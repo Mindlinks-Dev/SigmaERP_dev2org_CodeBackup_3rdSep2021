@@ -1,0 +1,117 @@
+<aura:component Controller="StockRecevingControllerLtng" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickAction"  access="global" > 
+    <aura:attribute name="isOpenprodTablechild" type="boolean" default="false"/>
+    <aura:attribute name="StockInProduct" type="Stock_In_Product__c[]"/> 
+    <aura:attribute name="isOpen" type="boolean" />
+    <aura:attribute name="id" type="String" default=""/>
+    <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="isflag" type="boolean" /> 
+     <aura:attribute name="isloc" type="Boolean" /> 
+    <aura:registerEvent name="carryStockInEvent" type="c:carryStockInEvent"/>
+    <aura:attribute name="ProductSerNumberList" type="Product_Serial_Number__c[]" />
+    <aura:attribute name="srlList" type="Product_Serial_Number__c[]" />
+     <aura:attribute name="srlinsertList" type="Product_Serial_Number__c[]" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="">
+        <thead>
+            <tr class="slds-text-title_caps" style="background:#fafaf9;">
+                <th scope="col">
+                    <div class="slds-truncate" title="Action">Action</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Purchase Order">Purchase Order</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="PO Product">PO Product</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Received Quantity">Received Quantity</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Lot">Lot</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Actual Location">Actual Location</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Status">Status</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Comments">Comments</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.StockInProduct}" var="obj" indexVar="index">
+                <tr>
+                    
+                    <td data-label="Action">
+                        
+                        <div class="a_btn" title="Action">                     
+                            <a aura:id="{!index+'ip'}" data-record="{!index}" data-index="{!index}" onclick="{!c.handleRemoveProductItemClick}">
+                                {!(index+1 == 0) ? '' : 'Delete'}</a> | 
+                            <lightning:button name="{!index}" variant="slds-button" label="Edit" onclick="{!c.addProducts}"/>
+                            
+                        </div>
+                        
+                    </td>
+                    
+                    <td data-label="Purchase Order">
+                        <div title="Purchase Order">{!obj.Pur_Order_Name}&nbsp;</div>
+                    </td>
+                    <td data-label="PO Product">
+                        <div title="PO Product">{!obj.PO_Name}&nbsp;</div>
+                    </td>
+                    <td data-label="Received Quantity">
+                        <div title="Received Quantity">{!obj.sigmaerpdev__Quantity_Received__c}&nbsp;</div>
+                    </td>
+                    
+                    <td data-label="Lot">
+                        <div title="Lot">{!obj.Lot_Name}&nbsp;</div>
+                    </td> 
+                    <td data-label="Actual Location">
+                        <div title="Actual Location">{!obj.Loc_Name}&nbsp;</div>
+                    </td> 
+                    
+                    <td data-label="Status">
+                        <div title="Status">{!obj.sigmaerpdev__Status__c}&nbsp;</div>
+                    </td> 
+                    <td data-label="Comments">
+                        <div title="Comments">{!obj.sigmaerpdev__Return_Quantity_Comment__c}&nbsp;</div>
+                    </td>
+                    <!--  <aura:iteration items="{!v.ProductSerNumberList}" var="srl" >
+                         <tr>
+                            
+                     <td >
+                      <aura:set attribute="srl.index" value="0"/>
+                        <lightning:inputField fieldName="srl.index" value="{!v.index}" />
+                        
+                         <lightning:input type="number" name="{!srl.count}" disabled="true" value="15" label="Disabled number field" />
+                             1-srl.index: {!srl.count} ,index:{!index}
+                             </td>
+                    </tr>
+                         </aura:iteration>-->
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+    
+    <div class="slds-hide" aura:id="ModalDelete">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="margin-top:-2.5%;">
+                <header class="slds-modal__header">                   
+                    <h2 class="slds-text-heading_medium" style="color:#c23934;">Delete Item</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p class="slds-align_absolute-center">Are you sure you want to delete stock receiving item?</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    
+                    <button class="slds-button slds-button--neutral" aura:id="confirmModalDelete" onclick="{!c.confirmModalDelete}" style="background:#c23934 !important;border:1px solid #c23934 !important;color:white !important;">Confirm</button>
+                    <button class="slds-button slds-button--neutral" aura:id="cancelModalDelete" onclick="{!c.cancelModalDelete}">Cancel</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

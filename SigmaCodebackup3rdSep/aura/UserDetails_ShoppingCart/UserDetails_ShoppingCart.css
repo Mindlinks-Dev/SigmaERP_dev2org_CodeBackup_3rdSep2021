@@ -1,0 +1,8 @@
+.THIS .user-bg,.THIS.user-bg{
+    background:url("https://ssigma-mvp-dev2-dev-ed-developer-edition.ap17.force.com/shoppingcart/resource/1593692689000/sigmaerpdev2__SigmaStore/SigmaStore/UserDetails.jpg");
+    background-size: cover;
+    background-position: 60%;
+}
+.THIS .slds-backdrop_open,.THIS .slds-backdrop_open,.slds-backdrop_open.THIS {
+    background:none repeat scroll 0 0 rgba(0, 0, 0, 0.6) !important; 
+}

@@ -1,0 +1,31 @@
+<aura:component controller="OrderDetailsCntrl"  implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="recordId" type="String" default="a1l2x0000002A5eAAE" />
+    <aura:attribute name="OrderData" type="Object"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:card>
+        Order Details
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <lightning:input name="Order Number" disabled="true" value="{!v.OrderData.OrderNumber}" label="Order Number" />
+            </div>
+            <div class="slds-col">
+                <lightning:input name="Total Amount" disabled="true" value="{!v.OrderData.TotalAmount}" label="Total Amount" />
+            </div>
+            <div class="slds-col">
+                <lightning:input name="Tax Percentage" disabled="true" value="{!v.OrderData.Tax}" label="Tax Percentage" />
+            </div>
+            <div class="slds-col">
+                <lightning:input name="Net Amount" disabled="true" value="{!v.OrderData.NetAmount}" label="Net Amount" />
+            </div>
+        </div>
+        <div class="slds-grid slds-gutters slds-p-top_medium">
+            <div class="slds-col">
+                <lightning:button variant="brand" label="Proceed To Payment" title="Proceed" onclick="{handleClick}" class="slds-m-left_x-small"/>
+				 <lightning:button variant="brand" label="Skip Payment" title="Skip" onclick="{handleClick}" class="slds-m-left_x-small"/>
+            </div>
+            
+               
+			
+        </div>
+    </lightning:card>    
+</aura:component>

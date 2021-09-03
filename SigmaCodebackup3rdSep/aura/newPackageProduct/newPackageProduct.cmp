@@ -1,0 +1,197 @@
+<aura:component controller="newPackageControllerLtng" implements="flexipage:availableForAllPageTypes"  access="global">
+    <aura:attribute name="packageProduct" type="PackagedProducts__c" 
+                    default="{ 'sobjectType': 'PackagedProducts__c',
+                             'sigmaerpdev__Order__c': '',
+                             'sigmaerpdev__Sigma_Order__c': '',
+                             'sigmaerpdev__Package__c':'',	
+                             'sigmaerpdev__Location__c': '',
+                             'sigmaerpdev__Instructions__c': '',
+                             'sigmaerpdev__Package_Date__c': '',
+                             'sigmaerpdev__Status__c': ''
+                             }"/>	
+    <aura:attribute name="ProductSerialNumber" type="Product_Serial_Number__c[]" />
+    <aura:attribute name="idnxval" type="decimal" />
+    <aura:attribute name="oneshotrecid" type="String" />
+    <aura:attribute name="isoneshot" type="boolean" default="false"/>
+    <aura:attribute name="OrderName" type="String" />
+    
+    <aura:handler event="c:setStatusValFromParentSO" action="{!c.setStatusValueFromParentComp}"/>
+    
+    <aura:attribute name="recordName2" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="recordName3" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="customerId" type="String" default="" description="" />
+    <aura:attribute name="status" type="String[]" default=""/>
+    <aura:attribute name="statusReady" type="String[]" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="pkgProdStatus" type="String" default=""/>
+    
+    <aura:attribute name="parentStatus" type="String" default=""/> 
+    <aura:attribute name="isStandardOrder" type="Boolean" default="false" />
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="InventoryID" type="String" default="" description="" />
+    <aura:attribute name="InventoryQuant" type="decimal" />
+    <aura:attribute name="VBOMIndex" type="array" />
+    
+    <aura:attribute name="AddOrEditFlow" type="String" default=""/> 
+    
+    <!-- added on 5/1/2018 to stop same transaction from being selected twice-->
+    <aura:attribute name="dupTransIdList" type="array" />
+    <aura:attribute name="dupTransIdListFromEditFlow" type="array" />
+    <!-- ends here -->
+    
+    <!-- added for Select Box-->
+    <aura:handler name="sampleComponentEvent" action="{!c.handleSampleEvent}" event="c:ComponentEvent" />
+    
+    <aura:attribute name="transLineListNew" type="array"  />
+    <aura:attribute name="isManual" type="boolean" default="false"/>
+    <aura:attribute name="selTransLineItemId" type="Id" default="" />
+    <aura:attribute name="productListNew1" type="array" />    	
+    <aura:attribute name="package" type="Package__c" 
+                    default="{ 'sobjectType': 'Package__c',
+                             'Name': '',
+                             'sigmaerpdev__Customer__c': '',
+                             'sigmaerpdev__Location__c': '',
+                             'sigmaerpdev__PackagedBy__c': '',
+                             'sigmaerpdev__PackagedDate__c': '',
+                             'sigmaerpdev__Status__c': 'In Progress',
+                             'sigmaerpdev__Instructions__c': ''
+                             }"/>
+    <aura:method name="sampleMethod" action="{!c.savePackage}" access="PUBLIC" />     
+    <aura:attribute name="selTransId" type="Id" default="" />
+    <!-- ends here-->
+    
+    <!-- added on 15-2-2018 to make Status to readonly after Autopick is done-->
+    <aura:handler name="sampleComponentEventNew" action="{!c.makeStatusReadOnly}" event="c:MakeStatusReadOnlyDuringAutopick" />
+    <!-- ends here -->
+    
+    <aura:attribute name="lineItemsLength" type="String" default=""/>
+    <aura:attribute name="productList" type="array" />
+    <aura:attribute name="productId" type="String" default=""/>     
+    <aura:registerEvent name="packageEvent" type="c:packageViewEvent"/><!-- Event Registration for wrapper data -->
+    <aura:handler name="cmpEvent" event="c:PackProdLotEvnt" action="{!c.setLotValue}"/> <!-- Getting Lot Value --> 
+    
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    
+    <!--new code to standorder  for normal order flow start -->
+    <td scope="row" data-label="SO NO." style="">
+        <aura:if isTrue="{!v.isoneshot}" >
+            <!-- <div class="slds-form-element__control" title="">
+             <c:LookupSobjectForSoOnHover aura:id="order" 
+                             SRString="{!v.customerId}" 
+                             searchString="{!v.productListNew1.transName}" 
+                             label="Standared Order" 
+                             pluralLabel="Sigma Orders" 
+                             sObjectAPIName="Order" 
+                             instanceId="MyOrder"
+                             listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                             listIconClass="slds-icon-standard-account"                             
+                             />
+            
+          </div>-->
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <ui:inputText aura:id="order" label=""
+                                  class="slds-input instructions"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.OrderName}"
+                                  disabled="true"
+                                  />
+                </div>
+            </div>
+            
+            <aura:set attribute="else">
+                <aura:if isTrue="{!v.isStandardOrder}" >
+                    <div class="slds-form-element__control" title="">
+                        <c:LookupSobjectForSoOnHover aura:id="order" 
+                                                            SRString="{!v.customerId}" 
+                                                            searchString="{!v.productListNew1.transName}" 
+                                                            label="Sigma Order" 
+                                                            pluralLabel="Sigma Orders" 
+                                                            sObjectAPIName="Order" 
+                                                            instanceId="MyOrder"
+                                                            listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                            listIconClass="slds-icon-standard-account"                             
+                                                            />
+                    </div>
+                    <aura:set attribute="else"> 
+                        <div class="slds-form-element__control" title="">
+                            <c:LookupSobjectForSoOnHover aura:id="order" 
+                                                                SRString="{!v.customerId}" 
+                                                                searchString="{!v.productListNew1.transName}" 
+                                                                label="Sigma Order" 
+                                                                pluralLabel="Sigma Orders" 
+                                                                sObjectAPIName="sigmaerpdev__Sigma_Order__c" 
+                                                                instanceId="MyOrder"
+                                                                listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                                listIconClass="slds-icon-standard-account"                             
+                                                                />
+                        </div> 
+                    </aura:set>
+                </aura:if>
+            </aura:set>
+        </aura:if>
+    </td>    
+    
+    <td data-label="product details">     
+        <table> 
+            <aura:iteration items="{!v.productListNew1.lineItemsList}" var="orderItem" indexVar="idx" > 
+                <tr>
+                    <c:newPackageProductInner selTransId="{!v.selTransId}" AddorEdit="{!v.AddOrEditFlow}" fullOriginalList="{!v.productListNew1.lineItemsList}" orderedQnt="{!orderItem.orderedQnt}" transItem="{!orderItem.transLineItemId}" orderItemNew="{!orderItem}" selStatus="{!v.productListNew1.status}" isoneshot="{!v.isoneshot}"  isStandardOrder="{!v.isStandardOrder}"/>                        
+                </tr>
+            </aura:iteration>   
+        </table>    
+        <aura:set attribute="else">
+        </aura:set>        
+    </td>   
+    
+    <!--    <td data-label="status">
+        <div class="slds-truncate" title="">
+    <aura:if isTrue="{!v.isoneshot == true}">
+                {!v.status}
+                       <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <ui:inputText aura:id="status" label=""
+                                                  class="slds-input instructions"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.status}"
+                                                   disabled="true"
+                                                  />
+                                </div>
+                            </div> 
+                        <br></br> 
+             <aura:set attribute="else">
+                 <ui:inputSelect aura:id="status" label="" 
+    class="slds-input"
+    labelClass="slds-form-element__label" required="true" change="{!c.getStatus}">               
+                <aura:iteration items="{!v.status}" var="st">
+                  
+                    <option value="{!st}" selected="{!st==v.productListNew1.status}">{!st}</option>
+                </aura:iteration>
+            </ui:inputSelect>
+             </aura:set>
+            </aura:if>
+        </div>
+    </td> 
+   --> 
+    <td data-label="status">
+        <div class="slds-truncate" title="">
+            
+            <ui:inputSelect aura:id="status" label="" 
+                            class="slds-input"
+                            labelClass="slds-form-element__label" required="true" change="{!c.getStatus}">               
+                <aura:iteration items="{!v.status}" var="st">
+                    
+                    <option value="{!st}" selected="{!st==v.productListNew1.status}">{!st}</option>
+                </aura:iteration>
+            </ui:inputSelect>
+        </div>
+    </td>    
+    
+    <div class="slds-spinner_container slds-hide" aura:id="spinner">
+        <div class="slds-spinner--brand slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--close" aura:id="backGroundSectionId"></div>
+</aura:component>

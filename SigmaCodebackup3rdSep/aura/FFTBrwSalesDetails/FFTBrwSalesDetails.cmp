@@ -1,0 +1,54 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes">
+    <aura:registerEvent name="FFTBBPSalesEvnt" type="c:FFTBBPSalesEvnt"/>
+    <aura:attribute name="rowDetails" type="object" />
+    <aura:attribute name="searchVal" type="String" />
+    
+    <td style="width:15%;text-align:center;">
+    	{!v.rowDetails.Name}
+    </td>
+    <td style="width:15%;text-align:center;">
+    	{!v.rowDetails.sigmaerpdev2__Customer_Formula__c}
+    </td>
+    <td style="width:15%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Delivary_Date__c != null}">
+            {!v.rowDetails.sigmaerpdev2__Delivary_Date__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td>
+    <td style="width:15%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__TotalAmount__c != null}">
+            {!v.rowDetails.sigmaerpdev2__TotalAmount__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td>
+    <td style="width:15%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Is_Payment_Made__c == true}">
+            <img src="{!$Resource.Payment_Done}" width="25" height="5" />
+            <aura:set attribute="else">
+                <img src="{!$Resource.Payment_Not_Done}" width="25" height="5" />
+            </aura:set>
+        </aura:if>
+    </td>
+    <td style="width:15%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Orders_Status__c != null}">
+            {!v.rowDetails.sigmaerpdev2__Orders_Status__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td>
+	<td data-label="Action" style="width:2%;padding-left:40px;">                
+        <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right"  onselect="{!c.handleMenuSelect}">                               
+            <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Is_Payment_Made__c == true}">
+                <aura:if isTrue="{!or(v.rowDetails.sigmaerpdev2__Orders_Status__c == 'Pending',v.rowDetails.sigmaerpdev2__Orders_Status__c == 'Order Confirmed')}">
+                    <lightning:menuItem label="Mark as Delivered" value="Mark as Delivered" iconName="action:markdelivered" />  
+                </aura:if>
+            </aura:if>
+            <lightning:menuItem label="Delete" value="Delete" iconName="action:delete" />
+        </lightning:buttonMenu> 
+     </td>    
+</aura:component>

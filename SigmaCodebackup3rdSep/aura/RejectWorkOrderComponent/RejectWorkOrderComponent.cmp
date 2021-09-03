@@ -1,0 +1,29 @@
+<aura:component controller="WorkOrderReject" implements="force:hasRecordId,force:lightningQuickActionWithOutHeader" >
+	<br/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+        <aura:attribute name="reasons" type="String"/>
+ 
+
+   <h3 class="slds-section__title slds-align_absolute-center">
+        <span class="slds-truncate" title="Section Title">Do you want to send back this Work Order ?</span>
+    </h3>
+    <br/>
+   
+     <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:select label="Send Back Reason" aura:id="reasonPicklist" required="true" onchange="{!c.reason}">
+								
+                                <option value="None">--None--</option>
+                                <option value="On Emergency Leave">On Emergency Leave</option>
+								<option value="No Part stock to Service">No Part stock to Service</option>
+								<option value="Others">Others</option>
+							</lightning:select>
+							</div>
+    
+    <br/>
+    <br/>
+    <br/>
+     <footer class="slds-align_absolute-center">
+        <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Confirm" onclick="{!c.confirm}" />
+        <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+    </footer> 
+</aura:component>

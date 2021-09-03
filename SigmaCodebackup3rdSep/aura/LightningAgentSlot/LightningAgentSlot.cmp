@@ -1,0 +1,99 @@
+<aura:component controller="AgentContactListClass">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.ListOfKeys}" action="{!c.doInit}"/>
+    <aura:registerEvent name="valueOfBoolean" type="c:EventToSetParentAttribute"></aura:registerEvent>
+    <aura:registerEvent name="cancelSlot" type="c:cancelSlot"></aura:registerEvent>
+    <aura:attribute name="slotKey" type="String" />
+    <aura:attribute name="startHeader" type="String" default="" /> 
+    <aura:attribute name="endHeader" type="String" default="" /> 
+    <aura:attribute name="hoverDuration" type="Integer"/>
+    <aura:attribute name="isAPILoaded" type="Boolean" default="false"/>
+    <aura:attribute name="eachSlotDuration" type="Decimal" default="" />
+    <aura:attribute name="timeOut" type="Integer" default="3" />
+    <aura:attribute name="indexHeaders" type="String[]" />
+    <aura:attribute name="mapvalue" type="map"/>
+    <aura:attribute name="slotMap" type="map"/>
+    <aura:attribute name="slotDurationMap1" type="map"/>
+    <aura:attribute name="StartZipcode" type="String" />
+    <aura:attribute name="ListOfKeys" type="List" />
+    <aura:attribute name="element" type="String" />
+    <aura:attribute name="BreakValue" type="String" />
+    <aura:attribute name="condition" type="Boolean" />
+    <aura:attribute name="Breakslot" type="Boolean" />
+    <aura:attribute name="Slot" type="Boolean" />
+    <aura:attribute name="WOADetails" type="map"/>
+    <aura:attribute name="travelDuration" type="String" />
+    <aura:attribute name="slotWODetails" type="map"/>
+    <aura:attribute name="workOrderZip" type="String" default=""/>
+    <aura:attribute name="workOrderContact" type="String" />
+    <aura:attribute name="workOrderName" type="String" />
+    <aura:attribute name="contactSpeed" type="String" />
+    <aura:attribute name="showLoadingSpinner" type="Boolean"/>
+    <aura:attribute name="showLoadingSpinnerFlag" type="Boolean"/>    
+    <aura:attribute name="workOrderId" type="Id" />
+    <aura:attribute name="serviceZipCode" type="string"/>
+    <aura:attribute name="zippostalcode" type="string"/>
+    <aura:attribute name="allocatedSlot" type="String" />
+    <aura:attribute name="showMessage" type="Boolean" />
+    <aura:attribute name="message" type="String" />
+    <aura:attribute name="customSettingDetails" type="Map" />
+    <aura:attribute name="PresentWOContact" type="string"/>
+    <aura:attribute name="WOContact" type="string"/>
+    <aura:handler name="change" value="{!v.allocatedSlot}" action="{!c.agentSlotAssignmentChange}"/>
+    <aura:registerEvent name="slotDetails" type="c:AgentSlotAssignmentEvent"/>
+    <aura:attribute name="slotBusy" type="Boolean" />
+    <!--<aura:if isTrue="{!v.condition}">
+        {!v.body}
+    </aura:if>-->
+    <aura:if isTrue="{!v.slotBusy}" >
+        
+        <td data-label="8" aura:id="Time-8" data-record="Time-8"  class="time-slot_tooltip time-cell time-slot tech-busy" onclick="{!c.showError}" onmouseenter="{!c.getDistanceFromGoogleAPI}" onmouseleave="{!c.deleteTimeOut}">
+            <div class="slds-popover slds-popover_tooltip slds-nubbin_right time-tooltip" role="tooltip">
+                <div class="slds-popover__body">
+                    <aura:if isTrue="{!v.isAPILoaded}">
+                        
+                                <p>Travel Time : <span>approx. {!v.travelDuration} mins</span></p>
+                                    <aura:set attribute="else">
+                                        
+                                    <p>Travel Time : <span>Calculating distance, pls wait...</span></p>
+                                    </aura:set>
+                                </aura:if> 
+                    <!--<p>Time Slots: {!v.slotKey}</p>-->
+                    <p>Contact name: {!v.WOContact}</p>
+                    <p>Location of Service:{!v.zippostalcode} </p>
+                    <p>Slot Assigned to: {!v.workOrderName}</p>
+                    
+                </div>
+            </div>
+            <div class="" title="" >&nbsp;</div>
+        </td>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!v.Breakslot}" >
+                <td data-label="8"  class="time-cell time-slot lunch-slot">
+                    <div class="slds-text-align_center" title="">{!v.BreakValue}</div>
+                </td>
+                <aura:set attribute="else">
+                    <td data-label="8" aura:id="Time-8" data-record="{!v.slotKey}"  class="time-slot_tooltip time-cell time-slot" onclick="{!c.SelectAvailableTime}" onmouseenter="{!c.getDistanceFromGoogleAPI}" onmouseleave="{!c.deleteTimeOut}">
+                        <div class="slds-popover slds-popover_tooltip slds-nubbin_right time-tooltip" role="tooltip">
+                            <div class="slds-popover__body">
+                                <aura:if isTrue="{!v.isAPILoaded}">
+                               
+                                <p>Travel Time : <span>approx. {!v.travelDuration} mins</span></p>
+                                    <aura:set attribute="else">
+                                    <p>Travel Time : <span>Calculating distance, pls wait...</span></p>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                <!--<p>Time Slots: {!v.slotKey}</p>-->
+                                <p>Contact name: {!v.workOrderContact}</p>
+                                <p>Location of Service: {!v.zippostalcode}</p>
+                            </div>
+                        </div>
+                        <div class="" title="" >&nbsp;</div>
+                    </td>
+                </aura:set>
+            </aura:if>
+        </aura:set>            
+    </aura:if>
+    
+</aura:component>

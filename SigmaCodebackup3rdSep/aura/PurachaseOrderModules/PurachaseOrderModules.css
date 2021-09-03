@@ -1,0 +1,31 @@
+.THIS .zoom {
+  padding: 21px;
+  transition: transform .2s; /* Animation */  
+}
+
+.THIS .zoom:hover {
+  transform: scale(1.3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+
+.marquee.THIS {
+    width: 100%;
+    line-height: 28px;
+    color: black;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+    background-color: #9bd7f1;
+}
+ 
+.marquee.THIS p {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 20s linear infinite;
+    font-size:10px;
+}
+
+@media screen and (max-width:800px) {
+	.THIS.slds-p-none,.THIS .slds-p-none{padding-left:0 !important;}
+    .THIS .align-center,.THIS.align-center{text-align:center !important;}
+    .THIS .slds-scrollable-mob,.THIS.slds-scrollable-mob{overflow-x: scroll;overflow-y: hidden;padding-bottom:80px;}
+}

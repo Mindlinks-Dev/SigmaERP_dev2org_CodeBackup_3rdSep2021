@@ -1,0 +1,14 @@
+.THIS .paddingAround .slds-col
+{
+   padding: .3rem;
+}
+.THIS.shadowPadding{
+    padding: 5px;
+    box-shadow: inset 0 0px 3px 3px rgba(0, 0, 0, 0.1);
+}
+.THIS .slds-tabs_scoped__content{
+    padding: 0rem;
+}
+.THIS .mobileView{
+    display:inline-flex !important;
+}

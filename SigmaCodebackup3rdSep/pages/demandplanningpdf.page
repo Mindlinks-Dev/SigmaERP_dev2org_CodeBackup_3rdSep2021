@@ -1,0 +1,192 @@
+<apex:page controller="demandplanpdf" standardStylesheets="false" applyHtmlTag="false" showHeader="false" renderAs="PDF">
+<html>
+    <head>
+        <style>
+            #ManfRun {
+                font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+            #ManfRun td, #ManfRun th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+            #ManfRun tbody>tr>td {
+              font-size: 14px;
+              font-weight: normal;
+            }
+            #ManfRun th {
+              font-size: 15px;
+              font-weight: normal;
+            }
+            #ManfRun td>table>tr>th {
+              font-size: 12px;
+              font-weight: bold;
+            }
+            #ManfRun td>table>tr>td {
+              font-size: 12px;
+              font-weight: bold;
+            }
+            #ManfRun tr:nth-child(even){background-color: #f2f2f2;}
+            #ManfRun tr:hover {background-color: #ddd;}
+            #ManfRun th {
+                padding-top: 5px;
+                padding-bottom: 5px;
+                text-align: middle;
+                background-color: #7fdece;
+                color: white;
+            }
+            #ManfRun td>table>tr>th {
+                padding-top: 5px;
+                padding-bottom: 5px;
+                text-align: middle;
+                background-color: #ffffff;
+                color: #7a7a7a;
+            }
+            #ManfRun td>table>tr>td {
+                padding-top: 5px;
+                padding-bottom: 5px;
+                text-align: middle;
+                background-color: #ffffff;
+                color: #7a7a7a;
+            }
+            @page {
+                     @top-center {
+                           content: element(header);
+                   }
+                   @bottom-left {
+                         content: element(footer);
+                   }
+                }
+            div.header {
+                padding: 10px;
+                position: running(header);
+            }
+            div.footer {
+                display: block;
+                padding: 5px;
+                position: running(footer);
+            }
+            .pagenumber:before {
+                content: counter(page);
+            }
+            .pagecount:before {
+                content: counter(pages);
+            }
+            
+        </style>
+    </head>
+    <body>                  
+        <table width="90%" border="0">  
+            <tr>
+                <td style="width:85%">
+                    <h2>Demand Plan Document</h2>
+                </td>
+                <td style="width:5%">
+                     <apex:image id="theImage" value="{!URLFOR($Resource.DemandPlanning1)}" width="190" height="100" alt="Description of image here"/>
+                    
+                </td>                
+            </tr>
+        </table>
+        <hr /> 
+        <table width="90%">
+            <tr>
+                <td style="width:9.9%" >Printed Date:</td>
+                <td style="width:25%">
+                   <apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}">
+                    <apex:param value="{!TODAY()}" /> 
+                   </apex:outputText>   
+                </td><br/>
+            </tr>
+            <tr>
+                <td style="width:8%">Product Name :</td>
+                <td style="width:25%">{!prodname}</td><br/> 
+            </tr>
+            <tr>
+                <td style="width:8%">Start Date :</td>
+                <td style="width:25%">                    
+                    <apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}"> 
+                        <apex:param value="{!DATEVALUE(fromdate)}"/> 
+                    </apex:outputText>
+                </td><br />
+            </tr>
+            <tr>
+                <td style="width:8%">End Date :</td>
+                <td style="width:25%">
+                    <apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}"> 
+                        <apex:param value="{!DATEVALUE(toDate)}"/> 
+                    </apex:outputText>                    
+                </td>                   
+                <br />
+            </tr>
+           <tr>
+                <td style="width:8%">Total Back Order Quantity:</td>
+                <td style="width:25%">{!TotalBackorder}</td>
+                   
+                <br />
+            </tr>
+            <tr>
+                <td style="width:8%">Available Quantity:</td>
+                <td style="width:25%">{!Availqunt}</td>
+                   
+                <br />
+            </tr>
+                       
+           
+        </table><br />
+        <apex:repeat value="{!container}" var="mainList" id="theRepeat1">
+            <table id="ManfRun">
+                <tr>
+                    <th>Sigma Order Name</th> 
+                    <th>Customer Name</th>       
+                    <th>Created Date</th>
+                    <th>Customer Type</th>
+                    <th>Order Type</th>
+                </tr>
+                <tbody>
+                    <apex:repeat value="{!mainList.sigmaOrderList}" var="soWrap" >                       
+                        <apex:repeat value="{!soWrap}" var="soWrap1">                           
+                            <tr>                                
+                                <td><apex:outputText value="{!HTMLENCODE(soWrap1.soName)}"/></td>
+                                 <td><apex:outputText value="{!HTMLENCODE(soWrap1.custName)}"/></td>
+                                 
+                                 <td>
+                                 <apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}">
+                                    <apex:param value="{!soWrap1.createDate}" /> 
+                                </apex:outputText></td>
+                                 <td><apex:outputText value="{!HTMLENCODE(soWrap1.custType)}"/></td>
+                                 <td><apex:outputText value="{!HTMLENCODE(soWrap1.orderType)}"/></td>                                
+                            </tr>
+                            <tr>
+                                <td colspan="5">
+                                    <table width="100%">
+                                        <tr>
+                                            <th>Sigma Order Lines</th>
+                                            <th>Product Name</th> 
+                                            <th>Back Order Quantity</th>
+                                            <th>Status</th>      
+                                            
+                                        </tr>
+                                        <apex:repeat value="{!soWrap1.orderLinesList}" var="sollineitem" >  
+                                            <tr>
+                                               <td>{!sollineitem.soliName}</td>
+                                               <td>{!sollineitem.prodName}</td>
+                                               <td>{!sollineitem.ordQuantity}</td>
+                                               <td>{!sollineitem.status}</td>                                              
+                                            </tr>
+                                        </apex:repeat>
+                                    </table>
+                                </td>
+                            </tr>                                                                   
+                        </apex:repeat>                                      
+                    </apex:repeat>          
+                </tbody>                
+            </table>
+        </apex:repeat>               
+           <div class="footer">
+                <div style="float:left;">{!NOW()}</div>
+                <div style="float:right;">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+          </div>
+    </body> 
+</html>
+</apex:page>

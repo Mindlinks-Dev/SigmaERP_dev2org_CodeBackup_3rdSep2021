@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Product Object Info" access="global">    
+    <aura:attribute name="customerName" type="String" required="true" description="The Id of the selected SObject." />
+    <aura:attribute name="totalAmount" type="Long" required="true" description="The id to identify the instance the component" />
+</aura:event>

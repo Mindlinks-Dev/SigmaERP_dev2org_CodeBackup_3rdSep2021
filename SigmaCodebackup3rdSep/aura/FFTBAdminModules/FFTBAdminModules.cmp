@@ -1,0 +1,59 @@
+<aura:component implements="force:appHostable">
+    <aura:attribute name="showIcons" type="boolean" default="true" />
+    <aura:attribute name="showModules" type="boolean" default="false" /> 
+    <aura:attribute name="showBPPayments" type="boolean" default="false" /> 
+    <aura:attribute name="showBPConfigs" type="boolean" default="false" />
+    <aura:attribute name="showBPs" type="boolean" default="false" />
+    <div class="marquee slds-text-align_center slds-p-around_small slds-truncate">
+        <img src="/resource/sigmaerpdev2__BPBeers" width="47" height="45" title=""  class="slds-float_left"/>
+        <span class="slds-text-heading_small" style="letter-spacing:8px;text-transform:uppercase;"><b>FFTB Admin</b></span>              
+        <img src="/resource/sigmaerpdev2__BPBeers" width="47" height="45" title=""  class="slds-float_right"/>
+    </div>    
+	<aura:if isTrue="{!v.showIcons == false}">
+        <lightning:card title="FFTB Admin Icons">
+            <aura:set attribute="actions">
+                <img onclick="{!c.showInfo}" src="/resource/sigmaerpdev2__ShowIcons" width="35" height="35" title="Show Icons" />                
+            </aura:set>        
+        </lightning:card>
+    </aura:if>
+    <aura:if isTrue="{!v.showIcons == true}">
+        <article class="slds-card slds-card--narrow">
+            <lightning:card title="">
+                <aura:set attribute="actions">
+                    <img onclick="{!c.closeInfo}" src="/resource/sigmaerpdev2__HideIcons" width="35" height="35" title="Hide Icons" />
+                </aura:set>
+                <table style="max-width:80%;" align="center">                    
+                    <tr>
+                        <td class="zoom" style="width:23%;text-align:center;">
+                            <img onclick="{!c.showBPConfiguration}" src="/resource/sigmaerpdev2__BPConfigs" width="60" height="80" title="Configurations" Name="Configurations" /><br />                
+                            <div class="slds-text-heading_small" style="padding-left:2px;">Configurations (BP)</div>
+                        </td> 
+                        <td class="zoom" style="width:23%;text-align:center;">
+                            <img onclick="{!c.showBP}" src="/resource/sigmaerpdev2__BPProducers" width="100" height="70" title="Brewery Producers" Name="Brewery Producers" /><br />                
+                            <div class="slds-text-heading_small" style="padding-left:2px;">Brewery Producers</div>
+                        </td> 
+                        <td class="zoom" style="width:23%;text-align:center;">
+                            <img onclick="{!c.showBpPayments}" src="/resource/sigmaerpdev2__BPPaysNew" width="60" height="80" title="Payments" /><br />                                  
+                            <div class="slds-text-heading_small" style="padding-left:2px;padding-top:9px;">Payments (BP)</div>
+                        </td> 
+                    </tr>
+                </table>
+            </lightning:card>
+         </article>
+    </aura:if>
+    
+     <aura:if isTrue="{!v.showModules == true}">
+        <lightning:card>       
+            <aura:if isTrue="{!v.showBPPayments == true}"> 
+               <c:FFTB_BP_PaymentList />
+            </aura:if>  
+            <aura:if isTrue="{!v.showBPConfigs == true}">
+               <c:BPUsers /> 
+            </aura:if> 
+            <aura:if isTrue="{!v.showBPs == true}">
+               <c:FFTB_BrwProducers /> 
+            </aura:if> 
+        </lightning:card>    
+    </aura:if>
+    
+</aura:component>

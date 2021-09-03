@@ -1,0 +1,6 @@
+<aura:event type="COMPONENT" description="Event template" >
+    <aura:attribute name="flag" type="String"/>
+    <aura:attribute name="rowIndex" type="Integer"/>  
+    <aura:attribute name="RecordID" type="String"/>  
+    <aura:attribute name="IsSelected" type="Boolean"/>
+</aura:event>

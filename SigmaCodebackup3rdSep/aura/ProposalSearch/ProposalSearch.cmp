@@ -1,0 +1,199 @@
+<aura:component controller="Proposalsearch" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="PropList" type="Object"/>
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>
+    <aura:attribute name="ProdEditFlag" type="Boolean"/>
+    <aura:attribute name="ServEditFlag" type="Boolean"/>
+    <aura:attribute name="MainFlag" type="Boolean" default="true"/>
+    <aura:attribute name="RecordId" type="String"/>
+    <aura:handler event="c:PageChange" action="{!c.pageChange}"/>    
+    <aura:attribute name="IsSpinner" type="Boolean" default="false"/>
+     <aura:attribute name="errorText" type="String"/>
+    <aura:attribute name="isErrorflag" type="Boolean" default="false"/>
+    <aura:attribute name="propid" type="string" default=""/>
+    <aura:attribute name="expanded" type="String" default="true"/>
+    <aura:attribute name="checkThis" type = "Boolean" default ="true" />
+    <aura:attribute name="expanded1" type="String" default="false"/>
+    <aura:attribute name="checkThis1" type = "Boolean" default ="true" />
+    <aura:attribute name="proposalObjectList" type="Proposal__c[]" />	
+
+    <aura:attribute name="propdetails" type="Proposal__c" default="{'sobjectType' : 'Proposal__c',
+                                                             'Name':'',
+                                                             'sigmaerpdev2__Status__c':'Signed',
+                                                             'sigmaerpdev2__Start_Date__c':'', 
+                                                             'sigmaerpdev2__End_Date__c':''
+                                                           }"/>
+    <aura:if isTrue="{!v.MainFlag}"> 
+    <div class="banner-bg">
+        <div class="content-bg">
+            <aura:If isTrue="{!v.isErrorflag}">
+            <div class="slds-grid">
+                <div class="slds-col slds-align-bottom">
+                    <p class="slds-text-body_small">
+                        
+                        <ui:message title="Error" severity="error" closable="false">
+                            {!v.errorText}
+                        </ui:message>
+                    </p>
+                </div>
+            </div>
+        </aura:If>
+            <div class="content">
+                <article class="slds-card">
+                    <div class="slds-card__header slds-grid-flex slds-m-bottom_none slds-p-around--xx-small" >
+                        <div class="slds-media__figure">
+                            <!-- <span class="slds-icon_container" title="contact">
+                                    <lightning:icon iconName="standard:entitlement" size="small" alternativeText="Warning!" variant="brand"/>
+                                    <span class="slds-assistive-text">contact</span>
+                                </span> -->
+                            	<span class="slds-icon_container slds-icon-standard-poll" title="Description of icon when needed">
+                                    <lightning:icon iconName="standard:flow" alternativeText="Approved" size="Medium"/> 
+                                </span> 
+                           		
+                        </div>
+                        
+                        <div class="slds-media__body">
+						 <!--<button class="slds-button slds-button_neutral" aura:id="toggle" onclick="{!c.toggle}" value="{!v.checkThis}"  style="padding: 6px;line-height: 10px;"> 
+                                <lightning:Icon  class="slds-hide" aura:id="chevronright" iconName="utility:chevronright" size="xx-small"/>
+                                <lightning:Icon  aura:id="chevrondown" iconName="utility:chevrondown" size="xx-small"/>
+                            </button>--> 
+                            <!--<span style="font-size:16px;color:black;margin-left: 6px;">
+                               Proposal Search
+                            </span>-->
+                            	<h2 class="slds-page-header__title slds-align-middle slds-m-top_xxx-small" title="Proposal Search">Proposal Search</h2>                        	
+                        </div>
+                        <img src="/resource/sigmaerpdev2__PropSearch" width="75" height="25" title="Proposal for Product" />                
+                    </div>
+                    <aura:if isTrue="{!v.expanded}">                        
+                    	<div class="slds-card__body">
+							<div class="main-content" style="width:60%;">
+                           		<div class="slds-form-element__group">
+                    				<div class="slds-grid">
+                                        <div class="slds-col slds-size_1-of-2 slds-p-horizontal_small">
+                                            <label class="slds-form-element__label" for="ID:">ID:</label>                           
+                                            <lightning:input type="text" name="input1" value ="{!v.propdetails.Name}" label="" />						
+                                        </div>                                        
+                                        <div class="slds-col slds-size_1-of-2 slds-p-horizontal_small">
+                                            <label class="slds-form-element__label" for="Status:">Status: </label>                                           
+                                            <lightning:select name="select" value="{!v.propdetails.sigmaerpdev2__Status__c}" label="">                                                                
+                                                <option value="Signed">Signed</option>
+                                                <option value="Planning">Planning</option>
+                                                <option value="Proposed">Proposed</option>
+                                                <option value="Active Negotiation">Active Negotiation</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                            </lightning:select>                                            
+                                        </div>
+									</div>
+					
+                                    <div class="slds-grid">
+                                    	<div class="slds-col slds-size_1-of-2 slds-p-horizontal_small">
+                                        	<label class="slds-form-element__label" for="Start Date:"> Start Date:</label>
+                                            <lightning:input type="date" name="input1" value ="{!v.propdetails.sigmaerpdev2__Start_Date__c}" label="" />
+                                        </div>                                        
+                                        <div class="slds-col slds-size_1-of-2 slds-p-horizontal_small">
+                                        	<label class="slds-form-element__label" for="End Date:">End Date:</label>
+                                            <lightning:input type="date" name="input1" value ="{!v.propdetails.sigmaerpdev2__End_Date__c}" label="" />
+                                        </div>		
+                                    </div>
+								</div>
+							</div>
+                        </div>
+                    </aura:if>  
+                    
+                    <div class="slds-text-align_left slds-m-left--small slds-m-top_xx-small slds-p-bottom--medium" > 
+                        <lightning:button class="slds-button slds-button_brand" onclick="{!c.FetchProp}">Search</lightning:button>
+                        <lightning:button class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</lightning:button>
+                       <!-- [Search is restricted to max. 200 records] -->
+                    </div>                     
+                </article>
+            </div>
+        </div>
+    </div>
+    
+     <div class="banner-bg">
+        <div class="content-bg">
+            <div class="content">
+                <article class="slds-card">                    
+                   <aura:if isTrue="{!v.expanded1}">
+                    <div class="slds-card__header slds-grid slds-m-top-xx-large slds-m-bottom_none slds-p-around--xx-small" style="background:#e6f2ff;">                        
+                        <div class="slds-media__figure">                           
+                        </div>
+                        <div class="slds-media__body">
+                             <!--<button class="slds-button slds-button_neutral" aura:id="toggle1" onclick="{!c.toggle1}" value="{!v.checkThis1}"  style="padding: 6px;line-height: 10px;"> 
+                                <lightning:Icon  class="slds-hide" aura:id="chevronright1" iconName="utility:chevronright" size="xx-small"/>
+                                <lightning:Icon  aura:id="chevrondown1" iconName="utility:chevrondown" size="xx-small"/>
+                            </button> -->
+							<span style="font-size:14px;color:black;margin-left: 6px;">
+                               Search Results
+                            </span>                            
+                        </div>
+                     </div>
+                    <aura:if isTrue="{!v.total > 0}">
+                    <div class="slds-card__body slds-table_bordered">
+                            <div class="slds-scrollable table-scroll slds-table slds-table_bordered1">
+                                <table class="main-table "> 
+                                    <thead>
+                                        <tr class="slds-line-height_reset" style="background:#f2f2f2;text-transform:uppercase;">
+                                        <th scope="col" style=""><div class="slds-truncate"> </div></th>
+                                        <th scope="col" style=""><div class="slds-truncate"> </div> Actions</th>
+                                        <th scope="col" style=""><div class="slds-truncate"> </div></th>
+                                        <th scope="col" style=""><div class="slds-truncate"> ID</div></th>
+                                        <th scope="col" style=""><div class="slds-truncate"> Proposal Name</div></th>
+                                        <th scope="col" style=""><div class="slds-truncate">Client Name</div></th>
+                                        <th scope="col" style=""><div class="slds-truncate"> Agency Name</div></th>
+                                        <th scope="col" style=""><div class="slds-truncate"> Start date</div></th>
+                                        <th scope="col" style=""><div class="slds-truncate"> End date</div></th>
+                                        <th scope="col" style=""><div class="slds-truncate"> Net Amount ($)</div></th>
+                                        <th scope="col" style=""><div class="slds-truncate"> Status</div></th>
+                                        <th scope="col" style=""><div class="slds-truncate" style="padding-left:40px;">View As</div></th>
+                                        <th scope="col" style=""><div class="slds-truncate"></div></th>    
+                                        </tr>
+                                    </thead>
+                                     <tbody>
+                                         <aura:iteration items="{!v.PropList.Poplist}" var="var1" indexVar="index">
+                                    <c:Proposalchild PropList="{!var1}" ProdEditFlag="{!v.ProdEditFlag}" ServEditFlag="{!v.ServEditFlag}" RecordId="{!v.RecordId}" MainFlag="{!v.MainFlag}"  rowIndex="{!index}"/> 
+                                    
+                                </aura:iteration>
+                                    </tbody>
+                                </table>
+                        </div>
+                    </div>
+                    </aura:if>
+                    <footer class="slds-card__footer footer">
+                        <aura:if isTrue="{!v.total > 0}">
+                            <div class="slds-text-align_center">
+                                <c:PaginationComponentForInventory page="{!v.page}"  pages="{!v.pages}" total="{!v.total}"/>
+                                {!V.body}
+                            </div>
+                        	<aura:set attribute="else">
+                                <div class="slds-text-align_center">
+                            		No records found for your search criteria.
+                                </div>
+                            </aura:set>
+                        </aura:if>          
+                	</footer>
+                    </aura:if>
+                </article>
+            </div>
+        </div>
+    </div>
+    </aura:if>
+    <aura:if isTrue="{!v.ProdEditFlag}"> 
+        <c:ProposalforProduct recordId="{!v.RecordId}" />
+    </aura:if>
+    <aura:if isTrue="{!v.ServEditFlag}"> 
+        <c:Proposal recordId="{!v.RecordId}" />
+    </aura:if>
+    
+    <div class="demo-only slds-hide" aura:id="mySpinner" style="height: 6rem;">
+    	<div class="slds-spinner_container">
+        	<div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+            	<span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,16 @@
+.THIS .slds-modal__container
+{
+    width:100%;
+    max-width:100%;
+}
+.THIS .slds-modal__content
+{
+
+}
+@media only screen and (max-width: 768px) 
+{
+	.THIS .slds-modal__container{margin:0 !important;}
+    .THIS .slds-grid{display:block !important;}
+    .THIS .slds-modal__content{height:474px !important;min-height:474px !important;}
+    .THIS .slds-col{display:block !important;width:100% !important;}
+}

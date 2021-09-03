@@ -1,0 +1,156 @@
+<aura:component implements="force:appHostable,forceCommunity:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="StockAdjustmentCntrlLightning"  access="global">
+    
+ 	<ltng:require styles="{!$Resource.HelpMenuCss}" />
+    
+    <!--Help-->
+    <aura:attribute name="description" type="String" default="test"/>
+    <aura:attribute name="descriptionBody" type="String" default="test"/>
+    <aura:attribute name="currectChapter" type="Integer"/>    
+    <aura:attribute name="openTrailWindow" type="Boolean" default="false"/>
+    <aura:attribute name="objectFiledList" type="List"/>
+    <aura:attribute name="jsonString" type="Map"/>
+    <aura:attribute name="currectObject" type="String" default=""/>
+    <aura:attribute name="HelpIcons" type="boolean" default="false" />
+    <aura:attribute name="showHelpMenu" type="boolean" default="false" />
+    <!--HelpEnd-->
+    
+    <aura:attribute name="showStkAdj" type="boolean" default="false" />
+    <aura:attribute name="showStkMvmnt" type="boolean" default="false" />
+    <aura:attribute name="showStkChk" type="boolean" default="false" />
+    <aura:attribute name="showStkConv" type="boolean" default="false" />
+    <aura:attribute name="showIcons" type="boolean" default="true" />  
+    <aura:attribute name="showModules" type="boolean" default="false" /> 
+    
+    
+    <aura:attribute name="from" type="String" default ="" />
+    <aura:attribute name="stkMId" type="Id" default ="" />
+    <aura:attribute name="stkChkId" type="Id" default ="" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+   	<aura:attribute name="ForFFTBDemoHidingSigmaIcons" type="boolean" default="false" />
+    
+    <!--<div class="marquee">
+        <img src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title="Stock Management Modules" />
+        <span style="padding-left:397px;font-size:16px;"><b>S T O C K&nbsp;&nbsp;&nbsp;&nbsp;M A N A G E M E N T&nbsp;&nbsp;&nbsp;&nbsp;M O D U L E S</b></span>
+        <img style="padding-top:4px;float:right;" src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title="Stock Management Modules" />
+    </div><p style="line-height:33%;">&nbsp;</p> 
+	-->
+    
+    <div class="marquee slds-text-align_center slds-p-around_small slds-truncate">
+        <!--<img src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title="Stock Management Modules"  class="slds-float_left"/>-->
+        <aura:if isTrue="{!v.ForFFTBDemoHidingSigmaIcons == true}">
+        <img src="{!$Resource.sigmaerp365logo}" width="95" height="95" title="Stock Management Modules"  class="slds-float_left"/>
+		</aura:if>
+        <img src="{!$Resource.BPProducer66}" width="77" height="45" title=""  class="slds-float_left"/>
+            <span class="slds-text-heading_small" style="letter-spacing:6px;text-transform:uppercase;"><b>Stock Management</b></span>
+        <img src="{!$Resource.BPProducer66}" width="77" height="45" title=""  class="slds-float_right"/>
+         <aura:if isTrue="{!v.ForFFTBDemoHidingSigmaIcons == true}">
+        <aura:if isTrue="{!v.showHelpMenu == true}">
+            <!--<img onclick="{!c.HelpMenu}" src="/resource/sigmaerpdev2__HelpMenu79" width="94" title="Help" class="slds-float_right"/>-->
+			<img onclick="{!c.HelpMenu}" src="{!$Resource.HelpMenu79}" width="94" title="Help" class="slds-float_right"/>
+		</aura:if>
+        </aura:if>
+    </div>
+    
+    <aura:if isTrue="{!v.showIcons == false}">
+        <lightning:card title="Stock Management Icons">
+            <aura:set attribute="actions">                                       
+                <!--<lightning:button variant="brand" label="Show" onclick="{!c.showInfo}"/>-->
+                <!--<img onclick="{!c.showInfo}" src="/resource/sigmaerpdev2__ShowIcons" width="35" height="35" title="Show Icons" /> -->               
+				<img onclick="{!c.showInfo}" src="{!$Resource.ShowIcons}" width="35" height="35" title="Show Icons" /> 
+			</aura:set>        
+        </lightning:card>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showIcons == true}">
+        <article class="slds-card slds-card--narrow">
+            <lightning:card>
+               
+                <aura:set attribute="actions">  
+                     <!--lightning:button variant="brand" label="Help Menu" onclick="{!c.HelpMenu}"/>&nbsp;-->
+                    <!--<lightning:button variant="brand" label="Hide" onclick="{!c.closeInfo}"/>-->
+                    <!--<img onclick="{!c.closeInfo}" src="/resource/sigmaerpdev2__HideIcons" width="35" height="35" title="Hide Icons" />-->
+					<img onclick="{!c.closeInfo}" src="{!$Resource.HideIcons}" width="35" height="35" title="Hide Icons" />
+                </aura:set>
+                <div class="slds-scrollable-mob">
+                    <table align="center" style="width:83%;margin:0 auto;">
+                        <tr>
+                            <td width="20%" class="zoom" style="text-align:center;">
+                                <!--<img onclick="{!c.showStockAdjustment}" src="/resource/sigmaerpdev2__StockAdjustments_MM" width="140" height="100" title="Stock Adjustment" Name="Stock Adjustment"/><br />   -->   
+								<img onclick="{!c.showStockAdjustment}" src="{!$Resource.StockAdjustments_MM}" width="90" height="100" title="Stock Adjustment" Name="Stock Adjustment"/><br />
+                                <div class="slds-text-heading_small" style="padding-left:20px;">Stock Adjustment</div>
+                            </td> 
+                            <td width="20%" class="zoom" style="text-align:center;">
+                                <!--<img style="padding-top:55px;" onclick="{!c.showStkMovement}" src="/resource/sigmaerpdev2__StockMovement" width="130" height="100" title="Stock Movement" Name="Stock Movement" /><br /> -->                                 
+                                <img style="padding-top:55px;" onclick="{!c.showStkMovement}" src="{!$Resource.StockMovement}" width="85" height="100" title="Stock Movement" Name="Stock Movement" /><br />
+								<div class="slds-text-heading_small" style="padding-left:15px;padding-bottom:20px;">Stock Movement</div>
+                            </td> 
+                            <td width="20%" class="zoom" style="text-align:center;">
+                                <!--<img onclick="{!c.showStkCheck}" src="/resource/sigmaerpdev2__StockCheck_MM1" width="110" height="150" title="Stock Check" Name="Stock Check" /><br />--> 
+								<img onclick="{!c.showStkCheck}" src="{!$Resource.StockCheck_MM1}" width="85" height="150" title="Stock Check" Name="Stock Check" /><br />								
+                                <div class="slds-text-heading_small" style="padding-left:20px;">Stock Check</div>
+                            </td> 
+                            <td width="20%" class="zoom" style="text-align:center;">
+                                <!--<img onclick="{!c.showStkConversion}" src="/resource/sigmaerpdev2__BomTOInd_MM" width="100" height="100" title="Stock Conversion" Name="Stock Conversion"/><br />  -->
+								<img onclick="{!c.showStkConversion}" src="{!$Resource.BomTOInd_MM}" width="85" height="100" title="Stock Conversion" Name="Stock Conversion"/><br />
+                                <div class="slds-text-heading_small" style="padding-left:25px;">Stock Conversion</div>
+                            </td>  
+                        </tr>   
+                    </table>
+                </div>
+            </lightning:card>
+        </article>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showModules == true}">
+        <lightning:card>       
+            <aura:if isTrue="{!v.showStkAdj == true}">
+                <c:StockAdjustmentLocation/>
+            </aura:if>  
+            <aura:if isTrue="{!v.showStkMvmnt == true}">          
+                <c:StockMovementsOne/>          
+            </aura:if> 
+            <aura:if isTrue="{!v.showStkChk == true}">          
+                <c:StockCheckDetails/>          
+            </aura:if>
+            <aura:if isTrue="{!v.showStkConv == true}">          
+                <c:StockConversion/>          
+            </aura:if>         
+        </lightning:card>    
+    </aura:if>
+    <br/>
+    
+    <!--HelpMenu-->
+   <aura:if isTrue="{!v.HelpIcons == true}">
+        <div id="trialWindow" aura:id="trialWindow" class="trialWindowClass expand"  onmouseenter="{!c.dragContent}">
+                       <aura:iteration items="{!v.jsonString.chapters}" var="chapter" indexVar="chapterIndx">
+                <aura:if isTrue="{!chapter.objectName == v.currectObject}">
+                    <div id="" class="slds-scrollable" style="display: flex!important;border-radius: 8px 8px 0px 0px;cursor: grab;flex-grow: 1!important;flex-direction: column!important;height:15%;background-color: #0C99C4;padding: 15px">
+                        <span id="stepDiscriptionHead" class="fontClassHeader1"> 
+                            <b>{!v.description}</b></span><br /> 
+                        <span id="stepDiscription" class="fontClass">{!v.descriptionBody}</span>                        
+                    </div>
+                    <ul class="slds-has-dividers_bottom-space slds-scrollable" style="height: 65%;">                        
+                        <aura:iteration items="{!chapter.steps}" var="step" indexVar="stepIndx">
+                            <li class="slds-item">
+                                <lightning:icon style="{!v.currectPage=='list' ? 'background-color: lightslategray;':''}" class="slds-m-right_x-small" iconName="action:approval" size="xx-small" alternativeText="Indicates approval"/>
+                                <!--a id="{!fields}" class="{!v.currectPage=='list' ? 'not-active':''}" name="{!fields}" href="" onclick="{!c.highlightSteps}">{!fields}</a-->
+                                <a id="{!chapterIndx+'-'+stepIndx}" class="{!v.currectPage!=step.element.uri.pathname ? 'not-active slds-col slds-size_10-of-12':'slds-col slds-size_10-of-12'}" style="{!step.isClicked ? 'margin-left: 3px;font-size: 13px;color:#6faa00':'margin-left: 3px;font-size: 13px;'}" name="{!step.title}" href="" onclick="{!c.stepsOnclickHandler}">{!step.title}</a>
+                           
+                            </li>
+                        </aura:iteration>
+                    </ul>
+                   <div style="border-radius: 0 0 8px 8px;text-align:center;padding: 0 1em;font-size: .8em;background-color: #0C99C4;">
+                        <span class="control-panel__footer__body">
+                            Powered by
+                            <span class="control-panel__footer__body__strong">Mindlinks</span>
+                        </span>
+                    </div>    
+                </aura:if>
+            </aura:iteration>
+            </div>
+        
+    </aura:if>
+    <!--HelpEnd-->
+    
+</aura:component>

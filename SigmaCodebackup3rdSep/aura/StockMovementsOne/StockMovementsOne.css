@@ -1,0 +1,18 @@
+.THIS .slds-button--icon-bare
+{
+    float:right !important;
+}
+.THIS .slds-pill{width:100% !important;}
+.THIS.slds-pill{width:100% !important;}
+.THIS .slds-spinner_container{position:fixed !important;}
+.THIS.slds-spinner_container{position:fixed !important;}
+
+@media only screen and (max-width: 768px) 
+{
+    .THIS .slds-form-element{padding-left:0 !important;}
+    .THIS .slds-form-element__row,.THIS.slds-form-element__row{display:block !important;}
+    .THIS .slds-size_1-of-4{width:100% !important;}
+    .THIS .record-header{left:0 !important;}
+    .THIS .closeButton{left:0 !important;}
+    .THIS .slds-scope .slds-notify_toast{padding: .75rem .5rem .75rem 0.5rem !important;min-width: 21rem !important;margin-top: 0.5rem !important;}
+}

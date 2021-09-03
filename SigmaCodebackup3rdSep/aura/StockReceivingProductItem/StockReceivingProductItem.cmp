@@ -1,0 +1,290 @@
+<aura:component controller="StockRecevingControllerLtng" implements="flexipage:availableForAllPageTypes"  access="global">
+    
+    <aura:registerEvent name="carryStockInList" type="c:CarryStockInRecord"/>
+    <aura:attribute name="ProductSerNumberList" type="Product_Serial_Number__c[]" />
+    <aura:handler event="c:carryStockInEvent" action="{!c.editFlow}"/>
+    <aura:attribute name="rowIndexVar" type="Integer"/>
+    <aura:attribute name="indexes" type="Integer"/>
+     <aura:attribute name="isloc" type="Boolean" />
+     <aura:attribute name="index1" type="Integer" />
+    <aura:attribute name="StockInProduct" type="Stock_In_Product__c[]"/>
+     <aura:attribute name="StockInProductlist" type="Stock_In_Product__c[]"/>
+    <aura:attribute name="StockInProductPopup" type="Stock_In_Product__c" 
+                    default="{'sobjectType': 'Stock_In_Product__c',
+                             'sigmaerpdev__Pur_Order__c': '',
+                             'sigmaerpdev__Purchase_Order__c': '',
+                             'sigmaerpdev__Quantity_Received__c': '',
+                             'sigmaerpdev__Returned_Quantity__c': '',
+                             'sigmaerpdev__Putaway_location__c': '',
+                             'sigmaerpdev__Status__c': '',
+                             'sigmaerpdev__Return_Quantity_Comment__c': '',
+                             'Pur_Order_Name': '',
+                             'PO_Name': '',
+                             'Loc_Name': '',
+                             'Lot_Name': '',
+                             'Qty':'',
+                             'RemainQty':'',
+                             'Attribute_type':''
+                             }"/>
+    <aura:attribute name="ProductSerialNumber" type="Product_Serial_Number__c" 
+                    default="{'sobjectType': 'Product_Serial_Number__c',
+                             'sigmaerpdev__Serial_Number__c': '',                                       
+                             'sigmaerpdev__Location__c' : '',
+                             'sigmaerpdev__Purchase_Order__c': '',
+                             'sigmaerpdev__Product_Code__c': '',
+                             'sigmaerpdev__Stock_Receiving_Product__c': '',
+                             'sigmaerpdev__Purchase_Order_Product__c': '',
+                             'count':'2'
+                             }"/>
+    <aura:attribute name="PSerialNumber" type="Product_Serial_Number__c[]" />
+    <aura:registerEvent name="updateLookupIdEvent" type="c:UpdateLookupId"/> 
+    <aura:registerEvent name="GenerateProductSerialNumber" type="c:GenerateProductSerialNumber"/> 
+    
+    <!--<aura:handler name="carryStockInList" event="sigmaerpdev:CarryStockInRecord" action="{!c.handleStockinList}"/>-->
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    
+    <aura:handler name="clearLookupIdEvent" event="c:ClearLookupId" action="{!c.clearLookup}"/>
+    
+    
+    <aura:attribute name="recordId" type="Id" default="" description="The current record Id to display" />
+    
+    <aura:attribute name="recordName1" type="String"  description="The current record Id to display" />
+    <aura:attribute name="recordName2" type="String"  description="The current record Id to display" />
+    <aura:attribute name="recordName3" type="String" description="The current record Id to display" />
+    <aura:attribute name="lotRecord" type="String"  description="The current record Id to display" />
+    <aura:attribute name="productId" type="String"  description="" />
+    <aura:attribute name="status" type="String[]" default=""/>
+    <aura:attribute name="recordId1" type="String" />
+    <aura:attribute name="index" type="String" default=""/>
+    <aura:attribute name="Id" type="String" default=""/>
+    <aura:attribute name="POPQuantity" type="String" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="PSNumber" type="Product_Serial_Number__c[]"  />
+    <aura:attribute name="completePSNumber" type="Product_Serial_Number__c[]"  />
+    <aura:attribute name="DummyPSNumber" type="Product_Serial_Number__c[]"  />
+    <aura:attribute name="PurchageOrder" type="String" />
+    <aura:attribute name="POPurchageOrder" type="String" />
+    <aura:attribute name="psnadd" type="String" />
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="errorMsgs" type="String" default=""/>
+    <aura:attribute name="isErrors" type="Boolean" default="false"/>
+    
+    
+    <aura:attribute name="RetainVendourID"     type="String" 
+                    description="The current record Id to display" />
+    
+    <aura:attribute name="SPStatus"  type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="POName"    type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="POPName"   type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="ALocation" type="String" description="The current record Id to display" />
+    
+    <aura:attribute name="childAttr" type="String" />
+    <aura:attribute name="isOpenchild" type="boolean" default="false"/>
+    <aura:attribute name="isOpenTablechild" type="boolean" default="false"/>
+    
+    <div role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open ">
+        <div class="slds-modal__container" style="">
+            
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-float--right" title="Close" aura:id="close" onclick="{!c.closeModel1}">
+                    <c:svg class="slds-button__icon slds-button__icon_large" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" style="color:rgb(0, 112, 210);">Add Stock Receiving Products</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="slds-form slds-form_compound">
+                    <div style="width:102%;margin-left:-2px;">
+                        <aura:renderIf isTrue="{!v.isError}">
+                            <ui:message title="Error" severity="error" closable="false">
+                                {!v.errorMsg}
+                            </ui:message>
+                            <aura:set attribute="else">
+                                
+                            </aura:set>
+                        </aura:renderIf>  
+                    </div>                     
+                    
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01">Purchase Order
+                                    <span style="color:red">* </span>
+                                </label>
+                                <c:LookupSObject aura:id="PurchaseOrder{!v.index}" 
+                                                        searchString="{!v.recordName1}"
+                                                        SRString="{!v.RetainVendourID}"
+                                                        label="Purchase Order" 
+                                                        pluralLabel="Purchase Orders" 
+                                                        sObjectAPIName="sigmaerpdev__Purchase_Order__c" 
+                                                        instanceId="POrder"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                        listIconClass="slds-icon-standard-account" />
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-02">PO Product
+                                    <span style="color:red">* </span>
+                                </label>
+                                <c:LookupSObject aura:id="Purchase_Order_Product{!v.index}" 
+                                                        searchString="{!v.recordName2}" 
+                                                        label="Purchase Order" 
+                                                        SRString="{!v.StockInProductPopup.sigmaerpdev__Pur_Order__c}"
+                                                        pluralLabel="PO Products"
+                                                        sObjectAPIName="sigmaerpdev__Purchase_Order_Product__c" 
+                                                        instanceId="POProduct"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                        listIconClass="slds-icon-standard-account" />
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01">Received Quantity
+                                    <span style="color:red">* </span>
+                                </label>
+                                <ui:inputNumber aura:id="QReceived" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.StockInProductPopup.sigmaerpdev__Quantity_Received__c}" 
+                                              change="{!c.validateQuantity}"/>
+                                
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-02">Actual Location
+                                    
+                                </label>
+                                <c:LookupSObject aura:id="ReceivingLocation" 
+                                                        searchString="{!v.recordName3}"
+                                                        SRString="Location"
+                                                        label="Account" pluralLabel="Accounts" 
+                                                        sObjectAPIName="Account" instanceId="MyAccount3"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                        listIconClass="slds-icon-standard-account" /> 
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01">Status
+                                    <span style="color:red">* </span>
+                                </label>
+                                <ui:inputSelect aura:id="status" label=""
+                                                class="slds-select"
+                                                labelClass="slds-form-element__label"
+                                                change="{!c.saveStatus}" value="{!v.StockInProductPopup.sigmaerpdev__Status__c}" >
+                                    <aura:iteration items="{!v.status}" var="st">
+                                        <ui:inputSelectOption text="{!st}" label="{!st}"/>      
+                                    </aura:iteration>
+                                </ui:inputSelect>  
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01">Lot</label>
+                                <c:LookupSObject aura:id="Lot" 
+                                                        searchString="{!v.lotRecord}"
+                                                        SRString="{!v.productId}"
+                                                        label="Lot" pluralLabel="Lots" 
+                                                        sObjectAPIName="sigmaerpdev__Lot__c" instanceId="Lot"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                        listIconClass="slds-icon-standard-account" />
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01">Comments</label>
+                                <ui:inputText aura:id="packagedDate" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.StockInProductPopup.sigmaerpdev__Return_Quantity_Comment__c}" />
+                                
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+                
+                
+            </div>
+            <footer class="slds-modal__footer">
+                
+                <aura:if isTrue="{!v.StockInProduct.sigmaerpdev__Purchase_Order__r.sigmaerpdev__Product__r.sigmaerpdev__Attribute_Type__c =='SERIALIZED'}">
+                    
+                    <div class="slds-truncate slds-float--left" title="Serial Number" >
+                        <ui:button label="Sl No."  press="{!c.showOppmodal}"/>
+                    </div>
+                    
+                    <aura:set attribute="else">
+                        
+                        <div class="slds-truncate slds-float--left" title="Serial Number" aura:id="serialBtn">
+                            <button class="slds-button slds-button--neutral" onclick="{!c.showOppmodal}">Sl No.</button>
+                        </div> 
+                    </aura:set>
+                    
+                </aura:if>
+                
+                <button class="slds-button slds-button--brand" aura:id="submit" onclick="{!c.submit}">Submit</button>
+                <button class="slds-button slds-button--neutral" aura:id="closeModel" onclick="{!c.closeModel1}">Cancel</button>
+            </footer>
+        </div>
+    </div>
+    
+    <div class="slds">
+        <div aria-hidden="true" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-hide" aura:id="modaldialog" style="background:rgba(150, 148, 146, 0.8)">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header slds-theme--info">
+                    
+                    <h2 class="slds-text-heading--medium">Serial Number</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <div>
+                        <aura:renderIf isTrue="{!v.isErrors}">
+                            <ui:message title="Error" severity="error" closable="false">
+                                {!v.errorMsgs}
+                            </ui:message>
+                            <aura:set attribute="else">
+                                
+                            </aura:set>
+                        </aura:renderIf> 
+                        <div aura:id="msg" >
+                            Add  <ui:outputText aura:id="oName" value="{!v.psnadd}"/> Serial Number
+                        </div>
+                        
+                       
+                        
+                        <aura:iteration items="{!v.PSerialNumber}" var="psn" indexVar="index" >
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="text-input-id-1">Serial Number</label>
+                                <div class="slds-form-element__control slds-input-has-fixed-addon">
+                                    <ui:inputText aura:id="pSNumber{!index}"
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!psn.sigmaerpdev__Serial_Number__c}"
+                                                  />
+                                    <span class="slds-form-element__addon">
+                                        <div data-record="{!index}">
+                                            <a href="javascript:void(0);" aura:id="{!index+'ip'}" data-index="{!index}" onclick="{!c.handleRemoveProductItemClick}">
+                                                {!(index+1 == 0) ? '' : 'X'}</a>
+                                        </div>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                        </aura:iteration>
+                    </div>
+                </div>
+                
+                <div class="slds-modal__footer">
+                    
+                    <button class="slds-button slds-button--brand"   onclick="{!c.saveProductSerialNumber}">Save</button>
+                    <button class="slds-button slds-button--neutral" onclick="{!c.hidePopup}">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+</aura:component>

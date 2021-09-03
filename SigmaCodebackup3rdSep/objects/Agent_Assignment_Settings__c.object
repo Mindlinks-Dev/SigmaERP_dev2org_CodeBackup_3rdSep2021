@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Holds the details for Agent Assignment.</description>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>Hover_Duration__c</fullName>
+        <externalId>false</externalId>
+        <label>Hover Duration(in milliseconds)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Maximum_Threshold_Travel_Time__c</fullName>
+        <externalId>false</externalId>
+        <label>Maximum Threshold Travel Time (Minutes)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>Agent Assignment Settings</label>
+    <visibility>Public</visibility>
+</CustomObject>

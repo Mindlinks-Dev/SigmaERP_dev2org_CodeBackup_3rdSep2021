@@ -1,0 +1,214 @@
+<aura:component controller="StockCheckController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="today" type="Date" default=""/>
+    <aura:attribute name="Orderdate" type="Date" default=""/>
+    <aura:attribute name="ILPlist" type="Object[]"/>
+    <aura:attribute name="recordId" type="Id" /> 
+    <aura:attribute name="FromLocId" type="String" description="" />
+    <aura:attribute name="ContactName" type="String" description="User for UI" />
+    <aura:attribute name="packagedBy" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="TotalQty" type="String" description="" />
+    <aura:attribute name="CheckDate" type="string" description="Stock Check Date"/>
+    <aura:attribute name="CheckUser" type="string" description="Stock Check Date"/>
+    <aura:attribute name="prodName" type="String" description="" />
+    <aura:attribute name="ilpName" type="String" description="" />
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/> 
+        <aura:attribute name="curRecordID" type="String" />
+    <aura:attribute name="ilid" type="String" /> 
+    
+    <aura:attribute name="isBarcodeScanned" type="boolean" default="false"/>
+    <aura:attribute name="prodBarCodeValue" type="String" default=""/>
+    <aura:attribute name="productFoundFlag" type="boolean" default="false"/>  
+    <aura:attribute name="scannedProductName" type="String" default=""/> 
+    <aura:attribute name="qnty" type="Integer" default="null"/>
+	<aura:attribute name="recID" type="Id" default="" description="The current record Id to display" />
+    <aura:handler name="change" value="{!v.recID}" action="{!c.locChange}" />
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:handler name="change" value="{!v.packagedBy}" action="{!c.userChanged}"/>
+    
+    <aura:attribute name="showBarCodeFlg" type="boolean" default="false" />
+    <aura:handler name="change" value="{!v.ilid}" action="{!c.removeLoc}"/>
+    
+    <aura:dependency resource="markup://force:navigateToSObject" type="EVENT"/> 
+    
+    <aura:attribute name="StockCheck" type="Stock_Check__c" description="The current record Id to display" 
+                    default="{ 'sobjectType' : 'Stock_Check__c' ,
+                             'sigmaerpdev2__Stock_Check_Date__c' : '',
+                             'sigmaerpdev2__Stock_Check_User__c' :'',
+                             }"/>
+    <aura:attribute name="StockCheckDetails" type="Stock_Check_Details__c[]" />
+    <aura:attribute name="selVal" type="object"  />
+    
+    <aura:attribute name="carVal" type="String" default=""/>
+    <aura:attribute name="carValss" type="String" default=""/>
+     <aura:attribute name="loaded" type="boolean" default="true"/>
+     <!--<aura:registerEvent name="vfEvent" type="c:StockEvent"/>-->
+     <div class="exampleHolder">
+        <aura:if isTrue="{! v.loaded }">
+           
+            <aura:set attribute="else">
+               <lightning:spinner alternativeText="Loading" />
+            </aura:set>
+        </aura:if>
+    </div>
+    
+    <div id="Accspinner" class="slds-spinner_container" style="display:none">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    
+    <article class="slds-card">
+        <div class="slds-page-header slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <lightning:icon iconName="standard:visit_templates" alternativeText="Stock Check" />       
+                </div>
+                <div class="slds-media__body">                    
+                    <h2 class="slds-card__header-title">
+                        <a class="slds-card__header-link slds-truncate" title="Stock Check">
+                            <span class="slds-text-heading_small">Stock Check</span>
+                        </a>
+                    </h2>
+                </div>
+                <div  class="{!and(v.StockCheck.sigmaerpdev2__Stock_Check_Date__c,v.packagedBy) ? 'slds-no-flex':'slds-hide'}">
+                    <lightning:button variant="brand" label="Print" onclick="{!c.print}" class="print-hide" />
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-gutters" >
+                
+                <div class="slds-col slds-size--1-of-5 slds-p-horizontal--Small slds-truncate" id="TempToDisplayCheckDate">
+                    <label class="slds-form-element__label" for="input-02">Stock Check Date<span style="color:red;"> *</span></label>
+                    <ui:inputDate class="slds-input dateField" aura:id="StockDate" value="{!v.StockCheck.sigmaerpdev2__Stock_Check_Date__c}" displayDatePicker="true" change="{!c.checkEmptyDate}" />  
+                    <ui:outputText aura:id="custValidationss" value="{!v.carValss}" class="textClass" />  
+                </div>
+                
+                <div class="slds-col slds-size--1-of-5 slds-p-horizontal--Small" id="TempToDisplayUser">
+                    <label class="slds-form-element__label" for="input-01">Verifying User<span style="color:red;"> *</span></label>
+                     <c:LookupSObject aura:id="Contact" SRString="All"                                       
+                                     searchString="{!v.packagedBy}" 
+                                     label="User" pluralLabel="Users"
+                                     sObjectAPIName="User" instanceId="MyContact"
+                                     listIconSVGPath="/resource/StappEE__SLDS103/assets/icons/standard-sprite/svg/symbols.svg#account"
+                                     listIconClass="slds-icon-standard-account"
+                                      />                      
+                    <ui:outputText aura:id="custValidation" value="{!v.carVal}" class="textClass" />    
+                </div>
+                <div class="slds-col slds-size--1-of-6 slds-p-horizontal--Small" id="TempToDisplayLoc">
+                    <label class="slds-form-element__label" for="input-01">Location Name</label>
+                    <c:LookupSObject aura:id="Location Name" 
+                                               searchString="{!v.ilid}"
+											   recID="{!v.recID}"
+                                               SRString="Location"
+                                               label="Account" pluralLabel="Accounts" 
+                                               sObjectAPIName="Account" instanceId="ReceivingLocation"
+                                               listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                               listIconClass="slds-icon-standard-account" />                       
+                    
+                </div>
+				 <div class="slds-col slds-size--1-of-6 slds-p-horizontal--Small" style="margin: 1.3%;margin-left: 0%;">
+						    <lightning:button variant="brand" label="Search" onclick="{!c.searchILP}" class="print-hide"  />
+                </div>
+               <!--searchString="{!v.packagedBy}"  -->
+                
+            </div><br />
+            <aura:if isTrue="{!v.showBarCodeFlg}">
+                <div class="slds-grid slds-gutters" >                
+                    <div class="slds-col slds-size--1-of-5 slds-p-horizontal--Small" id="TempToDisplaybarcode">
+                        <label class="slds-form-element__label" for="input1">Scan Barcode</label>
+                        <lightning:input type="checkbox"  name="input1" checked="{!v.isBarcodeScanned}"/>
+                    </div>
+                    
+                    <div class="{!v.isBarcodeScanned? 'slds-col slds-size--1-of-5 slds-p-horizontal--Small':'slds-hide' }" id="TempToDisplayprodbarcode" data-label="ProdBarCode"  >
+                        <lightning:input class=""
+                                         aura:id="prodScanedCode"
+                                         name="enter-search"
+                                         label="Product Barcode"
+                                         type="search"
+                                         value="{!v.prodBarCodeValue}"
+                                         error=""
+                                         onchange="{!c.afterProdScaned}"
+                                         />
+                        <div aura:id="ProdName" class="">
+                            <strong class="{!v.productFoundFlag? '':''}" style="{!v.productFoundFlag? v.scannedProductName!='Not Found'?'-webkit-text-stroke-width: medium;color: green;':'-webkit-text-stroke-width: medium;color: red;':'color: white'}">{!v.scannedProductName}</strong>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+        <aura:renderIf isTrue="{!v.isError}">
+            <ui:message title="Error" severity="error" closable="false">
+                {!v.errorMsg}
+            </ui:message>
+            <aura:set attribute="else">  
+            </aura:set>
+        </aura:renderIf> 
+        <div class="slds-grid slds-m-top_x-large slds-scrollable--x">
+            
+            <table border="0" class="slds-table slds-table_cell-buffer slds-table_striped slds-box" width="100%">   	
+                <thead>
+                    <tr class="slds-text-title_caps" style="background:#fafaf9;border-bottom:1px solid #d8dde6;">                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Inventory Location Product" style="color:#16325c;">SL No.</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Inventory Location Product" style="color:#16325c;">ILP</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Location" style="color:#16325c;">Inv. Location</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Product" style="color:#16325c;">Product</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Product Barcode" style="color:#16325c;">Product Barcode</div>
+                        </th>
+                        
+                        <th scope="col" style="">
+                            <div class="slds-truncate" title="Available Qty" style="color:#16325c;">Available Qty.</div>
+                        </th>
+                        
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Stock Check Qty" style="color:#16325c;"><span>Stock Check Qty.</span><!--<span class="required">*</span>--></div>
+                        </th>
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Difference Qty" style="color:#16325c;"><span>Difference Qty.</span><!--<span class="required">*</span>--></div>
+                        </th>
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Reason" style="color:#16325c;"><span>Reason<span style="Visibility:hidden;">Reas</span></span><!--<span class="required">*</span>--></div>
+                        </th>
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Verified" style="color:#16325c;"><span>Verified</span><!--<span class="required">*</span>--></div>
+                        </th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.StockCheckDetails}" var="scd" indexVar="index" >    
+                        <c:StockCheckChild  StockCheckDetails="{!scd}" indexVal="{!index}" />
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+        
+        <footer class="slds-card__footer slds-text-align_center">
+            <button class="slds-button slds-button--brand"  aura:id="Submit" onclick="{!c.SaveStockCheckkkk}">Submit</button>             
+            <!-- commented below line for new Module wise UI on 5/2/2020 -->
+            <button class="slds-button slds-button_neutral" onclick="{!c.BackButton}" style="margin-right:0.6%;">Cancel</button>
+     
+        
+                   
+            <!-- commented below line for new Module wise UI on 5/2/2020 -->
+            
+        </footer>
+    </article>
+</aura:component>

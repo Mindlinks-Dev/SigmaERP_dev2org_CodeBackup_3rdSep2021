@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Delete package Product Event">
+    <aura:attribute name="selectedpackageProduct" type="sigmaerpdev__PackageProduct__c"/>
+</aura:event>

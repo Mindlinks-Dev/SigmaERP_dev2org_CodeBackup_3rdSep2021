@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT" description="Event template">
+    <aura:attribute name="currStatus" type="String"/>
+    <aura:attribute name="soId" type="String"/>
+    <aura:attribute name="selAct" type="String"/>
+</aura:event>

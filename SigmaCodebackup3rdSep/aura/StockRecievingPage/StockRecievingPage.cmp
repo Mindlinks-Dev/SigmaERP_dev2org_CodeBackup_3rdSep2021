@@ -1,0 +1,162 @@
+<aura:component controller="StockRecievingHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>   
+    <aura:attribute name="stockList" type="Stock_In__c[]"/>
+    <aura:attribute name="CreateCustomerShow" type="Boolean" default ="false" description="The current record Id to display" />
+    
+    <aura:attribute name="errorText" type="String"/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="isErrorflag" type="Boolean" default="false"/>
+    <aura:attribute name="Listflag" type="Boolean" default="true"/>
+    <aura:attribute name="stockFlag" type="Boolean" default="false"/>
+    <aura:attribute name="isstockrecieveWithId" type="Boolean" default="false"/>    
+    <aura:attribute name="stockId" type="id"/> 
+     <aura:handler name="stockrecieveevent" event="c:stockrecieveevent" action="{!c.handlestockId}"/>
+    <aura:handler name="SigmaComponentEvent" event="c:SigmaComponentEvent" action="{!c.handleComponentEvent}" />
+    
+    <aura:attribute name="name" type="Stock_In__c"/>
+    <aura:handler event="c:PageChange" action="{!c.pageChange}"/>
+    <!--Attribute for ProductImage Show -->
+   <aura:attribute name="productimageexist" type="boolean" default ="false"/>
+    <aura:attribute name="ProductImageData" type="ContentDocumentLink" /> 
+     <aura:attribute name="ProductView" type="Boolean" default="false" />
+    
+    <!--<div class="slds-box">-->
+        <aura:If isTrue="{!v.isErrorflag}">
+            <div class="slds-grid">
+                <div class="slds-col slds-align-bottom">
+                    <p class="slds-text-body_small">
+                        
+                        <ui:message title="Error" severity="error" closable="false">
+                            {!v.errorText}
+                        </ui:message>
+                    </p>
+                </div>
+            </div>
+        </aura:If>
+        
+        <aura:If isTrue="{!v.Listflag}">
+            <div class="slds-m-vertical_small" aura:id="mainDiv">
+                <div class="slds-grid slds-grid-mob">
+                    <div class="slds-col slds-has-flexi-truncate">
+                        <div class="slds-media slds-no-space slds-grow  slds-m-vertical_xx-small">
+                            <div class="slds-media__figure">
+                                <span style="padding-left:5px;">
+                                    <lightning:icon iconName="custom:custom55" size="small" />
+                                </span>
+                            </div>
+                            <div class="slds-media__body">                        
+                                <!--<h1 class="slds-page-header__title slds-p-right_x-small">                                    
+                                    <button class="slds-button slds-button_reset slds-type-focus slds-truncate" aria-haspopup="true" title="">
+                                        <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">
+                                            <span class="slds-truncate" title="Stock Receiving">Stock Receiving</span>
+                                        </span>
+                                    </button>                                    
+                                </h1>-->
+                                <span style="font-size:15px;" class="slds-truncate"><b>Stock Receiving</b></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="slds-col slds-no-flex slds-grid slds-align-top slds-p-bottom_xx-small">
+                        <div class="slds-button-group" role="group" style="padding-right:5px;">                            
+                            <lightning:button label="New" name="Stock Receiving"  onclick="{!c.StockReceivingComponent}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--   <aura:If isTrue="{!v.isErrorflag}">
+            <div class="slds-grid">
+                <div class="slds-col slds-align-bottom">
+                    <p class="slds-text-body_small">
+                        
+                        <ui:message title="Error" severity="error" closable="false">
+                            {!v.errorText}
+                        </ui:message>
+                    </p>
+                </div>
+            </div>
+        </aura:If> -->
+            
+            <!-- <aura:If isTrue="{!v.Listflag}"> -->
+            <div aura:Id="ProductSection">
+                <div class="slds-grid slds-scrollable-mob">
+                    <table class="slds-table slds-table_bordered" role="grid" style="border-left: 1px solid rgb(216, 221, 230);border-right: 1px solid rgb(216, 221, 230);">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" >
+                                <div class="slds-truncate" title="Serial Number">SL NO</div>
+                            </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="Name">Name</div>
+                                </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="Vendor">Vendor</div>
+                                </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="Location">Location</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Received Date Time">Received Date Time</div>
+                                </th>
+                                <!--<th scope="col"> 
+                                    <div class="slds-truncate" title="Status">Status</div>
+                                </th>-->
+                               <!-- <th scope="col"> 
+                                    <div class="slds-truncate" title="Status">Actions</div>
+                                </th>-->
+                               </tr>
+                        </thead>
+                        
+                        
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.stockList}" var="item" indexVar="i">
+                                
+                                <c:StockRecievingChild stockList="{!item}" serialCount="{!i+1}"/> 
+                                
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="align-center">
+                <c:PaginationComponentForInventory page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                
+                {!V.body}
+                    </div>
+            </div>
+            
+        </aura:If>
+        
+        
+        
+        <aura:If isTrue="{!v.stockFlag}">
+            <c:StockReceivingComponent/>
+        </aura:If>
+        
+         <aura:If isTrue="{!v.isstockrecieveWithId}">
+       <div aura:Id="ProductSection">
+            <c:StockReceivingComponent recordId="{!v.stockId}"/>
+       </div>
+   </aura:If>
+     <aura:if isTrue="{!v.ProductView}">
+       <c:viewProductImage ProductImageDataSet ="{!v.ProductImageData}" productimageexist ="{!v.productimageexist}" ProductView ="{!v.ProductView}"/>    
+    </aura:if>   
+        
+      
+    <!--</div>-->
+    
+    <div class="demo-only slds-hide" aura:id="mySpinner" style="height: 6rem;">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+    
+</aura:component>

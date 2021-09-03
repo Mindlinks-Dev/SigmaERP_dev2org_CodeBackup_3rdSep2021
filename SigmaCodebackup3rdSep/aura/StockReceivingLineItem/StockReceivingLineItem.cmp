@@ -1,0 +1,163 @@
+<!-- StockReceivingLineItem -->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:isUrlAddressable,forceCommunity:availableForAllPageTypes"  access="global">
+    <!--<ltng:require styles="{!$Resource.StappCustomCSS + '/StockRecievingCustomCSS.css'}" />  -->
+    <aura:attribute type="List" name="StockRecievingProdList"/>
+    <aura:attribute name="indexNum" type="Integer" />
+    <aura:attribute name="vendor" type="String" />
+    <aura:attribute name="company" type="String" />
+    <aura:attribute name="locationId" type="String" />
+    <aura:attribute name="transactionID" type="string" default=""/>
+    <aura:attribute name="transactionName" type="string" default=""/>
+    <aura:attribute name="recId" type="String"/>
+    <aura:attribute name="isopen" type="boolean" />
+    <aura:attribute name="recordName1" type="String"  description="The current record Id to display" />
+    <aura:attribute name="isStarted" type="Boolean" default="true"/>
+    <aura:attribute type="Boolean" name="isShowDispatchedQuantity"  />
+   
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:handler name="change" value="{!v.transactionID}" action="{!c.handleTransIdValueChange}" />
+	<aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>
+   
+    <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+	
+    <aura:attribute name="mobileScreenFlag" type="boolean" default="false"/>
+    <aura:attribute name="pageReference" type="Object"/>
+    <aura:attribute name="tdID" type="string"/>
+    <aura:attribute name="isVerified" type="boolean"/>   
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/> <!-- to handle lookups-->  
+    <aura:registerEvent name="POevent" type="c:POevent"/><!--carry PO details-->
+    
+    <aura:attribute name="scannedProductBarCodeValue" type="string"/>
+    <aura:attribute name="scannedProductName" type="string"/>
+    <aura:handler name="change" value="{!v.scannedProductBarCodeValue}" action="{!c.barCodeClear}" />
+    <aura:attribute name="productFoundFlag" type="boolean" default="false"/>
+    <aura:attribute name="StockReceivingWrap" type="List" />
+    
+    <div class="transBorder slds-grid slds-wrap slds-size_1-of-1 slds-medium-size_10-of-12 slds-large-size_6-of-12" style="background: rgb(250, 250, 249);border-top: 1px solid rgb(221, 219, 218);border-right: 1px solid rgb(221, 219, 218);">
+        <div class="slds-align_absolute-center slds-p-top_medium slds-col slds-size_1-of-6 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+            <lightning:button class="slds-truncate ButtonTextPadding" label="Remove" iconName="utility:delete" iconPosition="left" onclick="{!c.removeSRP}" disabled="{!v.isVerified}"/>
+        </div>
+        <div class="slds-col slds-size_2-of-6 slds-medium-size_4-of-12 slds-p-around_x-small slds-large-size_4-of-12" Id="SelectPOId">
+            <aura:if isTrue="{!!v.isVerified}">
+                <label class="slds-form-element__label">Select PO</label>
+      
+         <c:customLookup recordID="{!v.transactionID}" recordName="{!v.transactionName}" whereCondition ="{!'AND sigmaerpdev2__Product_Supplier__c=\''+v.vendor+'\' AND sigmaerpdev2__Status__c=\'Submitted\' AND Id in (select sigmaerpdev2__Purchase_Order__c from sigmaerpdev2__Purchase_Order_Product__c where sigmaerpdev2__Received_Quantity__c>0)'}" objectAPIName="sigmaerpdev2__Purchase_Order__c"  IconName="custom:custom96" isSigmaOrder= "true"/>
+                										   
+                <aura:set attribute="else">
+                    <ui:inputText value="{!v.transactionName}" disabled="{!v.isVerified}"/>
+                </aura:set>
+            </aura:if>
+			
+            
+        </div>
+        
+        <div class="slds-col slds-size_2-of-6 slds-medium-size_4-of-12 slds-p-around_x-small slds-large-size_4-of-12" Id="prodBarCode">
+            <lightning:input class=""
+                             aura:id="basketScanedCode"
+                             name="enter-search"
+                             type="search"
+                             value="{!v.scannedProductBarCodeValue}"
+                             label="Product Bar Code"
+                             error=""
+                             onchange="{!c.afterProductScaned}"
+                             />
+            <div aura:id="productNameDispaly" class="">
+                <strong class="{!v.productFoundFlag? '':''}" style="{!v.productFoundFlag? v.scannedProductName!='Not Found'?'-webkit-text-stroke-width: medium;color: green;':'-webkit-text-stroke-width: medium;color: red;':'color: white'}">{!v.scannedProductName}</strong>
+            </div>
+        </div>
+    </div>
+       
+    
+    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal">
+        <thead>
+            
+            
+            <tr class="slds-text-title_caps">
+                <th scope="col">
+                    <div class="slds-truncate" title="Product">
+                        Product
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Product">
+                       View Product
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title=" Bar Code">
+                        Bar Code
+                    </div>
+                </th>
+                <th scope="col" style="width:5%;">
+                    <div class="slds-truncate" title="Ordered QTY">
+                        Ordered QTY
+                    </div>
+                </th>
+                 <aura:if isTrue="{!v.isShowDispatchedQuantity}">
+                <th scope="col" style="width:5%;">
+                    <div class="slds-truncate" title="Dispatched QTY">
+                        Dispatched QTY
+                    </div>
+                </th>
+                </aura:if>
+                <th scope="col" style="width:5%;">
+                    <div class="slds-truncate" title="Remaining QTY">
+                        Remaining QTY
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Receiving QTY">
+                        <span style="color:red">*</span>Receiving QTY
+                    </div>
+                </th>
+                <!--<th scope="col" style="width: 12%;">
+                    <div class="slds-truncate" title="Location">
+                        <span style="color:red">*</span>Location
+                    </div>
+                </th>-->
+                <th scope="col" style="width:10%;">
+                    <div class="slds-truncate" title="Status">
+                        <span style="color:red">*</span>Status
+                    </div>
+                </th>
+                <!--<th scope="col">
+                    <div class="slds-truncate" title="Lot">
+                        Lot
+                    </div>
+                </th>-->
+               <!-- <th scope="col" Style="width:10%;">
+                    <div class="slds-truncate" title="Bin">
+                        <span style="color:red">*</span>Actual Location
+                    </div>
+                </th>-->
+				 <th scope="col" style="width:16%;">
+                    <div class="slds-truncate" title="Bin">
+                        <span style="color:red">*</span>Bin
+                    </div>
+                </th>
+                 <th scope="col" style="width:14%;">
+                    <div class="slds-truncate" title="Lot">
+                        Lot
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title=" Expiry Date">
+                        Expiry Date
+                    </div>
+                </th>
+                <th scope="col" style="width: 8%;">
+                    <div class="slds-truncate" title="Action">
+                        Action 
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody style="transform: inherit;">
+            <aura:iteration items="{!v.StockRecievingProdList}" var="item" indexVar="i">
+                <c:StockReceivingLineItemChild StockRcvProduct="{!item.SRLineItemRec}" isShowDispatchedQuantity="{!v.isShowDispatchedQuantity}"  hasExpiryDate="{!item.hasExpiryDate}" locationId="{!v.locationId}" BinId="{!item.BinId}" BinName="{!item.BinName}"  attributeType="{!item.attributeType}" prodName="{!item.productName}" productid="{!item.productid}" Product_Bar_Code="{!item.Product_Bar_Code}"  remainqty="{!item.remainqty}" orderqty="{!item.orderqty}" dispatchedQty="{!item.dispatchedQuantity}"   indx="{!i}" parentIndx="{!v.indexNum}" isSerialCodeMandatory="{!item.isSerialCodeMandatory}"/>
+            </aura:iteration> 
+        </tbody>
+    </table>
+    
+    
+</aura:component>

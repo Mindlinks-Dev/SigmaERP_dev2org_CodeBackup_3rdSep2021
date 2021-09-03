@@ -1,0 +1,6 @@
+<apex:page standardController="Order"  renderAs="pdf" applyHtmlTag="false" 
+           showHeader="false" 
+           cache="true"
+           readOnly="true">
+
+</apex:page>

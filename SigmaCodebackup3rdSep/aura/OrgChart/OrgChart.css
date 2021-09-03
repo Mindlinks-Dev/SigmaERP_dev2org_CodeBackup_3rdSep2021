@@ -1,0 +1,11 @@
+.THIS {
+    display: flex;
+    flex-direction: column;
+	box-sizing: border-box;
+    height: 100%;
+}
+
+.THIS .content {
+    flex: 1;
+    overflow: scroll;
+}

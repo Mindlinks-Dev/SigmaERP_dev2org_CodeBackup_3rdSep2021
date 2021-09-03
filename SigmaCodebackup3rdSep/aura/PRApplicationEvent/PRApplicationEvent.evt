@@ -1,0 +1,8 @@
+<aura:event type="APPLICATION" description="Event template">
+    <aura:attribute name="recID" type="string"/>
+    <aura:attribute name="isEdit" type="Boolean"/>
+    <aura:attribute name="data" type="Map"/>
+    <aura:attribute name="flag" type="string" default="edit"/>
+    <aura:attribute name="Edit" type="Boolean"/>
+    <aura:attribute name="isprodChanged" type="Boolean"/>
+</aura:event>

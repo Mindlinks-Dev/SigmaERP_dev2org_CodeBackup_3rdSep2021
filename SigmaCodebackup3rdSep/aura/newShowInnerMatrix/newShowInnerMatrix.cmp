@@ -1,0 +1,41 @@
+<aura:component controller="newPackageControllerLtng" implements="flexipage:availableForAllPageTypes"  access="global">
+    <aura:attribute name="index" type="String" default=""/>
+    <aura:attribute name="wrapList" type="array" />
+    <aura:attribute name="prodAttributeTypeInner" type="String" />
+    <aura:attribute name="rowId" type="String" default=""/>  
+    <aura:attribute name="orderedQn" type="Decimal" /> 
+    <aura:attribute name="selQuantity" type="String" default=""/>  
+    
+    <aura:handler event="c:handlebackEvent" action="{!c.handleApplicationEvent}"/>
+    
+    <tr>
+        <td data-label="Enter Quantity">              
+            <ui:inputText label="" class="slds-input" value="{!v.wrapList.selQuantity}" required="true" updateOn="keyup" keyup="{!c.validateQuantity}"/>                             
+        </td>
+        <td data-label="Lot">
+            <ui:inputText label="" class="slds-input" value="{!v.wrapList.lotName}" disabled="true" />
+        </td>  
+        <td data-label="Expiry Date">
+            <div data-label="expiry">                
+                <ui:inputDate aura:id="DateTime"
+                              class="slds-input "
+                              labelClass="slds-form-element__label"
+                              value="{!v.wrapList.lotExpiryDate}"
+                              displayDatePicker="true"
+                              disabled="true"/>	
+            </div>
+        </td>
+        <aura:if isTrue="{!v.prodAttributeTypeInner =='SERIALIZED'}">
+            <td data-label="Serial No.">
+                <ui:inputText label="" class="slds-input" value="{!v.wrapList.srNumName}" disabled="true" />
+            </td>
+        </aura:if>           
+        <td data-label="Bin Location">
+            <ui:inputText label="" class="slds-input" value="{!v.wrapList.ilpName}" disabled="true" />
+        </td>
+        <td data-label="Available Quantity">
+            <ui:inputText label="" class="slds-input" value="{!v.wrapList.ilpAvailQuantity}" disabled="true" />
+        </td>
+    </tr>                
+    
+</aura:component>

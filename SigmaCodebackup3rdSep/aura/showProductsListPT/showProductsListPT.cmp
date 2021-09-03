@@ -1,0 +1,76 @@
+<aura:component >
+    <aura:attribute name="prdName" type="String" />
+    <aura:attribute name="stockItem" type="Boolean" />
+     <aura:attribute name="autoMode" type="Boolean" default ="false" />
+    <aura:attribute name="requiredQnt" type="Decimal" />
+    <aura:attribute name="innerList" type="object"/>
+    <aura:attribute name="indexNum" type="Integer" /> 
+        <aura:registerEvent name="SigmaComponentEvent" type="c:SigmaComponentEvent" />
+
+     
+    <div class="slds-section" aura:id="sldsSection">
+        
+        <button aria-expanded="true" aura:id="buttonsldsSection" class="slds-button slds-section__title-action" onclick="{!c.productTitle}">
+            <c:svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#switch'}" />            
+            <span title="Product Name">Product : {!v.prdName}</span>
+            <div style="width:50px;">&nbsp;</div>
+            <span title="Requested Quantity">Requested Qty : {!v.requiredQnt}</span>
+           
+        </button>
+            
+            
+       
+        <div aria-hidden="false" class="slds-section__content" id="expando-unique-id">
+            <aura:if isTrue="{!v.stockItem == false}"> 
+                <div class="slds-scrollable_x">
+                <table class="slds-table slds-table_striped">
+                    <tr>
+                        <td colspan="7">
+                         	<div style="padding-left:225px;">Non Stock Item</div>
+                        </td>                        
+                    </tr>
+                </table>
+                </div>
+            	<aura:set attribute="else">
+                    <div class="slds-scrollable_x">
+                    <table class="slds-table slds-table_striped" border="0">
+                        <thead>
+                            <tr style="text-transform:uppercase">
+                                <th scope="col" style="width:10%;background:#ffcccc;">
+                                    <div class="" title="ILPLI">ILPLI</div>
+                                </th>
+                                <th scope="col" style="width:10%;background:#ffcccc;">
+                                    <div class="" title="Bin">Bin</div>
+                                </th>
+                                <th scope="col" style="width:10%;background:#ffcccc;">
+                                    <div class="" title="Expiry Date">Lot</div>
+                                </th>
+                                <th scope="col" style="width:10%;background:#ffcccc;">
+                                    <div class="" title="Expiry Date">Expiry Date</div>
+                                </th>
+                                <th scope="col" style="width:12%;background:#ffcccc;">
+                                    <div class="" title="PSN ">PSN</div>
+                                </th>
+                              
+                                <th scope="col" style="width:10%;background:#ffcccc;">
+                                    <div class="" title="Available Qty">Available Qty</div>
+                                </th>
+                                <th scope="col" style="width:10%;background:#ffcccc;">
+                                    <div class="" title="Pick Qty">Pick Qty</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <aura:iteration items="{!v.innerList}" var="listInner">
+                            <tr>
+                                <c:showProductsILPLIListPT details="{!listInner}" />
+                            </tr>
+                        </aura:iteration>
+                    </table>
+                    </div>
+            	</aura:set>
+            </aura:if>
+        </div> 
+    </div>
+    
+    
+</aura:component>

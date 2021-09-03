@@ -1,0 +1,6 @@
+<aura:event type="COMPONENT" description="Component event for sigma app" >
+    <aura:attribute type="Map" name="data"/>
+    <aura:attribute type="string" name="flag"/>
+    <aura:attribute type="string" name="flag1"/>
+    <aura:attribute type="string" name="customerId"/>
+</aura:event>

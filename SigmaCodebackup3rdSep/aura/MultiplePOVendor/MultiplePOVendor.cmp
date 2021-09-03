@@ -1,0 +1,32 @@
+<aura:component controller="MultiplePOCtrl" access="global">
+    <aura:attribute name="accLst" type="Account[]"/>
+    <aura:attribute name="itemIndex" type="integer" />
+    <aura:registerEvent name="MultiplePOEvt" type="c:MultiplePOEvt"/>
+    <aura:attribute name="MultiplePOWrapper" type="Vendor_Product__c" default="{'sobjectType': 'Vendor_Product__c'}" />
+    
+    <tr class="slds-hint-parent">
+        <td data-label="Select">            
+            <!--{!v.Innerwrapper.IsSelected}-->
+            <ui:inputCheckbox aura:id="cboxRow" value="{!v.MultiplePOWrapper.isSelected}" text="{!v.MultiplePOWrapper.isSelected}" change ="{!c.onClickCheckBox}"/>
+        </td> 
+        <!-- <th scope="row">
+                                      <lightning:input type="checkbox" aura:id="checkBoxId"  name="checkbox" onchange="{!c.onClickCheckBox}"/>
+                                   </th>-->
+        <td scope="row">
+            <div class="slds-truncate" title="vendname"><a href="javascript:void(0);">{!v.MultiplePOWrapper.sigmaerpdev2__Account_Name__c}</a></div>
+        </td>
+        <td scope="row">
+            <div class="slds-truncate" title="phone">{!v.MultiplePOWrapper.VendorProductCode__c}</div>
+        </td>
+        <td scope="row">
+            <div class="slds-truncate" title="phone">{!v.MultiplePOWrapper.Current_Stock__c}</div>
+        </td>
+        <td scope="row">
+            <div class="slds-truncate" title="phone">{!v.MultiplePOWrapper.sigmaerpdev2__Buying_Price__c}</div>
+        </td>
+    </tr>     
+    
+    
+    <footer class="slds-card__footer"><a href="javascript:void(0);"><!--View All <span class="slds-assistive-text">entity type</span>--></a></footer>
+    
+</aura:component>

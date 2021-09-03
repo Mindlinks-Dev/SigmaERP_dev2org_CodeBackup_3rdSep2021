@@ -1,0 +1,2 @@
+<aura:event type="APPLICATION" description="Reload Tax Values Success Info" access="global">        
+</aura:event>

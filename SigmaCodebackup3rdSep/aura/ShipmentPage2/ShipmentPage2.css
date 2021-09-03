@@ -1,0 +1,4 @@
+@media only screen and (max-width: 768px) 
+    {
+    .THIS .slds-scrollable-mobile{overflow-x:scroll;}
+}

@@ -1,0 +1,49 @@
+<aura:component implements="force:appHostable,forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes" access="global">
+     <aura:attribute name="IlpliItem" type="Inventory_Location_Product_Line_Item__c"/>
+    <aura:attribute name="ProType" type="String"/>
+	<aura:attribute name="AdjustType" type="String" description="IlpName for UI" /> 
+     <aura:attribute name="istrue" type="Boolean" Default="true" />
+     <tr>
+        <td>
+            <ui:outputText value="{!v.IlpliItem.Name}"/>
+        </td>  
+          <td>
+            <ui:outputText value="{!v.IlpliItem.sigmaerpdev2__Inventory_Location__r.sigmaerpdev2__Location__r.Name}"/>
+        </td>  
+          <td>
+            <ui:outputText value="{!v.IlpliItem.sigmaerpdev2__Bin__r.Name}"/>
+        </td>  
+        <td style="text-align:center;">
+            <ui:outputText value="{!v.IlpliItem.sigmaerpdev2__Available_Quantity__c}" />
+        </td>
+        <td data-label="bucket">              
+            <ui:inputText aura:id="bucket" placeholder="0" label="" value="{!v.IlpliItem.sigmaerpdev2__bucket_field__c}" required="true" updateOn="keyup" keyup="{!c.validateQuantity}"/>                             
+        </td>
+        
+        <aura:If isTrue="{!v.IlpliItem.sigmaerpdev2__Lot__c != null }">
+            <td>	
+                <ui:outputText value="{!v.IlpliItem.sigmaerpdev2__Lot__r.Name}"/>
+            </td>
+            <td>
+                <ui:outputDate value="{!v.IlpliItem.sigmaerpdev2__Product_Expiry_Date__c}" />
+            </td>
+            <aura:set attribute="else">
+                <td><ui:outputText value="N/A"/></td>
+                <td><ui:outputText value="{!v.IlpliItem.sigmaerpdev2__Expiry_Date__c}"/></td>
+            </aura:set>
+        </aura:If>
+        
+        <td>
+            <aura:If isTrue="{!v.IlpliItem.sigmaerpdev2__Product__r.sigmaerpdev2__Attribute_Type__c == 'SERIALIZED'}">
+                <!--<ui:outputText value="{!v.IlpliItem.sigmaerpdev2__Serial_Name__c}" />-->
+                 <ui:outputText value="{!v.IlpliItem.sigmaerpdev2__Product_Serial_Number__r.sigmaerpdev2__Serial_Number__c}" />
+                <aura:set attribute="else">
+                    <ui:outputText value="N/A" />
+                  
+                </aura:set>
+            </aura:If>   
+        </td>
+    
+    </tr>
+	
+</aura:component>

@@ -1,0 +1,110 @@
+<aura:component controller="viewCartctrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="SelectedRetailerName" type="String" /> 
+    <aura:attribute name="SelectedRetailer" type="String" />  
+    <aura:attribute name="parentcmp" type="Boolean" default="false"/>
+    <aura:attribute name="HideButtons" type="Boolean" default="true"/>
+    <aura:attribute name="Shipcmp" type="Boolean" default="true"/>
+    <aura:attribute name="DisplayCustDetail" type="String"/>
+    <aura:attribute name="DisplayCartDetail" type="list"/>
+    <aura:attribute name="CartValue" type="Integer" default="0"/>
+    
+    <aura:attribute name="AddandCone" type="Integer" default="0"/>
+    <aura:attribute name="PlaceorderBtn" type="boolean" default="false"/>
+    
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner class="psfix" alternativeText="Loading" size="large" />
+    </div>
+    
+    <aura:If isTrue="{!v.Shipcmp}">
+        <div class="slds-p-around_medium">
+            <div class="slds-box styfx" >
+                <h2 class="slds-card__header-title slds-p-vertical_small"><b>SHOPPING CART</b></h2>
+                <div class="slds-scrollable">
+                <table class="slds-table slds-table_bordered">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col" width="25%">
+                                <div class="slds-truncate" title="Product">Product</div>
+                            </th>
+                            <th class="" scope="col" width="35%">
+                                <div class="slds-truncate" title="Description">Description</div>
+                            </th>
+                            <th class="" scope="col" width="20%">
+                                <div class="slds-truncate" title="Quantity">Quantity</div>
+                            </th>
+                            
+                            <th class="" scope="col" width="5%">
+                                <div class="slds-truncate" title="Action">Action</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <aura:iteration items="{!v.DisplayCartDetail}" var="cartDetail" indexVar="ind">
+                            <tr class="slds-hint-parent">
+                                <td data-label="Opportunity Name" scope="row">
+                                    <img src="{! cartDetail.RetailerCommURL+'/sfc/servlet.shepherd/version/download/'+cartDetail.Attachementsid}" alt="Product" width="110"/>
+                                    <!-- <img src="{!cartDetail.Productimage}" alt="Product" width="110"/>-->
+                                </td>
+                                <td data-label="Account Name">
+                                    <p><b class="disinl">Product Name </b><span class="clrb">: {!cartDetail.Name}</span></p>
+                                    <p class="slds-truncate"><b class="disinl">Description </b>: {!cartDetail.Description} from {!cartDetail.retailerName}</p>
+                                    <!--<aura:if isTrue="{!cartDetail.fullboxQty}">-->
+                                    <p><b class="disinl">Ordered Quantity </b>: {!cartDetail.OrderedQuantity}</p>
+                                    <p><b class="disinl">Unit Price </b>: {!cartDetail.UnitPrice}</p>
+                                    <p><b class="disinl">Total Amount </b>: {!cartDetail.ProductPrice}</p>
+                                    
+                                    <!--</aura:if>-->
+                                </td>
+                                <td data-label="Close Date" >
+                                    <lightning:input type="number" name="{!ind}" value="{!cartDetail.OrderedQuantity}" onchange="{!c.CalculateBoxQty}"	/>
+                                    <aura:set attribute="else">
+                                        <lightning:input type="number" aura:id="myInput" name="{!ind}" value="{!cartDetail.OrderedQuantity}"  onchange="{!c.CalculateBoxQty}"/>
+                                    </aura:set>
+                                </td>
+                                
+                                <td data-label="Amount" class="algn">
+                                    <lightning:buttonIcon name="{!ind}" iconName="utility:delete" size="large" variant="bare" onclick="{!c.deleteProduct}" alternativeText="Remove" />
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+                </div>
+                <div class="slds-grid slds-grid-block">
+                    <div class="slds-col">
+                        <lightning:button class="slds-button slds-button_brand slds-m-top_medium" iconName="utility:shopping_bag" variant="CONTINUE SHOPPING" label="CONTINUE SHOPPING" title="CONTINUE SHOPPING" onclick="{! c.BacktoCatalog}"/>
+                    </div>
+                    <div class="slds-col">                        
+                        <aura:if isTrue="{!v.PlaceorderBtn}">
+                            <h3 class="slds-p-top_large"><b class="colr">Please click "Update Cart"  to proceed...</b></h3>
+                        </aura:if>                        
+                    </div>
+                    <div class="slds-col slds-text-align_right">
+                        <lightning:button class="slds-button slds-button_brand slds-m-top_medium" iconName="utility:clear" variant="base" label="CLEAR CART" title="CLEAR CART" disabled="{! !v.HideButtons}" onclick="{! c.ClearItems }"/>
+                        <aura:If isTrue="{!v.HideButtons}">
+                            <lightning:button class="slds-button slds-button_brand slds-m-top_medium" iconName="utility:record_update" variant="UPDATE CART" label="UPDATE CART" title="UPDATE CART" onclick="{! c.UpdateCart}"/>
+                            <lightning:button class="{!v.PlaceorderBtn==true?'slds-button slds-button_brand slds-m-top_medium slds-button_disabled':'slds-button slds-button_brand slds-m-top_medium '}" aura:id="placeorder" disabled="{!v.PlaceorderBtn}" iconName="utility:cart" variant="PLACE ORDER" label="PLACE ORDER" title="PLACE ORDER" onclick="{! c.placeOrders }" />
+                        </aura:If>
+                    </div>
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>        
+        <div class="slds-p-around_small"> 
+            <section class="main-container col1-layout">   
+                <div class="actions"> 
+                </div>
+            </section> 
+        </div>
+    </aura:If>
+    <!-- <aura:If isTrue="{!v.GetAddress}">
+       <c:SalesOrderAddress AddressPopUpFlag="{!v.GetAddress}" CustomerInfoID="{!v.DisplayCustDetail}" OrderSource="CATALOG" retailerName="{!v.SelectedRetailerName}" retailerCodeId="{!v.SelectedRetailer}"/>
+    </aura:If>
+    <aura:If isTrue="{!v.parentcmp}">
+        <c:CatalogOrder parentcmp="{!v.parentcmp}" SelectedRetailercode="{!v.SelectedRetailer}" SelectedRetailer="{!v.SelectedRetailerName}"/>
+    </aura:If>-->
+</aura:component>

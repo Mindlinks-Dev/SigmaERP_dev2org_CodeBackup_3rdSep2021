@@ -1,0 +1,13 @@
+<aura:component >
+
+    <aura:attribute name="employees" type="Contact[]"/>
+    
+	<aura:registerEvent name="itemSelected" type="c:OrgChartItemSelected"/>
+    
+    <ul class="slds-lookup__list" role="listbox">
+    <aura:iteration items="{!v.employees}" var="employee">
+        <c:OrgChartListItem employee="{!employee}"/>
+    </aura:iteration>    
+    </ul>
+    
+</aura:component>

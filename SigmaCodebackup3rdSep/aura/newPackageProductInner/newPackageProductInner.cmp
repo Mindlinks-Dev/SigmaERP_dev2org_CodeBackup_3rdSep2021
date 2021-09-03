@@ -1,0 +1,84 @@
+<aura:component controller="newPackageControllerLtng" implements="flexipage:availableForAllPageTypes" access="global">
+    
+    <aura:attribute name="prodName" type="String" default=""/>
+    <aura:attribute name="orderedQnt" type="String" default=""/>
+    <aura:attribute name="PackageQnt" type="String" default=""/>    
+    <aura:attribute name="autoAllocate" type="Boolean" default="false"/>
+    <aura:attribute name="orderItemNew" type="array" />
+    <aura:attribute name="transItem" type="Id" />
+    <aura:attribute name="isManual" type="boolean" default="false"/>
+    <aura:attribute name="selTransLineItemId" type="Id" default="" />
+    <aura:attribute name="AddorEdit" type="String" default=""/> 
+    <aura:attribute name="mismatchflag" type="Boolean" default="false" />
+    <aura:attribute name="VBOMIndex" type="array" />
+    <aura:attribute name="VBOMflag" type="Boolean" default="false" />
+    <aura:attribute name="InventoryID" type="Id" />
+    
+    <aura:attribute name="fullOriginalList" type="array" />    	
+    <aura:attribute name="selTransId" type="Id" default="" />
+    
+    <aura:attribute name="selStatus" type="String" default="" />
+    <aura:attribute name="isoneshot" type="boolean" default="false"/>
+    <aura:attribute name="isStandardOrder" type="boolean" default=""/>
+    <aura:registerEvent name="sampleComponentEventNew" type="c:MakeStatusReadOnlyDuringAutopick"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!v.AddorEdit == undefined}">
+        <td style="border:0;padding-left:6px;padding-right:0;width:2%;" data-label="Select"><ui:inputCheckbox aura:id="checkbox" click="{!c.getInvQuant}" name="{!idx}" value="{!v.orderItemNew.isSelected}" /></td>            
+        <aura:set attribute="else"> 
+            <td style="border:0;padding-left:6px;padding:right:0;width:2%;" data-label="Select"><ui:inputCheckbox aura:id="checkbox" name="{!idx}" value="{!v.orderItemNew.isSelected}" /></td>
+        </aura:set>
+    </aura:if>
+    
+    <td style="border:0;width:230px;" data-label="Product"><ui:outputText aura:id="instructions"  value="{!v.orderItemNew.prodName}"/>
+        <aura:if isTrue="{!and(v.VBOMflag,v.orderItemNew.isSelected)}" >
+            <button aura:id="popUp" class="slds-button slds-button--neutral" onclick="{!c.openpopup}" style="fonts-size:12px;padding:6px;line-height:14px;">VBOM</button>            
+        </aura:if>
+    </td>
+    <td style="border:0;width:19%;" data-label="Ordered Qty"><ui:outputText aura:id="instructions" value="{!v.orderedQnt}"/></td>
+    
+    <aura:if isTrue="{!v.isoneshot}" >
+        <td style="border:0;width:22.5%;" data-label="Packaged Qty">
+            <ui:inputText updateOn="keyup" keyup="{!c.doValidate}" class="slds-input" aura:id="quantity" size="1"  value="{!v.orderItemNew.allocatedQnty}" disabled="true"/>   
+        </td>
+        <aura:set attribute="else"> 
+            <td style="border:0;width:22.5%;" data-label="Packaged Qty">
+                <ui:inputText updateOn="keyup" keyup="{!c.doValidate}" disabled="{!v.orderItemNew.packProd.sigmaerpdev__Auto_allocate__c}" class="slds-input" aura:id="quantity" size="1"  value="{!v.orderItemNew.allocatedQnty}"/>   
+            </td>
+            
+        </aura:set>
+    </aura:if>
+    <td style="border:0;" data-label="Stock"> 		         
+        <div title="">
+            <a id="{!'autopickDiv_'+v.orderItemNew.transLineItemId}" onclick="{!c.selectAutopick}" title="Allocate Stock Automatically">Autopick</a>&nbsp;&nbsp;                			
+            <a id="{!'manualDiv_'+v.orderItemNew.transLineItemId}"  onclick="{!c.selectManual}" title="Select Stock Manually">Select</a>                                               			            			
+        </div>        	      
+    </td>
+    <!-- Fast Entry  Popup starts -->    
+    <aura:if isTrue="{!v.isManual == true}" >        
+        <td>
+            <div class="slds-truncate">
+                <div aria-hidden="false" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-hide" aura:id="modaldialogFastEntry" style="">
+                    <div class="slds-modal__container" style="height: 520px;width:95%;max-width:95%;">                         
+                        <aura:iteration items="{!v.orderItemNew.prodwrap}" var="orderItem" indexVar="idx" >                            	                                
+                            <aura:if isTrue="{!orderItem.transItemId == v.transItem}">                                      
+                                <c:newMatrixForPackageCmp isManualFromParent="{!v.isManual}" transLineList="{!orderItem}" selTransLineItemId="{!v.transItem}" orderedQty="{!v.orderedQnt}" autopickOrManualList="{!v.fullOriginalList}" packQty="{!v.orderItemNew.allocatedQnty}" />
+                                
+                            </aura:if>
+                        </aura:iteration>
+                    </div>
+                </div>
+            </div>  
+        </td>
+        <div class="slds-backdrop slds-backdrop--open"></div>   
+    </aura:if>
+    <!-- Fast Entry Popup ends --> 
+    <div class="slds-spinner_container slds-hide" aura:id="spinner">
+        <div class="slds-spinner--brand slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    
+    
+</aura:component>

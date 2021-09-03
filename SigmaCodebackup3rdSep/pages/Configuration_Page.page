@@ -1,0 +1,247 @@
+<apex:page controller="DefaultconfigurationCntrl" >
+    <head>
+     
+        <apex:slds />
+        <style>
+        .pbSubheader{color: black !important;background: #F2F1F2 !important;}
+        h2{font-size: 16px !important;font-weight: bold !important;}
+        
+        @media only screen and (max-width: 768px) 
+        {
+        .mob-box{width:98%;margin:auto;margin:1%;}
+        .slds-scope th{display:block !important;}
+        .slds-scope td{display:block !important;}
+        .slds-size_1-of-2{width:100% !important;}
+        .slds-size_2-of-3{width:100% !important;}
+        .mob-box {width: 96%;margin: 8px auto;padding: 1rem;border-radius: 0.25rem;border: 1px solid #dddbda;}
+        .slds-input{margin-bottom: 10px !important;}
+        .slds-select{margin-bottom: 10px !important;}
+        .labelCol.empty{display:none !important;}
+        .dataCol.empty{display:none !important;}
+        h2{font-size:150% !important;}
+        h3{font-size:130% !important;}
+        .submit{margin-left:26% !important;}
+        }
+        </style>
+        <script  type="text/javascript">
+        
+     
+      
+        function myFunction(value)
+        {
+           
+            var pickVal=document.getElementById("j_id0:j_id4:j_id5:j_id77:j_id87:displayCheckBox1"); 
+          
+            if(value=="Allocation in Picking")
+            {
+                OrderUSage1=value;
+                document.getElementById("j_id0:j_id4:j_id5:j_id77:j_id87:displayCheckBox1").style.display = "block";
+            }
+            if(value=="Allocation in Sales Order")
+             {
+                 document.getElementById("j_id0:j_id4:j_id5:j_id77:j_id87:displayCheckBox1").style.display = "none";
+                
+             }
+         
+        };
+           
+        function ClosePage1() {
+            if ((typeof sforce != 'undefined') && sforce && (!!sforce.one)) {
+                
+                sforce.one.navigateToURL("/lightning/page/home");
+            }
+            else{
+                
+                //window.location.href = "/home/home.jsp";
+                window.open("/home/home.jsp");
+                close();
+            }
+            
+            
+        } 
+        
+        
+        
+        </script>
+    </head>
+    <div class="mob-box">
+    <apex:form >       
+        <apex:pageblock title="Custom Settings" >
+            <apex:PageMessages />
+            <apex:pageBlockSection title="Default Parameters" collapsible="false">
+                
+               <!-- <apex:pageBlockSectionItem >
+                    Currency
+                    <apex:inputText value="{!dpSettings.Currency__c}" label="Currency" styleClass="slds-input slds-size_1-of-2" required="true"/> 
+                </apex:pageBlockSectionItem>-->
+                
+                <apex:pageBlockSectionItem >
+                    Default Location
+                    <apex:inputText value="{!dpSettings.Default_Location__c}" label="Default Location" styleClass="slds-input slds-size_1-of-2" required="true"/> 
+                </apex:pageBlockSectionItem>
+                
+                 <apex:pageBlockSectionItem >
+                      Default Zone
+                    <apex:inputText value="{!dpSettings.Default_Zone__c}" label="Default Zone" styleClass="slds-input slds-size_1-of-2" required="true"/> 
+                </apex:pageBlockSectionItem>
+                
+                 <apex:pageBlockSectionItem >
+                      Default Bin
+                    <apex:inputText value="{!dpSettings.Default_Bin__c}" label="Default Bin" styleClass="slds-input slds-size_1-of-2" required="true"/> 
+                </apex:pageBlockSectionItem>
+                
+                
+             <!--   <apex:pageBlockSectionItem >
+                    Invoice Doc Id
+                    <apex:inputText value="{!dpSettings.Invoice_Doc_Id__c}" label="Invoice Doc Id" styleClass="slds-input slds-size_1-of-2" required="true"/>
+                </apex:pageBlockSectionItem>
+                      
+                -->
+                <apex:pageBlockSectionItem > 
+                    Inventory Status
+                    <apex:inputText value="{!dpSettings.Inventory_Status__c}" label="Inventory Status" styleClass="slds-input slds-size_1-of-2" required="true"/> 
+                </apex:pageBlockSectionItem>
+                
+         
+                <apex:pageBlockSectionItem >
+                    PriceBook For Orders                
+                    <apex:inputText value="{!dpSettings.priceBook_for_orders__c}" label="priceBook for orders" styleClass="slds-input slds-size_1-of-2" required="true"/>
+                    
+                </apex:pageBlockSectionItem>
+                
+                  
+                <apex:pageBlockSectionItem >
+                    Company Name                     
+                    <apex:inputText value="{!dpSettings.Company_Name__c}" label=" Company Name" styleClass="slds-input slds-size_1-of-2" required="true"/>
+                    
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    LOGO Image                    
+                    <apex:inputText value="{!dpSettings.Logo__c}" label="LOGO Image" styleClass="slds-input slds-size_1-of-2" required="true"/>
+                    
+                </apex:pageBlockSectionItem>
+                 <apex:pageBlockSectionItem >
+                   Company Email                     
+                    <apex:inputText value="{!dpSettings.Company_Email__c}" label="Company Email" styleClass="slds-input slds-size_1-of-2" required="true"/>
+                    
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                   Company Phone                     
+                    <apex:inputText value="{!dpSettings.Company_Phone__c}" label="Company Phone" styleClass="slds-input slds-size_1-of-2" required="true"/>                    
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                   Company VAT Number                     
+                    <apex:inputText value="{!dpSettings.Company_VAT__c}" label="Company Phone" styleClass="slds-input slds-size_1-of-2" required="true"/>                    
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    ThankYou Image                
+                    <apex:inputText value="{!dpSettings.EmailImage__c}" label="Thank You Image" styleClass="slds-input slds-size_1-of-2" required="true"/>
+                    
+                </apex:pageBlockSectionItem>  
+                
+                <apex:pageBlockSectionItem >
+                    Manufacturing Run Wastage Charges               
+                    <apex:inputText value="{!dpSettings.Wastage_Amount_MR__c}" label="Manufacturing Run Wastage Charges" styleClass="slds-input slds-size_1-of-2" />                    
+                </apex:pageBlockSectionItem>  
+                
+                <apex:pageBlockSectionItem >
+                    Default Damaged Goods Location              
+                    <apex:inputText value="{!dpSettings.Default_Damaged_Location__c}" label="Default Damaged Goods Location" styleClass="slds-input slds-size_1-of-2" />                    
+                </apex:pageBlockSectionItem>  
+                
+                <apex:pageBlockSectionItem >
+                    Gantt Base URL                
+                    <apex:inputText value="{!dpSettings.GanttURL__c }" label="Gantt base URL" styleClass="slds-input slds-size_1-of-2" required="true"/>
+                </apex:pageBlockSectionItem>  
+                
+                <apex:pageBlockSectionItem >
+                    Gantt Library Name                
+                    <apex:inputText value="{!dpSettings.Gantt_Library_Name__c }" label="Gantt base URL" styleClass="slds-input slds-size_1-of-2" required="true"/>
+                </apex:pageBlockSectionItem> 
+                                
+            </apex:pageBlockSection> 
+
+            
+            <apex:pageBlockSection title="Order Usage" collapsible="false"> 
+                <apex:pageBlockSectionItem >
+                    <apex:selectList value="{!OrderUSage}" multiselect="false" size="1" styleClass="slds-select slds-size_1-of-3"  >
+                        <apex:actionSupport event="onchange" reRender="none"/>
+                        <apex:selectOption itemLabel="Sigma Order" itemValue="Sigma Order"></apex:selectOption>
+                        <apex:selectOption itemLabel="Order" itemValue="Order"></apex:selectOption>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection> 
+            
+            <apex:pageBlockSection title="Stock Reservation" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    Auto Reserve Stock :                
+                     <apex:inputCheckbox value="{!dpSettings.Auto_Reserve_Stock__c}" label="Automate Stock Reservation" required="false" />
+                </apex:pageBlockSectionItem>                
+            </apex:pageBlockSection>
+            
+            
+            <apex:pageBlockSection title="Automatic PO Generation" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    Based On Default Vendor :                
+                    <apex:inputCheckbox label="Default Vendor" value="{!dpSettings.Default_Vendor__c}" required="false" />
+                </apex:pageBlockSectionItem>  
+                <apex:pageBlockSectionItem >
+                    Based On Vendor Rating :                
+                    <apex:inputCheckbox label="Vendor Rating"  value="{!dpSettings.Vendor_Rating__c}" required="false" />
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            
+            
+            <apex:pageBlockSection title="Setup Conversion Rate Euro" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    Conversion Rate :                
+                    <apex:inputText value="{!SCRE.Conversion_Rate__c}" label="Conversion Rate" styleClass="slds-input slds-size_1-of-4"/>
+                </apex:pageBlockSectionItem>             
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Approval Process (For PO)" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    Approval Process Not Needed :                
+                    <apex:inputCheckbox value="{!dpSettings.Approval_Process_Not_Needed__c}" label="Approval Process Not Needed" disabled="true"/>
+                </apex:pageBlockSectionItem>             
+            </apex:pageBlockSection>
+             <apex:pageBlockSection title="PO Based on Vendor & Location (Email To Contact) " collapsible="false">
+                <apex:pageBlockSectionItem >
+                    PO to contact:                
+                    <apex:inputCheckbox value="{!dpSettings.PO_to_Contact__c}" />
+                </apex:pageBlockSectionItem>             
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Show Dispatched Quantity In Stock Receiving UI " collapsible="false">
+                <apex:pageBlockSectionItem >
+                    Show Dispatched Quantity In Stock Receiving UI :                
+                    <apex:inputCheckbox value="{!dpSettings.ShowDispatchedQuantityInStockReceivingUI__c}"  />
+                </apex:pageBlockSectionItem>             
+            </apex:pageBlockSection>
+           
+             <script>
+    function onCompleteJSFunc()
+    {
+        document.getElementById("spinner").style.display = "block";
+    }
+    </script>
+    <apex:slds />
+    <div id="spinner" style="display:none;">
+        <div class="slds-spinner_container" style="position:fixed">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+            
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Submit"  action="{!saveConfig1}"  onclick="onCompleteJSFunc()" styleClass="slds-button slds-button_brand submit" style="margin-left:120px"/>
+                <apex:commandButton value="Cancel" action="{!cancelConfig}" onclick="ClosePage1()" styleClass="slds-button slds-button_brand" immediate="true" />
+            </apex:pageBlockButtons>
+        </apex:pageblock>
+    </apex:form>
+    </div>
+</apex:page>

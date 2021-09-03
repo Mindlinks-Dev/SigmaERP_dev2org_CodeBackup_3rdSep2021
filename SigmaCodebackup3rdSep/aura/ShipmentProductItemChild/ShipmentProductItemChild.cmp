@@ -1,0 +1,142 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" Controller="AddShipmentProductsLtng" access="global" >
+    <aura:attribute name="ShipmentProduct" type="Shipment_Products__c" 
+                    default="{'sobjectType': 'Shipment_Products__c',
+                             'sigmaerpdev2__Package_ID__c': '',
+                             'sigmaerpdev2__Customer_Name__c': '',
+                             'sigmaerpdev2__Order__c': '',
+                             'sigmaerpdev2__Shipment_Delivery_Date__c': '',
+                             'sigmaerpdev2__Status__c': '',
+                             'Pkg__Name':'',
+                             'Cust__Name':'',
+							 'sigmaerpdev2__Contact_Person__c':''
+                             }"/>
+    
+      <aura:attribute name="packageId" type="Id"/>
+     <aura:attribute name="packageName" type="String" default=''/>
+    <aura:attribute name="isSigmaOrder" type="Boolean" default=''/>
+       <aura:attribute name="status" type="String[]" default=""/>
+    <aura:attribute name="Id" type="String"/>
+     <aura:attribute name="isOpenPackage" type="Boolean" default="true"/>
+    <aura:attribute name="cuctomerId" type="Id"/>
+    <aura:attribute name="cuctomerId1" type="Id"/>
+     <aura:attribute name="Custname" type="String" default=""/>
+    <aura:attribute name="recordName1" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="recID" type="Id" default="" description="The current record Id to display" />
+     <aura:handler name="change" value="{!v.packageId}" action="{!c.packageChangeNew}" />
+    <aura:handler name="change" value="{!v.recID}" action="{!c.packageChange}" />
+     <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+     <aura:registerEvent name="StappComponentEvent" type="c:StappComponentEvent" />
+      <!--aura:if isTrue="{!v.isOpenPackage}">
+    <c:LookupSObject aura:id="PackageNumber" 
+                     searchString="{!v.recordName1}"
+                     SRString="{!v.cuctomerId}"
+                     pluralLabel="Package" 
+                     sObjectAPIName="sigmaerpdev2__Package__c" 
+                     instanceId="MyPackage"
+                     listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                     listIconClass="slds-icon-standard-account"
+                     />
+    <aura:set attribute="else">
+      {!v.ShipmentProduct.sigmaerpdev2__Package_ID__r.Name}
+       
+    </aura:set>
+  </aura:if--> 
+    <!--label class="slds-form-element__label" for="input-01">Package Number
+        <span style="color:red">* </span>
+    </label-->
+    
+   
+    
+    
+     <tr>
+            <!--td data-label="Action">
+                
+                                <div class="a_btn" title="Action">
+                                    <a data-record="{!index}" aura:id="{!index+'ip'}" data-index="{!index}" onclick="{!c.handleRemoveProductItemClick}">
+                                        {!(index+1 == 0) ? '' : 'Delete'}</a> |
+									<lightning:button name="{!index}" variant="slds-button" label="Edit" onclick="{!c.addProducts}"/>
+                                </div>
+                	
+            </td-->
+            <td data-label="Package Number " id="tempToDisplayPackageNumber">  
+                 <aura:if isTrue="{!v.isOpenPackage}">
+    <!--c:LookupSObject aura:id="PackageNumber" 
+                     searchString="{!v.recordName1}"
+                     SRString="{!v.cuctomerId}"
+                     pluralLabel="Package" 
+                     sObjectAPIName="sigmaerpdev2__Package__c" 
+                     instanceId="MyPackage"
+                     listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                     listIconClass="slds-icon-standard-account"
+                     recID="{!v.recID}"/-->
+                         <c:customLookup 	recordID="{!v.packageId}" recordName="{!v.packageName}" objectAPIName="sigmaerpdev2__Package__c" IconName="standard:account"  isSigmaOrder="{!v.isSigmaOrder}" whereCondition=" And sigmaerpdev2__Status__c	='Ready' And sigmaerpdev2__Canceled_Package__c=false"/> <!--whereCondition="AND sigmaerpdev2__Order_Created_Via__c='POS'"-->
+               
+    <aura:set attribute="else">
+      <!--{!v.ShipmentProduct.sigmaerpdev2__Package_ID__r.Name}-->
+        <lightning:input  disabled="true" value="{!v.ShipmentProduct.sigmaerpdev2__Package_ID__r.Name}"  variant="label-hidden" />
+          
+    </aura:set>
+                </aura:if>
+    
+            </td>
+            <td data-label="Customer Name" id="tempToDisplayShipmentCustomerName">
+                  
+               <aura:if isTrue="{!v.isOpenPackage}">
+    <!--ui:outputText aura:id="instructions" 
+                   class="slds-input slds-truncate"        
+                   value="{!v.Custname}"
+                   /-->
+                   <lightning:input  disabled="true" value="{!v.Custname}"  variant="label-hidden" />
+          
+           <aura:set attribute="else">
+               <lightning:input  disabled="true" value="{!v.ShipmentProduct.sigmaerpdev2__Customer_Name__r.Name}"  variant="label-hidden"/>
+          
+    
+       <!-- {!v.ShipmentProduct.sigmaerpdev2__Customer_Name__r.Name}-->
+    </aura:set>
+                    </aura:if> 
+            </td>
+            <!--td data-label="Shipment Delivery Date">
+                <div class="slds-truncate" title="Shipment Delivery Date">{!obj.sigmaerpdev2__Shipment_Delivery_Date__c}&nbsp;</div>
+            </td-->
+            <td data-label="Status" id="tempToDisplayShipmentProductStatus">
+                  <lightning:input  disabled="true" value="{!v.ShipmentProduct.sigmaerpdev2__Status__c}"  variant="label-hidden"/>
+          
+                  <!--ui:outputText aura:id="instructions" 
+                   class="slds-input slds-truncate"        
+                   value="{!v.ShipmentProduct.sigmaerpdev2__Status__c}" 
+                   /-->
+ 
+                
+            </td> 
+          
+        </tr>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!--label class="slds-form-element__label" for="input-02">Customer Name
+        
+    </label>
+    
+     
+    <label class="slds-form-element__label" for="input-02">Status
+        <span style="color:red">* </span>
+    </label>
+     <ui:outputText aura:id="instructions" 
+                   class="slds-input slds-truncate"        
+                   value="{!v.ShipmentProduct.sigmaerpdev2__Status__c}" 
+                   /-->
+  
+  
+    
+</aura:component>

@@ -1,0 +1,42 @@
+<aura:component implements="force:appHostable,forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes" access="global">
+    
+    <aura:attribute name="lineItem" type="object"/> 
+    
+    <tr class="slds-hint-parent">
+        <td scope="row">
+            <div class="slds-truncate1" title="Line Item">
+                <a href="javascript:void(0);"><ui:outputText value="{!v.lineItem.eachLineItem}" /></a>
+            </div>
+        </td>
+        <td role="gridcell">
+            <div class="slds-truncate1" title="Line Item Quantity"><ui:outputText value="{!v.lineItem.LineItemqty}" /></div>
+        </td>
+        <td role="gridcell">
+            <div class="slds-truncate1" title="Total Pick Quantity"><ui:outputText value="{!v.lineItem.pickqtydisplay}" /></div>
+        </td>
+        <td role="gridcell">
+            <div class="slds-truncate1" title="Stock Available Quantity"><ui:outputText value="{!v.lineItem.Indavailable}" /></div>
+        </td>
+        <td role="gridcell">
+            <!--<img align="middle" style="padding-top:7px;" src="/resource/sigmaerpdev__StockExists" width="20" height="20" title="Sufficient Stock" />-->
+            <aura:if isTrue="{!v.lineItem.pickqtydisplay}">    
+                <div class="{!and(v.lineItem.eachLineItem,(v.lineItem.Indavailable >= v.lineItem.pickqtydisplay)) ? 'slds-show inStock1':'slds-hide'}" >
+                    <span class="slds-badge slds-theme_success">Stock Available</span>
+                    <!--
+                    <h2>Stock Available</h2> -->
+                </div>
+                <!--<img align="middle" style="padding-top:7px;" src="/resource/sigmaerpdev__StockLow" width="20" height="20" title="Insufficient Stock" />-->
+                <div class="{!and(v.lineItem.eachLineItem,(v.lineItem.pickqtydisplay > v.lineItem.Indavailable)) ? 'slds-show outOfStock1':'slds-hide'}" >
+                    <!--<h2>Insufficient Stock</h2>-->
+                    <span class="slds-badge slds-theme_error">Insufficient Stock</span>
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-truncate"></div>
+                </aura:set>
+            </aura:if>
+            
+            
+            
+        </td>
+    </tr>
+</aura:component>

@@ -1,0 +1,64 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"  access="global" >
+    <aura:attribute name="FromId" type="String"/>
+    <aura:attribute name="ILPL" type="object" />
+    <aura:attribute name="ReasonCode" type="object"/>
+    <aura:attribute name="QTY" type ="String" />
+    <aura:attribute name="selVal" type="object"  />
+    <aura:attribute name="selValchkbox" type="boolean" default="false" />
+    
+    <aura:attribute name="indexVal" type="Integer" />
+    <aura:attribute name="isVerified" type="boolean" default="false"/>
+    
+    <aura:attribute name="StockCheckDetails" type="Stock_Check_Details__c" 
+                    default="{'sobjectType' : 'Stock_Check_Details__c'}" /> 
+    <!--<aura:handler name="change" value="{!v.StockCheckDetails}" action="{!c.checkQty}"/>-->
+    <!--<aura:handler name="change" value="{!v.StockCheckDetails.sigmaerpdev2__Stock_Check_Quantity__c}" action="{!c.testBarcode}"/>-->
+    <aura:handler name="change" value="{!v.StockCheckDetails.sigmaerpdev2__StockCheckbox__c}" action="{!c.barcodeEnableChkbox}"/>
+   
+    <tr>
+        <td style="text-align:left;" width="5%">
+        	{!(v.indexVal) + 1}
+        </td>
+        <td width="10%">
+            <ui:outputText value="{!v.StockCheckDetails.ilpName}"/>
+        </td>
+        <td style="text-align:left;" width="10%">
+            <ui:outputText value="{!v.StockCheckDetails.Loc}" />
+        </td>
+        <td style="text-align:left;" width="22%">
+            <ui:outputText value="{!v.StockCheckDetails.prodName}" />
+        </td>
+         <td style="text-align:left;" width="10%">
+            <ui:outputText value="{!v.StockCheckDetails.prodBarCode}" />
+        </td>     
+        <td style="text-align:left;" width="5%">              
+            <ui:outputText value="{!v.StockCheckDetails.sigmaerpdev2__Available_Quantity__c}" />                            
+        </td>
+        
+       <td style="text-align:left;" width="5%" data-label="CheckQty" id="CheckQty" >
+            <!--<ui:inputText aura:id="CheckQty" value="{!v.StockCheckDetails.sigmaerpdev2__Stock_Check_Quantity__c}" class="slds-input" label="" change="{!c.checkQty}" updateOn="change"/>-->
+           <ui:inputText aura:id="CheckQty" value="{!v.StockCheckDetails.sigmaerpdev2__Stock_Check_Quantity__c}" class="slds-input" label="" keyup="{!c.setValues}" updateOn="keyup" />
+        </td>
+        <td style="text-align:center;" width="5%">   
+            <ui:outputText value="{!if(v.StockCheckDetails.sigmaerpdev2__Stock_Check_Quantity__c==0,null,v.StockCheckDetails.sigmaerpdev2__Available_Quantity__c - v.StockCheckDetails.sigmaerpdev2__Stock_Check_Quantity__c)}" aura:id="setQty" />
+            
+ 			<!--<ui:outputText aura:id="ChecksQty" value="{!v.QTY}" /> -->                                       
+        </td>
+        
+        <td style="text-align:left;" width="15%" data-label="ReasonCode" id="ReasonCode">
+            
+            <ui:inputSelect aura:id="ReasonCode" value="{!v.selVal}" multiple="false" class="uiInputSelect slds-select" label="" change="{!c.ChangeCode}">
+                <ui:inputSelectOption text="--None--" label="--None--" value="true"/>
+                <ui:inputSelectOption text="Damaged Stock" label="Damaged Stock" />
+                <ui:inputSelectOption text="Missing Stock" label="Missing Stock"/>
+                <ui:inputSelectOption text="Not Known" label="Not Known"/>						
+            </ui:inputSelect>
+            
+        </td>
+        <td style="text-align:center;" width="5%" data-label="checkbox">
+            <!--<ui:inputCheckbox value="{!v.StockCheckDetails.sigmaerpdev2__StockCheckbox__c}" aura:id="checkbox" />-->
+            <ui:inputCheckbox value="{!v.selValchkbox}" aura:id="checkbox" change="{!c.chkboxChecked}" />
+            
+        </td>
+    </tr>
+</aura:component>

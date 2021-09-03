@@ -1,0 +1,99 @@
+<aura:component Controller="paymentinvoice" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="SigmaorderID" type="String"/>
+    <aura:attribute name="selectAllFlag" type="boolean" default='false'/>
+    
+    <aura:attribute name="SigmaOrderSalesInvoice" type="Sigma_Order__c[]" />
+    <aura:attribute name="selectedSalesInvoice" type="Sigma_Order__c[]" />  
+    
+    <div role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">           	
+         <div class="slds-modal__container" style="width:100%;max-width:100%;">           
+            <header class="slds-modal__header">
+                <h2>                                
+                    <span class="slds-icon_container slds-icon-standard-work-order-item slds-icon_container--circle slds-m-right--x-small">
+                        <lightning:icon iconName="standard:work_order_item" size="medium" alternativeText="section" />
+                    </span>SALES INVOICE
+                </h2>
+            </header>
+             
+              <div class="slds-modal__content slds-p-around_large" id="modal-content-id-1"  style="height: 600px;">                 
+                    <table class="slds-table slds-table_bordered slds-table_resizable-cols slds-table_fixed-layout" role="grid">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                                    <label class="slds-checkbox">
+                                        <ui:inputCheckbox aura:id="checkbox" change="{!c.selectAllInvoice}" value="{!v.selectAllFlag}"/>
+                                        <span class="slds-checkbox--faux" />
+                                    </label>
+                                    <span class="slds-truncate" title="Name">  Select All</span>
+                                    <div class="slds-resizable">
+                                        <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                        <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>
+                                        
+                                    </div>
+                                </th>
+                                
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                                    <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                                        <span class="slds-truncate" title="Name">Customer</span>
+                                    </a>
+                                    <div class="slds-resizable">
+                                        <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                        <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>
+                                        
+                                    </div>
+                                </th>
+                                
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                                    <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                                        <span class="slds-truncate" title="Name">Sigma Order</span>
+                                        <!--<span class="slds-truncate" title="Name">Total Amount</span>-->
+                                    </a>
+                                    <div class="slds-resizable">
+                                        <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                        <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>
+                                        
+                                    </div>
+                                </th>
+                                
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                                    <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                                        <span class="slds-truncate" title="Name">Due Amount</span>
+                                        <!--<span class="slds-truncate" title="Name">Paid Amount</span>-->
+                                    </a>
+                                    <div class="slds-resizable">
+                                        <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                        <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>
+                                        
+                                    </div>
+                                </th>
+                                
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                                    <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                                        <span class="slds-truncate" title="Name">Total Amount</span>
+                                        <!--<span class="slds-truncate" title="Name">Balance Amount</span>-->
+                                    </a>
+                                    <div class="slds-resizable">
+                                        <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                        <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>
+                                        
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.SigmaOrderSalesInvoice}" var="item" indexVar="i">
+                                <c:PaymentChild SigmaOrderSalesInvoice="{!item}" indexVar="{!i}"/>
+                            </aura:iteration>
+                        </tbody>  
+                    </table>
+                </div>                    
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button--brand" onclick="{!c.paySalesInvoice}">Pay</button>
+                    <button type="button" class="slds-button slds-button_neutral" onclick="{!c.close}">Cancel</button>
+                </footer>
+         </div>
+    </div>
+</aura:component>

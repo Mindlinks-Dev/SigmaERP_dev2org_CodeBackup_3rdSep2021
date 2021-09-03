@@ -1,0 +1,13 @@
+.THIS .slds-section__title-action{
+    color: rgb(0, 112, 210) !important;
+    background: #f3f2f2 !important;
+    padding:4px !important;
+}
+
+.THIS .slds-input{
+    height:2.125rem;
+}
+@media only screen and (max-width: 768px) 
+{
+    .THIS table{display:block !important;overflow:scroll !important;width:100% !important;}
+}

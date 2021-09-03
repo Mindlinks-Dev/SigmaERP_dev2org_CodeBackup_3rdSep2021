@@ -1,0 +1,18 @@
+<aura:component>
+    <aura:attribute name="innerList" type="array" />
+    <tr>
+        <td>{!v.innerList.ilName}</td> 
+        <td>{!v.innerList.ilpName}</td>        
+        <td>{!v.innerList.zoneName}</td>
+        <td>{!v.innerList.lotName}</td>                      
+        <td>           
+            <aura:if isTrue="{!v.innerList.unitPrice != null}">
+                {!v.innerList.unitPrice}
+                <aura:set attribute="else">
+                	Not Available
+                </aura:set>
+            </aura:if>	
+        </td> 
+        <td>{!v.innerList.selQuantity}</td>        
+    </tr>     
+</aura:component>

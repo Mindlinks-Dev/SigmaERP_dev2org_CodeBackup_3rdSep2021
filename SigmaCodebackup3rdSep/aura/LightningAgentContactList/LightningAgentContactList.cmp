@@ -1,0 +1,71 @@
+<aura:component controller="AgentContactListClass">
+    <aura:attribute name="workOrderId" type="Id"/>
+    <aura:attribute name="hoverDuration" type="Integer"/>
+    <aura:attribute name="startHeader" type="String" default="" /> 
+    <aura:attribute name="endHeader" type="String" default="" /> 
+    <aura:attribute name="indexHeaders" type="String[]" />
+    <aura:attribute name="eachSlotDuration" type="Decimal" default="" />
+    <!--<aura:attribute name="ListOfContacts" type="Work_T__c"/> -->
+    <aura:attribute name="ListOfContacts" type="map"/> 
+    <aura:attribute name="key" type="string"/>
+    <aura:attribute name="currenWorkOrderId" type="string"/>
+    <aura:attribute name="contactName" type="string"/>
+    <aura:attribute name="PreferredDate" type="DateTime"/>
+    <aura:attribute name="Skill" type="string"/>
+    <aura:attribute name="Duration" type="string"/>
+    <aura:attribute name="DurationUI" type="string"/>
+    <aura:attribute name="serviceZipCode" type="string"/>
+    <aura:attribute name="technicianPostalCode" type="string"/>
+    <aura:attribute name="PresentWOContact" type="string"/>
+    <!-- <aura:attribute name="distance" type="string"/>-->
+   <!--<aura:attribute name="lstKey" type="List"/>-->
+    <aura:attribute name="slotKeys" type="List"/>
+    
+    <aura:attribute name="value1" type="map"/>
+    <aura:attribute name="slot8" type="Boolean" default="true"/>
+    <aura:attribute name="WOADetails" type="Map"/>
+    <aura:attribute name="slotMap" type="Map"/>
+    <aura:attribute name="slotDurationMap" type="Map"/>
+    <aura:attribute name="contactSpeed" type="string"/>
+    <aura:attribute name="showLoadingSpinner" type="Boolean"/>
+    <aura:attribute name="showLoadingSpinnerFlag" type="Boolean"  />
+    <!--<aura:attribute name="currentContactId" type="string"/>-->
+    
+    <!--<aura:attribute name="allocatedSlot" type="String" default="1,2,3"/>-->
+    <aura:attribute name="allocatedSlot" type="String"/>
+     <!--<aura:handler name="change" value="{!v.allocatedSlot}" action="{!c.agentChange}"/>-->
+     <aura:attribute name="showMessage" type="Boolean" />
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="customSettingDetails" type="Map" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="listItems" type="List" default="['Name','Phone']"/>
+    <aura:attribute name="HasSlot" type="Boolean" default="true"/>
+    <aura:handler name="valueOfBoolean" event="c:EventToSetParentAttribute" action="{!c.setbooleanVariableFromChild}"></aura:handler>
+    <tr class="slds-hint-parent" aura:id ="SelectedRowId">
+        
+        
+        <td data-label="" class="time-slot_tooltip">
+            <div class="slds-truncate" title=""><a onclick="{!c.handleClick}">{!v.contactName}</a></div>
+            
+            <div class="slds-popover slds-popover_tooltip slds-nubbin_left time-tooltip time-tooltip-right" role="tooltip">
+                <div class="slds-popover__body">
+                	<p>Home Location : <span>{!v.technicianPostalCode}</span></p>
+                    <!--<p><span>10 Mins</span> away from current job location</p>-->
+                </div>
+            </div>
+        </td>
+       <td data-label="">
+            <div class="slds-truncate slds-text-align_center" title="" >{!v.Skill}</div>
+        </td>
+        <td data-label="" aura:id ="ServiceDuration" >
+            <div class="slds-truncate slds-text-align_center" title="">{!v.DurationUI}</div>
+        </td>
+        
+        <aura:iteration items="{!v.slotKeys}" var="key" >
+            <c:LightningAgentSlot hoverDuration="{!v.hoverDuration}" PresentWOContact="{!v.PresentWOContact}" serviceZipCode="{!v.serviceZipCode}" slotMap="{!v.slotMap}" slotDurationMap1="{!v.slotDurationMap}" contactSpeed="{!v.contactSpeed}" WOADetails="{!v.WOADetails}" allocatedSlot="{!v.allocatedSlot}" showLoadingSpinner="{!v.showLoadingSpinner}" showLoadingSpinnerFlag="{!v.showLoadingSpinnerFlag}" slotKey="{!key}" showMessage="{!v.showMessage}" message="{!v.message}" customSettingDetails="{!v.customSettingDetails}" startHeader="{!v.startHeader}" endHeader="{!v.endHeader}" eachSlotDuration="{!v.eachSlotDuration}" indexHeaders="{!v.indexHeaders}"></c:LightningAgentSlot>
+        
+        </aura:iteration>
+
+    </tr>
+</aura:component>

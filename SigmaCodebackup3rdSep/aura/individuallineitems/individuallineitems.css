@@ -1,0 +1,10 @@
+.THIS .inStock h2 {
+	color:green;
+	font-size: 14px;
+    padding-top: 8px;
+}
+.THIS .outOfStock h2 {
+	color:red;
+	font-size: 14px;
+    padding-top: 8px;
+}

@@ -1,0 +1,15 @@
+<aura:component >
+    <aura:attribute name="rowDetails" type="object" />
+    <td style="width:6%;text-align:center;">
+        {!v.rowDetails.Name}
+    </td>
+    <td style="width:3%;text-align:center;">
+    	{!v.rowDetails.sigmaerpdev2__Delivary_Date__c}
+    </td>
+    <td style="width:3%;text-align:center;">
+        {!v.rowDetails.sigmaerpdev2__Net_Quantity__c}
+    </td>
+    <td style="width:3%;text-align:center;">
+        {!v.rowDetails.sigmaerpdev2__TotalAmount__c}
+    </td>
+</aura:component>

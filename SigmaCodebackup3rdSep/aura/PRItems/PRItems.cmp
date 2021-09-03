@@ -1,0 +1,41 @@
+<aura:component >
+    <aura:registerEvent name="ManufactureApplicationEvent" type="c:ManufactureApplicationEvent" />
+	<aura:attribute name="prDetails" type="object" />
+    <aura:attribute name="profName" type="String" />    
+    <tr>
+        <th scope="row" style="width:25%;" data-label="{!v.prDetails.Name}">
+            <div class="slds-truncate" title="{!v.prDetails.Name}">
+                <aura:if isTrue="{!v.profName == 'System Administrator'}">
+                	<a onclick="{!c.viewDetails}">{!v.prDetails.Name}</a>
+                    <aura:set attribute="else">
+                    	{!v.prDetails.Name}
+                    </aura:set>
+                </aura:if>
+            </div>
+        </th>
+        <th scope="row" style="width:25%;" data-label="{!v.prDetails.sigmaerpdev2__Need_by_Date__c}">
+            <div class="slds-truncate" title="{!v.prDetails.sigmaerpdev2__Need_by_Date__c}">{!v.prDetails.sigmaerpdev2__Need_by_Date__c}</div>
+        </th> 
+        <th style="width:25%;" scope="row" data-label="{!v.prDetails.sigmaerpdev2__Status__c}">
+            <div class="slds-truncate" title="{!v.prDetails.sigmaerpdev2__Status__c}">{!v.prDetails.sigmaerpdev2__Status__c}</div>
+        </th>
+        <aura:if isTrue="{!v.profName == 'System Administrator'}">
+            <th style="width:25%;" scope="row" data-label="{!v.prDetails.CreatedBy.Name}">
+                <div class="slds-truncate" title="{!v.prDetails.CreatedBy.Name}">{!v.prDetails.CreatedBy.Name}</div>
+            </th>
+        </aura:if>
+        <aura:if isTrue="{!v.profName != 'System Administrator'}">
+            <td data-label="Action" style="width:5%;">                
+                <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right" onselect="{!c.handleMenuSelect}">                
+                     <aura:if isTrue="{!v.profName !='System Administrator'}">
+                        <aura:if isTrue="{!or(v.prDetails.sigmaerpdev2__Status__c == 'Draft',v.prDetails.sigmaerpdev2__Status__c == 'Submitted',v.prDetails.sigmaerpdev2__Status__c == 'Review in Progress')}">
+                            <lightning:menuItem label="Edit" value="Edit" iconName="action:edit" />
+                        </aura:if>
+                    </aura:if>
+                    <lightning:menuItem label="Delete" value="Delete" iconName="action:delete" />
+                   
+                </lightning:buttonMenu>  
+            </td>
+        </aura:if>
+    </tr>
+</aura:component>

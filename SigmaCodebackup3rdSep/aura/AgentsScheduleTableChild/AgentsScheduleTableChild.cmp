@@ -1,0 +1,24 @@
+<aura:component >
+    <aura:attribute name="techScheduleDetails" type="Map"/>
+    <aura:attribute name="key" type="String"/>
+    <aura:attribute name="keyValue" type="List"/>
+    <aura:attribute name="woCount" type="Integer" default="0"/>
+    <aura:attribute name="printWOCount" type="Integer" default="0"/>
+    <aura:attribute name="imageName" type="String"/>
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.getEachTechDetails}"></aura:handler>
+    <tr class="slds-hint-parent" aura:id ="SelectedRowId">
+        
+        <td data-label="" aura:id ="Technician Name" class="slds-p-horizontal_medium time-slot">
+            <div class="slds-truncate slds-text-align_left imgSize" title=""><img src="{!'/resource/'+v.imageName}" height="23px">  </img>{!v.key}</div>
+        </td>
+        <td data-label="" aura:id ="WoCount" class="slds-p-horizontal_medium time-slot">
+            <div class="slds-truncate slds-text-align_right" title="">{!v.woCount}</div>
+        </td>
+        
+        <aura:iteration items="{!v.keyValue}" var="eachValue" >
+            <c:AgentScheduleTableGrandChild eachValue="{!eachValue}" woCount="{!v.woCount}" printWOCount="{!v.printWOCount}"/>
+        </aura:iteration>
+    </tr>
+</aura:component>

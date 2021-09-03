@@ -1,0 +1,55 @@
+<aura:component >        
+    <aura:attribute name="LocationInstance" type="object[]" default=""/>
+    <aura:attribute name="rowIndex" type="String"/>
+    <!--<aura:registerEvent name="DeleteRowEvt" type="c:DeleteRowEvt"/> -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+     <aura:attribute name="LocationInstance1"  type="Vendor_Product__c[]" 
+                    default="{'sobjectType' : 'Vendor_Product__c',
+                             'sigmaerpdev2__Product_Name__c' : '',
+                             'sigmaerpdev2__Product_Name__r.Name' : '',
+                             'sigmaerpdev2__VendorProductCode__c' : '',
+                             'sigmaerpdev2__Vendor_Location__c' :'',
+                               'sigmaerpdev2__Vendor_Location__r.Name' :'',
+                             'sigmaerpdev2__Current_Stock__c': '',
+                              'sigmaerpdev2__Buying_Price__c':'',
+                             'sigmaerpdev2__Last_Updated_Date__c':''
+                             }"/> 
+    <aura:attribute name="productcodefromparent"  type="String" />
+    <tr>
+        <td> 
+            {!v.rowIndex + 1}
+        </td>
+        <td>
+            <p class="break-word">{!v.LocationInstance.sigmaerpdev2__Vendor_Location__r.Name}</p>
+        </td>
+       <!-- <td >
+            <p class="break-word">
+                {!v.LocationInstance.sigmaerpdev2__VendorProductCode__c}</p>
+        </td>-->
+        <td>
+            <div class="slds-size_5-of-6">
+                <lightning:input type="number" variant="label-hidden" value="{!v.LocationInstance.sigmaerpdev2__Current_Stock__c}" min="1" pattern="[0-9]*"/>
+                
+                <!--<ui:inputNumber class="slds-input" value="{!v.ProductInstance.sigmaerpdev2__Current_Stock__c}"/>-->
+            </div>
+        </td>
+        <td>
+            <div class="slds-size_5-of-6">
+                <lightning:input type="number" variant="label-hidden" value="{!v.LocationInstance.sigmaerpdev2__Buying_Price__c}" min="1" pattern="[0-9]*"/>
+                
+                <!--<ui:inputNumber class="slds-input" value="{!v.ProductInstance.sigmaerpdev2__Buying_Price__c}"/>-->
+            </div>
+        </td>
+        <td>
+            <ui:inputDate displayDatePicker="true" change="{!c.changedate}" class="slds-input" value="{!v.LocationInstance.sigmaerpdev2__Last_Updated_Date__c}"/>
+        </td>
+        <!--
+        <td class="slds-text-align_center">
+            <a onclick="{!c.removeRow}">
+                <lightning:icon variant="error" iconName="utility:delete"  size="small" alternativeText="icon"/>
+                <span class="slds-assistive-text">Delete Icon</span>
+            </a>
+        </td>
+  --> 
+    </tr>
+</aura:component>

@@ -1,0 +1,79 @@
+.THIS .slds-page-header{
+    padding:1rem !important;
+}
+.THIS .slds-button--icon-bare
+{
+    float:right !important;
+}
+.THIS .slds-3-of-4
+{
+    width:92% !important;
+}
+.THIS th
+{
+    background:#fafaf9 !important;
+}
+.THIS a:hover
+{
+    text-decoration:none !important;
+}
+.THIS .slds-pill{width:100% !important;}
+.THIS.slds-pill{width:100% !important;}
+.THIS .slds-spinner_container{position:fixed !important;}
+.THIS.slds-spinner_container{position:fixed !important;}
+@media only screen and (max-width: 768px) 
+    {
+    .THIS .main-content{width:96% !important;}
+    .THIS .slds-form-element__label{font-size:0.75rem!important;margin-right:0;}
+    .THIS .slds-input{padding:0.14rem !important;}
+    .THIS .slds-modal__container{}
+    .THIS .slds .slds-pill__label{max-width:6rem !important;}
+    .THIS .slds-button{line-height:2.4rem !important;}
+    .THIS select{height:2.5rem !important;}
+    .THIS .slds-text-heading_medium{font-size:1.2rem !important;font-weight:500 !important;}
+    .THIS table{font-size:0.8rem !important;}
+    .THIS .a_btn{font-size:0.9rem;}
+    .THIS #modal-content-id-1{overflow:visible !important;}
+    .THIS .slds-modal__container{margin:0 1rem !important; }
+    .THIS .record-header{left:0 !important;}
+    .THIS .closeButton{left:0 !important;}
+    .THIS .slds-form-element__row{display:block;}
+    .THIS .slds-form-element__row .slds-form-element{width:100%;padding-left:0 !important;}
+    .THIS .slds-3-of-4{width:100% !important;}
+    .THIS .slds-lookup__menu{text-align:left !important;}
+    
+    .THIS table thead {
+        border: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+    .THIS table tr {
+        border-bottom: 4px solid #ddd;
+        display: block;
+    }
+    .THIS table td {
+        border-bottom: 1px solid #ddd;
+        display: block;
+        font-size: .8em;
+        text-align: right;
+    }
+    .THIS table td:before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .THIS .slds-table tr > td:first-child{
+        padding-left:0.5rem !important;
+    }
+    .THIS table td:last-child {
+        border-bottom: 0;
+        padding-right:0;
+    }
+    
+}

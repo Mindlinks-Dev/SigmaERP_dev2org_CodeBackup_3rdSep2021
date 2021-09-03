@@ -1,0 +1,18 @@
+.THIS .serialBtnSize {
+    font-size: 90%;
+    padding-left: .5rem;
+    padding-right: .5rem;
+}
+.THIS.table td.expand {
+    width: 99%
+}
+.THIS .label-hidden label
+{
+    display:none !important;
+}
+.THIS .slds-button_balck
+{
+    padding-left:6px;
+    padding-right:6px;
+    
+}

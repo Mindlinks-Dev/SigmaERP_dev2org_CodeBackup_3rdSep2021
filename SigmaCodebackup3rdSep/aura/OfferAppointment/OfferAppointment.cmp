@@ -1,0 +1,195 @@
+<aura:component controller="ServiceOfferAppoinment" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:lightningQuickAction,force:hasRecordId" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="workOrderDetails" type="Work_Order__c" />
+    <aura:attribute name="Dates" type="List" />
+    <aura:attribute name="tym" type="Date" />
+    <aura:attribute name="whatToUse" type="Date"/>
+    <aura:attribute name="responseData" type="List" />
+    <aura:attribute name="startDate" type="Date" />
+    <aura:attribute name="endDate" type="Date" />
+    <aura:attribute name="MinDate" type="Date" />
+    <aura:attribute type="Integer" name="totalOfferCount" />
+    <aura:attribute type="Integer" name="DefaultViewCount" />
+    <aura:attribute name="ShowAgent" type="boolean" default="false" />
+    <!--To show error-->
+    <aura:attribute name="openModalPopUp" type="Boolean" default="false" />
+    <aura:attribute name="isError" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+    <aura:attribute name="PromoSetD" type="string" default="Day"/>
+    <aura:attribute name="PromoSetF" type="string" default="First Call"/>
+    <aura:attribute name="PromoSetS" type="string" default="Last Call"/>
+    <aura:attribute name="recordId" type="String" />
+    
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    
+    <aura:attribute name="selDateAndTime" type="DateTime" default="" />
+    
+    <aura:attribute name="showChkAvail" type="boolean" default="true" />
+    
+    
+    <aura:attribute name="openSLAReasonModel" type="Boolean" default="false" />
+    
+    <lightning:navigation aura:id="navLink"/>
+    
+    <div id="Accspinner" class="slds-spinner_container" style="display:none; z-index:10000;">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    
+    <lightning:card>
+        <div id='HeaderErrorDiv' class="{!v.isError ? '':'slds-hide'}">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                <span class="slds-assistive-text">error</span>
+                <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+                    <lightning:icon iconName="utility:error" size="x-small" alternativeText="section" />
+                </span>
+                <h1>{!v.errorMessage.description}&nbsp;&nbsp;&nbsp;{!v.errorMessage.errorCode}</h1>
+                <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="{!c.closeErrorMsg}">
+                    <lightning:icon iconName="action:close" size="x-small" alternativeText="section" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+        </div>
+        <aura:set attribute="footer">
+            <!--<lightning:button class="buttonOverlay" variant="brand" label="Get Appointment" onclick="{! c.getAppointmentData }"/>-->
+            <img onclick="{!c.getAppointmentData}" src="/resource/sigmaerpdev2__Bookappointment2" width="118" height="118" title="Book Appointment" />
+        </aura:set>
+        <div class="slds-form slds-align_absolute-center slds-size_1-of-1 " role="list">
+            <div class="slds-grid slds-wrap slds-box paddingAround">
+                
+                <div class="slds-col slds-size_1-of-1 ">
+                    <lightning:input aura:id="worktype" label="Work Type"
+                                     name="worktype"
+                                     value="{!v.workOrderDetails.sigmaerpdev2__Work_Type__r.Name}" disabled="true" /> 
+                </div>
+                <!--div class="slds-col slds-size_1-of-1 ">
+                    <c:customLookup objectAPIName="serviceResource" IconName="standard:account" label="Service Resource" selectedRecord="{!v.selectedLookUpRecord}"/>
+                </div-->
+                <div class="slds-col slds-size_1-of-3 ">
+                    <lightning:input type="date" required="true" aura:id="ESPdate" label="Available From Date"
+                                     name="EarliestStartPermitted" messageWhenValueMissing="Please Select Start Date"
+                                     value="{!v.startDate}" format=" YYYY-MM-DD" min="{!v.MinDate}"  /> 
+                    <!-- <ui:inputDateTime aura:id="startDate" label="Time" class="field" value="{!v.startDate}" displayDatePicker="true" />-->
+                </div>&nbsp;&nbsp;&nbsp;
+                <div class="slds-col slds-size_1-of-3 ">
+                    <lightning:input type="date" required="true" aura:id="DueDate" label="To Date"
+                                     name="DueDate"  messageWhenValueMissing="Please Select Due Date"
+                                     value="{!v.endDate}" format=" YYYY-MM-DD" min="{!v.MinDate}" />
+                    <!--<ui:inputDateTime aura:id="endDate" label="Time" class="field" value="{!v.endDate}" displayDatePicker="true" />-->
+                </div>
+                <div>
+                    <div style="max-width: 600px;"> 
+                        <lightning:inputAddress
+                                                addressLabel="Address"
+                                                streetLabel="Street"
+                                                cityLabel="City"
+                                                postalCodeLabel="Post Code"
+                                                provinceLabel="State"
+                                                countryLabel="Country"  
+                                                street="{!v.workOrderDetails.sigmaerpdev2__Service_Street__c}"
+                                                city="{!v.workOrderDetails.sigmaerpdev2__Service_City__c}"
+                                                postalCode="{!v.workOrderDetails.sigmaerpdev2__Service_Zip_Postal_Code__c}"
+                                                province="{!v.workOrderDetails.sigmaerpdev2__Service_State_Province__c}"
+                                                country="{!v.workOrderDetails.sigmaerpdev2__Service_Country__c}"
+                                                fieldLevelHelp=""/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </lightning:card>
+    
+    
+    <aura:if isTrue="{!v.openModalPopUp}">
+        <!--<aura:if  isTrue="{!and(!v.openModalPopUp, !v.endDate>!v.startDate)}" >-->
+        
+        <div class="demo-only" style="height: 640px;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Book Appointment</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <!-- <c:offerAppoinmentView  showOffer="{!v.Dates}"/> -->
+                        
+                        
+                        <table class="slds-table slds-table_striped" width="90%" style="background-color:#FFE042;">
+                            <tr>
+                                <td style="width:20%;">
+                                    <img src="/resource/sigmaerpdev2__BookDates" width="150" height="150" />              
+                                </td>
+                                <td style="width:70%;">
+                                    <table class="slds-table slds-table_striped" style="background-color:#d9dee3;">
+                                        
+                                        <aura:iteration items="{!v.Dates}" var="date" indexVar="index">
+                                            <tr id ="{!index}">
+                                                <th data-label="Action" scope="row">
+                                                    <div class="slds-truncate" label="Actions" style="padding-top:20px;">
+                                                        <lightning:input label="{!date}" variant="label-hidden"  value="{!v.Dates}" type="radio" name="options" onchange="{!c.onWhatToUseNew}"/>
+                                                        
+                                                    </div>
+                                                </th>
+                                                <td>
+                                                    
+                                                    
+                                                    
+                                                    <lightning:input type="Datetime" value="{!date}"  onchange="{!c.endDateUpdated}" />
+                                                   
+                                                    
+                                                    
+                                                </td>                                            
+                                            </tr>
+                                        </aura:iteration>
+                                        
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        
+                        
+                        <br/>
+                        
+                    </div>   
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.clsoePopUp}">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.makeBookRequest}" disabled="{!v.showChkAvail}">Check Availability</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    <!-- <aura:if isTrue="{!v.ShowAgent == true}" >
+                <c:LightningAgentAssignment recordId="{!v.recordId}" />
+            </aura:if>-->
+    
+    <aura:if isTrue="{!v.openSLAReasonModel}">
+        
+        <div class="demo-only" style="height: 1000px;">
+            
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-float--right">
+                    <lightning:buttonIcon iconName="utility:close"  variant="border-inverse" title="Close" alternativeText="Close modal" onclick="{!c.closeMessage}"/>
+                    <!--<lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeMessage}" />-->
+                </div>
+                <div class="slds-modal__container" style="width:80% !important;">
+                    
+                    <div  class="slds-modal__content slds-p-around_large" id="modal-content-id-1">
+                        
+                        <c:LightningAgentAssignment recordId="{!v.recordId}" openSLAReasonModel="{!v.openSLAReasonModel}" openModalPopUp="{!v.openModalPopUp}" />
+                    </div>   
+                    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

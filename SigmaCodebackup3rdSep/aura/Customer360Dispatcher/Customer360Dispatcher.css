@@ -1,0 +1,52 @@
+.THIS .bordersides{
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    width: 100%;
+}
+.THIS .tableheading{
+    font-weight:bold;  
+}
+
+.THIS .font{
+    font-size: 15px;
+    color: blue;
+}
+
+.THIS .td_description{
+    white-space:normal;  
+}
+.THIS .bordersideleft{
+    border-left: 1px solid #d4d4d4;
+}
+.THIS .bordertop{
+    border-top:none;
+}
+.THIS .colorGreen{
+    color:green;
+}
+.THIS .colorBlack{
+    color:black;
+}
+.THIS .colorRed{
+    color:red;
+}
+@media (max-width: 991px) and (min-width: 768px){
+    .THIS table.bordersides{
+        width: 100%;   
+    }
+    .THIS .tableheading{
+        font-weight:bold;
+        white-space:normal;   
+    }
+    
+}
+@media (max-width: 767px) and (min-width: 320px){
+    .THIS table.bordersides{
+        width: auto;   
+    }
+    .THIS .tableheading{
+        font-weight:bold;
+        white-space:normal;   
+    }
+    
+}

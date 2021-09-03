@@ -1,0 +1,186 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" access="global" >
+    
+    <div class="slds-p-around_medium">
+        <div><p><b>HOW DOES IT WORK?</b>
+            </p>
+            <br/>
+            <p><b>Step 1:</b> Below you will find a list of all (low-cost and regular) counselling and coaching places currently available with Heart &amp; Mind. Choose the slot that fits your regular, weekly availability and let us know what support and help you are looking for. You will receive a booking reference once your registration has been submitted successfully<br/>
+                <b>Step 2:</b> We will get in touch by email and offer you an initial consultation with the team member best suited to your individual needs, preferences and chosen slot<br/>
+                <b>Step 3:</b> To go ahead, confirm your initial consultation by setting up your direct debit mandate with Heart &amp; Mind within 48 hours</p>
+            <br/>
+            <p><b>After your initial consultation: </b><br/>
+                You can book additional consultations directly with your counsellor or coach. Sessions will take place weekly, on the same day and time as your initial consultation. Not the right fit? Come back here and book another initial consultation and we will match you with another, more suitable counsellor or coach. Alternatively, contact our Heart &amp; Mind coordinator and we will do our best to offer you an alternative source of help - either within the Heart &amp; Mind network or we will make suggestions as to where else you could go for support.</p>
+        </div>
+    </div>
+    
+    <div class="slds-box background-gray slds-m-bottom_medium">
+        <div class="slds-grid">
+            <div class="slds-col"><p><b>SCHEDULE</b></p></div>
+            <div class="slds-col slds-text-align_right"><a>EXIT BOOKING SYSTEM</a></div>
+        </div>
+    </div>
+    
+    <div class="slds-grid slds-p-around_medium">
+        <div class="slds-col slds-box slds-size_1-of-2 slds-p-around_none slds-m-right_large" style="width:49%;">
+            <div class="background-gray slds-p-around_small">
+                <lightning:input type="date" label="Choose date to schedule" class="slds-size_1-of-2" name="date" />
+            </div>
+            <div>
+                <table class="slds-table slds-table_cell-buffer slds-table_striped">
+                    <tr>
+                        <td colspan="5"><b>January 2021</b>
+                        </td>
+                    </tr>
+                    <tr aura:id="schedule-row" onclick="{!c.clickSchedule}">                
+                        <td>1</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td><lightning:icon iconName="utility:error" variant="error" size="xx-small" /></td>
+                    </tr>
+                    <tr>                
+                        <td>2</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td><lightning:icon iconName="utility:error" variant="error" size="xx-small" /></td>
+                    </tr>
+                    <tr>                
+                        <td>3</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td><lightning:icon iconName="utility:error" variant="error" size="xx-small" /></td>
+                    </tr>
+                    
+                    <tr>
+                        <td colspan="5"><b>February 2021</b>
+                        </td>
+                    </tr>
+                    <tr>                
+                        <td>1</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td></td>
+                    </tr>
+                    <tr>                
+                        <td>2</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td></td>
+                    </tr>
+                    <tr>                
+                        <td>3</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td><lightning:icon iconName="utility:error" variant="error" size="xx-small" /></td>
+                    </tr>
+                    <tr>                
+                        <td>3</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td><lightning:icon iconName="utility:error" variant="error" size="xx-small" /></td>
+                    </tr><tr>                
+                    <td>3</td>
+                    <td>Fri</td>
+                    <td>365 days</td>
+                    <td>Internal Use only</td>
+                    <td></td>
+                    </tr>
+                    <tr>                
+                        <td>3</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td><lightning:icon iconName="utility:error" variant="error" size="xx-small" /></td>
+                    </tr>
+                    <tr>                
+                        <td>3</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td><lightning:icon iconName="utility:error" variant="error" size="xx-small" /></td>
+                    </tr>
+                    <tr>                
+                        <td>3</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td><lightning:icon iconName="utility:error" variant="error" size="xx-small" /></td>
+                    </tr>
+                    <tr>                
+                        <td>3</td>
+                        <td>Fri</td>
+                        <td>365 days</td>
+                        <td>Internal Use only</td>
+                        <td><lightning:icon iconName="utility:error" variant="error" size="xx-small" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="slds-text-align_center background-gray"><a>Show more...</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="slds-col slds-box slds-size_1-of-2 slds-p-around_none" style="width:49%;">
+            <div class="background-gray slds-p-around_small">
+                <div class="slds-grid">
+                    <div class="slds-col">
+                        <p><b>Online | Low-cost Counselling</b></p>
+                    </div>
+                    <div class="slds-col slds-text-align_right">
+                        <lightning:button label="View Details" variant="brand"/></div>
+                </div>
+                
+                <div class="event_header">
+                    <p class="slds-m-bottom_xx-small"><lightning:icon iconName="utility:event" size="xx-small" /> Thursday, 28 January '21 &nbsp; <span class="time_span">10am - 10:50am</span>
+                    </p>
+                    
+                    <p class="slds-m-bottom_xx-small"><lightning:icon iconName="utility:checkin" size="xx-small" /> Heart &amp; Mind - Online Video Consultation
+                    </p>
+                    
+                    <p class="slds-m-bottom_xx-small"><lightning:icon iconName="utility:user" size="xx-small" /><span class="slds-text-color_destructive"> Fully booked</span>
+                    </p>
+                    
+                    
+                </div>
+            </div>
+            <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true"  activeSectionName="A">
+                <lightning:accordionSection name="A" label="INFORMATION">
+                    <div class="information_section">
+                        <h6 class="slds-m-bottom_x-small">
+                            <b>Details</b>
+                        </h6>
+                        
+                        <div class="markdown">
+                            <ul>
+                                <li class="slds-m-bottom_x-small">
+                                    <b>Who is this slot for?</b><b> </b>This low-cost counselling slot is open to anyone with a gross personal income of up to £25,000 per year<br/>
+                                </li>
+                                <li class="slds-m-bottom_x-small">
+                                    <b>Who will be helping me?</b><b> </b>Our low-cost team is made up of counsellors at various stages of their professional training</li>
+                                
+                                <li class="slds-m-bottom_x-small">
+                                    <b>What happens after my initial consultation?</b><b> </b>You can book up to 12 low-cost counselling sessions with your counsellor</li>
+                            </ul>
+                        </div>
+                    </div>
+                </lightning:accordionSection>
+            </lightning:accordion>
+            <hr class="slds-m-vertical_x-small"/>
+            <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true"  activeSectionName="A">
+                <lightning:accordionSection name="A" label="TICKETS">
+                    <div class="information_section">
+                        <div class="title_row"><b>Initial consultation | Low-cost Counselling</b></div>
+                        
+                        <div class="summary_text slds-text-color_success">Fees charged for initial and subsequent consultations are based on your personal, annual gross income<br/> <br/> Up to £18,000                     = £25.00 per consultation<br/> £18,001 - £20,000              = £30.00 per consultation<br/> £20,001 - £22,000              = £35.00 per consultation<br/> £22,001 - £25,000              = £40.00 per consultation<br/></div>
+                    </div>
+                </lightning:accordionSection>
+            </lightning:accordion>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,327 @@
+<apex:page StandardController="Package__c"  extensions="Packagedispatcher" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false"
+           readOnly="true">
+    <head>
+        <style>
+            #ManfRun {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            }
+            #ManfRun td, #ManfRun th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            }
+            #ManfRun tbody>tr>td {
+            font-size: 14px;
+            font-weight: normal;
+            }
+            #ManfRun th {
+            font-size: 15px;
+            font-weight: normal;
+            }
+            #ManfRun td>table>tr>th {
+            font-size: 12px;
+            font-weight: bold;
+            }
+            #ManfRun td>table>tr>td {
+            font-size: 12px;
+            font-weight: bold;
+            }
+            #ManfRun tr:nth-child(even){background-color: #f2f2f2;}
+            #ManfRun tr:hover {background-color: #ddd;}
+            #ManfRun th {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            text-align: middle;
+            background-color: #7f8edd;
+            color: white;
+            }
+            #ManfRun td>table>tr>th {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            text-align: middle;
+            background-color: #ffffff;
+            color: #7a7a7a;
+            }
+            #ManfRun td>table>tr>td {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            text-align: middle;
+            background-color: #ffffff;
+            color: #7a7a7a;
+            }
+            @page {
+            @top-center {
+            content: element(header);
+            }
+            @bottom-left {
+            content: element(footer);
+            }
+            }
+            div.header {
+            padding: 10px;
+            position: running(header);
+            }
+            div.footer {
+            display: block;
+            padding: 5px;
+            position: running(footer);
+            }
+            .pagenumber:before {
+            content: counter(page);
+            }
+            .pagecount:before {
+            content: counter(pages);
+            }
+        </style>
+        <apex:includeScript value="{!$Resource.jquery_min_JS}"/>
+        <apex:includeScript value="{!$Resource.ajaxmoment}"/>
+        <script src="/soap/ajax/34.0/connection.js" type="text/javascript"></script>
+        <script src="/soap/ajax/34.0/apex.js" type="text/javascript"></script>    
+        
+        <script  type="text/javascript">
+            alert('result');
+            $(document).ready(function() { 
+            alert('result1');
+            sforce.connection.sessionId = '{!$Api.Session_ID}'; 
+            var SOObj = new sforce.SObject("sigmaerpdev__Package__c");
+            
+            SOObj= [select id ,sigmaerpdev__AccountId__c,Delivary_Date__c,Discount__c,Discount_Amount__c,Net_Amount__c,Net_Quantity__c,sigmaerpdev__Order_Number__c,sigmaerpdev__Orders_Status__c,sigmaerpdev__Quantity__c,sigmaerpdev__TotalAmount__c,sigmaerpdev__Date__c from sigmaerpdev__Sigma_Order__c where Id =: objId];
+            
+            var INObj = new sforce.SObject("Invoice__c");
+            
+            INObj.sigmaerpdev__SO__c = SOObj.id;
+            result = sforce.connection.insert([INObj]); 
+            alert('result'+result);
+            }
+            
+        </script>
+    </head>
+    <body>
+        <table width="90%" border="0">  
+            <tr>
+                <td style="width:85%">
+                    <h2>Package Slip</h2>
+                </td>
+                <td style="width:5%">
+                    <apex:image url="{!URLFOR($Resource.logo)}" width="40" />
+                </td>
+                
+            </tr>
+        </table>
+        <hr />            
+        <apex:form id="Form">
+            <apex:pageBlock id="invoiceBlock">
+                
+                <table >
+                    <tr>
+                        
+                        <td>
+                         <p></p>
+                           
+                            <p><b>Shipping Address:</b><br/>
+                                   {!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__AccountId__r.Name)}<br/>
+                                   {!HTMLENCODE(Pk.sigmaerpdev2__Customer_Email__c)}
+                                    {!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__Shipping_Street__c)}<br/>
+                                   {!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingCity__c)}<br/>
+                                   {!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingCountry__c)}<br/>
+          						   {!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingPostalCode__c)}<br/>
+                                </p>
+                            
+                            
+                            
+						 <!--p>Customer Name			:{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__AccountId__r.Name)}</p> 
+                         <p>Shipping Street	 		:{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__Shipping_Street__c)}</p>  
+                         <p>Shiipiing city	 		:{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingCity__c)}</p>  
+                         <p>Shiipiing State	 		: {!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingState__c)}</p>  
+                         <p>Shiipiing Country		:{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingCountry__c)}</p>  
+                         <p>Shiipiing PostalCode	:{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingPostalCode__c)}</p-->                              
+						</td>
+                       <td></td>
+                            <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td> <td></td><td></td><td></td><td></td><td></td> <td></td><td></td><td></td><td></td><td></td> <td></td><td></td><td></td><td></td><td></td> <td></td><td></td><td></td><td></td><td></td> <td></td><td></td><td></td><td></td><td></td> <td></td><td></td><td></td><td></td><td></td> <td></td><td></td><td></td><td></td><td></td> <td></td><td></td><td></td><td></td><td></td>
+                        <td>
+                            
+                           
+                                <p><b>Mindlinks Solution Distribution:</b><br/>
+                                   {!HTMLENCODE(defaultparam.Company_Name__c)}<br/>
+                                    <b>Phone No</b>:{!HTMLENCODE(defaultparam.Company_Phone__c)}<br/>
+                                    <b>Email</b>   :{!HTMLENCODE(defaultparam.Company_Email__c)}<br/>
+                                </p>
+                         
+                            
+                            <!--p><b>Sigma Erp Distribution:</b></p>
+                            <p>Company Name	:{!HTMLENCODE(defaultparam.Company_Name__c)}</p>
+                            <p> Phone       : {!HTMLENCODE(defaultparam.Company_Phone__c)}</p>
+                            <p> Email       : {!HTMLENCODE(defaultparam.Company_Email__c)}</p-->
+                        </td>
+                        
+						
+                    </tr>
+                </table>
+				<hr />                  
+			     <table id="invoiceBlock"> 
+                    <tr>
+                        <td>          
+                        </td>
+                    </tr>
+                </table>
+                <apex:outputPanel rendered="{!IF((Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Order__c!=null),true, false)}">
+                    <tr >
+                        <td>
+                            <p>
+                                <b>Package</b><br/>
+                                {!HTMLENCODE(Pk.Name)}
+                            </p>
+                        </td>  
+                        <td></td><td></td><td></td><td></td><td>  <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td> </td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>
+                <td>
+                    <p>
+                        <b>Order</b><br/>
+                        
+                        {!HTMLENCODE(Pk.sigmaerpdev2__Order__r.OrderNumber)} 
+                    </p>
+                </td> 
+                <td></td><td></td><td>  <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td> </td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>
+            <td>
+                <p>
+                    <b>Date</b><br/>
+                    
+                    <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                        <apex:param value="{!Pk.PackagedDate__c}" /> 
+                    </apex:outputText>
+                    
+                </p>
+            </td> 
+        </tr>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF((Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__c!=null),true, false)}">
+        <tr >
+            <td>
+                <p>
+                    <b>Package</b><br/>
+                    {!HTMLENCODE(Pk.Name)}
+                </p>
+            </td>  
+            <td></td><td></td><td></td><td></td><td>  <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td> </td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>
+    <td>
+        <p>
+            <b>Sigma Order</b><br/>
+            
+            {!HTMLENCODE(Pk.sigmaerpdev2__Sigma_Order__r.Name)} 
+        </p>
+    </td> 
+    <td></td><td></td><td>  <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td>   <td></td><td></td><td></td><td></td><td></td><td></td> </td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>  <td></td><td></td><td></td><td></td><td></td><td></td>
+<td>
+    <p>
+        <b>Date</b><br/>
+        
+        <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+            <apex:param value="{!Pk.PackagedDate__c}" /> 
+        </apex:outputText>
+        
+    </p>
+</td> 
+</tr>
+</apex:outputPanel>
+      
+                       
+                  <hr />  
+                <apex:outputPanel rendered="{!IF((Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__c!=null),true, false)}">
+                    <table id="ManfRun">
+                        <!--thead>
+                            <tr>
+                                <th>Customer Name</th> 
+                                <th> Package Name</th>       
+                                <th>Shipping Street</th>  
+                                <th>Shipping City</th>  
+                                <th> Shipping State</th>  
+                                <th>Shipping Country</th>  
+                                <th>Shipping PostalCode</th>   
+                            </tr>
+                        </thead>
+                        <tbody> 
+                            <tr>                                
+                                <td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__AccountId__r.Name)}</td> 
+                                <td>{!HTMLENCODE(Pk.Name)}</td>       
+                                <td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__Shipping_Street__c)}</td>  
+                                <td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingCity__c)}</td>  
+                                <td> {!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingState__c)}</td>  
+                                <td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingCountry__c)}</td>  
+                                <td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingPostalCode__c)}</td>                              
+                            </tr>   
+                        </tbody--> 
+                        
+						 <thead>
+                            <tr>
+                                <!--th>Package</th> 
+                                <th>Sigma Order</th!--> 
+                                <th> Product Name </th>  
+                                <th> Product Barcode </th>  
+                                <th>Quantity</th>  
+                                <th>Status</th>  
+                            </tr>
+                        </thead>
+                        <tbody> 
+                            
+								<apex:repeat value="{!Pk.sigmaerpdev2__PackagedProducts__r}" var="pp" id="theRepeat">
+									<tr>
+                                        <!--td>{!HTMLENCODE(pp.sigmaerpdev2__Package__r.Name)}</td> 
+									<td>{!HTMLENCODE(pp.sigmaerpdev2__Sigma_Order__r.Name)}</td--> 
+									<td>{!HTMLENCODE(pp.sigmaerpdev2__Product_Order__r.sigmaerpdev2__Product__r.Name)}</td>     
+                                        <td>{!HTMLENCODE(pp.sigmaerpdev2__Product_Order__r.sigmaerpdev2__Product__r.sigmaerpdev2__Product_Bar_Code__c)}</td>     
+									<td>{!pp.sigmaerpdev2__Quantity__c}</td>  
+                                        <td>{!HTMLENCODE(pp.sigmaerpdev2__Package__r.sigmaerpdev2__Status__c)}</td> 
+									<!--td>{!HTMLENCODE(pp.sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingCity__c)}</td>  
+									<td> {!HTMLENCODE(pp.sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingState__c)}</td>  
+									<td>{!HTMLENCODE(pp.sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingCountry__c)}</td>  
+									<td>{!HTMLENCODE(pp.sigmaerpdev2__Sigma_Order__r.sigmaerpdev2__ShippingPostalCode__c)}</td-->                              
+								</tr>
+								</apex:repeat>
+                               
+                        </tbody> 
+						
+                    </table>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!IF((Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Order__c!=null),true, false)}">
+                    <table id="ManfRun">
+                        <thead>
+                            <tr>
+                                 <th> Product Name </th>  
+                                <th> Product Barcode </th>  
+                                <th>Quantity</th>  
+                                <th>Status</th>  
+                                <!--th>Customer Name</th> 
+                                <th> Package Name</th>       
+                                <th>Shipping Street</th>  
+                                <th>Shipping City</th>  
+                                <th> Shipping State</th>  
+                                <th>Shipping Country</th>  
+                                <th>Shipping PostalCode</th-->   
+                            </tr>
+                        </thead>
+                        <tbody> 
+                            <apex:repeat value="{!Pk.sigmaerpdev2__PackagedProducts__r}" var="pp" id="theRepeat2">
+                            <tr>     
+                                
+                                <td>{!HTMLENCODE(pp.sigmaerpdev2__Order_Product__r.Product2.Name)}</td>     
+                                        <td>{!HTMLENCODE(pp.sigmaerpdev2__Order_Product__r.Product2.sigmaerpdev2__Product_Bar_Code__c)}</td>     
+									<td>{!pp.sigmaerpdev2__Quantity__c}</td>  
+                                        <td>{!HTMLENCODE(pp.sigmaerpdev2__Package__r.sigmaerpdev2__Status__c)}</td> 
+                                <!--td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Order__r.Account.Name)}</td> 
+                                <td>{!HTMLENCODE(Pk.Name)}</td>       
+                                <td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Order__r.sigmaerpdev2__Shipping_Street__c)}</td>  
+                                <td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Order__r.sigmaerpdev2__ShippingCity__c)}</td>  
+                                <td> {!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Order__r.sigmaerpdev2__ShippingState__c)}</td>  
+                                <td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Order__r.sigmaerpdev2__ShippingCountry__c)}</td>  
+                                <td>{!HTMLENCODE(Pk.sigmaerpdev2__PackagedProducts__r[0].sigmaerpdev2__Order__r.sigmaerpdev2__ShippingPostalCode__c)}</td-->                              
+                            </tr>
+                            </apex:repeat>
+                        </tbody> 
+						  
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlock>
+        </apex:form>
+    </body>
+    
+</apex:page>

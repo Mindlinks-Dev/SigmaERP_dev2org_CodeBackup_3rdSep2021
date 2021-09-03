@@ -1,0 +1,172 @@
+<aura:component controller="ManufacturingRun" implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes">
+        
+    <ltng:require styles="{!$Resource.HelpMenuCss}" />
+    <aura:attribute name="mobileScreenFlag" type="Boolean" default="false" />
+    <!--Help-->
+    <aura:attribute name="description" type="String" default="test"/>
+    <aura:attribute name="descriptionBody" type="String" default="test"/>
+    
+    <aura:attribute name="currectChapter" type="Integer"/>    
+    <aura:attribute name="openTrailWindow" type="Boolean" default="false"/>
+    <aura:attribute name="objectFiledList" type="List"/>
+    <aura:attribute name="jsonString" type="Map"/>
+    <aura:attribute name="currectObject" type="String" default=""/>
+    <aura:attribute name="HelpIcons" type="boolean" default="false" />
+    
+    <!--HelpEnd-->
+       
+    <aura:attribute name="showDemandPlanng" type="boolean" default="false" />
+    <aura:attribute name="showRecpMgmt" type="boolean" default="false" />
+    <aura:attribute name="showManfRun" type="boolean" default="false" />
+    
+    <aura:attribute name="from" type="String" default ="" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    
+    <aura:attribute name="showIcons" type="boolean" default="true" />  
+    <aura:attribute name="showModules" type="boolean" default="false" /> 
+    
+    <aura:attribute name="showHelpMnu" type="boolean" default="false" /> 
+    
+    <aura:if isTrue="{!v.mobileScreenFlag == false}">
+        <div class="marquee slds-text-align_center slds-p-around_small slds-truncate">
+            <img src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title=""  class="slds-float_left"/>
+            <span class="slds-text-heading_small" style="letter-spacing:8px;text-transform:uppercase;"><b>Manufacturing Modules</b></span>        
+            <aura:if isTrue="{!v.showHelpMnu == true}">
+                <img onclick="{!c.HelpMenu}" src="/resource/sigmaerpdev2__HelpMenu79" width="94" title="Help"  class="slds-float_right"/>
+            </aura:if>
+        </div>
+        <aura:set attribute="else">
+            <div class="slds-text-align_center slds-p-around_small">                
+                <span class="slds-text-heading_small" style="letter-spacing:2px;text-transform:uppercase;"><b>Manufacturing Modules</b></span>        
+                <!--<aura:if isTrue="{!v.showHelpMnu == true}">
+                    <img onclick="{!c.HelpMenu}" src="/resource/sigmaerpdev2__HelpMenu2" width="45" height="20" title="Help"  class="slds-float_right"/>
+                </aura:if>-->
+            </div>
+        </aura:set>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showIcons == false}">
+        <lightning:card title="Manufacturing Icons">
+            <aura:set attribute="actions">
+                <!--<aura:if isTrue="{!or(v.showDemandPlanng == true, v.showManfRun == true)}">
+                    <img onclick="{!c.HelpMenu}" src="/resource/sigmaerpdev2__HelpMenu2" width="55" height="50" title="Help" />
+                </aura:if>&nbsp;-->
+                <img onclick="{!c.showInfo}" src="/resource/sigmaerpdev2__ShowIcons" width="35" height="35" title="Show Icons" />                
+            </aura:set>        
+        </lightning:card>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showIcons == true}">
+        <article class="slds-card slds-card--narrow">
+            <lightning:card title="">
+                <aura:set attribute="actions">
+                    <img onclick="{!c.closeInfo}" src="/resource/sigmaerpdev2__HideIcons" width="35" height="35" title="Hide Icons" />
+                </aura:set>
+                <aura:if isTrue="{!v.mobileScreenFlag == false}">                
+                    <div class="slds-scrollable-mob">
+                        <table style="max-width:79%;" align="center">
+                            <tr>
+                                <td width="20%" class="zoom" style="text-align:center;">
+                                    <img onclick="{!c.showDemandPlanning}" src="/resource/sigmaerpdev2__DemandPlanningMM1" width="130" height="100" title="Demand Planning" Name="Demand Planning" /><br />                
+                                    <div class="slds-text-heading_small" style="padding-left:40px;">Demand Planning</div>
+                                </td> 
+                                <td width="20%" class="zoom" style="text-align:center;">
+                                    <img onclick="{!c.showRecipeManagement}" src="/resource/sigmaerpdev2__Recipe_MM" width="130" height="100" title="Recipes" /><br />                                  
+                                    <div class="slds-text-heading_small" style="padding-left:15px;padding-top:15px;">Recipe Management</div>
+                                </td> 
+                                <td width="20%" class="zoom" style="text-align:center;">
+                                    <img onclick="{!c.showMR}" src="/resource/sigmaerpdev2__ManfRun_MM2" width="175" height="100" title="Manufacturing Process" Name="Manufacturing Run" /><br />                 
+                                    <div class="slds-text-heading_small" style="padding-left:35px;">Manufacturing Process</div>
+                                </td>    
+                            </tr>   
+                        </table>
+                    </div>
+                    <aura:set attribute="else">                    	
+                            <table style="max-width:95%;" align="center">
+                                <tr>
+                                    <td style="width:20%;text-align:center;">
+                                        <img onclick="{!c.showDemandPlanning}" src="/resource/sigmaerpdev2__DemandPlanningMM1" width="75" height="80" title="Demand Planning" Name="Demand Planning" /><br />                
+                                        <div class="slds-text-heading_small" style="padding-left:2px;">Demand Planning</div>
+                                    </td> 
+                                    <td style="width:40%;text-align:center;">
+                                        <img onclick="{!c.showRecipeManagement}" src="/resource/sigmaerpdev2__Recipe_MM" width="75" height="80" title="Recipes" /><br />                                  
+                                        <div class="slds-text-heading_small" style="padding-left:2px;padding-top:9px;">Recipe Management</div>
+                                    </td> 
+                                </tr>
+                                <tr>
+                                    <td style="width:60%;text-align:center;">
+                                        <img onclick="{!c.showMR}" src="/resource/sigmaerpdev2__ManfRun_MM2" width="95" height="90" title="Manufacturing Process" Name="Manufacturing Run" /><br />                 
+                                        <div class="slds-text-heading_small" style="padding-left:2px;">Manufacturing Process</div>
+                                    </td>    
+                                </tr>   
+                            </table>                    	
+                    </aura:set>
+                  </aura:if>
+            </lightning:card>
+        </article>
+    </aura:if>
+    
+    <!--HelpMenu-->
+    <aura:if isTrue="{!v.HelpIcons == true}">
+        <div id="trialWindow" aura:id="trialWindow" class="trialWindowClass expand" onmouseenter="{!c.dragContent}">
+            <aura:iteration items="{!v.jsonString.chapters}" var="chapter" indexVar="chapterIndx">
+                  <aura:if isTrue="{!chapter.objectName == v.currectObject}">
+                    <div id="" class="slds-scrollable" style="display: flex!important;border-radius: 8px 8px 0px 0px;cursor: grab;flex-grow: 1!important;flex-direction: column!important;height:20%;background-color: #0C99C4;padding: 20px">
+                         <span id="stepDiscriptionHead" class="fontClassHeader1">  
+                        <b>{!v.description}</b></span><br />                       
+                     <span id="stepDiscription" class="fontClass">{!v.descriptionBody}</span>
+                      </div>
+                    <ul class="slds-has-dividers_bottom-space slds-scrollable" style="height: 65%;">                        
+                        <aura:iteration items="{!chapter.steps}" var="step" indexVar="stepIndx">
+                            <li class="slds-item">
+                                <lightning:icon style="{!v.currectPage=='list' ? 'background-color: lightslategray;':''}" class="slds-m-right_x-small" iconName="action:approval" size="xx-small" alternativeText="Indicates approval"/>
+                                <a id="{!chapterIndx+'-'+stepIndx}" class="{!v.currectPage!=step.element.uri.pathname ? 'not-active slds-col slds-size_10-of-12':'slds-col slds-size_10-of-12'}" style="{!step.isClicked ? 'margin-left: 3px;font-size: 13px;color:#6faa00':'margin-left: 3px;font-size: 13px;'}" name="{!step.title}" href="" onclick="{!c.stepsOnclickHandler}">{!step.title}</a>
+                            </li>
+                        </aura:iteration>
+                    </ul>
+                    <!--<div style="height:5%;background-color:#ffcccc;padding-left:30px;">
+                        	What Next ? Get Manufacturing Product
+                     </div>-->  
+                      
+                    <div style="border-radius: 0 0 8px 8px;text-align:center;padding: 0 1em;font-size: .8em;background-color: #0C99C4;">
+                        <span class="control-panel__footer__body">
+                            Powered by
+                            <span class="control-panel__footer__body__strong">Mindlinks</span>
+                        </span>
+                    </div>    
+                </aura:if>
+            </aura:iteration>
+        </div>
+    </aura:if>
+    <!--HelpEnd-->
+    
+    <aura:if isTrue="{!v.showModules == true}">
+        <lightning:card>       
+            <aura:if isTrue="{!v.showDemandPlanng == true}">               
+                <aura:if isTrue="{!v.mobileScreenFlag == true}">
+                	 <c:Demand_Planning_M />
+                    <aura:set attribute="else">
+                    	 <c:Demand_Planning />
+                    </aura:set>
+                </aura:if>
+            </aura:if>  
+            <aura:if isTrue="{!v.showRecpMgmt == true}">
+                <aura:if isTrue="{!v.mobileScreenFlag == true}">
+                	<c:RecipeManagementMob /> 
+                    <aura:set attribute="else">
+                    	<c:RecipeManagement />  
+                    </aura:set>
+                </aura:if>
+            </aura:if> 
+            <aura:if isTrue="{!v.showManfRun == true}"> 
+                <aura:if isTrue="{!v.mobileScreenFlag == true}">
+                	<c:ManufacturingRun_M />
+                    <aura:set attribute="else">
+                    	<c:ManufacturingRun />  
+                    </aura:set>
+                </aura:if>                        
+            </aura:if>                  
+        </lightning:card>    
+    </aura:if>
+    
+</aura:component>

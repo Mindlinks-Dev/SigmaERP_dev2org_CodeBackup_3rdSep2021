@@ -1,0 +1,12 @@
+<aura:component controller="WorkOrderReject" implements="force:hasRecordId,force:lightningQuickActionWithOutHeader">
+	 <br/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+  <h3 class="slds-section__title slds-align_absolute-center">
+        <span class="slds-truncate" title="Section Title">Do you want to accept this work Order ?</span>
+    </h3>
+    <br/>
+     <footer class="slds-align_absolute-center">
+        <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Accept" onclick="{!c.accept}" />
+        <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+    </footer> 
+</aura:component>

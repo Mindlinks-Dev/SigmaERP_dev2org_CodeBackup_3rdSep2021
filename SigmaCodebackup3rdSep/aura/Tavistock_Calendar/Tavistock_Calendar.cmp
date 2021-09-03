@@ -1,0 +1,143 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="items" type="Object" access="PRIVATE"/>
+    <aura:attribute name="selected" type="String" default=""/>
+    
+    <div class="slds-m-around_large">
+    <lightning:progressIndicator currentStep="3" type="base" hasError="true" variant="base">
+        <lightning:progressStep label="Step 1" value="1"/>
+        <lightning:progressStep label="Step 2" value="2"/>
+        <lightning:progressStep label="Step 3" value="3"/>
+        <lightning:progressStep label="Step 4" value="4"/>
+    </lightning:progressIndicator>
+        </div>
+    
+    <div class="slds-grid slds-m-around_large">
+        <div class="slds-col slds-size_1-of-8">
+            <p><b>Duration</b></p>
+            <p>50 minutes</p>
+        </div>
+        <div class="slds-col slds-size_1-of-8">
+            <p><b>Deposit</b></p>
+            <p>50.00</p>
+        </div>
+        <div class="slds-col slds-size_1-of-8">
+            <p><b>Date</b></p>
+            <p>Monday 11 January</p>
+        </div>         
+        <div class="slds-col slds-size_1-of-8">
+            <p><b>Time</b></p>
+            <p>{! v.selected }</p>
+        </div>
+    </div>
+    
+    
+    
+    <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
+        <tr><td colspan="7" class="slds-text-align_center slds-text-heading_medium"><strong class="slds-p-around_large">January 2021</strong></td></tr>
+        <tr class="slds-text-heading_small">
+            <th>Wed 6</th>
+            <th>Thu 7</th>
+            <th>Fri 8</th>
+            <th>Sat 9</th>
+            <th>Sun 10</th>
+            <th>Mon 11</th>
+            <th>Tue 12</th>
+        </tr>
+        <tr>
+            <td class="disabled">
+                <p>MORNING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>MORNING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>MORNING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>MORNING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>MORNING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>MORNING</p>
+                <p>0 available</p>
+            </td>
+            <td>
+                <p>
+                    <lightning:tree items="{! v.items }"  onselect="{! c.handleSelect }"/></p>
+                <p>1 available</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="disabled">
+                <p>AFTERNOON</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>AFTERNOON</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>AFTERNOON</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>AFTERNOON</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>AFTERNOON</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>AFTERNOON</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>AFTERNOON</p>
+                <p>0 available</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="disabled">
+                <p>EVENING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>EVENING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>EVENING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>EVENING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>EVENING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>EVENING</p>
+                <p>0 available</p>
+            </td>
+            <td class="disabled">
+                <p>EVENING</p>
+                <p>0 available</p>
+            </td>
+        </tr>
+    </table>
+    
+    <p class="slds-text-align_center slds-p-around_large slds-text-heading_small">If you can't find an appointment, contact us at <a>appointments@tavistockrelationships.org</a> and we maybe able to offer an alternative</p>
+    
+    <p class="slds-text-align_right slds-p-around_large"><a href="/tavistockbooking/s/registration" class="slds-button slds-button_brand">Continue</a></p>
+</aura:component>

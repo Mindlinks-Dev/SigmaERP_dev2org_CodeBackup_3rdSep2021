@@ -1,0 +1,92 @@
+<aura:component controller="Accountsubscription" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" >
+    <ltng:require styles="{!$Resource.increasepopupsize}" />
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.handleAccountIdUpdate}"/>
+    
+    <aura:attribute name="status" type="String[]" default=""/>
+    <aura:attribute name="subTier" type="String[]" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/> 
+    <aura:attribute name="today" type="Date" default=""/>
+    <aura:attribute name="intervals" type="Integer" default=""/>
+    <aura:attribute name="charges" type="Decimal" default=""/>
+    <aura:attribute name="recordId" type="Id" />
+     
+     <aura:attribute name="enddate" type="Date" default=""/>
+    
+    <aura:attribute name="recordName" type="String"  description="The current record Id to display" />
+    <aura:attribute name="recordName1" type="String"  description="The current record Id to display" />
+    <aura:attribute name="SubscriptionProduct" type="SubscriptionDetail__c[]"/>
+    <aura:attribute name="Subscription" type="SubscriptionDetail__c" 
+                    default="{'sobjectType': 'SubscriptionDetail__c',
+                             'sigmaerpdev__Total_charges__c': '',
+                             'sigmaerpdev__Subscription_Duration__c': '',
+                             'sigmaerpdev__Product__c': '',
+                             'sigmaerpdev__Subscription_Tier__c':''
+                             }"/>
+    
+    <aura:attribute name="AccSubscription" type="Account_Subscription__c[]"/>
+    <aura:attribute name="AccSubscriptions" type="Account_Subscription__c" 
+                    default="{'sobjectType': 'Account_Subscription__c',
+                             'sigmaerpdev__Account__c':'',
+                             'sigmaerpdev__Status__c': '',
+                             'sigmaerpdev__Start_Date__c': '',
+                             'sigmaerpdev__End_Date__c': '',
+                             'sigmaerpdev__Unit_Price__c':'',
+                             'sigmaerpdev__Total_Intervel__c':'',
+                             'sigmaerpdev__SubscriptionDetail__c':'',
+                             'sigmaerpdev__Paid_Amount__c':'',
+                             'sigmaerpdev__Discount__c':'',
+                             'sigmaerpdev__Tax__c':'',
+                             'sigmaerpdev__Min_Discount__c':'',
+                             'sigmaerpdev__Max_Discount__c':'',
+                             'sigmaerpdev__Subscribe_Date__c':'',
+                             'sigmaerpdev__Subscription_Tier__c':''
+                             }"/>
+    
+    <!-- code to start-->
+    <div class="slds-box" style="padding:0;">
+         <div class="backdrop slds-hide" aura:id="backdrop"></div>
+        <div class="slds-page-header" style="">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-work-order" title="Description of icon when needed">
+                        <c:svg class="slds-icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/custom-sprite/svg/symbols.svg#custom98'}" />
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Shipments">Account Subscription</h1>
+                </div>
+            </div>
+        </div>
+        <br/>
+        
+        <!-- Input Form using components -->
+        <div class="container">
+            <div style="width:60%;margin:auto;">
+                <aura:renderIf isTrue="{!v.isError}">
+                    <ui:message title="Error" severity="error" closable="false">
+                        {!v.errorMsg}
+                    </ui:message>
+                    <aura:set attribute="else">
+                        
+                    </aura:set>
+                </aura:renderIf> 
+                <div class="slds-grid slds-grid--pull-padded-medium">
+                    
+                    <div class="slds-col slds-p-horizontal--medium" style="">  
+                        <div class="slds-m-bottom_small">     	
+                            <label class="slds-form-element__label" for="email">Subscription: <span style="color:red">* </span> </label>                 
+                            <c:LookupSObject aura:id="SubscriptionDetails" 
+                                             searchString="{!v.recordName}" 
+                                             label="SubscriptionDetails" 
+                                             SRString="All"
+                                             pluralLabel="SubscriptionDetails" 
+                                             sObjectAPIName="sigmaerpdev__SubscriptionDetail__c" 
+                                             instanceId="MyPAccount"
+                                             listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                             listIconClass="slds-icon-standard-account"
+                                             />
+                        </div>
+                    </div></div></div></div></div>
+</aura:component>

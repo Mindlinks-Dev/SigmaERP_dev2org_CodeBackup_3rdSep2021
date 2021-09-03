@@ -1,0 +1,151 @@
+<aura:component Controller="StandardOrderCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
+    
+    <aura:attribute name="isDisabled" type="boolean" default="false" />
+    <aura:attribute name="isDisplay" type="boolean" default="false" />
+    <aura:attribute name="isConfirmedOL" type="boolean" default="true" />
+    <aura:attribute name="indexNum" type="Integer" /> 
+    <aura:attribute name="availableQuantity" type="Integer" default ='0'/>
+    <aura:attribute name="accRelatedData" type="Object"/>
+    <aura:attribute name="allocatedAs" type="String"/>
+    <aura:attribute name="maxdiscount" type="decimal"/>
+    <aura:attribute name="defaultValues" type="String" default="" />
+    <aura:attribute name="defualtInventorystatus" type="String"/>
+    <aura:attribute name="StockItem" type="boolean"  />
+    <aura:attribute name="autoMode" type="Boolean" default ="false"  />
+    <aura:attribute name="BackOrdercheckbox" type="Boolean" />
+    <aura:attribute name="isbackordercheck" type="boolean"/>
+    
+    
+    <aura:attribute name="StandardOrderLines" type="OrderItem" default="{'sobjectType': 'OrderItem'}" />
+    <aura:attribute name="standOrder" type="Order" default="{'sobjectType': 'Order',}" />
+    
+    <aura:attribute name="isbackorder" type="boolean"/>
+    <aura:attribute name="hide" type="boolean"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="idListStr" type="String"/>
+    <aura:attribute name="productPrices" type="List[]" />
+    <aura:attribute name="productName" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="productId" type="Id" default="" description="The current record Id to display" /> 
+   
+    
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.handleAccountIdUpdate}"/>
+    <aura:handler name="change" value="{!v.productName}" action="{!c.handleProductIdValueChange}" />
+    <aura:registerEvent name="SigmaComponentEvent" type="c:SigmaComponentEvent" />
+    
+    <tr style="{!v.StandardOrderLines.sigmaerpdev2__Back_Order__c? 'background: antiquewhite;':''}">
+        <td data-label="Action">
+            <div class="slds-button-group" role="group">
+                <lightning:buttonIcon iconName="utility:close" size="small" variant="border-filled" alternativeText="remove" iconClass="dark"
+                                      onclick="{!c.removeOrderLines}" disabled="{!v.isConfirmedOL || v.standOrder.sigmaerpdev2__Orders_Status__c=='Order Confirmed'}"/>
+            <lightning:buttonIcon  iconName="utility:rules" size="small" variant="border-filled" alternativeText="split" iconClass="dark"
+                                      onclick="{!c.splitOrderLines}" disabled="{!v.StandardOrderLines.sigmaerpdev2__Back_Order__c || v.StandardOrderLines.sigmaerpdev2__Splited_Order_Line__c || v.standOrder.sigmaerpdev2__Orders_Status__c=='Order Confirmed'}" />
+           
+            </div>
+        </td>
+       		
+            <td data-label="Product" title="{!v.productName}">
+               <!-- <aura:if isTrue="{!!v.isConfirmedOL}">-->
+			   <aura:if isTrue="{!and(and(v.StandardOrderLines.sigmaerpdev2__Back_Order__c == undefined,v.StandardOrderLines.sigmaerpdev2__Splited_Order_Line__c == undefined),v.recordId == undefined)}"> 
+                <c:LookupSObject label="Product"
+                                 pluralLabel="Products" 
+                                 searchString="{!v.productName}" 
+                                 sObjectAPIName="Product2" instanceId="MyProduct" SRString="All"
+                                 listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#Product'}"
+                                 listIconClass="slds-icon-standard-Product"  
+                                 />  
+                      <aura:set attribute="else">
+                    <ui:inputText value="{!v.productName}" class="slds-input" disabled="{!v.isConfirmedOL || v.StandardOrderLines.sigmaerpdev2__Order_Status__c!='Pending'||v.StandardOrderLines.sigmaerpdev2__Back_Order__c ||v.StandardOrderLines.sigmaerpdev2__Splited_Order_Line__c }"/>
+                </aura:set>
+            </aura:if>
+            </td>
+          
+       <td data-label="View Product">
+            <!--<lightning:button class='slds-m-top_medium' variant="neutral" label="View Product" onclick="{!c.getproductimagedata}" />-->
+            <lightning:button class="slds-button_balck" onclick="{!c.getproductimagedata}"><lightning:icon iconName="action:add_photo_video" size="x-small" alternativeText="View Product" /></lightning:button>
+       </td>
+        
+        <div>
+            <td data-label="Quantity" title="{!v.StandardOrderLines.Quantity}" >
+                <!--<lightning:input label="" disabled="{!v.isDisabled || v.orderLines.stapp__IsBackOrderParent__c || v.isConfirmedOL }" aura:id="Quantity" value="{!v.orderLines.stapp__Quantity__c}" onchange="{!c.assignOriginalOrderedQuantity}" />-->
+                
+                <ui:inputNumber aura:id="Quantity" class="slds-input " value="{!v.StandardOrderLines.Quantity}" change="{!c.updateOrderQuantity}"  disabled="{!v.isDisabled || v.isConfirmedOL || v.StandardOrderLines.sigmaerpdev2__Order_Status__c!='Pending'}"/>
+                
+            </td>
+        </div>    
+        
+        
+        <td data-label="Order Quantity"  title="{!v.StandardOrderLines.sigmaerpdev2__Net_Quantity__c}" >
+            <div class="{!v.isDisplay == true ? 'slds-hide':''}" >
+                <lightning:input label="" aura:id="OriginalOrderQuant" value="{!v.StandardOrderLines.sigmaerpdev2__Net_Quantity__c}" disabled="true"/>
+            </div>
+        </td>
+        <td data-label="Available Quantity" title="{!v.availableQuantity}" >
+            <div class="{!(v.isDisplay || v.isConfirmedOL) ? 'slds-hide':''}" >     
+                <lightning:input label="" aura:id="AvailableQuant" value="{!v.availableQuantity}" disabled="true"/>
+            </div>
+        </td>
+        <td data-label=" Price" >
+            
+            <div class="{!v.isDisplay == true ? 'slds-hide':''}" >
+                <lightning:input label="" aura:id="UnitPrice" value="{!v.StandardOrderLines.sigmaerpdev2__Unit_Price__c}" disabled="true" />
+            </div>
+        </td>
+        
+        <td data-label="DISCOUNT" >
+            
+                <lightning:input label="" aura:id="OriginalOrderQuant" value="{!v.StandardOrderLines.sigmaerpdev2__Discount__c}" onchange="{!c.updateTotalPrice}"  disabled="{! v.isConfirmedOL ||v.StandardOrderLines.sigmaerpdev2__Order_Status__c!='Pending'|| v.standOrder.sigmaerpdev2__Paid_Amount__c >0}" />
+           
+        </td>
+        <td data-label="Total">
+               <lightning:input label="" aura:id="Total" value="{!v.StandardOrderLines.sigmaerpdev2__TotalPrice__c}" disabled="true" />
+        </td>
+        <td data-label="Delivery Date">
+            <lightning:input type="date" name="input" label="" value="{!v.StandardOrderLines.sigmaerpdev2__Delivery_Date__c}"  disabled="{!v.isDisabled || v.isConfirmedOL || v.StandardOrderLines.sigmaerpdev2__Order_Status__c!='Pending'}" />
+        </td>
+        <td data-label="Status" title="{!v.StandardOrderLines.sigmaerpdev2__Order_Status__c}">
+            <lightning:select aura:id="status" label=''  value="{!v.StandardOrderLines.sigmaerpdev2__Order_Status__c}"  disabled="{!v.isConfirmedOL || v.StandardOrderLines.sigmaerpdev2__Order_Status__c=='Canceled'}">
+                <option text="Pending" value="Pending"/>
+                <!--<option text="Order Confirmed" value="Order Confirmed" />-->
+                <aura:if isTrue="{!and(v.standOrder.sigmaerpdev2__Customer_Type__c == 'Cash Customer', or(v.standOrder.sigmaerpdev2__Is_Payment_Made__c == false, v.standOrder.sigmaerpdev2__Is_Payment_Made__c == undefined))}">
+                	<option value="Order Confirmed" disabled="{!v.standOrder.sigmaerpdev2__Paid_Amount__c ==0 || v.standOrder.sigmaerpdev2__Paid_Amount__c == undefined}">Order Confirmed</option>
+                    <aura:set attribute="else">                                    
+                    	<option value="Order Confirmed" disabled="{!v.standOrder.AccountId == null}">Order Confirmed</option>                                    
+                    </aura:set>
+              	</aura:if>
+				 <option  value="Packaged" disabled="true">Packaged</option>
+				 <option  value="Shipped" disabled="true">Shipped</option>
+				 <option  value="Delivered" disabled="true">Delivered</option>
+                <option  value="Canceled" disabled="true">Canceled</option>
+                
+            </lightning:select>
+        </td>
+      <!--  <aura:if isTrue="{!v.defaultValues}">-->
+        <aura:if isTrue="{!v.autoMode == false}">
+     	    <td><div>
+                 <div class="slds-button-group slds-truncate" role="group">
+                <!--    <button class="{!v.allocatedAs=='Manually'? 'slds-button slds-button_brand btnpadding':'slds-button slds-button_neutral btnpadding'}" onclick="{!c.selectManually}" disabled="{!and(v.StandardOrderLines.sigmaerpdev2__Order_Status__c!='Order Confirmed',v.standOrder.sigmaerpdev2__Customer_Type__c == 'Credit Customer')|| v.defualtInventorystatus =='Allocated' || v.isConfirmedOL }" title="Manual">M</button>
+                    <button class="{!v.allocatedAs=='AutoPick'? 'slds-button slds-button_brand btnpadding':'slds-button slds-button_neutral btnpadding'}" onclick="{!c.autoPickInventory}" disabled="{!and(v.StandardOrderLines.sigmaerpdev2__Order_Status__c!='Order Confirmed',v.standOrder.sigmaerpdev2__Customer_Type__c == 'Credit Customer') || v.defualtInventorystatus =='Allocated' || v.isConfirmedOL}" title="Auto">A</button>-->
+                    <button class="{!v.allocatedAs=='Manually'? 'slds-button slds-button_brand btnpadding':'slds-button slds-button_neutral btnpadding'}" onclick="{!c.selectMalually}" disabled="{!v.StandardOrderLines.sigmaerpdev2__Order_Status__c!='Order Confirmed'||v.defualtInventorystatus =='Allocated' || v.isConfirmedOL || v.StandardOrderLines.sigmaerpdev2__Order_Status__c=='Canceled' ||v.StandardOrderLines.Quantity ==0 || v.StandardOrderLines.sigmaerpdev2__Stock_Fulfilled__c ==false}" title="Manual">M</button>
+                    <button class="{!v.allocatedAs=='AutoPick'? 'slds-button slds-button_brand btnpadding':'slds-button slds-button_neutral btnpadding'}" onclick="{!c.autoPickInventory}" disabled="{!v.StandardOrderLines.sigmaerpdev2__Order_Status__c!='Order Confirmed'||v.defualtInventorystatus =='Allocated' || v.isConfirmedOL ||v.StandardOrderLines.sigmaerpdev2__Order_Status__c=='Canceled'  ||v.StandardOrderLines.Quantity ==0 || v.StandardOrderLines.sigmaerpdev2__Stock_Fulfilled__c ==false}" title="Auto">A</button>
+
+                </div>
+          </div></td>
+            <aura:set attribute="else">
+            <td data-label="Allocation">
+               
+                </td>
+            </aura:set>
+        </aura:if>
+        <aura:set attribute="else">  
+        	<td><div></div></td>
+        </aura:set>
+        <td>
+        <div class="slds-button-group slds-truncate" role="group">
+                        <button class='slds-button slds-button_neutral btnpadding' onclick="{!c.Warrantydetails}" title="Warranty" disabled="{!v.StandardOrderLines.sigmaerpdev2__Order_Status__c!='Delivered'}">Warranty</button>
+                      
+               </div>
+        </td>
+    </tr>
+    
+</aura:component>

@@ -1,0 +1,61 @@
+<aura:component Controller="StockAdjustmentCntrlLightning" implements="forceCommunity:availableForAllPageTypes"  access="global">    
+    
+    <aura:attribute name="productID" type="string"/>    
+    <aura:attribute name="SAWrap" type="object" />
+    <aura:attribute name="showBA" type="boolean" default="false" />
+    <aura:attribute name="indexvar" type="Integer" />
+    <aura:attribute name="ilpliList" type="Inventory_Location_Product_Line_Item__c[]"/>
+    <aura:attribute name="ilpli" type="Inventory_Location_Product_Line_Item__c[]"/>
+    <aura:attribute name="OldilpliList" type="Map"/>
+    <aura:attribute name="selectedMap" type="Map"/>
+    <aura:attribute name="selectedIlpli" type="Inventory_Location_Product_Line_Item__c[]"/>
+    <aura:attribute name="errorMessage" type="String"/>
+    <aura:attribute name="isError" type="Boolean" default="false" />
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner alternativeText="Loading" size="large" />
+    </div>
+    <!--class="{!v.SAWrap.Name != null ? '':'slds-hide'}" */-->
+    <tr class="slds-hint-parent">
+        <td data-label="Name" scope="row">
+            <div class="slds-truncate" title="Name">
+                <input type="text" id="so" name="so" value="{!v.SAWrap.Name}" class="slds-input" required="true" readonly="true"/>
+            </div>
+        </td>
+        <td data-label="Location" scope="row">
+            <div class="slds-truncate" title="Location">
+                <input type="text" id="so" name="so" value="{!v.SAWrap.sigmaerpdev2__Inventory_Location_Name__c}" class="slds-input" required="true" readonly="true"/>
+            </div>
+        </td>
+        <!--td data-label="Company">
+            <a target="_blank" href="{!'/'+v.SAWrap.binList.Inventory_Location__r.stapp__Company__c}">{!v.SAWrap.binList.Inventory_Location__r.stapp__Company__r.Name}</a>
+        </td-->
+        <td data-label="Available Quantity" scope="row">
+            <div class="slds-truncate" title="Available Quantity">
+                <input type="text" id="so" name="so" value="{!v.SAWrap.sigmaerpdev2__Net_Quantity__c}" class="slds-input" required="true" readonly="true"/>
+            </div>
+        </td>
+        <td data-label="Attribute Type" scope="row">
+            <div class="slds-truncate" title="Attribute Type">
+                <input type="text" value="{!v.SAWrap.sigmaerpdev2__Attribute_Type__c}" class="slds-input" required="true" readonly="true"/>
+            </div>
+        </td>
+        <td data-label="ILPLI" scope="row">
+            <div class="slds-truncate" title="ILPLI">
+                <button class="slds-button slds-button_neutral" onclick="{!c.showILPLI}">Adjust Stock</button>
+            </div>
+        </td>
+    </tr>
+    <aura:if isTrue="{!v.showBA}">        
+        <div class="demo-only" style="height: 640px;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">                    
+                    <div  class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <c:Stock_Adjustments recordIDILP="{!v.SAWrap}" showBA="{!v.showBA}" />                       
+                    </div>                    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    
+</aura:component>

@@ -1,0 +1,6 @@
+<aura:component>
+	<aura:attribute name="innerListBin" type="List" />      
+    <td style="padding-left:75px;">
+        <div style="color:#FF69B4;height:1px;" title="Bin">{!v.innerListBin.binName}</div>
+    </td><br />
+</aura:component>

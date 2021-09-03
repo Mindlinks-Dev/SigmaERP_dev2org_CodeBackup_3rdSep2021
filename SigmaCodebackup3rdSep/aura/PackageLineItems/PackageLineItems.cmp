@@ -1,0 +1,257 @@
+<!--package line item-->
+<aura:component controller="PackageCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="indexNum" type="Integer" />
+    <aura:attribute type="List" name="packageProduct"/>
+    <aura:attribute name="stappOrderID" type="string" default=""/>
+    <aura:attribute name="stappOrderName" type="string"/>
+    <aura:attribute name="isSOComingFromPicking" type="boolean"/>
+     <!--Attribute for ProductImage Show  added on13-05-2020-->
+   <aura:attribute name="productimageexist" type="boolean" default ="false"/>
+    <aura:attribute name="ProductImageData" type="ContentDocumentLink" /> 
+     <aura:attribute name="ProductView" type="Boolean" default="false" />
+
+    
+    <aura:attribute name="basketId" type="string" default=""/>
+    <aura:attribute name="basketName" type="string" default=""/>
+    <aura:attribute name="basketBarCodeValue" type="string" default=""/>
+    
+    <aura:attribute name="mobileScreenFlag" type="boolean" default="false"/>
+    
+    <aura:attribute name="packRecordId" type="String" />
+    <aura:attribute name="custId" type="Id" default=""/>
+    <aura:attribute name="custName1" type="String"/>
+    <aura:handler name="change" value="{!v.basketBarCodeValue}" action="{!c.handleBasketValChange}" />
+   <aura:registerEvent name="controlOrderIdEvent" type="c:OrderIdEvent"/>
+    <!--<aura:attribute name="originalList" type="List" default="" />-->
+   
+    
+    <aura:attribute name="locId" type="Id" default=""/>
+    <aura:attribute name="headerStatus" type="string"/>
+    <aura:attribute name="isVerified" type="boolean"/>
+    <aura:attribute type="boolean" name="isDisable"/>
+    
+    <aura:attribute name="configValues" type="map"/>
+    <aura:attribute name="autoAllocToggle" type="boolean" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.basketBarCodeValue}" action="{!c.handleBasketValChange}" />
+  
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>
+    <aura:handler name="change" value="{!v.stappOrderID}" action="{!c.handleSOIdValueChange}" />
+    <aura:attribute name="idListStr" type="String"/>
+    
+    <!--AutoPick-->
+    <aura:attribute name="productIdAvailableQuantMap" type="Map" default="{}" />
+    <aura:attribute name="productIdRemainILPLIMap" type="Map" default="{}" />
+    <aura:attribute name="ilpliIdAllocatedQuantMap" type="Map"/>
+    <aura:attribute name="compId" type="String"/>
+    
+    <aura:attribute name="soNameFromBasket1" type="String" default= ""/>
+   
+    
+     <aura:registerEvent name="StappComponentEvent" type="c:StappComponentEvent"/>
+    <!-- <aura:registerEvent name="StappComponentResetEvent" type="stapp:StappComponentResetEvent"/> -->
+    <aura:registerEvent name="SigmaComponentResetEvent" type="c:SigmaComponentResetEvent"/>
+     <aura:handler name="SigmaComponentEvent" event="c:SigmaComponentEvent" action="{!c.handleProductImageData}"/>
+    
+
+    <!--<aura:handler name="change" value="{!v.stappOrderID}" action="{!c.handleSOIdValueChange}" />-->
+   
+    <!--code added by rashmi to hand Standard order in package on 19-07-2019 -->
+    <aura:attribute name="isSigmaOrder" type="boolean"/>
+  <!--  <aura:attribute name="standOrderID" type="string" default=""/>-->
+    <aura:attribute name="standOrderNumber" type="string" default=""/>
+	
+
+    
+    <!--  <div class="{!and(v.configValues.StappObjectConfiguration.stapp__P_Basket_Search__c,v.configValues.stappConfigCustomSetting.stapp__Allocation_Inside_Stapp_Order__c == true) ? 'slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12':'slds-col slds-size_1-of-1 slds-medium-size_6-of-6 slds-large-size_6-of-6'}"> -->
+   <!--<div class="{!and(v.configValues.StappObjectConfiguration.stapp__P_Basket_Search__c,v.configValues.stappConfigCustomSetting.stapp__Allocation_Inside_Stapp_Order__c == true) ? 'slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12':'slds-col slds-size_1-of-1 slds-medium-size_6-of-6 slds-large-size_6-of-6'}"> -->
+    <aura:if isTrue="{!v.mobileScreenFlag == true}">
+    	<div class="'slds-p-left--medium slds-size_1-of-1 ':'slds-hide'" id="{!v.mobileScreenFlag == true ? 'tempDisplayOrder' : ''}">
+           <aura:if isTrue="{!v.isSigmaOrder}"> 
+               <aura:if isTrue="{!v.isSOComingFromPicking}">
+                   <lightning:input name="input1" value="{!v.stappOrderName}" label="Sigma Order" disabled="true" />
+                    <!--ui:inputText value="{!v.stappOrderName}" disabled="true" label="Sigma Order"/-->
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!v.packRecordId==undefined}">
+                                    <c:customLookup recordID="{!v.stappOrderID}" recordName="{!v.stappOrderName}" 
+                            whereCondition="{!'  AND sigmaerpdev2__Orders_Status__c=\'Order Confirmed\' and  sigmaerpdev2__AccountId__r.name=\''+v.custName1+'\' AND id in (select sigmaerpdev2__Sigma_Order__c from sigmaerpdev2__Picking_Slip__c where sigmaerpdev2__Status__c=\'Picked\') AND Id in (select sigmaerpdev2__Sigma_Order__c from sigmaerpdev2__Product_Order_Price_Book__c where sigmaerpdev2__IsInventoryUpdated__c=true AND sigmaerpdev2__In_Progress_In_Package__c=false And sigmaerpdev2__Order_Status__c=\'Order Confirmed\' )' }" 
+                            objectAPIName="sigmaerpdev2__Sigma_Order__c" IconName="custom:custom96" label="Select Sigma Order" selectedRecord="{!v.selectedLookUpRecord}" isSigmaOrder="{!v.isSigmaOrder}" />
+                                <aura:set attribute="else">
+                                <lightning:input name="input1" value="{!v.stappOrderName}" label="Sigma Order" disabled="true" />
+               
+                                </aura:set>
+                            </aura:if> 
+                                <!-- <c:customLookup recordID="{!v.stappOrderID}" recordName="{!v.stappOrderName}" 
+                        whereCondition="{!' AND sigmaerpdev2__Orders_Status__c=\'Order Confirmed\' and  sigmaerpdev2__AccountId__r.name=\''+v.custName1+'\'   AND id in (select sigmaerpdev2__Sigma_Order__c from sigmaerpdev2__Picking_Slip__c where sigmaerpdev2__Status__c=\'Picked\') AND Id in (select sigmaerpdev2__Sigma_Order__c from sigmaerpdev2__Product_Order_Price_Book__c where sigmaerpdev2__IsInventoryUpdated__c=true)' }" 
+                        objectAPIName="sigmaerpdev2__Sigma_Order__c" IconName="custom:custom96" label="Select Sigma Order" selectedRecord="{!v.selectedLookUpRecord}" isSigmaOrder="{!v.isSigmaOrder}"/>
+                      -->
+                                </aura:set>
+               </aura:if>
+                 <!--   <c:LookupSobjectForSoOnHover aura:id="order" 
+                                                                        SRString="{!v.customerId}" 
+                                                                        searchString="{!v.productListNew1.transName}" 
+                                                                        label="Sigma Order" 
+                                                                        pluralLabel="Sigma Orders" 
+                                                                        sObjectAPIName="sigmaerpdev2__Sigma_Order__c" 
+                                                                        instanceId="MyOrder"
+                                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                                        listIconClass="slds-icon-standard-account"                             
+                                                                        />-->
+                <aura:set attribute="else">
+                     <aura:if isTrue="{!v.isSOComingFromPicking}"> 
+                    <!--ui:inputText value="{!v.standOrderNumber}" disabled="true" label="Standard Order"/-->
+                <lightning:input name="input1" value="{!v.standOrderNumber}" label="Standard Order" disabled="true" />
+                 
+                         <aura:set attribute="else">
+                              <aura:if isTrue="{!v.packRecordId==undefined}">
+                                      <c:customLookup recordID="{!v.stappOrderID}" recordName="{!v.standOrderNumber}" 
+                            whereCondition="{!' AND sigmaerpdev2__Orders_Status__c=\'Order Confirmed\' and  Account.name=\''+v.custName1+'\'   AND id in (select sigmaerpdev2__Order__c from sigmaerpdev2__Picking_Slip__c where sigmaerpdev2__Status__c=\'Picked\') AND Id in (select OrderId from OrderItem where sigmaerpdev2__IsInventoryUpdated__c=true AND sigmaerpdev2__In_Progress_In_Package__c=false And sigmaerpdev2__Order_Status__c=\'Order Confirmed\')' }" 
+                            objectAPIName="Order" IconName="custom:custom96" label="Select Standard Order" selectedRecord="{!v.selectedLookUpRecord}" isSigmaOrder="{!v.isSigmaOrder}" />
+            
+                                     <aura:set attribute="else">
+                                         <lightning:input name="input1" value="{!v.standOrderNumber}" label="Standard Order" disabled="true" />
+               
+                                     </aura:set>
+                                 </aura:if>
+                                 <!--c:customLookup recordID="{!v.stappOrderID}" recordName="{!v.standOrderNumber}" 
+                        whereCondition="{!' AND sigmaerpdev2__Orders_Status__c=\'Order Confirmed\' and  Account.name=\''+v.custName1+'\'   AND id in (select sigmaerpdev2__Order__c from sigmaerpdev2__Picking_Slip__c where sigmaerpdev2__Status__c=\'Picked\') AND Id in (select OrderId from OrderItem where sigmaerpdev2__IsInventoryUpdated__c=true and id in (select sigmaerpdev2__Order_Product__c from sigmaerpdev2__Inventory_Allocation__c where sigmaerpdev2__Status__c =: \'Picked\' ))' }" 
+                        objectAPIName="Order" IconName="custom:custom96" label="Select Standard Order" selectedRecord="{!v.selectedLookUpRecord}" isSigmaOrder="{!v.isSigmaOrder}" /-->
+        
+                                </aura:set>
+               </aura:if>
+                    
+                  
+                </aura:set>
+            </aura:if>
+    	</div><br />
+        <aura:set attribute="else">
+        	<div class="'slds-col slds-p-left--medium slds-size_1-of-6 ':'slds-hide'" id="tempDisplayOrder">
+                 
+                <aura:if isTrue="{!v.isSigmaOrder}"> 
+				   <aura:if isTrue="{!v.isSOComingFromPicking}"> 
+                   <!--ui:inputText value="{!v.stappOrderName}" disabled="true"  label="Sigma Order" /-->
+                <lightning:input name="input1" value="{!v.stappOrderName}" label="Sigma Order" disabled="true" />
+               
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!v.packRecordId==undefined}">
+                                    <c:customLookup recordID="{!v.stappOrderID}" recordName="{!v.stappOrderName}" 
+                            whereCondition="{!'  AND sigmaerpdev2__Orders_Status__c=\'Order Confirmed\' and  sigmaerpdev2__AccountId__r.name=\''+v.custName1+'\' AND id in (select sigmaerpdev2__Sigma_Order__c from sigmaerpdev2__Picking_Slip__c where sigmaerpdev2__Status__c=\'Picked\') AND Id in (select sigmaerpdev2__Sigma_Order__c from sigmaerpdev2__Product_Order_Price_Book__c where sigmaerpdev2__IsInventoryUpdated__c=true AND sigmaerpdev2__In_Progress_In_Package__c=false And sigmaerpdev2__Order_Status__c=\'Order Confirmed\' )' }" 
+                            objectAPIName="sigmaerpdev2__Sigma_Order__c" IconName="custom:custom96" label="Select Sigma Order" selectedRecord="{!v.selectedLookUpRecord}" isSigmaOrder="{!v.isSigmaOrder}" />
+                                <aura:set attribute="else">
+                                <lightning:input name="input1" value="{!v.stappOrderName}" label="Sigma Order" disabled="true" />
+               
+                                </aura:set>
+                            </aura:if> 
+
+                            
+                            	     
+                   
+                                </aura:set>
+               </aura:if>
+                  
+                     <!--   <c:LookupSobjectForSoOnHover aura:id="order" 
+                                                                            SRString="{!v.customerId}" 
+                                                                            searchString="{!v.productListNew1.transName}" 
+                                                                            label="Sigma Order" 
+                                                                            pluralLabel="Sigma Orders" 
+                                                                            sObjectAPIName="sigmaerpdev2__Sigma_Order__c" 
+                                                                            instanceId="MyOrder"
+                                                                            listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                                            listIconClass="slds-icon-standard-account"                             
+                                                                            />-->
+                    <aura:set attribute="else">
+					
+                         <aura:if isTrue="{!v.isSOComingFromPicking}">
+                           <!--ui:inputText  label="Standard Order" value="{!v.standOrderNumber}" disabled="true"/-->
+                             <lightning:input name="input1" value="{!v.standOrderNumber}" label="Standard Order" disabled="true" />
+               
+                             <aura:set attribute="else">
+                                 <aura:if isTrue="{!v.packRecordId==undefined}">
+                                      <c:customLookup recordID="{!v.stappOrderID}" recordName="{!v.standOrderNumber}" 
+                            whereCondition="{!' AND sigmaerpdev2__Orders_Status__c=\'Order Confirmed\' and  Account.name=\''+v.custName1+'\'   AND id in (select sigmaerpdev2__Order__c from sigmaerpdev2__Picking_Slip__c where sigmaerpdev2__Status__c=\'Picked\') AND Id in (select OrderId from OrderItem where sigmaerpdev2__IsInventoryUpdated__c=true AND sigmaerpdev2__In_Progress_In_Package__c=false And sigmaerpdev2__Order_Status__c=\'Order Confirmed\')' }" 
+                            objectAPIName="Order" IconName="custom:custom96" label="Select Standard Order" selectedRecord="{!v.selectedLookUpRecord}" isSigmaOrder="{!v.isSigmaOrder}" />
+            
+                                     <aura:set attribute="else">
+                                         <lightning:input name="input1" value="{!v.standOrderNumber}" label="Standard Order" disabled="true" />
+               
+                                     </aura:set>
+                                 </aura:if>
+                              
+                             </aura:set>
+                        </aura:if>
+                     
+                    </aura:set>
+					
+                </aura:if>
+    		</div><br />
+        </aura:set>
+    </aura:if>
+   <!-- </div> -->
+    <!-- Code Starts Here to upload Product Image on 13-05-2020-->
+    <aura:if isTrue="{!v.ProductView}">
+        <c:viewProductImage ProductImageDataSet="{!v.ProductImageData}" productimageexist ="{!v.productimageexist}" ProductView ="{!v.ProductView}"/>  
+    </aura:if>
+        
+        
+         
+  <!-- </div> -->
+     <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal" style="padding-top: 1.2px;">
+    <thead>
+            <tr class="slds-text-title_caps">
+                <th scope="col" style="width:20%">
+                    <div class="" title="Product">Product<span style="color:red">* </span></div>
+                </th>
+                <th scope="col" style="width:20%">
+                    <div class="" title="View Product">View Product<span style="color:red">* </span></div>
+                </th>
+               <!-- <aura:if isTrue="{!and(v.configValues.StappObjectConfiguration.stapp__PP_Serial_Code__c==true )}"> -->
+               <!--  <th scope="col" style="width:20%">
+                    <div class="" title="SerialCode">Serial Code<span style="color:red">*</span></div>
+                </th> -->
+             <!--   </aura:if> -->
+                <th scope="col">
+                  <!--  <div class="" title="Ordered Quantity">{!v.configValues.stappConfigCustomSetting.stapp__Allocation_Inside_Stapp_Order__c?'Ordered Quantity':'Reserved Quantity'}</div> -->
+                    <div class="" title="Ordered Quantity">Ordered Quantity</div>
+                </th>
+                <th scope="col">
+                    <div class="" title="Remaining Quantity">Packaged Quantity<span style="color:red">* </span></div>
+                </th>
+               
+                
+                
+                <aura:if isTrue="{!v.autoAllocToggle == false}">
+                    <th scope="col" style="width: 16%;">
+                        <div class="" title="Status">Status<span style="color:red">* </span></div>
+                    </th>
+                </aura:if>
+            </tr>
+        </thead>
+           <tbody style="transform: inherit;">
+			<aura:if isTrue="{!v.isSigmaOrder}"> 
+				<aura:iteration items="{!v.packageProduct}" var="item" indexVar="i"><!--isDisable="{!v.isDisable}"-->
+                <c:PackageLineItemsChild ilpliData="{!item.ilpliData}" headerStatus="{!v.headerStatus}" ilpliIdAllocatedQuantMap="{!v.ilpliIdAllocatedQuantMap}" packRecordId="{!v.packRecordId}" StockSelectedAs="{!item.StockSelectedAs}" configValues="{!v.configValues}" productIdAvailableQuantMap="{!v.productIdAvailableQuantMap}" productIdRemainILPLIMap="{!v.productIdRemainILPLIMap}" packageLinItems="{!item.ppLineItemRec}" isSerialCodeMandatory="{!item.isSerialCodeMandatory}" productName="{!item.productName}" orderedQuantity="{!item.orderedQuantity}" locId="{!v.locId}" compId="{!v.compId}" autoAllocToggle="{!v.autoAllocToggle}" indx="{!i}" isSigmaOrder="{!v.isSigmaOrder}" />
+				</aura:iteration>  
+				
+				<aura:set attribute="else">  
+				
+					<aura:iteration items="{!v.packageProduct}" var="item" indexVar="i"><!--isDisable="{!v.isDisable}"-->
+						<c:PackageLineItemsChild ilpliData="{!item.ilpliData}" headerStatus="{!v.headerStatus}" ilpliIdAllocatedQuantMap="{!v.ilpliIdAllocatedQuantMap}" packRecordId="{!v.packRecordId}" StockSelectedAs="{!item.StockSelectedAs}" configValues="{!v.configValues}" productIdAvailableQuantMap="{!v.productIdAvailableQuantMap}" productIdRemainILPLIMap="{!v.productIdRemainILPLIMap}" packageLinItems="{!item.ppLineItemRec}" isSerialCodeMandatory="{!item.isSerialCodeMandatory}" productName="{!item.productName}" orderedQuantity="{!item.orderedQuantity}" locId="{!v.locId}" compId="{!v.compId}" autoAllocToggle="{!v.autoAllocToggle}" indx="{!i}" isSigmaOrder="{!v.isSigmaOrder}"/>
+					</aura:iteration> 
+			  
+				</aura:set>
+			 </aura:if>		
+        </tbody>
+    </table>
+    
+    
+   <div class="demo-only slds-hide" aura:id="mySpinner" style="height: 6rem;">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

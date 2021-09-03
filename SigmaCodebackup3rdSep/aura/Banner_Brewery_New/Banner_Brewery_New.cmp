@@ -1,0 +1,72 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="banner" type="Boolean" default="false"/>  
+    <aura:attribute name="requestForDemoContent" type="Boolean" default="false"/>
+    
+    <div class="banner-bg slds-align_absolute-center">
+        <div class="content-bg">
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2 slds-text-align_center">
+                    <img src="/SigmaBrewery/file-asset/sigmaerpdev2__brewery_gl?v=1" width="180"/>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="content">
+                        <p class="para1">Fresh From The<br/>
+                            <span>Brewery</span></p>
+                        <p class="para2">Grow your business and increase profits through on-line sales. Set up your own online shop, free of charge and sell direct to customers online Fresh from the Brewery.</p>
+                        <br/>
+                        
+                        <div>                
+                            <aura:if isTrue="{!v.banner}">  
+                                <a class="brand-btn" href="/SigmaBrewery/s/breweryregistration" >Brewery Registration</a>
+                            </aura:if>
+                            <a class="brand-btn" onclick="{!c.clickRequestForDemo}">Request For Demo</a>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <aura:if isTrue="{!v.requestForDemoContent}">
+        <section role="dialog" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="width:60% !important;max-width:60% !important;">
+                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2 slds-text-align_center slds-p-around_large user-bg">
+                         <img src="/SigmaBrewery/file-asset/sigmaerpdev2__brewery_gl?v=1" width="180"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_small slds-p-horizontal_large">
+                    <form action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8" method="POST">
+                    
+                        <h2 class="slds-modal__title slds-hyphenate slds-text-align_center brown">Request For Demo</h2>
+                        <br/>
+                        <input type="hidden" name="oid" value="00D2x000003sFlp"/>
+                        <input type="hidden" name="retURL" value="https://ssigma-mvp-dev2-dev-ed-developer-edition.ap17.force.com/SigmaBrewery/s/" />
+                        <input type="hidden" value="Request demo" id="title" maxlength="40" name="title" size="20"  />
+                        
+                        <lightning:input label="First Name" class="slds-m-bottom_x-small" aura:id="fieldId" id="first_name" maxlength="40" name="first_name" size="20" type="text" required="true"/>
+                        
+                        <lightning:input label="Last Name" class="slds-m-bottom_x-small" aura:id="fieldId" id="last_name" maxlength="80" name="last_name" size="20" type="text" required="true"/>
+                        
+                        <lightning:input label="Email" class="slds-m-bottom_x-small" aura:id="fieldId" id="email" maxlength="80" name="email" size="20" type="text" required="true"/>
+                        
+                        <lightning:input label="Phone" class="slds-m-bottom_x-small" aura:id="fieldId" id="phone" maxlength="40" name="phone" size="20" type="text" required="true"/>
+                        
+                        <lightning:input label="Company" class="slds-m-bottom_x-small" aura:id="fieldId" id="company" maxlength="40" name="company" size="20" type="text" required="true"/><br/>
+                    
+                    <div class="slds-text-align_center">
+                        <button class="slds-button slds-button_brand btn-brown slds-m-right_small" type="submit" name="submit" onclick="{!c.submitForDemo}">Submit</button>
+                        <button class="slds-button slds-button_brand btn-brown" onclick="{!c.Cancel}">Cancel</button>  
+                    </div>
+                </form>
+                    </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

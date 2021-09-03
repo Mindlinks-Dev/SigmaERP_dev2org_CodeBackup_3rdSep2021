@@ -1,0 +1,56 @@
+<aura:component controller="CancelorReschduleWO" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="reasons" type="String" />
+    <aura:attribute name="showSuccess" type="boolean" default="false"/>
+    <aura:attribute name="status" type="String" />
+    <aura:handler name="cancelSlot" event="c:cancelSlot" action="{!c.handleComponentEvent}"/>
+    <aura:attribute name="slotBusy" type="Boolean" />
+	<!--<aura:handler name="init" value="{!this}" action="{!c.myAction}" />-->
+    
+   <!-- <br/>
+     <br/>
+    
+    <label class="slds-size-2-of-5">
+                                <ui:inputText aura:id="cancelreason" class="slds-input" label="Cancel Reason" required="true" disabled="false" keyup="{!c.cancelreason}"  updateOn="keyup"/>
+                            </label>
+    
+    
+    
+    <br/>-->
+    <h3 class="slds-section__title slds-align_absolute-center">
+        <span class="slds-truncate" title="Section Title">Do you want to Cancel this Work Order ?</span>
+    </h3>
+    <br/>
+   
+     <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:select label="Cancel Reason"  aura:id="reasonPicklist"  onchange="{!c.reason}">
+								<option value="None">None</option>
+                                <option value="Assigned to other technician">Assigned to other technician</option>
+								
+								<option value="Others">Others</option>
+							</lightning:select>
+         
+							</div>
+             
+     
+     <br/>
+    <aura:if isTrue="{!v.showSuccess}">
+        <h3 class="slds-section__title slds-align_absolute-center">
+                <span class="slds-truncate" title="Section Title">Cannot cancel the Work Order, which is in status-{!v.status}</span>
+            </h3>
+        
+        
+       
+     <aura:set attribute="else">
+         <h3 class="slds-section__title slds-align_absolute-center">
+                <span class="slds-truncate" title="Section Title">Are you sure you want to Proceed?</span>
+            </h3>
+    <br/>
+         
+            <footer class="slds-align_absolute-center">
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Confirm" onclick="{!c.myAction}" />
+                <!--<lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />-->
+            </footer>
+          </aura:set>
+         </aura:if>
+</aura:component>

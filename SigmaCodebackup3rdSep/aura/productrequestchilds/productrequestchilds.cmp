@@ -1,0 +1,59 @@
+<aura:component >
+	<aura:attribute name="productinner" type="Object" /> 
+     <aura:attribute name="errorMsg" type="String" default=""/>
+     <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="validatess" type="Boolean" default="false"/>
+            <div style="width: 101.8%;margin-left: -2px;">
+                        <aura:renderIf isTrue="{!v.isError}">
+                            <ui:message title="Error" severity="error" closable="false">
+                                {!v.errorMsg}
+                            </ui:message>
+                            <aura:set attribute="else">
+                                
+                            </aura:set>
+                        </aura:renderIf>  
+                    </div>
+    <tr>
+        <td>{!v.productinner.ProductName}</td>
+        <td>{!v.productinner.quantity}</td>
+         <td>{!v.productinner.fromilp}</td>
+        <td>{!v.productinner.lots}</td>
+        <td>
+        <aura:if isTrue="{!v.productinner.psn!= null}">
+            {!v.productinner.psn}
+                    <aura:set attribute="else">
+                        NA
+                    </aura:set>
+        </aura:if>
+       </td>
+         <td>
+            <div style="padding-left:2px;">
+                <ui:inputNumber  size="3" class="slds-input" value="{!v.productinner.selQuantity}" required="true"  keyup="{!c.validateQuantity}"
+                                                updateOn="keyup" />
+            </div>
+        </td>
+        
+        <td style="text-align:center;" width="5%"> 
+             <aura:if isTrue="{!v.productinner.selQuantity!= null}">
+ 
+            <ui:outputText value="{!if(v.productinner.selQuantity==0,v.productinner.quantity,v.productinner.quantity - v.productinner.selQuantity)}" aura:id="setQty" />
+ 			<!--<ui:outputText aura:id="ChecksQty" value="{!v.QTY}" /> --> 
+                  <aura:set attribute="else">
+                        0
+                    </aura:set>
+            </aura:if>
+        </td>
+         <td>
+            <div style="padding-left:2px;">
+                <ui:inputSelect aura:id="ReasonCode" value="{!v.productinner.resons}" multiple="false" class="uiInputSelect slds-select" label="" change="{!c.ChangeCode}">
+                <ui:inputSelectOption text="--None--" label="--None--" value="true"/>
+                <ui:inputSelectOption text="Damaged Stock" label="Damaged Stock" />
+                <ui:inputSelectOption text="Missing Stock" label="Missing Stock"/>
+                <ui:inputSelectOption text="Not Known" label="Not Known"/>	
+                </ui:inputSelect>
+             </div>
+        </td>
+       
+       
+    </tr>
+</aura:component>

@@ -1,0 +1,262 @@
+<aura:component controller="Inventroymaintainctrl" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="recordId" type="Id" /> 
+    <aura:attribute name="FromId" type="String"/>
+    <aura:attribute name="prodInvList" type="Object[]"/> 
+    <aura:attribute name="invLocProdList" type="Object[]"/>
+    <aura:attribute name="invLocprodLinelist" type="Object[]"/>
+    <aura:attribute name="searchResult" type="List" description="use for store and display account list return from server"/>
+    <aura:attribute name="productName" type="String" description="use for store user search input"/>
+    <aura:attribute name="LocationName" type="String" description="use for store user search input"/>
+    <aura:attribute name="displayedSection" type="string" default=""/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="pinotempty" type="boolean" default="false"/>
+    
+    <aura:handler name="change" value="{!v.productName}" action="{!c.clearSel}"/>
+    <aura:handler name="change" value="{!v.LocationName}" action="{!c.clearSel}"/>
+    <!--<aura:handler name="init" value="{!this}" action="{!c.fetchrecords}" />-->
+    <ltng:require styles="/resource/stapplink__standardiselookups" />
+    <div style="padding-left:5px;">
+        
+        <div class="slds-media">
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                    <lightning:icon iconName="standard:search" size="small" />
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <!--<h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Display Line Items">Search Inventory</h1>-->
+                <span class="slds-truncate" title="Search Inventory" style="font-size:15px;"><b>Search Inventory</b></span>
+            </div>
+        </div>
+        <div  class="slds-m-around_small">
+            <div class="slds-p-horizontal_small">    
+                <div class="slds-grid slds-gutters slds-wrap slds-grid-block">
+                  <div class="slds-col slds-size_1-of-4" id="TempDispalyForProduct">
+                      <span style="color:red">* </span>
+                       Product:<c:LookupSObject  label="Product"
+                                                  pluralLabel="Products" 
+                                                  searchString="{!v.productName}" 
+                                                  sObjectAPIName="Product2" instanceId="MyProduct" SRString="All"
+                                                  listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#Product'}"
+                                                  listIconClass="slds-icon-standard-Product"  />
+                    </div>
+					
+					
+					
+            
+                    <div class="slds-col slds-size_1-of-4" Id="TempDispalyForLocation">
+                        <span style="color:red">* </span>
+                     Location:<c:LookupSObject  aura:id="ReceivingLocation" 
+                                                  searchString="{!v.LocationName}"
+                                                  label="Account"
+                                                  SRString="Location"
+                                                  pluralLabel="Accounts" 
+                                                  sObjectAPIName="Account" 
+                                                  instanceId="MyAccount2"
+                                                  listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                  listIconClass="slds-icon-standard-account"
+                                                  /> 
+                        
+                        
+                  
+					</div>
+                </div>
+            </div>
+        </div>
+        
+        <aura:if isTrue="{!v.displayedSection == 'section1'}">
+            <div class="slds-m-vertical_medium">
+                <aura:if isTrue="{!v.pinotempty}">
+                    <div class="slds-card">
+                        
+                        <div class="slds-card__header slds-grid" style="padding:0.2rem;margin:0;">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <a onclick="{!c.accordionProductInventory}">
+                                        <lightning:icon aura:id="chevronrightProductInventory" iconName="utility:chevronright" size="x-small" alternativeText="sss"/>
+                                        <lightning:icon aura:id="chevrondownProductInventory" class="slds-hide" iconName="utility:chevrondown" size="x-small" alternativeText="sss"/>
+                                    </a>
+                                    <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                        <lightning:icon iconName="standard:account" size="x-small" alternativeText="sss"/>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2><span class="slds-text-heading_small">Product Inventory</span></h2>
+                                </div>
+                                <div class="slds-no-flex">
+                                    <button class="slds-button slds-button_neutral" style="visibility:hidden;">New</button>
+                                    <!--<lightning:button label="New" name="Product Inventory"  onclick="{!c.createNewRecord}" />-->
+                                </div>
+                            </header>
+                        </div>
+                        
+                        <div class="slds-card__body slds-scrollable--x slds-hide" aura:id="ProductInventoryBody">
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                <tr style="background:#f4f6f9;text-transform:uppercase">
+                                    <th scope="col" style="background:#f4f6f9;">
+                                        <div class="" title="INVENTORY ID">INVENTORY ID</div>
+                                    </th>
+                                    <th scope="col" style="background:#f4f6f9;">
+                                        <div class="" title="PRODUCT CODE">Product Name</div>
+                                    </th>                      
+                                    <th scope="col" style="background:#f4f6f9;">
+                                        <div class="" title="Total Available Qty">Available quantity</div>
+                                    </th>
+                                    <th scope="col" style="background:#f4f6f9;">
+                                        <div class="" title="Available Qty">Reserved quantity</div>
+                                    </th>
+                                    
+                                    
+                                    <th scope="col" style="background:#f4f6f9;">
+                                        <div class="" title="Available Qty">Shipped quantity</div>
+                                    </th>
+                                    
+                                    
+                                    <th scope="col" style="background:#f4f6f9;">
+                                        <div class="" title="Available Qty">Delivered quantity</div>
+                                    </th>
+                                    
+                                    
+                                </tr>
+                                <tbody>
+                                    <!--<aura:iteration items="{!v.prodInvList}" var="ILPLI" >
+                                    <c:Inventroymaintainchild ProdInv="{!ILPLI}"/>
+                                </aura:iteration>-->
+                                    <aura:iteration items="{!v.prodInvList}" var="ILPLI" >
+                                        <c:Test_comp ProdInv="{!ILPLI}"/>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </aura:if>
+                <div class="slds-card">
+                    <div class="slds-card__header slds-grid" style="padding:0.2rem;margin:0;">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <a onclick="{!c.accordionInventoryLocation}">
+                                    <lightning:icon aura:id="chevronright" iconName="utility:chevronright" size="x-small" alternativeText="sss"/>
+                                    <lightning:icon aura:id="chevrondown" class="slds-hide" iconName="utility:chevrondown" size="x-small" alternativeText="sss"/>
+                                </a>
+                                <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                    <lightning:icon iconName="standard:account" size="x-small" alternativeText="sss"/>
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2><span class="slds-text-heading_small">Inventory Location Product</span></h2>
+                            </div>
+                            <div class="slds-no-flex">
+                                <button class="slds-button slds-button_neutral" style="visibility:hidden;">New</button>
+                                <!--lightning:button label="New" name="Inventory Location Product"  onclick="{!c.createNewRecord}" /-->
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-scrollable slds-hide" aura:id="inventroylocation">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <tr style="background:#f4f6f9;text-transform:uppercase">
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Inventory Location Product Number">Inventory Location Product Number</div>
+                                </th>
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Location Name">Inventory Location Name</div>
+                                </th>
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Product Name">Product Name</div>
+                                </th>    
+                                
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Available quantity">Available quantity</div>
+                                </th>
+                                
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Received quantity">Received quantity</div>
+                                </th>
+                                  <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Received quantity">Reserved quantity</div>
+                                </th>
+                              
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Sold quantity">Sold quantity</div>
+                                </th>
+                                
+                            </tr>
+                            <tbody>
+                                <aura:iteration items="{!v.invLocProdList}" var="ILPLI" >
+                                    <c:InventoryLocationProducts ILP="{!ILPLI}"/>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="slds-card">
+                    <div class="slds-card__header slds-grid" style="padding:0.2rem;margin:0;">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <a onclick="{!c.accordionInventoryLocationproduct}">
+                                    <lightning:icon aura:id="chevronproduct" iconName="utility:chevronright" size="x-small" alternativeText="sss"/>
+                                    <lightning:icon aura:id="chevronproductline" class="slds-hide" iconName="utility:chevrondown" size="x-small" alternativeText="sss"/>
+                                </a>
+                                <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                    <lightning:icon iconName="standard:account" size="x-small" alternativeText="sss"/>
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2><span class="slds-text-heading_small">Inventory Location Product List</span></h2>
+                            </div>
+                            <div class="slds-no-flex">
+                                <button class="slds-button slds-button_neutral" style="visibility:hidden;">New</button>
+                                <!--lightning:button label="New" name="Inventory Location Product List"  onclick="{!c.createNewRecord}" /-->
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-scrollable slds-hide" aura:id="inventroylocationproduct">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <tr style="background:#f4f6f9;text-transform:uppercase">
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Inventory Location Product Number">Inventory Location Product Line Item Number</div>
+                                </th>
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Location Name">Inventory Location Name </div>
+                                </th>
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Product Name">Product Name</div>
+                                </th> 
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="BIn">Bin </div>
+                                </th>
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Available quantity">Available Quantity</div>
+                                </th>
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Received Quantity">Received Quantity</div>
+                                </th>
+                                
+                                <th scope="col" style="background:#f4f6f9;">
+                                    <div class="" title="Reserved Quantity">Reserved Quantity</div>
+                                </th>
+                                
+                                
+                            </tr>
+                            <tbody>
+                                <aura:iteration items="{!v.invLocprodLinelist}" var="ILPLI" >
+                                    <c:InventoryLocationProductLineItems ILPLI="{!ILPLI}"/>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+        
+        <div class="slds-m-around_large">            
+            <lightning:button onclick="{!c.Search}"                              
+                              variant="brand"
+                              label="Search"
+                              iconName="utility:search"
+                              disabled ="{!and(v.productName ==undefined,v.LocationName==undefined) || and(v.productName =='',v.LocationName=='') || and(v.productName ==undefined,v.LocationName=='') ||and(v.productName =='',v.LocationName==undefined) }"/> 
+            <!--<lightning:button label="Cancel"  name="canceinv" onclick="{!c.callComponent}" />-->      		
+        </div>
+    </div>	
+    
+</aura:component>

@@ -1,0 +1,188 @@
+<apex:page StandardController="Order" extensions="GenerateStandardorderInvoice" renderAs="Pdf" applyHtmlTag="false" showHeader="false" cache="true" action="{!getStandardOrderData}"
+           readOnly="true">
+    <html>
+        <head>
+            <style type="text/css">
+                body {
+                    font-family: Arial, Helvetica, sans-serif;font-size:80%;                   
+                }           
+                @page {
+                    size:A4 portrait;    
+                }
+                @page {
+                     @top-center {
+                           content: element(header);
+                   }
+                   @bottom-left {
+                         content: element(footer);
+                   }
+                }
+                div.header {
+                    padding: 10px;
+                    position: running(header);
+                }
+                div.footer {
+                    display: block;
+                    padding: 5px;
+                    position: running(footer);
+                }
+                .pagenumber:before {
+                    content: counter(page);
+                }
+                .pagecount:before {
+                    content: counter(pages);
+                }
+                #SI {
+                    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+                #SI td, #SI th {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                }
+                #SI tbody>tr>td {
+                  font-size: 8px;
+                  font-weight: normal;
+                }
+                #SI th {
+                  font-size: 8px;
+                  font-weight: normal;
+                }
+                #SI td>table>tr>th {
+                  font-size: 8px;
+                  font-weight: bold;
+                }
+                #SI td>table>tr>td {
+                  font-size: 8px;
+                  font-weight: bold;
+                }
+                #SI tr:nth-child(even){background-color: #f2f2f2;}
+                #SI tr:hover {background-color: #ddd;}
+                #SI th {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #7f8edd;
+                    color: white;
+                }
+                #SI td>table>tr>th {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #ffffff;
+                    color: #7a7a7a;
+                }
+                #SI td>table>tr>td {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #ffffff;
+                    color: #7a7a7a;
+                }
+            </style> 
+        </head>
+        <body>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">  
+                <tr>
+                   <!-- <td style="width:25%">
+                        <apex:image url="{!URLFOR(defaultparam.Logo__c)}" style="width:35px;height:35px;border-radius: 40%;" />
+                    </td>-->
+                    <td width="50%" style="font-size:16px;padding-left:50px;"><b>S A L E S &nbsp;&nbsp;I N V O I C E</b></td>
+                    <td align="left" width="25%" style="font-size:9px;">
+                        <apex:outputPanel rendered="{!defaultparam.Company_Name__c != null}">
+                            <b>{!HTMLENCODE(defaultparam.Company_Name__c)}</b><br/>
+                        </apex:outputPanel> 
+                        <apex:outputPanel rendered="{!defaultparam.Company_Phone__c != null}">
+                            <b>Tel : {!HTMLENCODE(defaultparam.Company_Phone__c)}</b><br/>
+                        </apex:outputPanel> 
+                        <apex:outputPanel rendered="{!defaultparam.Company_Email__c != null}">
+                            <b>Email : {!HTMLENCODE(defaultparam.Company_Email__c)}</b><br/>
+                        </apex:outputPanel>                     
+                    </td>                  
+                </tr>
+            </table>
+            <br/>               
+            <hr style="color:#D0D0D0;margin-top: 1px;"/> 
+            <table style="font-size:8px;">
+                <tr>
+                    <th  >
+                        Customer Details :
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        Name : {!standorderData[0].Account.Name} 
+                        <apex:outputText rendered="{!standorderData[0].Account.sigmaerpdev2__Email__c != ''}">                        
+                            <br/>Email : {!standorderData[0].Account.sigmaerpdev2__Email__c}                       
+                        </apex:outputText> 
+                        <apex:outputText rendered="{!standorderData[0].Shipping_Street__c != ''}">                     
+                            <br />Address : {!standorderData[0].Shipping_Street__c},
+                        </apex:outputText>
+                        <apex:outputText rendered="{!standorderData[0].ShippingCity__c != ''}">                        
+                            {!standorderData[0].ShippingCity__c},
+                        </apex:outputText>
+                       
+                        <apex:outputText rendered="{!standorderData[0].ShippingState__c != ''}">                       
+                            {!standorderData[0].ShippingState__c},
+                        </apex:outputText>    
+                        <apex:outputText rendered="{!standorderData[0].ShippingCountry__c != ''}">                     
+                            {!standorderData[0].ShippingCountry__c} -                         
+                        </apex:outputText>
+                         <apex:outputText rendered="{!standorderData[0].ShippingPostalCode__c != ''}">                     
+                            {!standorderData[0].ShippingPostalCode__c}<br />
+                        </apex:outputText>
+                                                                   
+                    </td>
+                </tr>
+            </table>
+            <hr style="color:#D0D0D0"/>
+            <table id="SI" width="90%" style="font-size:8px;">              
+                <tr>
+                    <th width="10%" align="center"><b>Order #</b></th>                  
+                    <th width="8%" align="center"><b>Total Product Price</b></th>
+                    <th width="8%" align="center"><b>Discount</b></th>                  
+                    <th width="8%" align="center"><b>Tax Amount(%)</b></th>   
+                    <th width="9%" align="center"><b>Total Amount</b></th> 
+                    <th width="8%" align="center"><b></b>Order Created Via</th>
+                    <th width="8%" align="center"><b></b>Status</th>                    
+                </tr>
+                <apex:repeat value="{!standorderData}" var="SO">
+                    <tr>  
+                        <td valign="top" width="10%" align="center">{!HTMLENCODE(SO.OrderNumber)}</td>                      
+                        <td valign="top" width="8%" align="center">{!HTMLENCODE(Text(SO.sigmaerpdev2__TotalProductPrice__c))}</td>
+                        <td valign="top" width="8%" align="center">{!HTMLENCODE(TEXT(SO.sigmaerpdev2__Discount__c))}</td>
+                        <td valign="top" width="8%" align="center">{!HTMLENCODE(TEXT(SO.sigmaerpdev2__Tax_Amount__c))}</td>
+                        <td valign="top" width="9%" align="center">{!HTMLENCODE(TEXT(SO.sigmaerpdev2__TotalAmount__c))}</td>                        
+                        <td valign="top" width="10%" align="center">{!HTMLENCODE(SO.sigmaerpdev2__Order_Created_Via__c)}</td>
+                        <td valign="top" width="8%" align="center">{!HTMLENCODE(SO.sigmaerpdev2__Orders_Status__c)}</td>   
+                    </tr>
+                </apex:repeat>
+            </table><br />
+            <table id="SI" width="30%" style="font-size:8px;">
+                <tr>
+                    <th width="5%" align="center">Order Item #</th>
+                    <th width="8%" align="center">Product</th>
+                    <th width="4%" align="center">Order Quantity</th>                  
+                    <th width="4%" align="center">Unit Price</th>    
+                    <th width="4%" align="center">Discount (%)</th>                                    
+                </tr>            
+                <apex:repeat value="{!OrderproductData}" var="POPB">
+                    <tr>
+                        <td width="5%" align="center">{!HTMLENCODE(POPB.OrderItemNumber)}</td>
+                        <td width="8%" align="center">{!HTMLENCODE(POPB.Product2.Name)}</td>
+                        <td width="4%" align="center">{!HTMLENCODE(TEXT(POPB.Quantity))}</td>
+                        <td width="4%" align="center">{!HTMLENCODE(TEXT(POPB.UnitPrice))}</td>   
+                        <td width="4%" align="center">{!HTMLENCODE(TEXT(POPB.sigmaerpdev2__Discount__c))}</td>                                                      
+                    </tr>
+                </apex:repeat>              
+            </table>
+            <hr style="color:#D0D0D0"/><br />
+            <p style="font-size:7px;float:right;">For any clarification please e-mail us : {!defaultparam.sigmaerpdev2__Company_Email__c}</p>
+            <div class="footer" style="font-size:8px;">             
+                <div style="float:left;">{!NOW()}</div>
+                <div style="float:right;">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+            </div>
+        </body>     
+    </html>
+</apex:page>

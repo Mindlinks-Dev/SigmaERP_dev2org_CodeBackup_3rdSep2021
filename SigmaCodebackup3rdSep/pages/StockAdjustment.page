@@ -1,0 +1,25 @@
+<apex:page StandardController="Inventory_Location_Product__c" id="mainPage">
+    <apex:includeLightning />
+    <style>
+    .sigmadevStock_Adjustments .slds-modal__container{width: 85%!important;min-width: 85%!important;}
+    .slds-modal__container{width: 85%!important;min-width: 85%!important;}
+    .slds-modal{background: rgba(43, 40, 38, 0.6) !important;}
+    </style>
+    <div id="lightning" />
+
+    <script>
+     var recId = "{!JSENCODE($CurrentPage.parameters.id)}";
+    
+        $Lightning.use("sigmaerpdev:StockAdjustmentApp", function() 
+        {
+         $Lightning.createComponent("sigmaerpdev:Stock_Adjustments",
+                                           {recordId: recId}, 
+                                           "lightning",
+                                           function(cmp) 
+                                           {
+                                           
+                                           }
+                );
+        });
+    </script>
+</apex:page>

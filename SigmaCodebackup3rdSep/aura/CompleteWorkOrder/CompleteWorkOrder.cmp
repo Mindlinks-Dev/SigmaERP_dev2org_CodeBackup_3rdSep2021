@@ -1,0 +1,40 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" controller="WorkOrderComplete" >
+    
+    <aura:attribute name='workorderstatus' type='String' default='success'></aura:attribute>
+    <aura:handler name="init" value="{!this}" action="{!c.woliStatus}"/>
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="isComplete" type="boolean" default="false" />
+    
+    <aura:if isTrue="{!v.isOpen}">
+        <h3 class="slds-section__title slds-align_absolute-center">
+            <span class="slds-truncate" title="Section Title">Do you want to complete this Work Order ?</span>
+        </h3>
+        <br/>
+        <footer class="slds-align_absolute-center">
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Complete" onclick="{!c.init}" />
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+        </footer> 
+        <!--<aura:set attribute="else">
+            <h3 class="slds-section__title slds-align_absolute-center" style="font-size:15px">
+                <span class="slds-truncate" title="Section Title">Do you want to proceed by deleting all the unused Work Order Line Items ?</span>
+            </h3>
+            <br/>
+            <footer class="slds-align_absolute-center">
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Proceed" onclick="{!c.init}" />
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+            </footer>
+        </aura:set>-->
+    </aura:if>
+    <aura:if isTrue="{!v.isComplete}">
+    	<h3 class="slds-section__title slds-align_absolute-center" style="font-size:15px">
+                <span class="slds-truncate" title="Section Title">Do you want to proceed by deleting all the unused Work Order Line Items ?</span>
+            </h3>
+            <br/>
+            <footer class="slds-align_absolute-center">
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Proceed" onclick="{!c.init}" />
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+            </footer> 
+    </aura:if>
+    
+    
+</aura:component>

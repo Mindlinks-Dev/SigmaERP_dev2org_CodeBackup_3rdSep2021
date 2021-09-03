@@ -1,0 +1,73 @@
+<aura:component controller="newPackageControllerLtng"  implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickAction"  access="global" >   
+    
+    <!-- Declare attributes --> 
+    <!-- added on 15-11-2017 for Autopick or Manual flow-->
+    <aura:registerEvent name="sampleComponentEvent" type="c:ComponentEvent"/>
+    <aura:registerEvent name="handleback" type="c:handlebackEvent"/>
+    
+    <aura:attribute name="autopickOrManualList" type="array" />  
+    <aura:attribute name="selTransLineItemId" type="Id" default="" />
+    <aura:attribute name="isManualFromParent" type="Boolean" />
+    
+    <!-- added now-->
+    <aura:attribute name="orderedQty" type="String" default=""/>
+    <!-- ends here-->
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    
+    <aura:attribute name="transLineList" type="array"  />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordName1" type="String" default="" description="The current record Id to display" />
+    <aura:handler name="change" value="{!v.recordName3}" action="{!c.transChange}"/>
+    <aura:attribute name="recordName2" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="recordName3" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="customerId" type="String" default="" description="" />
+    <aura:attribute name="transId" type="String" default="" description="" />
+    <aura:attribute name="tempRecordId1" type="Id" />
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:attribute name="status" type="String" default=""/>
+    <aura:attribute name="packQty" type="String" default=""/>
+    
+    <!-- -->
+    
+    <aura:attribute name="package" type="Package__c" 
+                    default="{ 'sobjectType': 'Package__c',
+                             'Name': '',
+                             'sigmaerpdev__Customer__c': '',
+                             'sigmaerpdev__Location__c': '',
+                             'sigmaerpdev__PackagedBy__c': '',
+                             'sigmaerpdev__PackagedDate__c': '',
+                             'sigmaerpdev__Status__c': '',
+                             'sigmaerpdev__Instructions__c': ''
+                             }"/>
+    
+    <header class="slds-modal__header" style="border-bottom: 1.5px solid #dddbda;color:#0070d2;">								
+        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Available Stock</h2>
+    </header>    
+    <div class="slds-modal__content" style="min-height:300px;padding:0;"> 
+        <aura:renderIf isTrue="{!v.isError}">                       
+            <ui:message title="Error" severity="error" closable="false">
+                {!v.errorMsg}
+            </ui:message>                       
+        </aura:renderIf>         
+        
+        <c:newShowMatrixFormat prodId="{!v.transLineList.prodId}" prodName="{!v.transLineList.prodName}" prodAttributeType="{!v.transLineList.prodAttributeType}" selStatus="{!v.transLineList.status}" Quantity="{!v.orderedQty}" wrapList="{!v.transLineList.wrapProdList}" rowIndex="{!index}" selTransLineItemId="{!v.selTransLineItemId}" packQtyShow="{!v.packQty}" />                  
+        
+    </div>
+    <footer class="slds-modal__footer" style="border-top: 1.5px solid #dddbda;text-align:right;">
+        <button class="slds-button slds-button--neutral" onclick="{!c.hidePopup}">Back</button>
+        <aura:if isTrue="{!v.transLineList.wrapProdList.length > 0}"> 
+            <button class="slds-button slds-button--brand" onclick="{!c.saveManualList}">Save</button>
+            <aura:set attribute="else">
+                <button class="slds-button slds-button--brand" disabled="true">Save</button>
+            </aura:set>
+        </aura:if>
+    </footer>
+    
+    <div class="slds-spinner_container slds-hide" aura:id="spinner">
+        <div class="slds-spinner--brand slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,5 @@
+@media only screen and (max-width: 768px) 
+    {
+    .THIS .mobile-scrollable,.THIS.mobile-scrollable{overflow-x: auto;}
+    .THIS .slds-grid-mob,.THIS.slds-grid-mob{display:block;}
+}

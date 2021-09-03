@@ -1,0 +1,204 @@
+<aura:component controller="InventoryClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!-- popup code -->
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:attribute name="InvLoc" type="Inventory_Location__c" description="The current record Id to display" 
+                    default="{ 'sobjectType' : 'Inventory_Location__c' ,
+                             'sigmaerpdev2__Location__c' : '',
+                             'sigmaerpdev2__Location__r.Name':''
+                             }"/>
+    <aura:attribute name="recordName2"    type="String"  description="The current record Id to display" /> 
+    <aura:attribute name="ILVal" type="String" default=""/>
+    <!-- Ends here -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>
+    <aura:attribute name="ILList" type="Inventory_Location__c[]"/>
+    <aura:attribute name="ILListval" type="Inventory_Location__c[]"/>
+    <aura:handler event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="errorMsgs" type="String" default=""/>
+    <aura:attribute name="isErrors" type="Boolean" default="false"/>
+    
+    <aura:attribute name="IsCommunityUser" type="boolean" default="false"/>
+    <div aura:id="mainDiv">
+        <div>
+            <div aura:id="ListFlag">
+                <div class="slds-grid">
+                    <div class="slds-col slds-has-flexi-truncate">
+                        <div class="slds-media slds-no-space slds-grow">
+                            <div class="slds-media__figure">
+                                <span style="padding-left:5px;">
+                                    <lightning:icon iconName="standard:address" size="small" />
+                                </span>
+                            </div>
+                            <div class="slds-media__body">                                                                                           
+                                <button class="slds-button slds-button_reset slds-type-focus slds-truncate" aria-haspopup="true" title="">
+                                    <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">
+                                        <span class="slds-truncate" title="Inventory Location" style="font-size:15px;"><b>Inventory Location</b></span>
+                                    </span>
+                                </button>                                    
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="slds-col slds-no-flex slds-grid slds-align-top slds-p-bottom_xx-small">
+                        <div class="slds-button-group" role="group"> 
+                              <lightning:button label="New" name="Product Inventory"  onclick="{!c.createNewRecord}" /> 
+                            <lightning:button label="New" name="New"  onclick="{!c.openmodal}" />
+                            
+                        </div>
+                    </div>-->
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-col slds-align-bottom">
+                        <p class="slds-text-body_small"></p>
+                    </div>
+                    
+                </div>
+                
+                <div class="slds-grid slds-m-top_small slds-scrollable--x">
+                    <table class="slds-table slds-table_bordered" role="grid" style="border-left: 1px solid rgb(216, 221, 230);border-right: 1px solid rgb(216, 221, 230);">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="SL">SL NO</div>
+                                </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="InventoryID">INVENTORY lOCATION NUMBER</div>
+                                </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="Location">LOCATION</div>
+                                </th>
+                                
+                            </tr>
+                        </thead>
+                        
+                        
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.ILList}" var="item" indexVar="i">
+                                
+                                <c:ILChildListCmp ILList="{!item}" serialCount="{!i+1}" IsCommunityUser="{!v.IsCommunityUser}"/> 
+                                
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="align-center">
+                    <c:PaginationComponentForInventory page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                    {!V.body}
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- Pop up Code -->
+        <aura:if isTrue="{!v.isOpen}">
+            
+            <!--===== MODAL BOX Start========--> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- ========= MODAL BOX HEADER Start ========-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Inventory Location</h2>
+                    </header>
+                    <!--========= MODAL BOX BODY Part Start========-->
+                    <div class="slds-modal__content" id="modal-content-id-1">
+                        <!-- <c:InventoryLocationcmp/> -->
+                        <div id="Accspinner" class="slds-spinner_container" style="display:none">
+                            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            
+                            <!-- PAGE HEADER -->
+                            <div class="slds-page-header">
+                                <div class="slds-media">
+                                    <div class="slds-media__figure">
+                                        <span class="slds-icon_container slds-icon-standard-user">
+                                            <c:svg class="slds-icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/custom-sprite/svg/symbols.svg#custom57'}" />
+                                            
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <h1 class="slds-page-header__title slds-truncate slds-align-middle">Information</h1>      
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                            <!-- / PAGE HEADER -->
+                            <div style="width:102%;margin-left:-2px;">
+                                <aura:renderIf isTrue="{!v.isError}">
+                                    <ui:message title="Error" severity="error" closable="false">
+                                        {!v.errorMsg}
+                                    </ui:message>
+                                    <aura:set attribute="else">
+                                        
+                                    </aura:set>
+                                </aura:renderIf>  
+                            </div>    
+                            
+                            
+                            <div class="slds-col slds-p-horizontal--medium">
+                                <div class="">
+                                    <div class="slds-form-element__control slds-m-bottom--x-small">
+                                        
+                                        <div class="slds-col slds-size--2-of-3 slds-p-horizontal--Small">   
+                                            
+                                            <label class="slds-form-element__label" for="email">Location:</label>
+                                            <span style="color:red">* </span>                        
+                                            <c:LookupSObject aura:id="ReceivingLocation" 
+                                                             searchString="{!v.recordName2}"
+                                                             label="Account"
+                                                             SRString="Location"
+                                                             pluralLabel="Accounts" 
+                                                             sObjectAPIName="Account" 
+                                                             instanceId="MyAccount2"
+                                                             listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                             listIconClass="slds-icon-standard-account"
+                                                             /> 
+                                            <ui:outputText aura:id="ILValidation" value="{!v.ILVal}" class="textClass" />    
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="brand" 
+                                              label="Submit"
+                                              title="Cancel"
+                                              onclick="{!c.ILSave }"/>                      
+                        </footer>
+                        
+                    </div>
+                    <!--======= MODAL BOX FOOTER Part Start ========-->
+                    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--======== MODAL BOX Part END Here =========-->
+            
+        </aura:if>
+        <!--Ends Here-->
+    </div> 
+    <footer class="slds-card__footer">
+        <div class="slds-form-element__row" id="" style="margin-top:1%;text-align:center;">
+            <!-- commented below line for new Module wise UI on 5/2/2020 -->
+            <!--<button class="slds-button slds-button-brand" onclick="{!c.close}" style="margin-right:0.6%;">Close</button>-->
+        </div>
+    </footer>
+    
+</aura:component>

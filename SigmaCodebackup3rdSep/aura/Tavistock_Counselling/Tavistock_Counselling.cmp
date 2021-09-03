@@ -1,0 +1,242 @@
+<aura:component controller="DisplayCourses" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    
+    <aura:attribute type="boolean" name="FullViewImg" default="false"/>
+    <aura:attribute type="boolean" name="MainContent" default="true"/>
+    <aura:attribute type="boolean" name="OpenContent" default="false"/>
+    <aura:attribute type="boolean" name="ParticipantForm" default="false"/>
+    
+    <aura:if isTrue="{!v.MainContent}">
+        <div class="slds-text-align_center slds-m-around_large">
+            <h1 class="slds-text-heading_medium"> Counselling And Psychotherapy Training</h1>
+            <p class="slds-m-top_x-small">World class teaching, from how to become a couple counsellor, to CPD and accredited courses for practitioners and therapists</p>
+        </div> 
+        
+        <div class="slds-grid slds-p-bottom_small slds-wrap slds-grid-block" style="border-bottom:2px solid #e0e0e0">
+            <div class="slds-col slds-col-block slds-size_1-of-4 slds-text-align_center slds-m-bottom_medium">
+                <div class="product-item">                                        
+                    <div class="item-inner">
+                        <div class="product-thumbnail">
+                            <div class="btn-quickview">
+                                <a onclick="{!c.OpenContent}">
+                                    <span><lightning:icon size="x-small" name="sdgh" iconName="utility:link" alternativeText="Open" /></span>
+                                </a>
+                                <a onclick="{!c.FullViewImg}">
+                                    <span><lightning:icon size="x-small" name="sdgh" iconName="utility:search" alternativeText="Search"/></span>
+                                </a>
+                            </div> 
+                        </div>
+                        <div class="pro-box-info">                        
+                            <div class="product-item-photo">
+                                <img src="https://ssigma-mvp-dev2-dev-ed-developer-edition.ap17.force.com/tavistockbooking/sfc/servlet.shepherd/version/download/a2e2x0000007GKRAA2" style="block-size: inherit;"/><img src="../servlet/servlet.ImageServer?id=0152x000000ZToM&amp;oid=00D2x000003sFlp"  style="block-size: inherit;"/>
+                                <!-- <img src="{!$Resource.TavistockImages + '/Tavistock/Img3.jpg'}" style="block-size: inherit;"/>-->
+                            </div>                          
+                            
+                            <div class="slds-p-vertical_large">
+                                <p class="slds-text-title_caps slds-m-bottom_small"><b>OPEN EVENTS AND TASTER DAYS <br/>(ONLINE)</b></p>
+                                <p>Learn about our trainings in relationship counselling, Foundation Certificate course and psychosexual work.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-col-block slds-size_1-of-4 slds-text-align_center slds-m-bottom_medium">
+                <div class="product-item">                                        
+                    <div class="item-inner">
+                        <div class="product-thumbnail">
+                            <div class="btn-quickview">
+                                <a onclick="{!c.OpenContent}">
+                                    <span><lightning:icon size="x-small" name="sdgh" iconName="utility:link" alternativeText="Open" /></span>
+                                </a>
+                                <a onclick="{!c.FullViewImg}">
+                                    <span><lightning:icon size="x-small" name="sdgh" iconName="utility:search" alternativeText="Search"/></span>
+                                </a>
+                            </div> 
+                        </div>
+                        <div class="pro-box-info">                        
+                            <div class="product-item-photo">
+                                <img src="{!$Resource.TavistockImages + '/Tavistock/Img2.jpg'}" style="block-size: inherit;"/>
+                            </div>                          
+                            
+                            <div class="slds-p-vertical_large">
+                                <p class="slds-text-title_caps slds-m-bottom_small"><b>OPEN EVENTS AND TASTER DAYS <br/>(ONLINE)</b></p>
+                                <p>Learn about our trainings in relationship counselling, Foundation Certificate course and psychosexual work.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-col-block slds-size_1-of-4 slds-text-align_center slds-m-bottom_medium">
+                <div class="product-item">                                        
+                    <div class="item-inner">
+                        <div class="product-thumbnail">
+                            <div class="btn-quickview">
+                                <a onclick="{!c.OpenContent}">
+                                    <span><lightning:icon size="x-small" name="sdgh" iconName="utility:link" alternativeText="Open" /></span>
+                                </a>
+                                <a onclick="{!c.FullViewImg}">
+                                    <span><lightning:icon size="x-small" name="sdgh" iconName="utility:search" alternativeText="Search"/></span>
+                                </a>
+                            </div> 
+                        </div>
+                        <div class="pro-box-info">                        
+                            <div class="product-item-photo">
+                                <img src="{!$Resource.TavistockImages + '/Tavistock/Img3.jpg'}" style="block-size: inherit;"/>
+                            </div>                          
+                            
+                            <div class="slds-p-vertical_large">
+                                <p class="slds-text-title_caps slds-m-bottom_small"><b>COUNSELLING And PSYCHOTHERAPY - FOUNDATION LEVEL</b></p>
+                                <p>Learn about our trainings in relationship counselling, Foundation Certificate course and psychosexual work.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-col-block slds-size_1-of-4 slds-text-align_center slds-m-bottom_medium">
+                <div class="product-item">                                        
+                    <div class="item-inner">
+                        <div class="product-thumbnail">
+                            <div class="btn-quickview">
+                                <a onclick="{!c.OpenContent}">
+                                    <span><lightning:icon size="x-small" name="sdgh" iconName="utility:link" alternativeText="Open" /></span>
+                                </a>
+                                <a onclick="{!c.FullViewImg}">
+                                    <span><lightning:icon size="x-small" name="sdgh" iconName="utility:search" alternativeText="Search" /></span>
+                                </a>
+                            </div> 
+                        </div>
+                        <div class="pro-box-info">                        
+                            <div class="product-item-photo">
+                                <img src="{!$Resource.TavistockImages + '/Tavistock/Img1.jpg'}" style="block-size: inherit;"/>
+                            </div>                          
+                            
+                            <div class="slds-p-vertical_large">
+                                <p class="slds-text-title_caps slds-m-bottom_small"><b>COUNSELLING And PSYCHOTHERAPY COURSES</b></p>
+                                <p>Learn about our trainings in relationship counselling, Foundation Certificate course and psychosexual work.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>   
+    </aura:if>
+    
+    <aura:if isTrue="{!v.FullViewImg}">
+        <div>
+            <section role="dialog" tabindex="-1" aria-label="Meaningful description of the modal content" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header slds-modal__header_empty">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.CloseFullViewImg}">
+                            <lightning:icon size="medium" iconName="utility:close" alternativeText="Open" variant="inverse"/>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                    </header>
+                    <div class="slds-modal__content">
+                        <img src="{!$Resource.TavistockImages + '/Tavistock/Img3.jpg'}"/>
+                        
+                    </div> 
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div> 
+    </aura:if>
+    
+    <aura:if isTrue="{!v.OpenContent}">
+        <div class="slds-p-around_large margin-para">
+            <p><b>Learn about our trainings in relationship counselling, Foundation Certificate course and psychosexual work.
+                </b></p>
+            <p>
+                Tavistock Relationships’ open events and taster days are an excellent free opportunity to find out more about our counselling and psychotherapy courses, meet our staff and ask any questions you might have about studying with us.
+            </p>
+            <h1 class="slds-text-heading_medium">Next Open Events:</h1>
+            <p><b>Venue:</b> All events are online, they will be held using the Zoom teleconferencing
+            </p>
+            <p><b>Open Evening - Couple Counselling And Psychotherapy Training</b></p>
+            
+            <p>Our March open evening is the ideal place to find out about our clinical qualifications, with the deadline for application coming mid year, if you want to take the leading couple qualification around, why not sign up for the event here?
+            </p>
+            
+            <div class="slds-m-vertical_large">
+                <p>Friday 5th March: 6pm - 7pm</p>
+                <lightning:button variant="brand" label="Book Online" iconName="utility:event" onclick="{!c.BookOnline}"/>
+            </div>
+            
+            <p>In our March open event, you will learn about the following courses: 
+            </p>
+            <p><b>
+                Clinical Qualification in Psychodynamic Couple and Individual Counselling and Psychotherapy 
+                </b></p>
+            <p>
+                This is a unique three-year psychotherapy training that qualifies practitioners to work with both couples and individuals. It is suitable for those who have had some relevant work experience, such as in social work, the legal profession, the NHS, voluntary organisations or those who have attended our Foundation Course in Couple Counselling and Psychotherapy.
+            </p>
+            <p>
+                Alternatively, you may be an experienced individual psychotherapist or couple therapist and may be eligible for entry with advanced standing. 
+            </p>
+            <p>See the course page HERE for further details</p>
+            
+            
+            
+            <p><b>Clinical Qualification in Couple Psychoanalytic Psychotherapy</b></p>
+            
+            <p>This unique four-year programme is a clinical training suitable for people who have had several years of post-qualifying experience in a helping profession such as counselling, psychology, social work or psychiatry. It provides a comprehensive understanding of psychoanalytic theory and techniques as it relates to the adult couple relationship and builds on and deepens the student's existing clinical experience. Clinical work with couples is provided through the Tavistock Relationships' clinical service, some of which is in co-therapy with experienced psychoanalytic couple therapists.
+            </p>
+            <p>This is the only couple psychoanalytic psychotherapy training that leads to professional membership of the psychoanalytic section of the British Psychoanalytic Council (BPC).
+            </p>
+            
+            <p>See the course page HERE for further details</p>
+            
+            <p><b>Meet the course head: Diploma in Psychosexual Therapy And Psychosexual Certificate</b></p>
+            
+            <p>Do you wish to develop expertise in working with psychosexual issues and to gain a professional qualification in this field? Our meet the course leader event is a great opportunity to learn about our Psychosexual courses and meet the course leaders.
+            </p>
+            <p>Awaiting next event</p>
+            
+            <p><b>About Open Day And Open Evening for our Foundation Certificate in Couple Counselling And Psychotherapy
+                </b></p>
+            <p>An opportunity to learn about the course, meet the course leaders and start your pathway to becoming a relationship counsellor or psychotherapist
+            </p>
+            <p>Awaiting next event</p>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.ParticipantForm}">
+        <div class="participant-form">
+            <h1 class="slds-text-heading_large slds-m-bottom_large">Professional Training Open Evening - 5 Nov 2021, 6pm</h1>
+            <div class="slds-box slds-m-bottom_large">
+                <h1 class="slds-text-heading_medium slds-m-bottom_medium">Primary participant form</h1>
+                
+                <lightning:input label="First Name" required="true"/>
+                <lightning:input label="Last Name" required="true"/>
+                <lightning:input label="Street Address"/>
+                <lightning:input label="Address"/>
+                <lightning:input label="City" required="true"/>
+                <lightning:input label="Postal Code" required="true"/>
+                <lightning:input label="Phone" required="true"/>
+                <lightning:input label="Email" required="true"/>
+                <lightning:input label="Job Title" required="true"/>
+                <lightning:input label="Current Employer" required="true"/>
+                <lightning:select label="How do you hear about this course or event ?" required="true"/>
+            </div>
+            
+            <div class="slds-box margin-para slds-m-bottom_large">
+                <h1 class="slds-text-heading_medium slds-m-bottom_medium">Training Data Collection</h1>
+                <p>Any personal information you give to us will be processed in accordance with the General Data Protection Regulation (GD PR). 
+                </p>
+                <p>We have a Privacy Notice which should be read in connection with your enquiry.</p>
+                
+                <p>Your information may be used to inform you of Tavistock Relationships other training and research in the form of marketing information newsletters. You can opt in or out of this at any time, by emailing us at  privacy@TavistockRelationships.org
+                </p>
+                <p>
+                    This type of communication consists of emails providing you with information about our events and activities that may be of interest to you but you will be able to unsubscribe from these if you choose to
+                </p> 
+                <lightning:select label="Please indicate if you are happy to receive communications about our events and activities from Tavistock Relationships." required="true"/>
+                <lightning:select label="How can we contact you ?" required="true"/>            
+            </div>
+            
+            <lightning:button variant="brand" label="Submit" />
+        </div>
+    </aura:if>
+</aura:component>

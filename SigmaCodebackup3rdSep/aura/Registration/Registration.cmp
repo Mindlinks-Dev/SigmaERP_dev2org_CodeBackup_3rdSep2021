@@ -1,0 +1,245 @@
+<aura:component controller="RegistrationService" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction">
+    
+     <!--variable Section Starts here-->
+    <aura:attribute name="MainWrapperObject" type="Map" default="{'FirstName':'','LastName':'','EmailId':'','ContactNumber':'','ContactPerson':'','Address':'','PostCode':'','City':'','BreweryName':'','ShowAddressOnSite':false,'ResistrationStatus':'','ResponseMessage':'','CreateOrder':false,'AccountId':'','OrderId':'','orderAmount':'','RegistryId':'','TermsConditions':''}" access="global"/>
+     <aura:attribute name="steps" type="List"/>
+    <aura:attribute name="isSelected" type="Boolean" default="false"/>
+    <aura:attribute name="currentStep" type="String"/>
+    <aura:attribute name="showAggrementSection" type="boolean" default="false"/>
+    <aura:attribute name="showBasicInfoSection" type="boolean" default="true"/>
+    <aura:attribute name="showAddressSection" type="boolean" default="false"/>
+    <aura:attribute name="showPaymentSection" type="boolean" default="false"/>
+    <aura:attribute name="LogoutURL" type="String"/>
+    <aura:attribute name="registrationSuccessfull" type="boolean" default="false"/>
+    <aura:attribute name="paymentNotification" type="boolean" default="false"/>
+    
+     <!--variable Section Ends Here -->
+     <!--<ltng:require scripts="{!$Resource.jQueryv3/jQueryv3}"
+                  afterScriptsLoaded="{!c.loadJquery}" />-->
+    
+    <!--<ltng:require scripts="{!$Resource.jQueryv3 + '/jquery-3.5.1.min.js'}" afterScriptsLoaded="{!c.loadJquery}" />-->
+    
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!--Events and method Section ends here-->
+    
+    <div class="slds-hide" aura:id="mySpinner">
+        <lightning:spinner style="position: fixed" variant="brand" alternativeText="Loading" size="large" />
+    </div>   
+    
+    
+    
+    
+    
+    
+    <div class="bg slds-p-around_small">
+             <h1 class="slds-p-bottom_x-small">
+            <!--<span class="slds-page-header__title slds-truncate slds-m-bottom_small">Brewery Registration Form </span>-->
+            <lightning:progressIndicator currentStep="{!v.currentStep}" type="path" variant="base">
+                <aura:iteration items="{! v.steps }" var="step">
+                    <lightning:progressStep label="{! step.label }" value="{! step.value }"/>
+                </aura:iteration>
+            </lightning:progressIndicator>
+        </h1>
+        
+        
+         <div class="{!v.showAggrementSection == true ? 'slds-show' : 'slds-hide'}">
+            <div class="slds-box slds-p-around_none">
+                <header class="slds-modal__header slds-text-align_left">
+                    <h2><span class="slds-icon_container slds-icon-standard-task" title="Bill To">
+                        <lightning:icon size="x-small" iconName="standard:contact_list" alternativeText="Event" />
+                        </span><b> Terms and Condition</b></h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium slds-scrollable" style="height:52vh;"> 
+                   <c:BrewerTermsAndConditions />
+                </div>
+                <footer class="slds-modal__footer slds-modal__footer_directional">
+                    <p class="slds-text-align_left slds-m-bottom_small"><b><lightning:input type="checkbox" label="I agree" checked="{!v.isSelected}" name="input1" onchange="{!c.onCheck}"/></b></p>
+                    
+                  	<lightning:buttonIcon iconName="utility:back" class="slds-float_left" size="large" variant="bare" onclick="{!c.backToAddressSection}" alternativeText="back" />
+                    <!--<lightning:buttonIcon iconName="utility:forward" size="large" variant="bare" onclick="{!c.goToBasicInfo}" alternativeText="forward" />-->
+                    <button class=" slds-button slds-button_neutral" onclick="{!c.SaveBreweryDetails}" >SUBMIT</button>
+                </footer>
+            </div>
+        </div>
+        
+        
+        <aura:if isTrue="{!v.showBasicInfoSection}" >
+        <div class="slds-box slds-p-around_none">
+            <header class="slds-modal__header slds-text-align_left">                    
+                <h2><span class="slds-icon_container slds-icon-standard-task" title="Bill To">
+                    <lightning:icon size="x-small" iconName="standard:user" alternativeText="Event" />
+                    </span>
+                    <b> Basic Information</b></h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="slds-grid slds-gutters slds-p-bottom_x-small">
+                    <div class="slds-col slds-size--1-of-2">
+                        <lightning:input type="email" value="{!v.MainWrapperObject.EmailId}" required="true" label="Email Id" class=" "/>                      
+                    </div>
+                    <div class="slds-col slds-size--1-of-2">
+                        <lightning:input type="number" value="{!v.MainWrapperObject.ContactNumber}" required="true" label="Contact Number" class=" "/>
+                    </div> 
+                </div>
+                
+                <div class="slds-grid slds-gutters slds-p-bottom_x-small">
+                    <div class="slds-col slds-size--1-of-2">
+                        <lightning:input value="{!v.MainWrapperObject.FirstName}" required="true" label="First Name" class=" "/>                      
+                    </div>
+                    <div class="slds-col slds-size--1-of-2">
+                        <lightning:input value="{!v.MainWrapperObject.LastName}" required="true" label="Last Name" class=" "/>
+                    </div> 
+                </div>
+                
+                <div class="slds-grid slds-gutters slds-p-bottom_x-small">
+                    <div class="slds-col slds-size--1-of-2">
+                        <lightning:input value="{!v.MainWrapperObject.BreweryName}" required="true" label="Brewery Name" class=" "/>                      
+                    </div>
+             	
+                    
+                    
+                </div>
+            </div>
+            <footer class="slds-modal__footer">                  
+                <!--<div class="slds-align_absolute-center slds-button-group" role="group"> -->
+                   
+                    <!--<lightning:buttonIcon iconName="utility:back" class="slds-float_left" size="large" variant="bare" onclick="{!c.backToAggrementSection}" alternativeText="back" />-->
+                    <lightning:buttonIcon iconName="utility:forward" size="large" variant="bare" onclick="{!c.goToAddressSection}" alternativeText="forward" />
+                    
+                    
+                <!--</div>-->
+            </footer>
+        </div>
+        </aura:if>
+        
+        
+        
+        <aura:if isTrue="{!v.showAddressSection}" >
+            <div class="slds-box slds-p-around_none">
+                
+                <header class="slds-modal__header slds-text-align_left slds-m-bottom_small">                   
+                    <h2><span class="slds-icon_container slds-icon-standard-task" title="Bill To">
+                        <lightning:icon size="x-small" iconName="standard:address" alternativeText="Event" />
+                        </span>
+                        <b> Address Details</b></h2>
+                </header>
+        		
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-grid slds-gutters slds-p-bottom_x-small">
+                        <div class="slds-col slds-size--1-of-2">
+                            <lightning:input value="{!v.MainWrapperObject.Address}" required="true" label="Address" class=" "/>                      
+                        </div>
+                        
+                        <div class="slds-col slds-size--1-of-2">
+                            <lightning:input value="{!v.MainWrapperObject.ContactPerson}" required="true" label="Contact Person" class=" "/>
+                        </div> 
+                        
+                    
+                    </div>
+                    
+                    <div class="slds-grid slds-gutters slds-p-bottom_x-small">
+                        <div class="slds-col slds-size--1-of-2">
+                            <lightning:input value="{!v.MainWrapperObject.PostCode}" required="true" label="Postal Code" class=" "/>                      
+                        </div>
+                        
+                        <div class="slds-col slds-size--1-of-2">
+                            <lightning:input value="{!v.MainWrapperObject.City}" required="true" label="City" class=" "/>
+                        </div>   
+                    </div>
+
+ 
+                </div>
+                <footer class="slds-modal__footer"> 
+
+                    	 <lightning:buttonIcon iconName="utility:back" class="slds-float_left" size="large" variant="bare" onclick="{!c.goToBasicInfoSection}" alternativeText="back" />
+       					<lightning:buttonIcon iconName="utility:forward" size="large" variant="bare" onclick="{!c.goToTermsSection}" alternativeText="forward" />
+                </footer>
+            </div>
+        </aura:if>
+                    
+        <!-- Go for Payment Section -->
+         <aura:if isTrue="{!v.showPaymentSection}" >
+            <div class="slds-box slds-p-around_none">
+                
+                <!--<header class="slds-modal__header slds-text-align_left slds-m-bottom_small">                   
+                    <h2><span class="slds-icon_container slds-icon-standard-task" title="Bill To">
+                        <lightning:icon size="x-small" iconName="standard:address" alternativeText="Event" />
+                        </span>
+                        <b> Payment Section</b></h2>
+                </header>-->
+        		
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+               		<c:BreweryPayment_Options Registration="true" LogoutURL="{!v.LogoutURL}" MainWrapperObject="{!v.MainWrapperObject}" customerName="{!v.MainWrapperObject.BreweryName}" postcode="{!v.MainWrapperObject.PostCode}" recordId="{!v.MainWrapperObject.AccountId}" amountTobeCharged="{!v.MainWrapperObject.orderAmount}" orderSFId="{!v.MainWrapperObject.OrderId}" billingPerson="{!v.MainWrapperObject.ContactPerson}" regid="{!v.MainWrapperObject.RegistryId}" />
+                </div>
+                <footer class="slds-modal__footer">   
+                    <div class="slds-align_absolute-center slds-button-group" role="group">
+                        <!--<lightning:button class="slds-button slds-button_neutral" onclick="{!c.goToBasicInfoSection}">BACK</lightning:button>-->
+                        <!--<lightning:button class="slds-button slds-button_neutral" onclick="{!c.SaveBreweryDetails}">SUBMIT</lightning:button>-->
+                        <!--<lightning:button class="slds-form-element submit" variant="neutral" name="callChild" label="Submit" onclick="{!c.SaveBreweryDetails}" />-->
+                    </div>
+                </footer>
+            </div>
+        </aura:if>
+        <!-- Till here Payment Section -->
+        
+        
+         <!-- Registration Success Section -->
+         <aura:if isTrue="{!v.registrationSuccessfull}">
+            <section class="slds-modal slds-fade-in-open slds-modal_prompt" aria-modal="true">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header slds-theme_success slds-theme_alert-texture">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium" id="prompt-heading-id"><lightning:icon iconName="utility:success" size="small" alternativeText="Approved" /> Registration Successful</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="prompt-message-wrapper">
+                       
+                        <p class="slds-text-heading_small">Thank you for your online registration and welcome to Brewery Community Portal!</p>
+                        <br/>
+                        <p class="slds-text-heading_small">FFTB Sales Representative will contact you soon for account validation and activation procedure.</p>
+                        <br/>
+                        <p  class="slds-text-heading_medium slds-text-color_error">NOTE : Please use browser CLOSE button to close the current page.</p>  
+                    </div>
+                    <footer class="slds-modal__footer slds-theme_default">             
+                        <a class="slds-button slds-button_neutral submit" href="{!v.LogoutURL}">Ok</a>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        <!-- Till here Registration Success Section -->
+        
+        
+          <!-- Payment Notification  Section -->
+         <aura:if isTrue="{!v.paymentNotification}">
+            <section class="slds-modal slds-fade-in-open slds-modal_prompt" aria-modal="true">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header slds-theme_success slds-theme_alert-texture">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <!--<span class="slds-assistive-text">Close</span>-->
+                        </button>
+                        <h2 class="slds-text-heading_medium" id="prompt-heading-id"><lightning:icon iconName="utility:success" size="small" alternativeText="Approved" /> Registration Process</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="prompt-message-wrapper">
+                       
+                        <p class="slds-text-heading_small">Thank you, your registration process in inprogress</p>
+                        <br/>
+                        <p class="slds-text-heading_small">There is a platform fee is set and please click below ok button to continue with payment process.</p>
+                        <br/>
+                         <p  class="slds-text-heading_medium slds-text-color_error">NOTE : Please do not close this window or click the Back button on your browser.</p>  
+                    </div>
+                    <footer class="slds-modal__footer slds-theme_default">             
+                        <a class="slds-button slds-button_neutral submit" onclick="{!c.gotoPaymentPage}" >Ok</a>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        <!-- Till here Payment Notification Section -->
+        
+        
+        
+        
+        
+ </div>
+</aura:component>

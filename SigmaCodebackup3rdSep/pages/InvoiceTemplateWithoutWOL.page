@@ -1,0 +1,5 @@
+<apex:page renderAs="pdf" applyBodyTag="false">
+<h1>
+    No Invoice Available!
+    </h1>
+</apex:page>

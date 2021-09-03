@@ -1,0 +1,144 @@
+<aura:component controller="AgentScheduleTable" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader" access="global" >
+    
+    <aura:attribute name="fromDate" type="Date" default=""/>
+    <aura:attribute name="isOpen" type="Boolean" default="true"/>
+    <aura:attribute name="techNames" type="List" />
+    <aura:attribute name="productPicklistvalues" type="String[]"/>
+    <aura:attribute name="picklistValue" type="String" default="Choose Territory"/>
+    <aura:attribute name="lstKey" type="List"/>
+    <aura:attribute name="hideChevronLeft" type="Boolean" default="false"/>
+    <aura:attribute name="isPast" type="Boolean" default="false"/>
+    <aura:attribute name="message" type="String" default="Please select Date and Territory." />
+    <aura:attribute name="messagePast" type="String" default="The calendar below, shows only the assigned schedule and does not reflect the current status of the work orders." />
+    <aura:attribute name="techScheduleDetails" type="Map"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <article>
+        <div class="slds-p-bottom_medium slds-align_absolute-center ">
+            <div class="slds-grid slds-gutters slds-align_absolute-center">
+                <div class="slds-col date_display">
+                    <label style="font-size:17px" class=" datewidth">Date: </label> 
+                    <lightning:buttonIcon aura:id="leftarrow" class="paddingRight color-icon" disabled="{!v.hideChevronLeft}" iconName="utility:chevronleft" variant="bare" onclick="{! c.handleClickLeft }" alternativeText="Settings" size="large"/>
+                    <ui:inputDate class="slds-input slds-required mbl-input tab-input" value="{!v.fromDate}" change="{!c.getOutputDate}" aura:id="datefield" displayDatePicker="false" format='DD-MM-YYYY'/>
+                    <lightning:buttonIcon aura:id="rightarrow" class="slds-p-left_small color-icon padding_icon" iconName="utility:chevronright" variant="bare" onclick="{! c.handleClickRight }" alternativeText="Settings" size="large"/>
+                </div>
+                <div class="slds-col paddingcolright">
+                    <lightning:select aura:id="picklistvalue" class="slds-p-bottom_medium slds-p-horizontal_medium selectStyle " name="selectItem" label="" onchange="">
+                        <option  value="">Choose Territory</option>
+                        <aura:iteration items="{!v.productPicklistvalues}" var="option">
+                            <option value="{!option}">{!option}</option>
+                        </aura:iteration>	
+                    </lightning:select>
+                </div>
+                <div class="slds-col">
+                    <!--<button class="slds-button slds-button_brand button-style" onclick="{!c.closeWindow}">Submit</button>-->
+                    <lightning:button  class="button_font" label="Submit" title="Neutral action" onclick="{! c.closeWindow }"/>
+                    
+                </div>
+            </div>
+        </div>
+        <aura:if isTrue="{!v.isPast}">
+        	<div>
+                <div class="slds-text-heading_small slds-size_1-of-1 slds-p-vertical_large">
+                    <div class="slds-text-align_center">
+                        <h1 style="font-size: 18px">{!v.messagePast}</h1>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.isOpen}">
+            <div>
+                <div class="slds-text-heading_medium slds-size_1-of-1 slds-p-vertical_large">
+                    <div class="slds-text-align_center">
+                        <h1 style="font-size:18px">{!v.message}</h1>
+                    </div>
+                </div>
+            </div>
+            <aura:set attribute="else">
+                
+                <div class="content-wrapper">
+                    
+                    <section class="slds-grid slds-wrap">
+                        <div class="slds-size_1-of-1">
+                            <table class="time-allocation-table slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal">
+                                <thead>
+                                    <tr class="slds-text-title_caps nostyle">
+                                        <th scope="col" class="slds-p-left_medium">
+                                        </th>
+                                        <th scope="col">
+                                            <div class="" title=""></div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="" title=""></div>
+                                        </th>
+                                        
+                                        <th scope="col" class="">
+                                            <div class="" title="Technician Name"></div>
+                                        </th>
+                                        <th scope="col" colspan="9" class="slds-p-right_medium">
+                                            <div class="slds-truncate slds-text-align_center" title="">8 AM - 8 PM</div>
+                                        </th>
+                                    </tr>
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col" class="slds-p-left_medium time-slot paddingTechName" style="padding-right: 122px">
+                                            <div class="slds-truncate" title="Technician Name">Technician</div>
+                                        </th>
+                                        <th scope="col" class="slds-p-horizontal_medium slds-text-align_right time-slot">
+                                            <div class="slds-truncate" title="Technician Name">#Work Orders</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">8</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">9</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">10</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">11</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">12</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">13</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">14</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">15</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">16</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">17</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">18</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">19</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">20</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.techNames}" var="eachTech" >
+                                        <c:AgentsScheduleTableChild key="{!eachTech}" techScheduleDetails="{!v.techScheduleDetails}" ></c:AgentsScheduleTableChild>
+                                    </aura:iteration>
+                                </tbody> 
+                            </table>
+                        </div>
+                    </section>
+                    
+                </div>
+            </aura:set>
+        </aura:if>
+    </article>
+</aura:component>

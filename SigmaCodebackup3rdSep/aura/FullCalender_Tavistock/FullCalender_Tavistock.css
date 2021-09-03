@@ -1,0 +1,33 @@
+.THIS .event-no {
+    background:#FFFFFF;
+    border-color:#FFFFFF;
+}
+.THIS .event-Inquired {
+    background:#8a2be2;
+    border-color:#8a2be2;    
+}
+.THIS .event-Hold {
+    background:#9acd32;
+    border-color:#9acd32;
+}
+.THIS .event-Confirmed {
+    background:#54ff9f;
+    border-color:#54ff9f;
+}
+.THIS .event-Cancelled {
+    background:#ff0000;
+    border-color:#ff0000;
+}
+.THIS.EventSection {
+    float:left;
+}
+.THIS.EventSection ul {
+    margin:0;padding:0;list-style:none;
+}
+.THIS.EventSection ul li {
+    margin:0;padding:5px;float:left;
+}
+.THIS.EventSection ul li span {
+    display:block; height:14px; width:14px; margin-right:4px; float:left; border-radius:4px;
+}
+/* This is Events End */

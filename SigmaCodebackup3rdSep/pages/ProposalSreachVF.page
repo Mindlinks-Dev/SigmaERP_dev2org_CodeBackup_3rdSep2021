@@ -1,0 +1,15 @@
+<apex:page standardController="Proposal__c" sidebar="false" tabStyle="Proposal__c" showHeader="true">
+    <apex:includeLightning />
+    <div id="lightning" />
+
+    <script>
+        $Lightning.use("sigmaerpdev:SigmaOrderAPP", function() {
+            $Lightning.createComponent("sigmaerpdev:ProposalSearch",
+            {  },
+            "lightning",
+            function(cmp) {
+                    //alert('inside Sigma Order');
+                });
+            });
+    </script>
+</apex:page>

@@ -1,0 +1,42 @@
+<aura:component controller="FFTBCtrl" implements="forceCommunity:availableForAllPageTypes">
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="bpsList" type="List" />
+	<lightning:card title="My Customers" iconName="standard:approval"> 
+         <hr />
+        <table width="100%" class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped slds-table_col-bordered">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Customer Name">Customer Name</div>
+                        </th>                                                                   
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Email">Email</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Mobile">Mobile</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                        	<div class="slds-truncate" style="text-align:center;" title="Shipping Address">Shipping Address</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.bpsList}" var="pr1">
+                        <tr>
+                            <c:FFTBrwProdCustDetails rowDetails="{!pr1}" />
+                        </tr>
+                    </aura:iteration>
+                    
+                </tbody>
+            </table>
+    </lightning:card>
+    <div class="demo-only slds-hide" aura:id="mySpinner">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,44 @@
+<aura:component controller="UploadStockVendorProductCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="fileName" type="string"/>
+    <aura:attribute name="isSpinner" type="boolean" default="false"/>
+    <aura:attribute name="errorMessage" type="String"/>
+    <aura:attribute name="showErrors" type="Boolean" default="false"/> 
+    <aura:if isTrue="{!v.showErrors}">       
+        <div class="slds-notify slds-notify_toast slds-theme_error">
+            <span class="slds-assistive-text">error</span>
+            <div class="slds-notify__content">
+                Error Message : {!v.errorMessage}              
+            </div>
+        </div>
+    </aura:if>
+    <div class="content slds-box slds-p-around_none">
+        <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                
+                <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-01" class="slds-text-heading_small slds-text-title_caps slds-hyphenate">
+                <img src="{!$Resource.SigmaIcons + '/Upload.png'}" width="50"/>
+                Update Stock</h2>
+        </header>
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <div class="slds-file-selector slds-file-selector_files slds-m-around_x-small" style="display:block;">
+                <label class="slds-form-element__label" for="form-element-01">Select File to Upload</label>                
+                <div class="slds-file-selector__dropzone">
+                    <input type="file" aura:id="file" onchange="{!c.DisplayFileName}" class="slds-file-selector__input slds-assistive-text" accept=".csv" id="file1" aria-labelledby="file-selector-primary-label file-selector-secondary-label" />
+                    <label class="slds-file-selector__body" for="file1" id="file-selector-secondary-label">
+                        <span class="slds-file-selector__button slds-button slds-button_neutral" style="padding:16px 18px">
+                            <lightning:icon class="slds-button__icon_left" iconName="utility:upload" size="xx-small" alternativeText="Indicates approval"/>
+                            Click here to upload file
+                        </span> 
+                    </label>  
+                    <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
+                </div>
+            </div>
+        </div>
+        <footer class="slds-modal__footer">
+            <!--<button class="slds-button slds-button_brand" onclick="{!c.Uploadfile }">Upload</button>-->
+            <lightning:button variant="brand" iconName="utility:upload"   label="Upload" onclick="{!c.Uploadfile}"/>
+        </footer>
+    </div>  
+</aura:component>

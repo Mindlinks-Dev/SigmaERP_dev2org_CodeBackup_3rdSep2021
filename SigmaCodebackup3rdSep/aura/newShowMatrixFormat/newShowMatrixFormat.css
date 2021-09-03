@@ -1,0 +1,9 @@
+.THIS .slds-icon-text-default 
+{
+    fill: #0070d2 !important;
+}
+@media only screen and (max-width: 768px) 
+{
+    .THIS .th-mobile{display:none !important;}
+    .THIS .fill-qty-btn{left:-10px !important;}
+}

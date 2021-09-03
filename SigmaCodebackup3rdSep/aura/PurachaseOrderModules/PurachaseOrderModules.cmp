@@ -1,0 +1,144 @@
+<aura:component controller="newPurchaseOrderControllerLightning" implements="force:appHostable,forceCommunity:availableForAllPageTypes">   
+    <ltng:require styles="{!$Resource.HelpMenuCss}" />
+    <!--Help-->
+    <aura:attribute name="description" type="String" default="test"/>
+    <aura:attribute name="descriptionBody" type="String" default="test"/>
+    
+    <aura:attribute name="currectChapter" type="Integer"/>    
+    <aura:attribute name="openTrailWindow" type="Boolean" default="false"/>
+    <aura:attribute name="objectFiledList" type="List"/>
+    <aura:attribute name="jsonString" type="Map"/>
+    <aura:attribute name="currectObject" type="String" default="Purchase"/>
+    <aura:attribute name="HelpIcons" type="boolean" default="false" />    
+    <aura:attribute name="showHelpMenu" type="boolean" default="false" /> 
+    
+    <!--HelpEnd-->
+        
+    <aura:attribute name="showPurchaseOrder" type="boolean" default="false" />
+    <aura:attribute name="showMultiplePurchaseOrder" type="boolean" default="false" />
+    <aura:attribute name="showSRecvng" type="boolean" default="false" />
+    
+    <aura:attribute name="from" type="String" default ="" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    
+    <aura:attribute name="showIcons" type="boolean" default="true" />  
+    <aura:attribute name="showModules" type="boolean" default="false" /> 
+    
+    <!--<div class="marquee">
+        <img src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title="Purchase order Modules" />
+     <img style="padding-top:13px;float:right;" src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title="Purchase order Modules" />
+    </div>
+    <div style="padding-left:525px;font-size: 14px;"><b>P U R C H A S E&nbsp;&nbsp;&nbsp;&nbsp;O R D E R&nbsp;&nbsp;&nbsp;&nbsp;M O D U L E S</b></div>-->
+    
+    <!--<div class="marquee">
+        <img src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title="Purchase Order Modules" />
+        <span style="padding-left:395px;font-size:16px;"><b>P U R C H A S E&nbsp;&nbsp;&nbsp;&nbsp;O R D E R&nbsp;&nbsp;&nbsp;&nbsp;M O D U L E S</b></span>
+     <img style="padding-top:4px;float:right;" src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title="Purchase Order Modules" />
+    </div><p style="line-height:33%;">&nbsp;</p> 
+ -->
+    
+   
+    <div class="marquee slds-text-align_center slds-p-around_small slds-truncate">
+        <!--<img src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title="Purchase Order Modules"  class="slds-float_left"/>-->
+        <img src="{!$Resource.sigmaerp365logo}" width="95" height="95" title="Purchase Order Modules"  class="slds-float_left"/>
+        
+        <span class="slds-text-heading_small" style="letter-spacing:10px;text-transform:uppercase;"><b>Purchase Order Modules</b></span>
+         <aura:if isTrue="{!v.showHelpMenu == true}">
+            <!--<img onclick="{!c.HelpMenu}" src="/resource/sigmaerpdev2__HelpMenu79" width="94" title="Help"  class="slds-float_right"/>-->
+             <img onclick="{!c.HelpMenu}" src="{!$Resource.HelpMenu79}" width="94" title="Help"  class="slds-float_right"/>
+        </aura:if>
+    </div>
+    <aura:if isTrue="{!v.showIcons == false}">
+        <lightning:card title="Purchase Order Modules Icons">            
+            <aura:set attribute="actions">               
+                <!--<lightning:button variant="brand" label="Show" onclick="{!c.showInfo}"/>-->
+                <!--<img onclick="{!c.showInfo}" src="/resource/sigmaerpdev2__ShowIcons" width="35" height="35" title="Show Icons" />-->
+                <img onclick="{!c.showInfo}" src="{!$Resource.ShowIcons}" width="35" height="35" title="Show Icons" />                
+            </aura:set>        
+        </lightning:card>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showIcons == true}"> 
+        <article class="slds-card slds-card--narrow">
+            <lightning:card title="">
+                <aura:set attribute="actions">                    
+                    <!--<lightning:button variant="brand" label="Hide" onclick="{!c.closeInfo}"/>-->
+                    <!--<img onclick="{!c.closeInfo}" src="/resource/sigmaerpdev2__HideIcons" width="35" height="35" title="Hide Icons" />-->
+                    <img onclick="{!c.closeInfo}" src="{!$Resource.HideIcons}" width="35" height="35" title="Hide Icons" />                    
+                </aura:set>   
+                <div class="slds-scrollable-mob">
+                    <table border="0" style="max-width:55%;" align="center">
+                        <tr>
+                            <td width="5%" class="zoom slds-p-none" style="text-align:center;padding-left:100px;">
+                                <!--<img onclick="{!c.showPurchaseOrders}" src="/resource/sigmaerpdev2__PurchaseOrderMM" width="105" height="100" title="Purchase Orders" Name="Purchase" /><br />-->
+                                <img onclick="{!c.showPurchaseOrders}" src="{!$Resource.PurchaseOrderMM}" width="80" height="100" title="Purchase Orders" Name="Purchase" /><br />
+                                <div class="slds-text-heading_small" style="padding-left:5px;">Purchase Orders</div>
+                            </td> 
+                            <td width="5%" class="zoom slds-p-none" style="text-align:center;">
+                                 <img onclick="{!c.showMultiplePurchaseOrders}" src="{!$Resource.multiple_purchase_order}" width="86" height="100" title="Purchase Orders" Name="Purchase" /><br />
+                                <div class="slds-text-heading_small" style="padding-left:5px;">Multiple PO</div>
+                            </td> 
+                            <td width="5%" class="zoom" style="text-align:center;">
+                                <!--<img onclick="{!c.showSR}" src="/resource/sigmaerpdev2__StockRecvMM2" width="135" height="100" title="Stock Receiving" Name="Stock" /><br />-->
+                                <img onclick="{!c.showSR}" src="{!$Resource.StockRecvMM2}" width="92" height="100" title="Stock Receiving" Name="Stock" /><br />
+                                <div class="slds-text-heading_small">Stock Receiving</div>
+                            </td>                         
+                        </tr>   
+                    </table>
+                </div>
+            </lightning:card>
+        </article>
+    </aura:if>
+    <!--HelpMenu-->
+    <aura:if isTrue="{!v.HelpIcons == true}">
+        <div id="trialWindow" aura:id="trialWindow" class="trialWindowClass expand" onmouseenter="{!c.dragContent}">
+            <aura:iteration items="{!v.jsonString.chapters}" var="chapter" indexVar="chapterIndx">
+                  <aura:if isTrue="{!chapter.objectName == v.currectObject}">                      
+                    <div id="" class="slds-scrollable" style="display: flex!important;border-radius: 8px 8px 0px 0px;cursor: grab;flex-grow: 1!important;flex-direction: column!important;height:15%;background-color: #0C99C4;padding: 15px">
+                        <span id="stepDiscriptionHead" class="fontClassHeader1">                            
+                            <b>{!v.description}</b></span><br />                                           
+                        <span id="stepDiscription" class="fontClass">{!v.descriptionBody}</span>                       
+                    </div>  
+                    <ul class="slds-has-dividers_bottom-space slds-scrollable" style="height: 65%;">                        
+                        <aura:iteration items="{!chapter.steps}" var="step" indexVar="stepIndx">
+                            <li class="slds-item">
+                                <lightning:icon style="{!v.currectPage=='list' ? 'background-color: lightslategray;':''}" class="slds-m-right_x-small" iconName="action:approval" size="xx-small" alternativeText="Indicates approval"/>
+                                <a id="{!chapterIndx+'-'+stepIndx}" class="{!v.currectPage!=step.element.uri.pathname ? 'not-active slds-col slds-size_10-of-12':'slds-col slds-size_10-of-12'}" style="{!step.isClicked ? 'margin-left: 3px;font-size: 13px;color:#6faa00':'margin-left: 3px;font-size: 13px;'}" name="{!step.title}" href="" onclick="{!c.stepsOnclickHandler}">{!step.title}</a>
+                            </li>
+                        </aura:iteration>
+                    </ul>
+                    
+                    <aura:if isTrue="{!chapter.objectName == 'Purchase'}">
+                        <div style="height:5%;background-color:#ffcccc;padding-left:30px;">
+                                What Next ? Add Product
+                         </div> 
+                    </aura:if>
+                      
+                    <div style="border-radius: 0 0 8px 8px;text-align:center;padding: 0 1em;font-size: .8em;background-color: #0C99C4;">
+                        <span class="control-panel__footer__body">
+                            Powered by
+                            <span class="control-panel__footer__body__strong">Mindlinks</span>
+                        </span>
+                    </div>    
+                </aura:if>
+            </aura:iteration>
+           
+        </div>
+        
+    </aura:if>
+    <!--HelpEnd-->
+    <aura:if isTrue="{!v.showModules == true}">
+        <lightning:card>       
+            <aura:if isTrue="{!v.showPurchaseOrder == true}">
+                <c:PurchaseOrderPage />
+            </aura:if>  
+            <aura:if isTrue="{!v.showMultiplePurchaseOrder == true}">
+                <c:GenerateMultiplePO />
+               <!-- <c:MulltiplePONew />-->
+            </aura:if>
+            <aura:if isTrue="{!v.showSRecvng == true}">          
+                <c:StockRecievingPage />          
+            </aura:if>            
+        </lightning:card>    
+    </aura:if>    
+</aura:component>

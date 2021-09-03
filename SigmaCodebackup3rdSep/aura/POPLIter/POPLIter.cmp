@@ -1,0 +1,147 @@
+<aura:component controller="Purchase_Order">
+    <aura:attribute name="fromCurrToCurrecyRate" type="Map" />
+    <aura:attribute name="Pur_Order" type="Purchase_Order__c" access="global"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="isConfirmed" type="Boolean" access="global"/>
+    <aura:attribute name="isCancelled" type="Boolean" access="global"/>
+    <aura:attribute name="issrpflag" type="Boolean" access="global"/>
+    <aura:attribute name="configData" type="Object"/>
+    <aura:attribute name="rowIndex" type="Integer"/>
+    <aura:attribute name="unitPriceOverrider" type="boolean" default='false'/>
+    <aura:attribute name="UsingVendorProductPriceflow" type="Boolean" />
+    <aura:attribute name="SearchKeyWord" type="string" access="global"/>
+<aura:attribute name="vendorid" type="ID"/>
+    <aura:attribute name="ProId" type="String"/>
+    <aura:attribute name="ProName" type="Integer"/>
+    <aura:attribute name="companyName" type="String"/>
+     <aura:attribute name="status" type="String[]" default="Open"/>
+    <!--Used For Tax exempted-->
+    <aura:attribute name="taxTreatmentData" type="Map" />
+    <!-- <aura:attribute name="Vendorid" type="Id"/>-->	
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   
+    <aura:handler name="change" value="{!v.vpline.pop.sigmaerpdev2__Product__c}" action="{!c.getProddata}" />
+    <!--<aura:handler name="change" value="{!v.vpline.pop.sigmaerpdev2__Product_Supplier__c}" action="{!c.getvendorid}" />-->
+    <!--<aura:handler name="change" value="{!v.vpline.pop.stapperptra__Tax_Code__c}" action="{!c.clearTaxCode}" />-->
+    <aura:handler name="SigmaComponentEvent" event="c:SigmaComponentEvent" action="{!c.handleComponentEvent}" />
+    <aura:attribute name="vpline" type="Object" access="global"/>
+    <!-- Register 2 Lightning Event for handle add or Delete rows on Parent Component  --> 
+    <aura:registerEvent name="DeleteRowEvt" type="c:RowDel"/> 
+    <aura:registerEvent name="AddRowEvt" type="c:RowAdd"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>
+    <aura:registerEvent name="SigmaComponentEvent" type="c:SigmaComponentEvent" />    
+    <aura:method name="currencyChangeAuraMethod" description="Sample method with parameter">
+    </aura:method>
+    
+    <!--Dynamic Push Code. Starts->
+    <aura:handler event="c:ApplicationEvent" action="{!c.handleApplicationEvent}" access="global"/>
+    <aura:handler name="change" value="{!v.vpline}" action="{!c.vplineChangeHnadler}"/> 
+    <aura:registerEvent name="SecondAppEvent" type="c:SecondAppEvent" access="global"/>
+ Ends-->
+    
+    <tr class="">
+        <td title="Remove">
+            <a onclick="{!c.removeRow}" style="{!and(v.isConfirmed,!empty(v.vpline.pop.Id)) ? 'pointer-events: none;':''}">
+                <lightning:icon  variant="{!and(v.isConfirmed,!empty(v.vpline.pop.Id))? '':'error'}" iconName="utility:delete" class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+                <span class="slds-assistive-text">Delete Icon</span>
+            </a>
+            
+        </td>
+    
+       <td title="{!v.vpline.ProductName}">
+            <div>
+                <aura:if isTrue="{!!and(v.isConfirmed,!empty(v.vpline.pop.Id))}">
+                    <c:customLookup aura:id='Product' recordID="{!v.vpline.pop.sigmaerpdev2__Product__c}" recordName="{!v.vpline.ProductName}"   objectAPIName="Product2"
+                                    IconName="custom:custom106" label="" SearchKeyWord="{!v.SearchKeyWord}"  whereCondition="{!'AND Id in (select sigmaerpdev2__Product_Name__c From sigmaerpdev2__Vendor_Product__c where  sigmaerpdev2__Account_Name__c = \''+v.vendorid+'\')and sigmaerpdev2__Stock_Item__c=true'}"  isSigmaOrder="true"/>
+                    <span class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-hide" aura:id="proInput">Select Product</span>
+                    <aura:set attribute="else">
+                        <lightning:input aura:id='Product' variant="label-hidden" label="" value="{!v.vpline.ProductName}" disabled="true"/>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </td>
+        <!-- whereCondition="{!'AND Id in (select sigmaerpdev2__Product_Name__c From sigmaerpdev2__Vendor_Product__c where  sigmaerpdev2__Account_Name__c = \''+v.vendorid+'\')and sigmaerpdev2__Stock_Item__c=true'}" -->
+       
+        <td title="{!v.vpline.pop.sigmaerpdev2__Quantity__c}">
+            <div>
+                <lightning:input variant="label-hidden" type="number" value="{!v.vpline.pop.sigmaerpdev2__Quantity__c}" onchange="{!c.changeHandler}" disabled="{!and(v.isConfirmed,!empty(v.vpline.pop.Id))}"/>
+            </div>
+        </td>
+       
+        
+        
+        <td title="{!v.vpline.pop.sigmaerpdev2__Buying_Price__c}">
+            <div>
+                <lightning:input variant="label-hidden"  type="number" value="{!v.vpline.pop.sigmaerpdev2__Buying_Price__c}" step="0.01" disabled="true"/>
+            </div>
+        </td>
+       
+       
+        <td title="{!v.vpline.pop.sigmaerpdev2__Discount__c}">
+            <div>
+                <lightning:input variant="label-hidden" type="number" value="{!v.vpline.pop.sigmaerpdev2__Discount__c}" step="0.01" onchange="{!c.discountChangeHandler}" disabled="{!and(v.isConfirmed,!empty(v.vpline.pop.Id))}"/>
+            </div>
+        </td>
+        <td title="{!v.vpline.pop.sigmaerpdev2__Expected_Delivery_Date__c}">
+            <div>
+        <ui:inputDate aura:id="ExpectedDeliveryDate" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.vpline.pop.sigmaerpdev2__Expected_Delivery_Date__c}"
+                                              displayDatePicker="true"
+                                              disabled="{!v.vpline.pop.sigmaerpdev2__Remaining_to_come__c>0}"
+                                                  
+                                              />
+                </div>
+        </td>
+         <td title="{!v.vpline.pop.sigmaerpdev2__Status__c}">
+             <div>
+                <ui:inputSelect aura:id="statuss" label=""  change="{!c.validateBuyingPrice}"
+                                                class="slds-input input uiInput uiInputText uiInput--default uiInput--input"
+                                                labelClass="slds-form-element__label"
+                                 value="{!v.vpline.pop.sigmaerpdev2__Status__c}">
+                                    <aura:iteration items="{!v.status}" var="st">
+                                        <ui:inputSelectOption text="{!st}" label="{!st}" />      
+                                    </aura:iteration>
+                                    
+                                </ui:inputSelect>    
+         </div>
+        </td>
+            <td title="{!v.vpline.pop.sigmaerpdev2__Tax_Code__c}">
+                <div>
+                        <c:customLookup recordID="{!v.vpline.pop.sigmaerpdev2__Tax_Code__c}" recordName="{!v.vpline.TaxCodeName}" objectAPIName="sigmaerpdev2__Tax_Code__c" whereCondition="{!'AND id IN (select sigmaerpdev2__Tax_Code__c from sigmaerpdev2__Tax_Rate__c where sigmaerpdev2__Tax_Treatment__c=\''+v.Pur_Order.sigmaerpdev2__Tax_Treatment__c+'\')'}"
+                                        IconName="custom:custom106" label=""  isSigmaOrder="true"/>
+                  
+                        <span class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-hide" aura:id="proInput">Select Tax Code</span>
+                        <aura:set attribute="else">
+                            <lightning:input variant="label-hidden" label="" value=" " disabled="true"/>
+                        </aura:set>
+                   
+                </div>
+            </td>
+        
+        <!--Dynamic Push Code. Starts->
+        {!v.body}
+  Ends-->
+        <td title="{!v.vpline.pop.sigmaerpdev2__Tax_Rate__c}">
+            <div>
+                <lightning:input variant="label-hidden" type="number" value="{!v.vpline.pop.sigmaerpdev2__Tax_Rate__c}" disabled="true"/>
+            </div>
+        </td>
+        <td title="{!v.vpline.pop.sigmaerpdev2__Tax_Amount__c}">
+            <div>
+                <lightning:input variant="label-hidden" type="number" value="{!v.vpline.pop.sigmaerpdev2__Tax_Amount__c}" step="0.01" disabled="true"/>
+            </div>
+        </td>
+        <td title="{!v.vpline.pop.sigmaerpdev2__Net_Amount__c}">
+            <div>
+                <lightning:input variant="label-hidden" type="number" value="{!v.vpline.pop.sigmaerpdev2__Net_Amount__c}"  step="0.01" disabled="true"/>
+            </div>
+        </td>
+        <td title="{!v.vpline.pop.sigmaerpdev2__Total_Amount__c}">
+            <div>
+                <lightning:input variant="label-hidden" type="number" value="{!v.vpline.pop.sigmaerpdev2__Total_Amount__c}" step="0.01" disabled="true"/>
+            </div>
+        </td>
+    </tr>
+</aura:component>

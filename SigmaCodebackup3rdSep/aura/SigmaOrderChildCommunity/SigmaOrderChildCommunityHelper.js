@@ -1,0 +1,5 @@
+({
+	deleteOrder : function(component, event) {
+        
+	},
+})

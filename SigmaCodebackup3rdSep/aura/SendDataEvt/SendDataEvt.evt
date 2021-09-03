@@ -1,0 +1,8 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="VendorId" type="String"/>
+    <aura:attribute name="VendorName" type="String"/>
+    <aura:attribute name="VendorLocation" type="String"/>
+    <aura:attribute name="BuyingPrice" type="Decimal" />
+    <aura:attribute name="VendorEmail" type="String" />
+    <aura:attribute name="VendorLocationID" type="String" />
+</aura:event>

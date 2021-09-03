@@ -1,0 +1,82 @@
+<aura:component Controller='StockRecievingHandler' implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+    
+    <aura:attribute name="stockList" type="Stock_In__c"/>
+   <aura:attribute name="serialCount" type="Integer"/>
+     <aura:attribute name="stockrecieving" type="Stock_In__c[]"/>
+    <aura:dependency resource="markup://force:editRecord" type="EVENT"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="LightView" type="Boolean" default="false"/>
+     <aura:registerEvent name="stockrecieveevent" type="c:stockrecieveevent"/>
+    <tr>
+        <td >
+            <div class="slds-truncate" title="">{!v.serialCount}</div>
+        </td>
+   
+        <aura:if isTrue="{!v.LightView}">
+        <th scope="row">
+            <span> 
+                <div class="slds-truncate" title="stockrecieving"><a href="{!'/one/one.app?#/sObject/'+ v.stockList.Id + '/view'}" onclick="{!c.openRecords}">{!v.stockList.Name}</a></div>
+            </span>
+        </th>
+            <aura:set attribute="else">
+                <th scope="row">
+                    <span> 
+                        <div class="slds-truncate" title="stockList">
+                            <!--<a href="{!'/'+v.stockList.Id}" onclick="{!c.openRecords}">{!v.stockList.Name}</a>-->
+                            <a target="_blank" href="{!'/'+v.stockList.Id}">{!v.stockList.Name}</a>
+                        </div>
+                    </span>
+                </th>                   
+            </aura:set>
+                </aura:if> 
+
+        <td>
+            <div class="slds-truncate" title="">{!v.stockList.sigmaerpdev2__Vendor__r.Name}</div>
+        </td>
+        <td>
+            <div class="slds-truncate" title="">{!v.stockList.sigmaerpdev2__Location__r.Name}</div>
+        </td>
+		<td width="21%">
+        	<ui:outputDateTime aura:id="oDateTime" value="{!v.stockList.sigmaerpdev2__Received_Date_Time__c}"/>
+        </td>
+		<!--<td>
+            <div class="slds-truncate" title="">{!v.stockList.sigmaerpdev2__Status__c}</div>
+        </td>-->
+            
+
+        <td>
+            <div class="slds-dropdown-trigger slds-dropdown-trigger_click" aura:id="dropdownContent">
+                <button class="slds-button slds-button_icon slds-button_icon-border-filled slds-button_icon-x-small" title="Show More" aura:id="dropdown" onclick="{!c.dropdown}">
+                    <lightning:icon iconName="utility:down" size="x-small" alternativeText="section" />
+                    <span class="slds-assistive-text">Show More</span>
+                </button>
+                
+                <div class="slds-dropdown slds-dropdown_right">
+                    <ul class="slds-dropdown__list" role="menu">
+                      <li class="slds-dropdown__item" role="presentation">
+                            <a href="javascript:void(0);" role="menuitem" tabindex="0" onclick="{!c.editso}">
+                                <span class="slds-truncate" title="Edit Record">Edit</span>
+                            </a>
+                        </li> 
+                      <li class="slds-dropdown__item" role="presentation">
+                            <a href="javascript:void(0);" role="menuitem" tabindex="0" onclick="{!c.handleDeleteRecord}">
+                                <span class="slds-truncate" title="Delete Record">Delete</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+            </div>
+        </td> 
+    </tr>
+    <aura:if isTrue="{!not(empty(v.recordError))}">
+        <div class="recordError">
+            {!v.recordError}
+        </div>
+    </aura:if>
+    
+    {!V.body}
+    
+    
+</aura:component>

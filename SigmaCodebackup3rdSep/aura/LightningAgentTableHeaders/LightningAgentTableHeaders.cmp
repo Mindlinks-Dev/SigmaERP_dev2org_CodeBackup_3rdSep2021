@@ -1,0 +1,8 @@
+<aura:component >
+    <aura:attribute name="timeSlotsForHeaders" type="String[]" />
+    <aura:attribute name="tableHeaderValue" type="String"/>
+    
+    <th scope="col" width="70" class="time-slot">
+        <div class="slds-truncate" title="">{!v.tableHeaderValue}</div>
+    </th>
+</aura:component>

@@ -1,0 +1,14 @@
+.THIS {
+}
+
+@media only screen and (max-width: 768px) 
+    {
+    .THIS .main-content{width:90% !important;}
+    .THIS .popup{height:auto !important;}
+    .THIS.main-content{width:90% !important;}
+    .THIS.popup{height:auto !important;}
+    .THIS .slds-modal__footer{text-align:center !important;}
+    .THIS.slds-modal__footer{text-align:center !important;}
+    .THIS .slds-button{margin-bottom:5px !important;}
+    .THIS.slds-button{margin-bottom:5px !important;}
+}

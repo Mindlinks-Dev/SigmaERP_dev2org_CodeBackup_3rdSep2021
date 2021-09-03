@@ -1,0 +1,92 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickAction"  access="global" >
+    <aura:attribute name="wrapper" type="Object" />
+    <aura:attribute name="isOpen" type="boolean" />
+     <aura:attribute name="quotelinelist" type="Service_Quote_Line_Item__c[]" /> 
+    <aura:attribute name="wrapperListInsertLineItems" type="object[]" />
+    <aura:registerEvent name="carryorderpopup" type="c:carryorderpopup"/>
+    <aura:attribute name="isOpenprodTablechild" type="boolean" default="false"/>
+    <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="disval" type="String" />
+    <aura:attribute name="proposalproduct" type="Boolean" /> 
+    
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="">
+        <thead>
+            <tr class="slds-text-title_caps" style="background:#fafaf9;">
+                <th scope="col">
+                    <div class="slds-truncate" title="Action">Action</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Product Name">Product Name</div>
+                </th>
+                 <th scope="col">
+                    <div class="slds-truncate" title="Quantity">Quantity</div>
+                </th>
+                              
+               <th scope="col">
+                    <div class="slds-truncate" title="Service Contract">Service Contract</div>
+                </th>
+              
+                <th scope="col">
+                    <div class="slds-truncate" title="Price($)">Price($)</div>
+                </th>
+                
+                
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.quotelinelist}" var="obj" indexVar="index">
+                <tr>
+                    
+                    <td data-label="Action">
+                        
+                        <div class="a_btn" title="Action">                     
+                            <a aura:id="{!index+'ip'}" data-record="{!index}" data-index="{!index}" onclick="{!c.handleRemoveProductItemClick}">
+                                {!(index+1 == 0) ? '' : 'Delete'}</a> | 
+                            <lightning:button name="{!index}" variant="slds-button" label="Edit" onclick="{!c.addProducts}"/>
+                            
+                        </div>
+                        
+                    </td>
+                    
+                    <td data-label="Product Name">
+                        <div title="Product Name">{!obj.proname}&nbsp;</div>
+                    </td>
+                     <td data-label="Quantity">
+                        <div title="Quantity">{!obj.sigmaerpdev2__Quantity__c}&nbsp;</div>
+                    </td> 
+                   
+                    <td data-label="service">
+                        <div title="service">{!obj.contractname}&nbsp;</div>
+                    </td>
+                  
+                    <td data-label="price">
+                        <div title="price">{!obj.sigmaerpdev2__Price__c}&nbsp;</div>
+                    </td> 
+                    
+                   
+                    
+                    
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+    
+    <div class="slds-hide" aura:id="ModalDelete">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="margin-top:-2.5%;">
+                <header class="slds-modal__header">                   
+                    <h2 class="slds-text-heading_medium" style="color:#c23934;">Delete Item</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p class="slds-align_absolute-center">Are you sure you want to delete item?</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    
+                    <button class="slds-button slds-button--neutral" aura:id="confirmModalDelete" onclick="{!c.confirmModalDelete}" style="background:#c23934 !important;border:1px solid #c23934 !important;color:white !important;">Confirm</button>
+                    <button class="slds-button slds-button--neutral" aura:id="cancelModalDelete" onclick="{!c.cancelModalDelete}">Cancel</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

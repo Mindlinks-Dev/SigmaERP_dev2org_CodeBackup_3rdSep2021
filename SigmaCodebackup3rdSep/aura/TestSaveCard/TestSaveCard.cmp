@@ -1,0 +1,109 @@
+<aura:component controller="savecardController" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,force:hasRecordId"  access="global">
+    <aura:attribute name="checkVal" type="boolean" default="false"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:if isTrue="{!v.Spinner}">
+   
+        <lightning:spinner alternativeText="Loading" size="large" />
+    </aura:if>
+    <aura:attribute name="isAlradyExist" type="boolean" default="false"/>
+    <aura:attribute name="recordId" type="String" description="The current record Id to display" /> 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
+    <aura:attribute name="selectedCardType" type="String" description="The current record Id to display" />
+    <aura:attribute name="carddetails" type="Customer_Saved_Card__c" description="The current record Id to display" 
+                       default="{ 'sobjectType' : 'Customer_Saved_Card__c' , 
+                             'unknown_custom_field' : '',
+                             'sigmaerpdev__Customer_Name__c' : '', 
+                             'sigmaerpdev__SFDC_Account__c':'',
+                             'sigmaerpdev__Expiry_Month__c' : '',
+                             'sigmaerpdev__Expiry_Year__c' : '',
+                             'sigmaerpdev__Credit_Card_No__c' : '', 
+                             'unknown_custom_field' : '',                             
+                             'sigmaerpdev__Status__c' : '',
+                             'sigmaerpdev__Card_Type__c' : '',
+                             'sigmaerpdev__UserEmail__c' :'',
+                             'sigmaerpdev__Default_Card__c' :'',
+                             'sigmaerpdev__CVVNO__c' :'',
+                             'sigmaerpdev__SourceCvv__c' : '',
+                             'sigmaerpdev__Card_Number__c' : ''   
+                             }"
+                    
+                    /> 
+    
+ <aura:attribute name="cardsinfoList" type="Customer_Saved_Card__c[]" />   
+ <aura:attribute name="newcardsinfoList" type="Customer_Saved_Card__c[]" /> 
+<div class="slds-modal__container slds-box" style="width:100%;padding:0;">
+<header class="slds-modal__header">
+
+<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Save Card</h2>
+</header>
+<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+<div class="slds-grid">
+                    <div class="slds-col">
+                        <div class="slds-form slds-form_stacked">
+                               <div class="slds-form-element slds-p-right_small">
+                                <label class="slds-form-element__label" for="input-id-01">Credit Card Number
+                                <span style="color:red">* </span>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputText class="slds-input slds-size--3-of-4" blur="{!c.checkForCardType}" value="{!v.carddetails.sigmaerpdev__Credit_Card_No__c}" 
+                                                  maxlength="16" required="true" aura:id="Credit_card_number" placeholder="Enter Credit Card Number"/>
+                                </div>
+                            </div>
+       
+                              <div class="slds-form-element slds-p-right_small">
+                                  <label class="slds-form-element__label" for="input-id-01">Expiry month/year
+                                <span style="color:red">* </span>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputDate aura:id="Expiry_Date" required="true" value="{!v.carddetails.sigmaerpdev__Expiry_Year__c}" class="slds-input slds-size--3-of-4" displayDatePicker="true" format="MM/yyyy" />
+                                </div>
+                            </div>
+							
+							<div class="slds-form-element slds-p-right_small">
+                                <label class="slds-form-element__label" for="input-id-01">Card Type</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputSelect class="slds-input input uiInput uiInputText uiInput--default uiInput--input slds-size--3-of-4" aura:id="InputSelectDynamic" value="{!v.selectedCardType}" required="true" disabled="true">
+                                        
+                                        <ui:inputSelectOption text="Enter card number" label="Card Type" value="true"/>
+                                        <ui:inputSelectOption text="Visa" label="Visa"/>
+                                        <ui:inputSelectOption text="MasterCard" label="MasterCard"/>
+                                        <ui:inputSelectOption text="AmEx" label="AmEx"/>
+                                    </ui:inputSelect>
+                                	
+                                
+                                </div>
+                            </div>
+                             
+                        </div>
+                    </div>
+                    <div class="slds-col">
+                        <div class="slds-form slds-form_stacked">
+                             <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="input-id-01">Card Holder Name
+                                    <span style="color:red">* </span></label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputText class="slds-input slds-size--3-of-4" aura:id="Card_holderName" value="{!v.carddetails.sigmaerpdev__Customer_Name__c}" placeholder="Name"/>
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="input-id-01">CVV<span style="color:red">* </span></label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputSecret aura:id="cardVerificationValue" class="slds-input slds-size--3-of-4"  maxlength="4" value="{!v.carddetails.sigmaerpdev__SourceCvv__c}" required="true" placeholder="Enter CVV Number" /> 
+                                </div>
+                            </div>
+							<div class="slds-p-top--x-large" style="display:flex;">
+									<ui:inputCheckbox aura:id="checkValFour" value="{!v.carddetails.sigmaerpdev__Default_Card__c}"/>
+									<label class="slds-form-element__label slds-m-left--small">Default Card</label>
+                             </div>
+                            
+                       
+                        </div>
+                    </div>
+                </div>
+</div>
+<footer class="slds-modal__footer">
+ <button class="slds-button slds-button--brand" aura:id="Save_card" onclick="{!c.save}">Save Card</button>
+</footer>
+</div>
+
+</aura:component>

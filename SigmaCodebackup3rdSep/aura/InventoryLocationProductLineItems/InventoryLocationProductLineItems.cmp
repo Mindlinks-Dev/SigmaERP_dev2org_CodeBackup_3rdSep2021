@@ -1,0 +1,60 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"  access="global"  >
+    <aura:attribute name="ILPLI" type="Object" />  
+    <aura:attribute name="recId" type="Id" />
+    <tr>
+        <td scope="col">
+            <div>
+                <!--ui:outputText value="{!v.ILPLI.Name}"/-->
+                <a style="pointer-events: none;" href="{!'/one/one.app?#/sObject/'+ v.ILPLI.Id + '/view'}" onclick="{!c.IlpName}">{!v.ILPLI.Name}</a>
+            </div>
+        </td>
+        <td scope="col">
+             <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Inventory_Location_Product__r.sigmaerpdev2__Inventory_Location_Name__c}"/>
+        </td>
+         <td scope="col">
+            <div class="">
+                <aura:If isTrue="{!v.ILPLI.sigmaerpdev2__Product__r.Name!= null}">				
+                    <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Product__r.Name}"/>				
+                    <aura:set attribute="else">					
+                        <ui:outputText value="N/A"/>
+                    </aura:set>
+                </aura:If>
+            </div>
+        </td>
+        
+        <td scope="col">
+             <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Bin__r.Name}"/>
+        </td>
+        <td scope="col">
+            <div class="">
+                <aura:If isTrue="{!v.ILPLI.sigmaerpdev2__Available_Quantity__c != null}">				
+                    <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Available_Quantity__c}"/>				
+                    <aura:set attribute="else">					
+                        <ui:outputText value="N/A"/>
+                    </aura:set>
+                </aura:If>
+            </div>
+        </td>
+        <td scope="col">
+            <div class="">
+                <aura:If isTrue="{!v.ILPLI.sigmaerpdev2__Received_Quantity__c != null}">				
+                    <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Received_Quantity__c}"/>				
+                    <aura:set attribute="else">					
+                        <ui:outputText value="N/A"/>
+                    </aura:set>
+                </aura:If>
+            </div>
+        </td>
+        <td scope="col">
+            <div class="">
+                <aura:If isTrue="{!v.ILPLI.sigmaerpdev2__Reserved_Quantity__c != null}">				
+                    <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Reserved_Quantity__c}"/>				
+                    <aura:set attribute="else">					
+                        <ui:outputText value="N/A"/>
+                    </aura:set>
+                </aura:If>
+            </div>
+        </td>
+        
+    </tr>
+</aura:component>

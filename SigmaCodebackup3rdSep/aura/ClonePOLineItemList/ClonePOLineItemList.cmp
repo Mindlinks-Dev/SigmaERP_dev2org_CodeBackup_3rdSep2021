@@ -1,0 +1,66 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="isOpenprodTablechild" type="boolean" default="false"/>
+    <aura:attribute name="isOpen" type="boolean" />
+    <aura:attribute name="purchaseOrder" type="Purchase_Order_Product__c[]" />
+    <aura:attribute name="approve" type="boolean" />
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="serialCount" type="Integer"/>
+    <aura:attribute name="Reqapprove" type="boolean" />
+    <aura:registerEvent name="carryPOEvent" type="c:CarryPOEvent"/>
+     <aura:attribute name="Id" type="ID"/>   
+    <aura:registerEvent name="SigmaComponentEvent" type="c:SigmaComponentEvent" />
+    <aura:iteration items="{!v.purchaseOrder}" var="obj" indexVar="index">
+        
+        <tr>
+            
+            <td >
+                
+                <div class="slds-truncate" title=""> {!index+1} </div>
+            </td>
+            
+            
+            
+            <td data-label="Action">
+                <div class="a_btn" title="Actionindex">
+                    <a aura:id="{!index+'ip'}" data-record="{!index}" data-index="{!index}" onclick="{!c.handleRemoveProductItemClick}">
+                        {!(index+1 == 0) ? '' : 'Remove'}</a> | 
+                    <lightning:button name="{!index}" variant="slds-button" label="Edit" onclick="{!c.addProducts}"/>
+                </div>
+            </td>
+            <td data-label="Product">
+                <div title="Product">{!obj.Product_name} &nbsp;</div>
+            </td>
+            <td data-label="View Product" class="slds-text-align_center">
+             <lightning:button class="slds-button_balck" value="{!obj.sigmaerpdev2__Product__c}" onclick="{!c.getproductimagedata}"><lightning:icon iconName="action:add_photo_video" size="x-small" alternativeText="View Product" /></lightning:button>   
+            <!--<button class="slds-button slds-button-brand" onclick="{!c.getproductimagedata}">View Product</button>-->
+            </td>        
+            
+            <td data-label="Buying Price">
+                <div title="Buying Price">{!obj.sigmaerpdev2__Buying_Price__c} &nbsp;</div>
+            </td>
+            <td data-label="Expected Delivery Date">
+                <div title="Expected Delivery Date">{!obj.sigmaerpdev2__Expected_Delivery_Date__c} &nbsp;</div>
+            </td>
+            
+            <td data-label="Quantity">
+                <div title="Quantity">{!obj.sigmaerpdev2__Quantity__c} &nbsp;</div>
+            </td>
+            <aura:If isTrue="{!obj.sigmaerpdev2__Discount__c != null }">
+                <td data-label="Discount(%)">
+                    <div title="Discount(%)">{!obj.sigmaerpdev2__Discount__c} &nbsp;</div>
+                </td>
+                <aura:set attribute="else"> 
+                    
+                    <td data-label="Discount(%)">
+                        <div title="Discount(%)">N/A &nbsp;</div>
+                    </td>
+                </aura:set>
+            </aura:If>
+            <td data-label="Status">
+                <div title="Status">{!obj.sigmaerpdev2__Status__c} &nbsp;</div>
+            </td> 
+        </tr>
+    </aura:iteration>
+    
+</aura:component>

@@ -1,0 +1,45 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes">
+    <aura:attribute name="rowDetails"  type="object" />
+    <td style="width:15%;text-align:center;">
+    	{!v.rowDetails.Name}
+    </td>
+    <td style="width:15%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Email__c != null}">
+            {!v.rowDetails.sigmaerpdev2__Email__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td>
+    <td style="width:15%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Contact_Person_Mobile__c != null}">
+            {!v.rowDetails.sigmaerpdev2__Contact_Person_Mobile__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td>
+    <td style="width:15%;text-align:center;">
+    	{!v.rowDetails.ShippingStreet},
+        {!v.rowDetails.ShippingCity} -
+        {!v.rowDetails.ShippingPostalCode},
+        {!v.rowDetails.ShippingState},
+        {!v.rowDetails.ShippingCountry}
+    </td>
+    <!--<td style="width:8%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Email__c != null}">
+            {!v.rowDetails.sigmaerpdev2__Email__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td>
+    <td style="width:4%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Contact_Person_Mobile__c != null}">
+            {!v.rowDetails.sigmaerpdev2__Contact_Person_Mobile__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td> -->   
+</aura:component>

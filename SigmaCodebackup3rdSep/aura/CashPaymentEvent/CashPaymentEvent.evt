@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" description="Event template" access="global">    
+    <aura:attribute name="cashReceiptNo" type="Payment__c" required="true" description="The Id of the selected SObject." />
+    <aura:attribute name="receivedFrom" type="String" required="true" description="The id to identify the instance the component" />
+	<aura:attribute name="paymentDate" type="Date" required="true" description="The Id of the selected SObject." />
+    <aura:attribute name="billAmount" type="Double" required="true" description="The id to identify the instance the component" />         
+</aura:event>

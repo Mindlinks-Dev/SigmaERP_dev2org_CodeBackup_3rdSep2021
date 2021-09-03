@@ -1,0 +1,8 @@
+<!-- selectedsObjectRecordEvent -->
+<aura:event type="COMPONENT" description="by this event we are pass the selected sObject(lookup list record) in the parent component">
+    <aura:attribute name="recordByEvent" type="sObject"/>
+    <aura:attribute name="objectAPIName" type="string"/>
+    <aura:attribute name="context" type="string"/>
+    <aura:attribute name="objectLabel" type="String" description="Object Label" />  
+     <aura:attribute name="sObjectId" type="Id" required="true" description="The Id of the selected SObject." />
+</aura:event>

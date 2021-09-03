@@ -1,0 +1,41 @@
+<aura:component >
+    <p  style="font-family: 'Helvetica Thin', Arial;text-transform: uppercase;font-size: 25px;line-height: 34px;padding: 4px;"><div class="slds-box slds-theme_shade slds-theme_alert-texture slds-text-heading_medium slds-text-align_center">Brewery Terms and Conditions</div></p>
+     <br/>
+    
+    <div style="font-size: 14px;font-family:Arial,Hlvetica,serif;Margin:0px 0px 0px 0px;Padding:0px 20px 7.46719px 0px;filter: contrast(70%)">
+    <p>The terms, policies, and conditions (collectively known as "Conditions") described below govern the use of this site (referred to as "Brewary" or "site").
+
+        </p>
+    <br/>
+    
+    <p><div style="font-weight: bold">1. PORTAL LICENSE</div>
+       Promotions and coupons are not valid on previously purchased merchandise. For all promotions, quantity is limited to stock on hand. No rain checks will be issued unless specifically stated in promotion details. Any promotion can end without notice. Coupons have no cash value and may only be used for the items intended. Coupon expiration times are Indian standard time (IST).  While we try to ensure accuracy, we reserve the right to correct any errors in pricing or descriptions and to cancel or refuse to accept any order based on an incorrect price or description. Such corrections may be made even after an order is accepted.
+        </p>
+     <br/>
+    <p><div style="font-weight: bold">2. PERMITTED LICENSE USES AND RESTRICTIONS  </div>
+        We will ship your product as it becomes available. We will keep you informed of any products that you have ordered that are out-of-stock and unavailable for immediate shipment. You may cancel your order at any time prior to shipping.
+        
+        </p>
+     <br/>
+    <p><div style="font-weight: bold">
+        3. TERM AND TERMINATION </div>
+       All products are described to the best of our ability. If you have questions, please ask before purchasing. Do not assume anything from an image as stock images are sometimes used.
+       </p>
+     <br/>
+    <p>
+        <div style="font-weight: bold">
+        4. SERVICE LEVEL AGREEMENT  </div>
+       Your receipt of electronic or other forms of order confirmation does not signify our acceptance of your order, nor does it constitute confirmation of our offer to sell. MyBrewery reserves the right at any time after receipt of your order to accept or decline your order for any reason or to supply less than the quantity you ordered of any item because of unavailability.
+       </p>
+     <br/>
+    <p>
+        <div style="font-weight: bold">
+        5. USE OF DATA </div>
+        This is a legally binding agreement. Please read it carefully. By clicking “I Agree,”  Enter all your terms and conditions here.
+        
+        </p>
+    
+    </div>
+     <br/>
+    
+</aura:component>

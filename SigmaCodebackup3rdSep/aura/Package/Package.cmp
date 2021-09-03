@@ -1,0 +1,223 @@
+<aura:component Controller="PackageCtrl" 
+                implements="force:appHostable,force:lightningQuickAction,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access='global'>
+    <aura:attribute name="recordId" type="String" />
+     <aura:attribute name="orderId" type="String" />
+    <aura:attribute name="customerName" type="String" />
+    <aura:attribute name="locationName" type="String" />
+    <aura:attribute name="noteType" type="String" />
+    <aura:attribute name="package" type="Package__c" default="{ 'sobjectType':'Package__c' }"/>
+    <aura:attribute name="packageProductWrap" type="List" default="[{'SOId':'','SOName':'','packageLinItems':[] }]"/>
+    <aura:attribute name="configValues" type="map" default="" />
+    <aura:attribute name="autoAllocFlag" type="boolean" default="false" />
+    <aura:attribute name="oldStatus" type="String"/>
+    <aura:attribute name="fromPickingSlip" type="Boolean" default="false" />
+    <aura:attribute name="isError" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+    <aura:attribute name="isPPLineError" type="Boolean" default="false" />
+    <aura:attribute name="errorPPMessage" type="String" default="" />
+    <!--AutoPick-->
+    <aura:attribute name="productIdAvailableQuantMap" type="Map" default="{}" />
+    <aura:attribute name="productIdRemainILPLIMap" type="Map" default="{}" />
+    <aura:attribute name="ilpliIdAllocatedQuantMap" type="Map" default="{}" />
+    <aura:attribute name="compId" type="String"/>
+    <aura:attribute name="idListStr" type="String"/>
+    <aura:attribute name="soNameFromBasket" type="String"/>
+    
+    <aura:attribute name="errorMsg1" type="String" default=""/>
+    <aura:attribute name="isError1" type="Boolean" default="false"/>
+    <aura:attribute name="isPackage" type="Boolean" default="true"/>
+    
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="StappComponentEvent" event="c:StappComponentEvent" action="{!c.handleSRComponentEvent}"/>
+    <aura:handler name="SigmaComponentResetEvent" event="c:SigmaComponentResetEvent" action="{!c.handleCompResetEvent}"/>
+    <aura:attribute name="isSigmaOrder" type="boolean"/>
+    <aura:attribute name="isSOComingFromPicking" type="boolean"/>
+     <aura:handler name="controlOrderIdEvent" event="c:OrderIdEvent" action="{!c.handleOrderId}"/>
+
+    
+    
+   <ui:scrollerWrapper class="slds-scrollable_y"> 
+    <!--code added by rashmi to hand Standard order in package on 19-07-2019 -->
+    
+    
+    <aura:renderIf isTrue="{!v.isError1}">
+        <ui:message title="Error" severity="error" closable="false">
+            {!v.errorMsg1}
+        </ui:message>
+        <aura:set attribute="else">
+            
+        </aura:set>
+    </aura:renderIf>
+    
+    <aura:if isTrue="{!v.isPackage}">
+        
+        
+       
+        <lightning:card title="Package" iconName="standard:account"> 
+            
+            
+            <div id='HeaderErrorDiv' class="{!v.isError ? '':'slds-hide'}">
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+                        <lightning:icon iconName="utility:error" size="x-small" alternativeText="section" />
+                    </span>
+                    <h1>{!v.errorMessage}</h1>
+                    <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="{!c.closeErrorMsg}">
+                        <lightning:icon iconName="action:close" size="x-small" alternativeText="section" />
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                </div>                 
+            </div>
+            
+            <aura:set attribute="footer">
+                <!--<lightning:button variant="brand" label="Add Package Products" onclick="{! c.addPP}" class="slds-float_left buttonOverlay"/>-->
+                <aura:if isTrue="{!v.recordId==undifined}">
+                    <lightning:button  class="buttonOverlay" variant="brand" label="Save" onclick="{! c.saveData }" />
+                    <aura:set attribute="else">
+                        <lightning:button class="buttonOverlay" variant="brand" label="Update" onclick="{! c.saveData }" />
+                    </aura:set>
+                </aura:if>
+                <!--  <aura:if isTrue="{!v.fromPickingSlip}">
+                <aura:if isTrue="{!v.noteType=='Package'}">
+                    <lightning:button aura:id='saveAndDeliveryNote' class="{!v.package.sigmaerpdev2__Status__c=='Ready'? 'buttonOverlay':'slds-hide'}" variant="brand" label="Save &amp; Generate Delivery Note" onclick="{! c.saveData }" />
+                </aura:if>
+            </aura:if>-->
+                <lightning:button class="buttonOverlay" variant="neutral" label="Cancel" type="reset" onclick="{!c.cancelPackage}" />
+                <!-- <lightning:button aura:id='ProceedToShipment' class="{!v.package.sigmaerpdev2__Status__c=='Ready'? 'slds-float_right buttonOverlay':'slds-hide'}" variant="brand" label="Proceed To Shipment" onclick="{! c.saveData}"/>
+--></aura:set> 
+            <div class="slds-form slds-align_absolute-center">
+                <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12" role="list">
+                    <div class="slds-grid slds-wrap slds-grid-block slds-box paddingAround">
+                        <!--  <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                      <label class="slds-form-element__label">Location</label>     -->              
+                        <!--<aura:if isTrue="{!and(empty(v.recordId),empty(v.customerName),empty(v.soNameFromBasket))}"> -->                                                                       
+                        <!--<aura:if isTrue="{!and(empty(v.recordId),empty(v.packageProductWrap[0].SOName),empty(v.soNameFromBasket))}"> -->
+                        
+                        <!-- <sigmaerpdev:customLookup recordID="{!v.package.sigmaerpdev2__Location__r.Name}" recordName="{!v.locationName}" whereCondition=" And  Type = 'Packaged Location' "  objectAPIName="Account"  IconName="standard:account" label=""/>
+       -->
+                        <!--<     <aura:set attribute="else">
+                                <ui:inputText value="{!v.locationName}" disabled="true"/>
+                            </aura:set> -->
+                        <!-- </aura:if>     -->
+                        <!-- </div> -->
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_6-of-12 slds-large-size_6-of-12" id="tempToDisplayPackageCustomer" >
+                                                 
+                            <!--<aura:if isTrue="{!and(empty(v.recordId),empty(v.customerName),empty(v.soNameFromBasket))}"> -->                                                                       
+                            <aura:if isTrue="{!and(empty(v.recordId),empty(v.packageProductWrap[0].SOName),empty(v.soNameFromBasket))}">
+                                <label class="slds-form-element__label"><span style="color:red">* </span>Customer</label>   
+                                <c:LookupSObject aura:id="AccName" searchString="{!v.customerName}" 
+                                                           label="Account" pluralLabel="Accounts"
+                                                           sObjectAPIName="Account" 
+                                                           instanceId="Supplier,Vendor"
+                                                           SRString="Customer"
+                                                           listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                           listIconClass="slds-icon-standard-account"
+                                                           
+                                                           />  
+                                
+                                <!-- <sigmaerpdev:customLookup recordID="{!v.package.sigmaerpdev2__Customer__r.Name}" recordName="{!v.customerName}" 
+                                                whereCondition="And  Type = 'Customer' " 
+                                                objectAPIName="Account" IconName="standard:account" label=""/> -->
+                                <aura:set attribute="else">
+                                    <lightning:input label="Customer" name="input1" value="{!v.customerName}" disabled="true" />
+                                    <!--ui:inputText  value="{!v.customerName}"  disabled="true"/-->
+                                </aura:set>
+                            </aura:if>                       
+                        </div>
+						  <div class="slds-col slds-size_1-of-2 slds-medium-size_6-of-12 slds-large-size_6-of-12" id="tempToDisplayPackageStatus" >
+                           <!--ui:inputSelect aura:id="status" change="{!c.handleStatusChange}" value="{!v.package.sigmaerpdev2__Status__c}">
+                                <ui:inputSelectOption value="In Progress" text="In Progress" disabled="{!v.oldStatus=='In Shipment' || v.oldStatus=='Delivered' || v.oldStatus=='Ready'}"/>
+                                <ui:inputSelectOption value="Ready" text="Ready" disabled="{!v.oldStatus=='In Shipment' || v.oldStatus=='Delivered'}"/>
+                                <ui:inputSelectOption value="In Shipment" text="In Shipment" disabled="true"/>
+                                <ui:inputSelectOption value="Delivered" text="Delivered" disabled="true"/>
+                              <  <ui:inputSelectOption value="Un-Package" text="Un-Package" disabled="{!empty(v.recordId) ? true: v.oldStatus=='Ready' ? false:true }"/>>
+                            </ui:inputSelect--> 
+                            <lightning:select aura:id="status" name="select" label="Status" required="true" onchange="{! c.handleStatusChange }" value="{!v.package.sigmaerpdev2__Status__c}" >
+                                
+                                <option value="In Progress" disabled="{!v.oldStatus=='In Shipment' || v.oldStatus=='Delivered' || v.oldStatus=='Ready'}">In Progress</option>
+                                <option value="Ready"  disabled="{!v.oldStatus=='In Shipment' || v.oldStatus=='Delivered'}">Ready</option>
+                                <option value="In Shipment" disabled="true">In Shipment</option>
+                                <option value="Delivered" disabled="true">Delivered</option>
+                                
+                            </lightning:select>
+                            
+                        </div>  
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12" id="tempToDisplayPackageDate" >
+                             <!--force:inputField value="{!v.package.sigmaerpdev2__PackagedDate__c}" required="true"/-->
+                               <lightning:input type="date" label="Packaged Date" required="true	" value="{!v.package.sigmaerpdev2__PackagedDate__c}"  />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- <div style="padding: 1%;" class="slds-align_absolute-center ">
+            <div class="slds-form slds-form_compound slds-box" style="width:50%;">
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label">Customer<span style="color:red">* </span></label>
+                                <stapp:customLookup recordID="{!v.package.stapp__Customer__c}" recordName="{!v.customerName}" whereCondition="{!'AND RecordType.name=\'Vendor\''}" objectAPIName="Account" IconName="standard:account" label=""/>
+                            </div>
+                            <div class="{!v.FieldHideAndShow[0].stapp__P_Location__c ? 'slds-form-element slds-size_1-of-2':'slds-hide'}">
+                                <label class="slds-form-element__label">Location</label>
+                                <stapp:customLookup recordID="{!v.package.unknown_custom_field}" recordName="{!v.locationName}" whereCondition="{!'AND RecordType.name=\'Location\''}" objectAPIName="Account" IconName="standard:account" label=""/>
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label">Status<span style="color:red">* </span></label>
+                                <ui:inputSelect aura:id="status" change="{!c.handleStatusChange}" value="{!v.package.stapp__Status__c}">
+                                    <ui:inputSelectOption value="In Progress" text="In Progress"/>
+                                    <ui:inputSelectOption value="Ready" text="Ready" />
+                                    <ui:inputSelectOption value="In Shipment" text="In Shipment" disabled="true"/>
+                                    <ui:inputSelectOption value="Delivered" text="Delivered" disabled="true"/>
+                                </ui:inputSelect>
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label">Packaged Date<span style="color:red">* </span></label>
+                                <force:inputField value="{!v.package.stapp__Packaged_Date__c}" required="true"/>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div> -->
+            <div>
+                <div class="slds-section slds-is-open">
+                    <h3 class="slds-section__title">
+                        <button class="slds-button slds-section__title-action">
+                            <span class="slds-truncate" title="Package Product">Package Product</span>
+                        </button>
+                    </h3>
+                </div>
+                <div id='LineItemErrorDiv' class="{!v.isPPLineError ? '':'slds-hide'}">
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                        <span class="slds-assistive-text">error</span>
+                        <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+                            <lightning:icon iconName="utility:error" size="x-small" alternativeText="section" />
+                        </span>
+                        <h1>{!v.errorPPMessage}</h1>
+                        <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="{!c.closeErrorMsg}">
+                            
+                            <lightning:icon iconName="action:close" size="x-small" alternativeText="section" />
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                    </div>
+                </div>
+                <aura:iteration items="{!v.packageProductWrap}" var="item" indexVar="i">
+                    <!--{!v.isSigmaOrder}-->
+                    <c:PackageLineItems packageProduct="{!item.packageLinItems}" isSOComingFromPicking="{!v.isSOComingFromPicking}" ilpliIdAllocatedQuantMap="{!v.ilpliIdAllocatedQuantMap}" packRecordId="{!v.recordId}" configValues="{!v.configValues}" productIdAvailableQuantMap="{!v.productIdAvailableQuantMap}" productIdRemainILPLIMap="{!v.productIdRemainILPLIMap}" idListStr="{!v.idListStr}" stappOrderID="{!item.SOId}" soNameFromBasket1="{!v.soNameFromBasket}" standOrderNumber="{!item.SOName}"  stappOrderName="{!item.SOName}" custId="{!v.package.sigmaerpdev2__Customer__c}" custName1="{!v.customerName}" headerStatus="{!v.package.sigmaerpdev2__Status__c}" locId="{!v.package.sigmaerpdev2__Location__c}" compId="{!v.compId}" autoAllocToggle="{!v.autoAllocFlag}" indexNum="{!i}" isSigmaOrder="{!v.isSigmaOrder}"/>
+                </aura:iteration>
+                
+            </div>
+        </lightning:card>
+    </aura:if>
+    
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner alternativeText="Loading" size="large" />
+    </div>
+	</ui:scrollerWrapper>
+</aura:component>

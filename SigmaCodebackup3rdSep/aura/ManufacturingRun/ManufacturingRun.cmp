@@ -1,0 +1,140 @@
+<aura:component controller="ManufacturingRun" implements="force:appHostable">
+    
+    <ltng:require scripts="{!join(',', 
+                           $Resource.jQueryConfirm1 + '/jquery.min.js', 
+                           $Resource.jQueryConfirm1 + '/jquery-confirm.min.js')}" styles="{!join(',', 
+                                                                                          $Resource.jQueryConfirm1 + '/jquery-confirm.style.css', 
+                                                                                          $Resource.jQueryConfirm1 + '/font-awesome.css')}" />
+    
+    <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="currentCount" type="Integer" default="0"/>
+    <aura:attribute name="initialRows" type="Integer" default="10"/>
+    <aura:attribute name="rowsToLoad" type="Integer" default="10"/>
+    <aura:attribute name="totalNumberOfRows" type="Integer"/>
+    <aura:attribute name="loadMoreStatus" type="String" default="Load More"/>
+    
+    <aura:attribute name="ManufacList" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:handler name="ManufactureEvent" event="c:ManufactureEvent" action="{!c.goToHome}" />
+    <aura:handler event="c:ManufactureApplicationEvent" action="{!c.openEdit}" />
+    
+    <aura:attribute name="autoAllocFlag" type="Boolean" />
+    <!--<aura:attribute name="compName" type="String" />-->
+    
+    <aura:attribute name="hideMRHeader" type="Boolean" default="false" />
+    
+    <aura:if isTrue="{!v.hideMRHeader == false}">        
+        <lightning:card title="">    	         
+            <img src="/resource/sigmaerpdev2__MRuns" width="45" height="5" title="Manufacturing Process" />    
+            <span style="padding-left:488px;font-size:16px;">{!'Manufacturing Runs ('+v.totalNumberOfRows+')'}</span>
+            <img style="float:right;" src="/resource/sigmaerpdev2__MRuns" width="45" height="5" title="Manufacturing Process" />        
+        </lightning:card>
+    </aura:if>
+    
+    <div aura:id="newMan" class="slds-hide">
+        <!--<c:ManufacturingRunNew autoAllocFlag="{!v.autoAllocFlag}" compName="{!v.compName}" />-->
+        <c:ManufacturingRunNew autoAllocFlag="{!v.autoAllocFlag}" />
+    </div>
+    
+    <div aura:id="ManList">         
+        <aura:if isTrue="{!and(v.totalNumberOfRows > 0, v.totalNumberOfRows != null)}">     
+            <lightning:card title="">               
+                <aura:set attribute="actions">
+                    <lightning:button label="New" onclick="{!c.NewManu}" />
+                </aura:set>
+                <aura:set attribute="footer">
+                    <a onclick="{!c.loadMoreData}">{!v.loadMoreStatus}</a>
+                </aura:set>
+                <div class="slds-scrollable--mob">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Manufacturing Run Name">Manufacturing Run Name</div>
+                                </th>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Product">Product</div>
+                                </th>                                
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Run Date">Initial<br /> Planned<br /> Qty.</div>
+                                </th>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Run Date">Final<br /> Produced<br /> Qty.</div>
+                                </th>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Recipe Name">Recipe Name</div>
+                                </th>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Status">Status</div>
+                                </th>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Run Date">Start Date</div>
+                                </th>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Run Date">End Date</div>
+                                </th> 
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Action">Actions</div>
+                                </th>
+                            </tr>     
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.ManufacList}" var="man">
+                                <c:ManufacturingRunItems Manufac="{!man}" />
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </lightning:card>
+            <aura:set attribute="else">
+                <lightning:card title="Manufacturing Run (0)" iconName="standard:metrics">
+                    <aura:set attribute="actions">
+                        <lightning:button label="New" onclick="{!c.NewManu}" />
+                    </aura:set>                
+                    <div class="slds-scrollable--x">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        <div class="slds-truncate" title="Manufacturing Run Name">Manufacturing Run Name</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        <div class="slds-truncate" title="Recipe Name">Recipe Name</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        <div class="slds-truncate" title="Run Date">Required Quantity</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        <div class="slds-truncate" title="Status">Status</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        <div class="slds-truncate" title="Run Date">Run Date</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        <div class="slds-truncate" title="Action"></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>  
+                                <tr>
+                                    <td colspan="5">
+                                        <div style="padding-left:47%;">No records found</div>
+                                    </td>
+                                </tr> 
+                            </tbody>
+                        </table>
+                    </div>
+                </lightning:card>
+            </aura:set> 
+        </aura:if>
+    </div>
+    <div class="demo-only slds-hide" aura:id="mySpinner" style="height: 6rem;">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

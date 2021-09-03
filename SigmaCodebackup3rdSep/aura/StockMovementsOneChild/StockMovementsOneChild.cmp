@@ -1,0 +1,55 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="FromId" type="String"/>
+    <aura:attribute name="ILPitem" type="Object"/>
+    <aura:attribute name="FromBinID" type="Id"/>
+    <aura:attribute name="indexNum" type="Integer" />
+    <aura:attribute name="isBinShow" type="boolean" default="false"/>
+    <aura:attribute name="isLocationShow" type="boolean" default="false"/>
+    
+    <aura:handler name="CarryStockEvent" event="c:CarryStockEvent" action="{!c.highlight}"/>
+    
+    <div class="slds-section" aura:id="sldsSection">
+        <h3 class="slds-section__title">
+            <button aria-expanded="true" aura:id="buttonsldsSection" class="slds-button slds-section__title-action" onclick="{!c.productTitle}">
+                <c:svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#switch'}" />
+                <span class="slds-truncate" title="Section Title">PRODUCT : {!v.ILPitem.ProName}</span>
+            </button>
+        </h3>
+        
+        <div aria-hidden="false" class="slds-section__content" id="expando-unique-id">
+            <table class="slds-table slds-table_cell-buffer">
+                <tr style="background:#f4f6f9;text-transform:uppercase">
+                    <th scope="col" style="width:10%;background:#f4f6f9;">
+                        <div class="" title="ILPLI">ILPLI</div>
+                    </th>
+                    <th scope="col" style="width:10%;background:#f4f6f9;">
+                        <div class="" title="LOT">LOT</div>
+                    </th>
+                    <th scope="col" style="width:10%;background:#f4f6f9;">
+                        <div class="" title="Expiry Date">Expiry Date</div>
+                    </th>
+                    <th scope="col" style="width:12%;background:#f4f6f9;">
+                        <div class="" title="Serial Number">Serial Number</div>
+                    </th>
+                    <th scope="col" style="width:10%;background:#f4f6f9;">
+                        <div class="" title="Available Qty">Available Qty</div>
+                    </th>
+                    <th scope="col" style="width:10%;background:#f4f6f9;">
+                        <div class="" title="Pick Qty">Pick Qty</div>
+                    </th>
+                    <th scope="col" style="width:18%;background:#f4f6f9;">
+                        <div class="" title="To Location">To Location</div>
+                    </th>
+                    <th scope="col" style="width:18%;background:#f4f6f9;">
+                        <div class="" title="Bin">To Bin</div>
+                    </th>
+                </tr>
+                <tbody>
+                    <aura:iteration items="{!v.ILPitem.IlpliList}" var="ILPLI" indexVar="index">
+                        <c:StockMovementsOneChildlist ILPLI="{!ILPLI}" FromId="{!v.FromId}" FromBinId="{!v.FromBinID}" indexNum ="{!index}"/>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </div>  
+</aura:component>

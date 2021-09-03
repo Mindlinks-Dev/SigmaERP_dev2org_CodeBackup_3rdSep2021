@@ -1,0 +1,55 @@
+<aura:component controller = "ServiceOfferAppoinment"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute type="List" name="showOffer" />  
+   <!-- <aura:attribute type="Integer" name="totalRecords" />-->
+    <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols">
+	<!--slds-table slds-table_cell-buffer slds-table_bordered-->
+        <thead>
+            <tr class="slds-line-height_reset">
+                 <!--<th class="" scope="col">
+                    <div class="slds-truncate" title="Action">Action</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Day">Day</div>
+                </th>-->
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Start Date">Dates</div>
+                </th>
+                <!--th class="" scope="col">
+                    <div class="slds-truncate" title="End Date">End Date</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="PromBand">PromBand</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="PromType">PromType</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Day">Day</div>
+                </th>
+                <commented based on Gareth comment
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="OfferToken">OfferToken</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="OfferText">OfferText</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="TravelTime">TravelTime</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="FRU">FRU</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="IRU">IRU</div>
+                </th>
+                  till here -->
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.showOffer}" var="iterator" >
+                <c:offerAppoinmentChild offerData="{!iterator}" />
+            </aura:iteration>
+           
+        </tbody>
+    </table>
+</aura:component>

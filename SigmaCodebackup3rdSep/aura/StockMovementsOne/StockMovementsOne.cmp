@@ -1,0 +1,194 @@
+<aura:component controller="StockMomentLightning" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,force:hasRecordId,forceCommunity:availableForAllPageTypes"  access="global" >
+    <ltng:require styles="{!$Resource.increasepopupsize}"/>
+    <aura:attribute name="diffQnty" type="Integer" description="" />
+    <aura:attribute name="FormLocId" type="String" description="" />
+    <aura:attribute name="ilpId" type="String" description="" />
+    <aura:attribute name="binId" type="Id"/>
+    <aura:attribute name="binName" type="String"/>
+    <aura:attribute name="ILPlist" type="Object[]"/>
+    <aura:attribute name="FromLocId" type="String" description="" />
+    <aura:attribute name="addMoreProdFlag" type="boolean" description="" />
+    <aura:attribute name="RowCompWrapperArray" type="Stock_Moment_Product__c[]" />
+    
+    <aura:registerEvent name="deleteWrapperRowEvent" type="c:RemoveWrapperRowComp"/>
+    <aura:attribute name="Id" type="String"    default=""/>	
+    <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+
+    <aura:handler name="carryStockmovementList" event="c:CarryStockmovementRecord" action="{!c.handleStockmovementList}"/>
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:attribute name="RowCompWrapperObj" type="StockMovement__c" description="The current record Id to display" 
+                    default="{ 'sobjectType' : 'StockMovement__c' ,
+                             'sigmaerpdev2__Status__c'   : '',    
+                             'sigmaerpdev2__Location__c':'',
+                             'sigmaerpdev2__Product__c':'',
+                             'sigmaerpdev2__Received_Quantity__c':''
+                             }"
+                    
+                    /> 
+    <aura:attribute name="StockMoment" type="StockMovement__c"
+                    default="{ 'sobjectType' : 'StockMovement__c' ,
+                             'sigmaerpdev2__Status__c': '',    
+                             'sigmaerpdev2__Location__c':'',
+                             'sigmaerpdev2__Stock_Movement_Type__c' : 'OUT'
+                             }"
+                    
+                    /> 
+    
+    <aura:attribute name="StockMomentProducts" type="Stock_Moment_Product__c[]" /> 
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/> 
+    <aura:attribute name="StockMomentProduct" type="Stock_Moment_Product__c[]" /> 
+    
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="isOpenprodTable" type="boolean" default="false"/>
+    <aura:attribute name="curRecordID" type="String" />
+    <aura:attribute name="recID" type="Id" default="" description="The current record Id to display" />
+    <aura:attribute name="isBinShow" type="boolean" default="false"/>
+    <aura:handler name="change" value="{!v.recID}" action="{!c.locChange}" />
+    <aura:handler name="change" value="{!v.binId}" action="{!c.binChange}" />
+        <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    <aura:attribute name="loaded" type="boolean" default="true"/>
+     <div class="exampleHolder">
+        <aura:if isTrue="{! v.loaded }">
+           
+            <aura:set attribute="else">
+               <lightning:spinner alternativeText="Loading" />
+            </aura:set>
+        </aura:if>
+    </div>
+    
+    <div id="Accspinner" class="slds-spinner_container" style="display:none">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    
+    <!--code for Success and Failure Alerts-->
+    <div class="slds-notify_container slds-is-relative slds-hide" aura:id="successAlert">
+        <div class="slds-notify slds-notify_toast slds-theme--success" aura:id="successAlertTheme" role="alert" style="z-index:10000;margin-top:0;">
+            <span class="slds-assistive-text">success</span>
+            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" aura:id="iconsuccess" title="Description of icon when needed">
+                <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#success'}" />
+            </span>
+            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top slds-hide" aura:id="iconwarning" title="Description of icon when needed">     
+                <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#warning'}" />
+            </span>	
+            <div class="slds-notify__content">
+                <h2 class="slds-text-heading_small record-header" style="position:relative;left:34%;">
+                    <span aura:id="recordCreatedHeader" >Record Created Successfully.</span>
+                    <span aura:id="recordNotCreatedHeader" class="slds-hide">Failed to create record.</span>
+                    <span aura:id="recordUpdtatedHeader" class="slds-hide">Record Updated Successfully.</span>
+                    <span aura:id="recordNotUpdtatedHeader" class="slds-hide">Record update failed.</span>
+                </h2>		
+                
+            </div>
+            <div aura:id="recordCreatedOK" class="closeButton" style="position:relative;left:40%;">
+                <button class="slds-button" title="Close" onclick="{!c.recordCreatedOK}" style="color:white !important;">
+                    <c:svg class="slds-button__icon slds-button__icon_large"  xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+            <div aura:id="recordCreatedCancel" class="slds-hide closeButton" style="position:relative;left:40%;">
+                <button class="slds-button slds-hide" title="Close" onclick="{!c.recordCreatedCancel}" style="color:white !important;">
+                    <c:svg class="slds-button__icon slds-button__icon_large" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+        </div>	
+        <div class="slds-backdrop slds-backdrop--open" style="opacity:0.6;"></div>
+    </div>
+    <!--End of Success and Failure Alerts-->
+    <div id="Accspinner" class="slds-spinner_container" style="display:none">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    
+    <div class="slds-box" style="padding:0 0 1rem 0;">
+        <div class="slds-page-header" style="margin-bottom:1rem;">
+            <div class="slds-media">
+                <!--div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-poll" title="Description of icon when needed">
+                        <c:svg class="slds-icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/action-sprite/svg/symbols.svg#description'}" />
+                        
+                    </span>
+                </div-->
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-contact" title="Stock">
+                        <lightning:icon iconName="custom:custom98" alternativeText="Stock" size="small"/>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <!--h2 class="slds-page-header__title slds-truncate slds-align-middle slds-m-top_xx-small" title="Stock Out Product"></h2-->
+                    <h2 class="slds-card__header-title">
+                        <a class="slds-card__header-link slds-truncate" title="Stock Movement">
+                            <span class="slds-text-heading_small">Stock Movement</span>
+                        </a>
+                    </h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content" style="width: 98%;margin:auto;">
+            <div class="slds-form slds-form_compound">
+                <div style="">
+                    <aura:renderIf isTrue="{!v.isError}">
+                        <ui:message title="Error" severity="error" closable="false">
+                            {!v.errorMsg}
+                        </ui:message>
+                        <aura:set attribute="else">  
+                        </aura:set>
+                    </aura:renderIf> 
+                </div>
+                <div class="form-element__group slds-p-bottom_x-small">
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-4" id="TempToDisplayFromLoc">
+                            <!--label class="slds-form-element__label" for="Vendor">From Location
+                                <span style="color:red">* </span>
+                            </label-->
+                            <label class="slds-form-element__label" for="Vendor">From Location
+                                <span style="color:red">* </span>
+                            </label>
+							  <c:customLookup recordID="{!v.recID}" recordName="" objectAPIName="sigmaerpdev2__Inventory_Location__c"  IconName="custom:custom24" isSigmaOrder ="true" whereCondition="{!'AND sigmaerpdev2__Location_Type__c=\'Warehouse\' '}" />
+                       
+                            <!--c:LookupSObject aura:id="FromLocation" searchString="" 
+                                             label="Inventory Location" pluralLabel="Inventory Locations"
+                                             sObjectAPIName="sigmaerpdev2__Inventory_Location__c" 
+                                             instanceId="FromLocation"
+                                             SRString="Inventory"
+                                             listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                             listIconClass="slds-icon-standard-account" recID="{!v.recID}"/-->                        
+                            
+                        </div>
+                          <aura:if isTrue="{!v.isBinShow}">
+                        <div class="slds-form-element slds-size_1-of-4" id="TempToDisplayFrombin">
+                            <label class="slds-form-element__label" for="Vendor">From Bin
+                                <span style="color:red">* </span>
+                            </label>
+                            
+                            <c:customLookup recordID="{!v.binId}" recordName="{!v.binName}" objectAPIName="Sublevel_location__c"  IconName="custom:custom24" isSigmaOrder ="true" whereCondition="{!v.recID ? 'AND recordtype.name=\'Bin\' AND sigmaerpdev2__Inventory_Location__c=\''+v.recID+'\'':''}" />
+                        </div>
+                        </aura:if>
+                    </div>
+                </div>
+                
+                <div aura:id="ILPitem">
+                    <aura:iteration items="{!v.ILPlist}" var="ILPitem" indexVar="index">
+                        <c:StockMovementsOneChild ILPitem="{!ILPitem}" FromId="{!v.recID}" FromBinID="{!v.binId}" indexNum ="{!index}"/> 
+                    </aura:iteration>
+                </div>     
+            </div>            
+        </div> 
+        <aura:if isTrue="{!v.ILPlist.length > 0}">
+            <div class="slds-form-element__row" id="" style="margin-top:1%;text-align:center;">
+                <button class="slds-button slds-button--brand"  aura:id="Save_StockMovements" onclick="{!c.SaveStockMovement}">Submit</button>             
+                <button class="slds-button slds-button--neutral"  aura:id="Save_StockMovements1" onclick="{!c.goBack}">Cancel</button>    
+           </div>
+       </aura:if>
+    </div>
+    <br/>
+</aura:component>

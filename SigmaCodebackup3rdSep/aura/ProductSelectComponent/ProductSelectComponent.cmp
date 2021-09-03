@@ -1,0 +1,70 @@
+<aura:component Controller="productmovement" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,force:lightningQuickAction" access="global" >
+  <ltng:require styles="{!$Resource.increasepopupsize}"/>
+    
+    
+    <aura:attribute name="option" type="Product_Request__c" />
+    <aura:attribute name="requestlineitem" type="Product_Request_Line_Item__c[]" /> 
+    <aura:attribute name="Fromlocation" type="String" />
+    <aura:attribute name="FromBin" type="String" />
+    <aura:attribute name="ToLocation" type="String" />
+    <aura:attribute name="ToBin" type="String" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="wrappdatas" type="object"/>
+    
+    <aura:attribute name="isTrue" type="Boolean" default="false"/>
+    <aura:attribute name="isFalse" type="Boolean" default="false"/>
+    
+    <aura:attribute name="isVisble" type="boolean"/>
+    
+    <aura:attribute name="FromLocationId" type="String" />
+    <aura:attribute name="FromBinId" type="String" />
+    
+    <aura:attribute name="ILPlist" type="Object[]"/>
+    
+    <ltng:require styles="{!$Resource.modal_close}" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <section class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <h2 class="slds-modal__title slds-hyphenate">Product Transfer</h2>
+            </header>
+            <div class="slds-modal__content" style="height:290px;">
+                <div class="slds-box  slds-card">
+                    <div class="slds-grid slds-m-bottom_medium">
+                         <div class="slds-size_1-of-4 slds-m-right_xx-small">
+                            <lightning:input type="Text" name="To Location" label="To Location" value="{!v.ToLocation}"  disabled="true"/>                    
+                        </div>&nbsp;&nbsp;&nbsp;&nbsp;                
+                        <div class="slds-size_1-of-4">
+                            <lightning:input type="Text" name="To Bin" label="To Bin" value="{!v.ToBin}"  disabled="true"/>
+                        </div>
+                    </div>
+                    <div class="slds-section">          
+                        <aura:iteration items="{!v.wrappdatas[0].mainWrapProdList}" var="packagingMat">                
+                            <c:showProductsListPT prdName="{!packagingMat.prodName}" requiredQnt="{!packagingMat.requiredQnt}" stockItem="{!packagingMat.stkItem}" innerList="{!packagingMat.wrapProdList}" />                        
+                        </aura:iteration>
+                    </div>
+                     
+                </div>
+            </div>
+            <footer class="slds-modal__footer">                
+                <!--<lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Create" onclick="{!c.createProductTransfer}" />
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />-->
+                <button class="slds-button slds-button_destructive" onclick="{!c.closeWindow}">Cancel</button>
+                <button class="slds-button slds-button_success" onclick="{!c.createProductTransfer}">Create</button>
+            </footer>
+        </div>
+    </section>
+    
+    <div class="demo-only slds-hide" aura:id="mySpinner">
+        <div class="slds-spinner_container slds-is-fixed">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+    
+</aura:component>

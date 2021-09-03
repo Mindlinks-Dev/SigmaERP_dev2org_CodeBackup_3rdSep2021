@@ -1,0 +1,13 @@
+.THIS {
+}
+
+@media (max-width: 48em)
+{
+    .THIS td{overflow:visible !important;} 
+    .THIS .slds-lookup__menu{text-align:left !important;}
+    .THIS.slds-lookup__menu{text-align:left !important;}
+    .THIS .transBorder .slds-col{width:100% !important;display:block !important;}
+    .THIS.transBorder .slds-col{width:100% !important;display:block !important;}
+    .THIS .ButtonTextPadding{margin-left:10px !important;}
+    .THIS.ButtonTextPadding{margin-left:10px !important;}
+}

@@ -1,0 +1,147 @@
+<aura:component controller="ProductReqCntrl" implements="force:appHostable">
+    
+     <ltng:require scripts="{!join(',', 
+                           $Resource.jQueryConfirm1 + '/jquery.min.js', 
+                           $Resource.jQueryConfirm1 + '/jquery-confirm.min.js')}" styles="{!join(',', 
+                           $Resource.jQueryConfirm1 + '/jquery-confirm.style.css', 
+                           $Resource.jQueryConfirm1 + '/font-awesome.css')}" />
+    
+	<aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="currentCount" type="Integer" default="0"/>
+    <aura:attribute name="initialRows" type="Integer" default="10"/>
+    <aura:attribute name="rowsToLoad" type="Integer" default="10"/>
+    <aura:attribute name="totalNumberOfRows" type="Integer"/>
+    <aura:attribute name="loadMoreStatus" type="String" default="Load More"/>
+	
+    <aura:attribute name="PRList" type="List" />
+    <aura:attribute name="hidePRHeader" type="Boolean" default="false" />
+    
+    <aura:attribute name="prRecId" type="String" />
+    <aura:attribute name="profName" type="String" />
+    
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:handler event="c:ManufactureApplicationEvent" action="{!c.openEdit}" />
+    <ui:scrollerWrapper class="slds-scrollable_y">    
+    <aura:if isTrue="{!v.hidePRHeader == false}"> 
+        <lightning:card title="">    	         
+            <aura:if isTrue="{!v.profName =='System Administrator'}">
+                <img src="/resource/sigmaerpdev2__Prod_Req_img" width="120" height="45" title="Product Requests" />                  
+                <span style="padding-left:420px;font-size:16px;">{!'Product Requests ('+v.totalNumberOfRows+')'}</span>                
+                <img style="float:right;" src="/resource/sigmaerpdev2__Prod_Req_img" width="120" height="45" title="Product Requests" />        
+                <aura:set attribute="else">
+                    <div class="slds-text-align_center">
+                        <span style="font-size:16px;">{!'Product Requests ('+v.totalNumberOfRows+')'}</span>
+            		</div>
+                </aura:set>
+            </aura:if>   
+        </lightning:card>
+    </aura:if>
+    
+	<div aura:id="newPR" class="slds-hide">
+        <aura:if isTrue="{!v.prRecId != null}">
+        	<c:ProductReqTechn recID1="{!v.prRecId}" />
+            <aura:set attribute="else">
+            	<c:ProductReqTechn />
+            </aura:set>
+        </aura:if>
+    </div>
+	
+	<div aura:id="PRList">         
+        <aura:if isTrue="{!and(v.totalNumberOfRows > 0, v.totalNumberOfRows != null)}">     
+            <lightning:card title="">
+                <aura:set attribute="actions">
+                   <aura:if isTrue="{!v.profName !='System Administrator'}">                       
+                       <lightning:button label="New" onclick="{!c.NewPR}" /><br />
+                   </aura:if>
+                </aura:set>
+                <aura:set attribute="footer">
+                    <a onclick="{!c.loadMoreData}">{!v.loadMoreStatus}</a>
+                </aura:set>
+                <div class="slds-scrollable--mob">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <aura:if isTrue="{!v.profName =='System Administrator'}">
+                                        <div class="slds-truncate" title="Product Req Name">Product Request</div>
+                                        <aura:set attribute="else">
+                                        	<div class="slds-truncate" title="Product Req Name">Prod. Req</div>
+                                        </aura:set>
+                                    </aura:if>
+                                </th>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Need by Date">Need by Date</div>
+                                </th>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Status">Status</div>
+                                </th>
+                                <aura:if isTrue="{!v.profName =='System Administrator'}">
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        <div class="slds-truncate" title="Requested By">Requested By</div>
+                                    </th>
+                                </aura:if>
+                                <aura:if isTrue="{!v.profName !='System Administrator'}">
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        <div class="slds-truncate" title="Action">Actions</div>
+                                    </th>
+                                </aura:if>
+                            </tr>     
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.PRList}" var="pr1">
+                                <c:PRItems prDetails="{!pr1}" profName="{!v.profName}" />
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </lightning:card>
+            <aura:set attribute="else">
+                <lightning:card title="Product Requests (0)" iconName="standard:metrics">
+                       <aura:set attribute="actions">
+                           <aura:if isTrue="{!v.profName !='System Administrator'}">                       
+                               <lightning:button label="New" onclick="{!c.NewPR}" /><br />
+                           </aura:if>
+                        </aura:set>
+                    <div class="slds-scrollable--x">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div class="slds-truncate" title="Product Req Name">Product Req Name</div>
+									</th>
+									<th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+										<div class="slds-truncate" title="Need by Date">Need by Date</div>
+									</th>
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+										<div class="slds-truncate" title="Status">Status</div>
+									</th>
+									<th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+										<div class="slds-truncate" title="Action">Actions</div>
+									</th>
+                                </tr>
+                            </thead>
+                            <tbody>  
+                                <tr>
+                                    <td colspan="5">
+                                        <div style="padding-left:47%;">No records found</div>
+                                    </td>
+                                </tr> 
+                            </tbody>
+                        </table>
+                    </div>
+                </lightning:card>
+            </aura:set> 
+        </aura:if>
+    </div>
+    </ui:scrollerWrapper>
+    <div class="demo-only slds-hide" aura:id="mySpinner">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+	
+</aura:component>

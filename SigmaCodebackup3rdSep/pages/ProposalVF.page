@@ -1,0 +1,16 @@
+<apex:page standardController="Proposal__c" sidebar="false">
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+        $Lightning.use("sigmaerpdev:ProposalAPP", function() {
+          $Lightning.createComponent("sigmaerpdev:ProposalCmp",
+          {  },
+          "lightning",
+          function(cmp) {
+              //alert('inside ');
+          });
+        });
+    </script>
+</apex:page>

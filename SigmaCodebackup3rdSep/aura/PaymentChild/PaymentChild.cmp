@@ -1,0 +1,28 @@
+<aura:component >
+    
+    <aura:attribute name="SigmaOrderSalesInvoice" type="Sigma_Order__c[]"/>
+    <aura:attribute name="indexVar" type="Integer"/>
+    
+    <tr class="slds-hint-parent"> 
+        <td class="">            
+            <label class="slds-checkbox">
+                <ui:inputCheckbox aura:id="checkbox"  value="{!v.SigmaOrderSalesInvoice.selected}"/>
+                <span class="slds-checkbox--faux" />
+            </label>
+        </td>	
+        <th scope="row">
+            <div class="slds-truncate" title="stapplink__Zone__c">{!v.SigmaOrderSalesInvoice.sigmaerpdev__AccountId__r.Name}</div>
+        </th>
+        <th scope="row">
+            <div class="slds-truncate" title="stapplink__Zone__c">{!v.SigmaOrderSalesInvoice.Name}</div>
+        </th>
+        <th scope="row">
+            <div class="slds-truncate" title="stapplink__Zone__c">{!v.SigmaOrderSalesInvoice.sigmaerpdev__Due_Amount__c}</div>
+        </th>
+        <th scope="row">
+            <div class="slds-truncate" title="stapplink__Zone__c">{!v.SigmaOrderSalesInvoice.sigmaerpdev__TotalAmount__c}</div>
+        </th>
+        
+    </tr>
+    
+</aura:component>

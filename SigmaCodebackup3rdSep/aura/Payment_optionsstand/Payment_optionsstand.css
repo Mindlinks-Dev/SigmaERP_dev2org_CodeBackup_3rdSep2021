@@ -1,0 +1,53 @@
+/*toggleCss.css*/
+.THIS.toggle {
+    display: none;
+}
+.THIS #head
+{
+	background-color:#293239;
+    
+}
+.THIS #Payment_options
+{
+    color:white;
+    font-size:18px; 
+    margin-left:42%;
+    margin-top:-32px;
+}
+
+.THIS .slds-button
+{
+   
+}
+.THIS #payment_options_body
+{
+   
+}
+.THIS #payment_options_content
+{
+    background:white;
+    margin:0 auto;
+    box-shadow: 0 0 6px rgba(0,0,0,0.27);
+    padding:2%;
+    position:relative;
+    border-radius:4px;    
+}
+
+
+
+.THIS .uiButton--default .label
+{
+    text-shadow:none;
+    color:none;
+}
+.slds-button--brand.THIS 
+{
+    color:white !important;
+}
+@media only screen and (max-width: 768px) 
+    {
+    .THIS #Payment_options{font-size: 20px !important;margin-left: 30%;margin-top: -34px;}
+    .THIS #payment_options_content{text-align:center;}
+    .THIS img{width:44% !important;}
+    .THIS .slds-form-element__label{width:100% !important;}
+}

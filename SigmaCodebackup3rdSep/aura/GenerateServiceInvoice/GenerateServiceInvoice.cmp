@@ -1,0 +1,42 @@
+<aura:component controller="InvoiceGenerationPdfController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <!--lightning button to download the pdf as generated reports -->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isWorkOrderEmpty" type="Boolean" default="false"/>
+    <aura:attribute name="showSuccess" type="boolean" default="false"/>
+    
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>-->
+    
+    
+    
+    <aura:if isTrue="{!v.showSuccess}">
+        <aura:if isTrue="{!v.isWorkOrderEmpty}">
+            <h3 class="slds-section__title slds-align_absolute-center">
+                <span class="slds-truncate" title="Section Title">No WorkOrderLineItems for the Invoice.</span>
+            </h3>
+            <br/>
+            <footer class="slds-align_absolute-center">
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+            </footer>
+            <aura:set attribute="else">
+                 <h3 class="slds-section__title slds-align_absolute-center">
+                <span class="slds-truncate" title="Section Title">The Invoice has been sent to the customer successfully.</span>
+            </h3>
+            <br/>
+                <footer class="slds-align_absolute-center">
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Close"  onclick="{!c.closeWindow}" />
+            </footer>
+            </aura:set>
+        </aura:if> 
+        <aura:set attribute="else">
+            <h3 class="slds-section__title slds-align_absolute-center">
+                <span class="slds-truncate" title="Section Title">Are you sure you want to Proceed?</span>
+            </h3>
+            <br/>
+            <footer class="slds-align_absolute-center">
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Confirm" onclick="{!c.doInit}" />
+                <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+            </footer>
+        </aura:set>
+    </aura:if>
+    <!--<ui:spinner aura:id="spinner"/>-->
+</aura:component>

@@ -1,0 +1,75 @@
+<apex:page StandardController="Product_transfer__c"  extensions="InventoryAfterTransfer" >
+    
+    <apex:pageBlock >
+        <apex:form >
+            
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">  
+                <tr>
+                    
+                    <td width="50%" style="font-size:16px;padding-left:42px;"><b>Product Transfer Invoice</b></td>
+                    <td align="left" width="25%" style="font-size:9px;">
+                        <apex:outputPanel >
+                            <b>MindLinks Solutions</b><br/>
+                        </apex:outputPanel> 
+                        <apex:outputPanel >
+                            <b>Tel :+919874563210</b><br/>
+                        </apex:outputPanel> 
+                        <apex:outputPanel >
+                            <b>Email :sales@sigmaerp365.com</b><br/>
+                        </apex:outputPanel> 
+                        <apex:outputPanel >
+                            <b>Today :{!TODAY()}</b><br/>
+                        </apex:outputPanel> 
+                    </td>                  
+                </tr>
+            </table>
+            <hr style="color:#D0D0D0;margin-top: 1px;"/>
+            <table border="0"  width="90%" style="font-size:10px;"> 
+                <apex:repeat value="{!pts}" var="SA">
+                    <tr>
+                        <td><b>Technician Name</b> : {!SA.User__c} </td>
+                        <td><b>Product Transfer Id : </b>{!SA.Name} </td>                                                             
+                    </tr>
+                    <tr><td><b>To Location : </b>{!SA.sigmaerpdev2__To_Requested_Location__r.Name}  </td>
+                        <td><b>Status : </b>{!SA.Transfer_Status__c}  </td>  </tr>
+                </apex:repeat>
+            </table>
+            <br/>
+            <table border="1"  width="90%" style="font-size:10px;">              
+                
+                <apex:repeat value="{!pts}" var="SA">
+                    <tr>
+                        
+                        <th width="8%" align="center"><b>Product Name</b></th>
+                        <th width="9%" align="center"><b>Quantity</b></th> 
+                        <th width="8%" align="center"><b>Received Quantity </b></th>
+                        <th width="8%" align="center"><b>Reason</b></th>
+                    </tr>
+                    <apex:repeat value="{!SA.sigmaerpdev2__Product_Transfer_Inv_Tracking__r}" var="SAP">
+                        <tr>  
+                            <td valign="top" width="8%" align="center">{!SAP.sigmaerpdev2__Product__r.Name}</td>
+                            <td valign="top" width="9%" align="center">{!SAP.sigmaerpdev2__Transferred_Qty__c}</td>
+                            <td valign="top" width="9%" align="center">{!SAP.sigmaerpdev2__Received_qty__c}</td>
+                            <td valign="top" width="9%" align="center">{!SAP.sigmaerpdev2__Reason__c}</td>
+                            
+                        </tr>
+                    </apex:repeat>
+                </apex:repeat>
+            </table>
+            <br/>
+            <br/>
+            
+            <table border="1">
+                Signature
+                <tr>
+                    <td>
+                        <apex:outputPanel rendered="{!if((signatureId!=null) , true ,false)}">
+                            <apex:image url="{!URLFOR($Action.Attachment.Download,signatureId)}" /> 
+                        </apex:outputPanel>    
+                    </td></tr>
+                
+            </table>
+            
+        </apex:form>  
+    </apex:pageBlock>
+</apex:page>

@@ -1,0 +1,262 @@
+<aura:component controller="MultiplePOCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <aura:attribute name="accountList" type="Account[]"/> 
+    <!-- Lookup Attribute -->
+    <!--Boolean attribute to indicate if modal is open or not -->
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="accLst" type="Account[]"/>
+    <aura:attribute name="CheckboxValue" type="Boolean" default="false"/>
+    <aura:attribute name="VendrowIndex" type="integer" />
+	<aura:attribute name="isVerified" type="boolean"/> 
+    <aura:attribute name="indexNum" type="Integer" />
+    <aura:handler name="MultiplePOEvt" event="c:MultiplePOEvt" action="{!c.handleSelectedAccount}"/>
+    <aura:attribute name="isSigmaOrder"  type="Boolean" default="false"/> 
+    <aura:attribute name="MultiplePOWrapper" type="Object" default="" access="global"/>
+  
+    
+     <aura:attribute name="NewPurchaseOrder" type="Purchase_Order__c[]"
+                    default="{ 'sobjectType': 'Purchase_Order__c',
+                             'Name': '',
+                             'sigmaerpdev2__Expected_Date__c' : '',
+                             'sigmaerpdev2__Currency__c' :'',
+                             'sigmaerpdev2__Merchant_Account__c' : '',
+                             'sigmaerpdev2__Order_Date__c' :'',
+                             'sigmaerpdev2__Status__c' : '',
+                             'sigmaerpdev2__Product_Supplier__c' : '',
+                             'sigmaerpdev2__Approved__c':'',
+                             'sigmaerpdev2__sub_Approval__c':'',
+                             'sigmaerpdev2__POSubmitted__c':'',
+                             'sigmaerpdev2__Currency__r.Name':''
+                             }"/>
+    <aura:attribute name="TempPurchaseOrderProducts" type="Purchase_Order_Product__c[]" 
+                    default="{ 'sobjectType': 'Purchase_Order_Product__c',
+                             'sigmaerpdev2__Product__c': '',
+                             'sigmaerpdev2__Buying_Price__c': '',
+                             'sigmaerpdev2__Expected_Delivery_Date__c': '',
+                             'sigmaerpdev2__Quantity__c': '',
+                             'sigmaerpdev2__Status__c': '',
+                             'sigmaerpdev2__Discount__c':'',
+                             'Product_name':''
+                             
+                             }"/>
+    
+    <div class="slds-box" style="padding:0 0 1rem 0;">
+        <div class="slds-page-header" style="margin-bottom:1rem;">
+            <div class="slds-media">
+                <!--div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-poll" title="Description of icon when needed">
+                        <c:svg class="slds-icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/action-sprite/svg/symbols.svg#description'}" />
+                        
+                    </span>
+                </div-->
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-contact" title="MultiplePO">
+                        <lightning:icon iconName="custom:custom98" alternativeText="MultiplePO" size="small"/>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <!--h2 class="slds-page-header__title slds-truncate slds-align-middle slds-m-top_xx-small" title="Stock Out Product"></h2-->
+                    <h2 class="slds-card__header-title">
+                        <a class="slds-card__header-link slds-truncate" title="Multiple PO ">
+                            <span class="slds-text-heading_small">Multiple Purchase Orders</span>
+                        </a>
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <div class="slds-m-around--xx-large">
+            <!-- <div class="slds-float_right slds-p-bottom_small">
+            <h1 class="slds-page-header__title">Add Product 
+                <lightning:buttonIcon iconName="utility:add"   size="large" variant="bare"  onclick="{!c.addRow}"/>
+            </h1>
+        </div>-->
+            <aura:iteration items="{!v.accountList}" var="MPwrap" indexVar="index">    
+                <div class="container-fluid">
+                    
+                    <div class="transBorder slds-grid slds-wrap slds-size_1-of-1 slds-medium-size_10-of-12 slds-large-size_6-of-12" style="background: rgb(250, 250, 249);border-top: 1px solid rgb(221, 219, 218);border-right: 1px solid rgb(221, 219, 218);">
+                        <!--<div class="slds-align_absolute-center slds-p-top_medium slds-col slds-size_1-of-6 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:button class="slds-truncate ButtonTextPadding" label="Remove" iconName="utility:delete" iconPosition="left" onclick="{!c.removeProd}" disabled="{!v.isVerified}"/>
+                        </div>-->
+                        <div class="slds-col slds-size_2-of-6 slds-medium-size_4-of-12 slds-p-around_x-small slds-large-size_4-of-12" Id="SelectPOId">
+                             <!-- <c:customLookup recordID="{!v.transactionID}" recordName="{!v.transactionName}" whereCondition ="{!'AND sigmaerpdev2__Product_Supplier__c=\''+v.vendor+'\' AND sigmaerpdev2__Status__c=\'Submitted\' AND Id in (select sigmaerpdev2__Purchase_Order__c from sigmaerpdev2__Purchase_Order_Product__c where sigmaerpdev2__Received_Quantity__c>0)'}" objectAPIName="sigmaerpdev2__Purchase_Order__c"  IconName="custom:custom96" isSigmaOrder= "true"/>-->
+                          <!-- <c:customLookup recordID="{!v.MPwrap.productId}"
+                                                  recordName="{!v.MPwrap.productName}"
+                                                  objectAPIName="Product2"
+                                                  IconName="custom:custom96" 
+                                                  isSigmaOrder= 'true'
+                                        		  label="Select Product" /> whereCondition="{!'AND sigmaerpdev2__Active__c=\'Yes\' AND sigmaerpdev2__Stock_Item__c=\'true\' '}"-->
+						 <c:customLookup aura:id="Product" label="Product" recordID="{!v.TempPurchaseOrderProducts.sigmaerpdev2__Product__c}" recordName="{!v.TempPurchaseOrderProducts.sigmaerpdev2__Product__r.Name}" objectAPIName="product2" IconName="standard:product"  isSigmaOrder= "true"/>
+        
+                        </div>
+                        <div>
+                          <!--  <ui:inputDate displayDatePicker="true" class="slds-input" value="{!v.MPwrap.OrderDate}" label="Order Date"/>-->
+                        <ui:inputDate aura:id="PurchaseOrderedDate"
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.NewPurchaseOrder.sigmaerpdev2__Order_Date__c}"
+                                              displayDatePicker="true"
+                                      		  label="Ordered Date"
+                                              change="{!c.saveRecord}"
+                                              />
+                        </div>
+                        <div >
+                            <lightning:button label="Select Vendor" class="slds-float_left buttonOverlay"  variant="brand" onclick="{!c.selectVendorModel}"/>
+                        </div>      
+                        
+                        
+                        <div class="slds-col slds-size_2-of-6 slds-medium-size_4-of-12 slds-p-around_x-small slds-large-size_4-of-12" Id="prodBarCode">
+                            
+                        </div>
+                    </div>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <!-- <th scope="col">
+                            <div class="slds-truncate">#</div>
+                        </th>-->
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Vendor Number">Vendor </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Quantity">Qty</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Discount(%)">Discount(%)</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Buying Price">Buying Price</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Expected Delivery Date">Expected Delivery Date</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Status">Status</div>
+                                </th>
+                            </tr>
+                        </thead>   
+                        <tbody>      
+                            
+                            <tr id="{!index}">
+                                <!--  <td> {!index + 1} -->
+								<td>
+                                    <lightning:input name="vendName" type="text"  maxlength="10"  value="{!v.NewPurchaseOrder.sigmaerpdev2__Product_Supplier__c}" />
+                                </td>
+                                
+                                <td>
+                                    <lightning:input aura:id="compname" name="orderQty" type="Qty" value="{!v.TempPurchaseOrderProducts.sigmaerpdev2__Quantity__c}"/> 
+                                </td>
+                                <td>
+                                    <lightning:input name="disc" type="discount"    value="{!v.TempPurchaseOrderProducts.sigmaerpdev2__Discount__c}" />
+                                </td>
+                                <td>
+                                    <lightning:input name="price" type="buyingPrice"  value="{!v.TempPurchaseOrderProducts.sigmaerpdev2__Buying_Price__c}" disabled="true" />
+                                </td>
+                                <td>
+                                    <!--    <lightning:input name="date" type="text"  maxlength="50"  value="{!acc.deliveryDate}" />-->
+                                    <!-- <lightning:input type="date" name="input1"  />-->
+                                    <ui:inputDate displayDatePicker="true" class="slds-input" value="{!v.TempPurchaseOrderProducts.sigmaerpdev2__Expected_Delivery_Date__c}"/>
+                                </td>
+                                <!--<td>
+                                <lightning:input name="status" type="text"  maxlength="10"  value="{!acc.selectStatus}" />
+                            </td>-->
+                                <div class="slds-hide slds-size_1-of-2" aura:id="TempToDisplayStatus">
+                                    <label class="slds-form-element__label" for="Status">Status
+                                        <span class="spanst">* </span></label>
+                                    <div class="slds-3-of-4" id="TempToDisplayStatus">
+                                        <div class="slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click slds-size--1-of-1">
+                                            <ui:inputSelect  class="slds-input input uiInput uiInputText uiInput--default uiInput--input" aura:id="InputSelectDynamic" value="{!v.NewPurchaseOrder.sigmaerpdev2__Status__c}" required="true" change="{!c.saveRecord}"   disabled="{!v.productId!=undefined}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <td>
+                                    <a onclick="{!c.removeRow}" data-record="{!index}">
+                                        <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                        <span class="slds-assistive-text">Delete</span>
+                                    </a>
+                                </td> 
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                   
+                    <!--<lightning:button label="Select Vendor" class="slds-float_left buttonOverlay"  variant="brand" onclick="{!c.selectVendorModel}"/>-->
+                    
+                    
+                </div>
+                 <div class="slds-m-around_xx-large">
+                        <!--Use aura:if tag to display/hide popup based on isModalOpen value-->  
+                        <aura:if isTrue="{!v.isModalOpen}">
+                            
+                            <!-- Modal/Popup Box starts here-->
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <!-- Modal/Popup Box Header Starts here-->
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close"
+                                                              onclick="{! c.closeVendorModel }"
+                                                              alternativeText="close"
+                                                              variant="bare-inverse"
+                                                              class="slds-modal__close"/>
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Vendor  </h2>
+                                    </header>
+                                    <!--Modal/Popup Box Body Starts here-->
+                    <table class="slds-table slds-table_bordered slds-no-row-hover slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                             <th scope="col">
+                                <div class="slds-truncate" title="Check"></div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Name">Vendor Name</div>
+                            </th>
+                           <th scope="col">
+                                <div class="slds-truncate" title="Code">Vendor Code</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Stock">Current Stock</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Price">Buying Price</div>
+                            </th>
+                        </tr>
+                    </thead>
+                        <tbody>
+                             <aura:iteration items="{!v.MultiplePOWrapper}" var="item" indexVar="i">
+                               
+                                <c:MultiplePOVendor MultiplePOWrapper="{!item}" itemIndex="{!i+1}"/> 
+                            </aura:iteration>
+                        </tbody>
+                                    </table>
+                                    <!--Modal/Popup Box Footer Starts here-->
+                                    <footer class="slds-modal__footer">
+                                        <center> <lightning:button variant="neutral" class="buttonOverlay"
+                                                                   label="Cancel"
+                                                                   title="Cancel"
+                                                                   onclick="{! c.closeVendorModel }"/>
+                                            <lightning:button variant="brand" class="buttonOverlay"
+                                                              label="OK"
+                                                              title="OK"
+                                                              onclick="{!c.submitDetails}"/></center>
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </aura:if>
+                    </div>
+            </aura:iteration>
+            <lightning:button  class="slds-float_left buttonOverlay" variant="brand" label="Add Product" onclick="{!c.addRow}"/>
+            <center>
+                <!--<lightning:button class="buttonOverlay" variant="brand" label="Save" onclick="{!c.saveData}" disabled="{!v.disableSave}" />-->
+                <aura:if isTrue="{!or(v.recordId == '', v.recordId == undefined)}">
+                    <lightning:button class="buttonOverlay" variant="brand" label="Save" title="Brand action" onclick="{!c.save}" /> 
+                    <aura:set attribute="else">
+                        <lightning:button class="buttonOverlay" variant="brand" label="Update" onclick="{!c.save}" disabled="{!v.disableSave}" />
+                    </aura:set>
+                </aura:if>                
+                <lightning:button class="buttonOverlay" variant="neutral" label="Cancel" type="reset" onclick="{! c.handleCancel }" />
+            </center>
+        </div>
+    </div>
+</aura:component>

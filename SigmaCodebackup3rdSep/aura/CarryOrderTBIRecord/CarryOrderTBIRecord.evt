@@ -1,0 +1,8 @@
+<aura:event type="COMPONENT">
+    <!-- Add aura:attribute tags to define event shape.
+         One sample attribute here. -->
+    <aura:attribute name="orderinfo" type="Object[]"/>
+     <aura:attribute name="rowIndex" type="Integer"/> 
+      <aura:attribute name="Promap" type="Object" />
+   
+</aura:event>

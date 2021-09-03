@@ -1,0 +1,180 @@
+<aura:component controller="productmovement" implements="force:appHostable">
+  
+   <aura:handler name="init" value="this" action="{!c.doInit}"/>
+
+    <aura:attribute name="showWorkIcons" type="boolean" default="false" />  
+    <aura:attribute name="showServiceIcons" type="boolean" default="false" />
+    <aura:attribute name="showProdIcons" type="boolean" default="false" /> 
+    <aura:attribute name="profName" type="String" />
+    <aura:attribute name="showOtherIcons" type="boolean" default="true" />
+    
+    <aura:if isTrue="{!v.profName == 'System Administrator'}">
+        <div class="marquee slds-text-align_center slds-p-around_small slds-truncate">
+            <img src="/resource/sigmaerpdev2__sigmaerp365logo" width="95" height="95" title=""  class="slds-float_left"/>
+            <span class="slds-text-heading_small" style="letter-spacing:8px;text-transform:uppercase;"><b>Field Service Console</b></span>                
+        </div> 
+        <aura:set attribute="else">
+            <div class="marquee slds-text-align_center slds-p-around_small slds-truncate">               
+                <span class="slds-text-heading_small" style="letter-spacing:4px;text-transform:uppercase;"><b>Field Service Console</b></span>                
+            </div> 
+        </aura:set>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.profName == 'System Administrator'}">
+        <aura:if isTrue="{!v.showWorkIcons == false}">
+            <lightning:card title="Work Order Icons">
+                <aura:set attribute="actions">               
+                    <img onclick="{!c.showInfo}" src="/resource/sigmaerpdev2__ShowIcons" width="35" height="35" title="Show Icons" />                
+                </aura:set>        
+            </lightning:card>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.showWorkIcons == true}">
+            <article class="slds-card slds-card--narrow">
+                <lightning:card title="">
+                    <aura:set attribute="actions">
+                        <img onclick="{!c.closeInfo}" src="/resource/sigmaerpdev2__HideIcons" width="35" height="35" title="Hide Icons" />
+                    </aura:set>                             
+                        <div class="slds-scrollable-mob">
+                            <table style="max-width:79%;" align="center">
+                                <tr>
+                                    <td width="25%" class="zoom" style="text-align:center;">
+                                        <img class="work-order-img" onclick="{!c.redirToWorkOrder}" src="/resource/sigmaerpdev2__Work_Order5" width="135" height="100" title="Work Order" /><br />                
+                                        <div class="slds-text-heading_small" style="padding-left:20px;"></div>
+                                    </td> 
+                                    <td width="25%" class="zoom" style="text-align:center;">
+                                        <img onclick="{!c.redirToWorkType}" src="/resource/sigmaerpdev2__Work_Type" width="65" height="100" title="Work Type" /><br />                                  
+                                        <div class="slds-text-heading_small" style="padding-left:15px;padding-top:15px;">Work Type</div>
+                                    </td> 
+                                    <td width="25%" class="zoom" style="text-align:center;">
+                                        <img onclick="{!c.redirToWorkBinding}" src="/resource/sigmaerpdev2__Work_Type_Bind" width="80" height="100" title="Work Type Binding" /><br />                 
+                                        <div class="slds-text-heading_small" style="padding-left:20px;">Work Type Binding</div>
+                                    </td> 
+                                    <td width="25%" class="zoom" style="text-align:center;">
+                                        <img onclick="{!c.redirToBusical}" src="/resource/sigmaerpdev2__Business_Calendar" width="115" height="100" title="Business Calendar" /><br />                                  
+                                        <div class="slds-text-heading_small" style="padding-left:15px;padding-top:15px;">Business Calendar</div>
+                                    </td>
+                                 </tr>
+                            </table>
+                        </div>                    
+                </lightning:card>
+            </article>
+        </aura:if> 
+        
+        <aura:if isTrue="{!v.showServiceIcons == false}">
+            <lightning:card title="Service Icons">
+                <aura:set attribute="actions">               
+                    <img onclick="{!c.showInfo2}" src="/resource/sigmaerpdev2__ShowIcons" width="35" height="35" title="Show Icons" />                
+                </aura:set>        
+            </lightning:card>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.showServiceIcons == true}">
+            <article class="slds-card slds-card--narrow">
+                <lightning:card title="">
+                    <aura:set attribute="actions">
+                        <img onclick="{!c.closeInfo2}" src="/resource/sigmaerpdev2__HideIcons" width="35" height="35" title="Hide Icons" />
+                    </aura:set>                             
+                        <div class="slds-scrollable-mob">
+                            <table style="max-width:79%;" align="center"> 
+                                 <tr>
+                                    <td width="20%" class="zoom" style="text-align:center;">
+                                        <img onclick="{!c.redirToServQ}" src="/resource/sigmaerpdev2__Service_Quote" width="95" height="100" title="Service Quote" /><br />                
+                                        <div class="slds-text-heading_small" style="padding-left:20px;">Service Quote</div>
+                                    </td> 
+                                    <td width="20%" class="zoom" style="text-align:center;">
+                                        <img onclick="{!c.redirToServRes}" src="/resource/sigmaerpdev2__Service_Resources" width="110" height="100" title="Service Resources" /><br />                                  
+                                        <div class="slds-text-heading_small" style="padding-left:15px;padding-top:15px;">Service Resources</div>
+                                    </td> 
+                                    <td width="20%" class="zoom" style="text-align:center;">
+                                        <img onclick="{!c.redirToServContracts}" src="/resource/sigmaerpdev2__Service_Contract" width="100" height="100" title="Service Contracts" /><br />                 
+                                        <div class="slds-text-heading_small" style="padding-left:10px;">Service Contracts</div>
+                                    </td>    
+                                </tr> 
+                            </table>
+                        </div>                    
+                </lightning:card>
+            </article>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.showProdIcons == false}">
+            <lightning:card title="Product Request and Transfer Icons">
+                <aura:set attribute="actions">               
+                    <img onclick="{!c.showInfo3}" src="/resource/sigmaerpdev2__ShowIcons" width="35" height="35" title="Show Icons" />                
+                </aura:set>        
+            </lightning:card>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.showProdIcons == true}">
+            <article class="slds-card slds-card--narrow">
+                <lightning:card title="">
+                    <aura:set attribute="actions">
+                        <img onclick="{!c.closeInfo3}" src="/resource/sigmaerpdev2__HideIcons" width="35" height="35" title="Hide Icons" />
+                    </aura:set>                             
+                        <div class="slds-scrollable-mob">
+                            <table style="max-width:45%;" align="center">
+                                 <tr>
+                                    <td width="20%" class="zoom" style="text-align:center;">
+                                        <img onclick="{!c.redirToProdReqAdmin}" src="/resource/sigmaerpdev2__Prod_Req" width="98" height="100" title="Product Request" /><br />                
+                                        <div class="slds-text-heading_small" style="padding-left:20px;">Product Request</div>
+                                    </td> 
+                                    <td width="20%" class="zoom" style="text-align:center;">
+                                        <img onclick="{!c.redirToProdTrf}" src="/resource/sigmaerpdev2__Prod_Trf" width="90" height="100" title="Product Transfer" /><br />                                  
+                                        <div class="slds-text-heading_small" style="padding-left:15px;padding-top:15px;">Product Transfer</div>
+                                    </td>
+                                </tr>   
+                            </table>
+                        </div>                    
+                </lightning:card>
+            </article>
+        </aura:if>         
+
+        <aura:set attribute="else">
+        	<!--<aura:if isTrue="{!v.showOtherIcons == false}">
+                <lightning:card title="Technician Icons">
+                    <aura:set attribute="actions">               
+                        <img onclick="{!c.showInfo4}" src="/resource/sigmaerpdev2__ShowIcons" width="35" height="35" title="Show Icons" />                
+                    </aura:set>        
+                </lightning:card>
+            </aura:if>-->
+            
+             <aura:if isTrue="{!v.showOtherIcons == true}">
+                <article class="slds-card slds-card-narrow">
+                    <lightning:card title="">
+                        <!--<aura:set attribute="actions">
+                            <img onclick="{!c.closeInfo4}" src="/resource/sigmaerpdev2__HideIcons" width="35" height="35" title="Hide Icons" />
+                        </aura:set>-->                             
+                            <div class="slds-scrollable-mob">
+                                <table style="max-width:59%;" align="center">
+                                    <tr>
+                                        <td width="20%" class="zoom" style="text-align:center;">
+                                            <img class="work-order-img" onclick="{!c.redirToWorkOrderTechn}" src="/resource/sigmaerpdev2__Work_Order5" width="160" height="170" title="Work Order" /><br />                
+                                            <div class="slds-text-heading_small" style="padding-left:20px;"></div>
+                                        </td>
+                                    </tr><hr />
+                                    <tr>
+                                        <td width="20%" class="zoom" style="text-align:center;">
+                                            <img onclick="{!c.redirToProdReqTechn}" src="/resource/sigmaerpdev2__Prod_Req" width="75" height="75" title="Product Request" /><br />                
+                                            <div class="slds-text-heading_small" style="padding-left:20px;">Product Request</div>
+                                        </td> 
+                                    </tr><hr />
+                                    <tr>
+                                        <td width="20%" class="zoom" style="text-align:center;">
+                                            <img onclick="{!c.redirToRoute}" src="/resource/sigmaerpdev2__RouteDisplay" width="75" height="75" title="Route Display" /><br />                
+                                            <div class="slds-text-heading_small" style="padding-left:20px;">Route Display</div>
+                                        </td>
+                                    </tr><hr />
+                                    <tr>
+                                        <td width="20%" class="zoom" style="text-align:center;">
+                                            <img onclick="{!c.redirToFSC}" src="/resource/sigmaerpdev2__StockCheck_MM1" width="80" height="80" title="Field Stock Check" /><br />                                  
+                                            <div class="slds-text-heading_small" style="padding-left:15px;padding-top:15px;">Field Stock Check</div>
+                                        </td>
+                                    </tr>   
+                                </table>
+                            </div>                    
+                    </lightning:card>
+                </article>
+            </aura:if>
+        </aura:set>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,69 @@
+<aura:component controller="AppointmentController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="appointment" type="Appointment__c[]"/>
+    <aura:attribute name="value" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.getAppt}" />
+    <aura:attribute name="PageNumber" type="integer" default="1"/>
+    <aura:attribute name="TotalPages" type="integer" default="0"/>
+    <aura:attribute name="TotalRecords" type="integer" default="0"/>
+    <aura:attribute name="RecordStart" type="integer" default="0"/>
+    <aura:attribute name="RecordEnd" type="integer" default="0"/>
+    
+    <div class="slds-m-around_xx-large">
+        <h1 class="slds-text-heading--medium">Appointment</h1>
+        <br/>
+        <div class="slds-float_right">
+            <ui:inputSelect aura:id="pageSize" label="Display Records Per Page: " change="{!c.onSelectChange}">
+                <ui:inputSelectOption text="5" label="5" value="true"/>
+                <ui:inputSelectOption text="63" label="63"/>
+                <ui:inputSelectOption text="10" label="10"/>
+            </ui:inputSelect>
+            <br/>
+        </div>
+        
+        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+            <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="AppointmentDate">select</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="AppointmentDate"> Appointment Date</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="Period">Period</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="Time">Time</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="Duration">Duration</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="Duration Interval">Duration Interval</div></strong>
+                        </th>
+                    </tr> 
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.appointment}" var="appointment">
+                    <tr class="slds-hint-parent">
+                        <td><ui:inputCheckbox aura:id="rowSelectionCheckboxId" value="false" text="{!appointment.id}" change="{!c.onCheckboxChange}"/></td>
+                        <td data-label="Period" style="padding-left:0;">{!appointment.sigmaerpdev2__AppointmentDate__c}</td>
+                        <td data-label="Period" style="padding-left:0;">{!appointment.sigmaerpdev2__period_of_time__c}</td>
+                        <td data-label="Time" style="padding-left:0;">{!appointment.sigmaerpdev2__Time__c}</td>
+                        <td data-label="Duration" style="padding-left:0;"><ui:outputNumber value="{!appointment.sigmaerpdev2__Duration__c}" /></td>
+                        <td data-label="Duration Interval" style="padding-left:0;">{!appointment.sigmaerpdev2__Duration_Interval__c}</td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table> 
+        <div class="slds-clearfix">
+            <div class="slds-page-header" role="banner">
+                <div class="slds-float_right">            
+                    <lightning:button disabled="{!v.PageNumber == 1}" variant="brand" aura:id="prevPage" label="Prev" onclick="{!c.handlePrev}" />            
+                    <lightning:button disabled="{!v.PageNumber == v.TotalPages}" aura:id="nextPage" variant="brand" label="Next" onclick="{!c.handleNext}"/>
+                </div>
+                <p class="slds-page-header__title"> Page {!v.PageNumber} of {!v.TotalPages}</p>
+            </div>
+        </div>
+    </div>  
+</aura:component>

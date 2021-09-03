@@ -1,0 +1,283 @@
+<apex:page renderAs="pdf" applyBodyTag="false" controller="ServiceInvoiceGenPdfCtrl">
+    
+    
+    <head>
+        <style>
+            *{
+            margin: 0px;
+            padding: 0px;
+            }
+            table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+            }   
+            body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",sans-serif;
+            font-size: 16px;
+            color: #212121;
+            line-height: 20px;
+            }   
+        </style>
+    </head>
+    <body>
+        <table style="width:100%;max-width:100%;overflow:hidden;border-collapse: collapse; table-layout: fixed;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',sans-serif;">
+            <tbody>
+                <tr>
+                    <td style="width:100%">
+                        <table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+                            <tbody>
+                                <tr>
+                                    <td style="width:50%;padding:0 3.2px 3.2px;border-bottom:1px solid #212121">
+                                        <!-- <img src="{!$Resource.Invoice_Logo}" alt="Company Logo" width="160"/>  --> 
+                                    </td> 
+                                    <td style="width:50%;text-align:right;padding:0 3.2px 3.2px;border-bottom:1px solid #212121">
+                                        <h4 style="text-transform:uppercase;font-size:22.4px">Service Order Report</h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:100%">
+                        <table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+                            <tbody>
+                                <tr>
+                                    <td style="width:50%;font-size: 15.2px;padding:3.2px 0;line-height:22.4px;font-weight: 500;">
+                                        <p style="margin:0px"><label style="font-weight:600">{!ContactAccountdetails.Account__r.Name}</label></p>
+                                        <!--  <p style="padding:3.2px 0px;margin:0px"><label style="font-weight:600">Fax :</label><label style="padding:0 3.2px">{!userrecord.Fax}</label></p> 
+<p style="margin:0px"><label style="font-weight:600">Email :</label><label style="padding:0 3.2px">Email :<label style="padding:0 0 0 3.2px">{!ContactAccountdetails.Account.BillingPostalCode}</label>}</label></p> -->
+                                        <address>
+                                            <label style="padding:0 0 0 3.2px">{!ContactAccountdetails.Account__r.BillingStreet}</label>
+                                            <label style="padding:0 0 0 3.2px">{!ContactAccountdetails.Account__r.BillingCity}</label>
+                                            <label style="padding:0 0 0 3.2px;display:block">{!ContactAccountdetails.Account__r.BillingState}</label>
+                                            <label style="padding:0 0 0 3.2px">{!ContactAccountdetails.Account__r.BillingCountry}, {!ContactAccountdetails.Account__r.BillingPostalCode}</label>
+                                        </address>
+                                    </td>
+                                    <td style="width:50%;font-size: 15.2px;padding:3.2px 3.2px 0;vertical-align: top;">
+                                        <table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+                                            <tr>
+                                                <td style="text-align:right"><label style="font-weight:600">Date :</label><label style="padding:0 3.2px">{!dt}</label></td>
+                                            </tr>
+                                            <!-- <tr>
+<td style="text-align:right;padding:3.2px 0"><label style="font-weight:600">Invoice # :</label><label style="padding:0 3.2px">{!workOrderRecord.Id}</label></td>
+</tr> -->
+                                            <tr>
+                                                <td style="text-align:right"><label style="font-weight:600">Case # :</label><label style="padding:0 3.2px">{!workOrderRecord.Case_Number_text__c}</label></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>                                
+                                <tr>
+                                    <td style="padding:3.2px" colspan="2">
+                                        <!--<p style="margin:0px"><label style="font-weight:600">Phone :</label><label style="padding:0 0 0 3.2px">{!ContactAccountdetails.sigmaerpdev2__Phone__c}</label></p>-->
+                                        <!--  <p style="padding:3.2px 0px;margin:0px"><label style="font-weight:600">Fax :</label><label style="padding:0 3.2px">{!userrecord.Fax}</label></p> 
+<p style="margin:0px"><label style="font-weight:600">Email :</label><label style="padding:0 3.2px">Email :<label style="padding:0 0 0 3.2px">{!ContactAccountdetails.Account.BillingPostalCode}</label>}</label></p> -->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="100%;padding:3.2px">
+                        <table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+                            <tbody>
+                                <tr>
+                                    <td style="width:100%">
+                                        <table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="background-color:#e4e4e4;padding:5.6px 3.2px;border:1px solid #bdbdbd;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;">Customer</th>
+                                                    <th style="background-color:#e4e4e4;padding:5.6px 3.2px;border:1px solid #bdbdbd;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;">Bill To</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td style="border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;padding:5.6px 3.2px;word-wrap:break-word;font-size:14.4px"><label style="font-weight:600">Customer Number :</label><label style="padding:0 0 0 3.2px">{!workOrderRecord.Account__r.AccountNumber}</label></td>
+                                                    <td style="padding:5.6px 3.2px;word-wrap:break-word;border-width:0 1px 1px 1px;border-style:solid;border-color:#bdbdbd;font-size:14.4px"><label style="font-weight:600">Name :</label><label style="padding:0 0 0 3.2px">{!contactDetails.Account.Name}</label></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;padding:5.6px 3.2px;word-wrap:break-word;font-size:14.4px"><label style="font-weight:600">Customer Name :</label><label style="padding:0 0 0 3.2px">{!workOrderRecord.Account__r.Name}</label></td>
+                                                    <td style="padding:5.6px 3.2px;word-wrap:break-word;border-width:0 1px 1px 1px;border-style:solid;border-color:#bdbdbd;font-size:14.4px"><label style="font-weight:600">Street Address :</label><label style="padding:0 0 0 3.2px">{!contactDetails.Account.BillingStreet}</label></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;padding:5.6px 3.2px;word-wrap:break-word;font-size:14.4px"><label style="font-weight:600">Contact Name :</label><label style="padding:0 0 0 3.2px">{!contactDetails.Name}</label></td>
+                                                    <td style="padding:5.6px 3.2px;word-wrap:break-word;border-width:0 1px 1px 1px;border-style:solid;border-color:#bdbdbd;font-size:14.4px"><label style="font-weight:600">City :</label><label style="padding:0 0 0 3.2px">{!contactDetails.Account.BillingCity}</label></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;padding:5.6px 3.2px;word-wrap:break-word;font-size:14.4px"><label style="font-weight:600">Contact Phone :</label><label style="padding:0 0 0 3.2px">{!contactDetails.Phone}</label></td>
+                                                    <td style="padding:5.6px 3.2px;word-wrap:break-word;border-width:0 1px 1px 1px;border-style:solid;border-color:#bdbdbd;font-size:14.4px"><label style="font-weight:600">State :</label><label style="padding:0 0 0 3.2px">{!contactDetails.Account.BillingState}</label></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;padding:5.6px 3.2px;word-wrap:break-word;font-size:14.4px"><label style="font-weight:600">Contact Email :</label><label style="padding:0 0 0 3.2px">{!contactDetails.Email}</label></td>
+                                                    <td style="padding:5.6px 3.2px;word-wrap:break-word;border-width:0 1px 1px 1px;border-style:solid;border-color:#bdbdbd;font-size:14.4px"><label style="font-weight:600">Country &amp; PostalCode :</label><label style="padding:0 0 0 3.2px">{!contactDetails.Account.BillingCountry},{!contactDetails.Account.BillingPostalCode}</label></td>
+                                                </tr>                               
+                                            </tbody>
+                                        </table>
+                                    </td>                                   
+                                </tr>
+                            </tbody>
+                        </table>                        
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:100%;padding: 3.2px;">
+                        <table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+                            <tbody>
+                                <tr>
+                                    <td style="width:26%;padding:9.6px 3.2px;background:#e4e4e4;font-weight:600;border-width:1px 1px 1px 1px;border-style:solid;border-color:#BDBDBD;    font-size: 13.5px;text-transform:uppercase;letter-spacing: 0.48px;"><label>Work Order Details </label></td>
+                                    <td style="width:74%;border-width:1px 1px 1px 1px;border-style:solid;border-color:#BDBDBD;padding:5.6px 3.2px">
+                                        <table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="font-size:14.4px"><label style="font-weight:600">Work Order # :</label><label style="padding:0 3.2px">{!workOrderRecord.Name}</label></td>      
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size:14.4px;padding:3.2px 0 0"><label style="font-weight:600">Subject :</label><label style="padding:0 3.2px">{!workOrderRecord.Case_Subject_text__c}</label></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:26%;padding:9.6px 3.2px;background:#e4e4e4;font-weight:600;border-width:0px 1px 1px 1px;border-style:solid;border-color:#BDBDBD;    font-size:13.5px;text-transform:uppercase;letter-spacing: 0.48px;"><label>Work Description </label></td>
+                                    <td style="width:74%;border-width:0px 1px 1px 1px;border-style:solid;border-color:#BDBDBD;padding:5.6px 3.2px;font-size:14.4px">
+                                        <label>{!workOrderRecord.Case_Description__c}</label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5.6px 3.2px" colspan="4">&nbsp;</td>
+                    <apex:repeat value="{!dummyUsedLIST}" var="d" >
+                        <h3>
+                            <b>Spares used</b>
+                        </h3>
+                    </apex:repeat>
+                </tr>
+                <apex:repeat value="{!dummyUsedLIST}" var="d" >
+                <tr>
+                    <td style="width:100%;padding:3.2px 3.2px 13.6px">
+                        <table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+                            <thead>
+                                
+                                    <tr>
+                                        <th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd;text-align:right" width="40"><label>Sl. No.</label></th>
+                                        <th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd" width="160"><label>Item/ Description</label></th>
+                                        <th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd;text-align:right" width="80"><label>Qty</label></th>
+                                        <!--<th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd"><label>Unit Price($)</label></th>-->
+                                        <th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd" width="80"><label>Warranty</label></th>
+                                        <!--<th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd"><label>Quote</label></th>-->
+                                        <!--<th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd"><label>Amount($)</label></th>-->
+                                    </tr>
+                                
+                            </thead>
+                            <tbody>
+                                <apex:repeat value="{!workOrderLineItems}" var="W" >
+                                    <tr>
+                                        <td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd ;text-align:right"><label>{!W.serialNumber}</label></td>
+                                        <td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd"><label>{!W.productName}</label></td>
+                                        <td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;text-align:right"><label>{!W.qunatity}</label></td>
+                                        <!--<td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;text-align:right"><label>{!W.unitPrice}</label></td>-->
+                                        <td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd"><label>{!W.warrantyYESNO}</label></td>
+                                        <!--<td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd"><label>{!W.quoteYESNO}</label></td>-->
+                                        <!--<td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;border-right:1px solid #bdbdbd;text-align: right"><label>{!W.amount} </label></td>-->
+                                    </tr>
+                                </apex:repeat>
+                                <!--<tr>
+<td style="padding:5.6px 3.2px" colspan="4">&nbsp;</td>
+<td style="padding:5.6px 3.2px;font-weight:500;background:#e4e4e4;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd"><label>Subtotal</label></td>
+<td style="padding:5.6px 3.2px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;border-right:1px solid #bdbdbd;text-align:right"><label>{!workOrderRecord.sigmaerpdev2__Total_Value__c}</label></td>
+</tr>
+<tr>
+<td style="padding:5.6px 3.2px" colspan="4">&nbsp;</td>
+<td style="padding:5.6px 3.2px;font-weight:500;background:#e4e4e4;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd"><label>Tax</label></td>
+<td style="padding:5.6px 3.2px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;border-right:1px solid #bdbdbd;text-align:right"><label>{!taxPercentageStr}</label></td>
+</tr>
+<tr>
+<td style="padding:5.6px 3.2px" colspan="4">&nbsp;</td>
+<td style="padding:5.6px 3.2px;font-weight:500;background:#e4e4e4;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd">Total Price<label></label></td>
+<td style="padding:5.6px 3.2px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;border-right:1px solid #bdbdbd;text-align:right"><label>{!lineItemsTotal}</label></td>
+</tr>-->
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="padding:5.6px 3.2px" colspan="4">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td style="padding:5.6px 3.2px" colspan="4">&nbsp;</td>
+                </tr>
+                    </apex:repeat>
+                <tr>
+                    <td style="width:100%;padding:9.6px 3.2px;border-top: 1px solid #e4e4e4;">
+                    </td>
+                    <td style="padding:5.6px 3.2px" colspan="4">&nbsp;</td>
+                </tr>
+                <tr>
+                    
+                    <td>
+                        <apex:repeat value="{!dummyLIST}" var="d" >
+                            <h3>
+                                <b>To be Quoted</b>
+                            </h3>
+                        </apex:repeat>
+                        <table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+                            <thead>
+                                <apex:repeat value="{!dummyLIST}" var="d" >
+                                    <tr>
+                                        <th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd;text-align:right" width="10"><label>Sl. No.</label></th>
+                                        <th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd" width="170"><label>Item/ Description</label></th>
+                                        <th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd;text-align:right" width="50"><label>Qty</label></th>
+                                    </tr>
+                                </apex:repeat>
+                            </thead>
+                            <tbody>
+                                <apex:repeat value="{!workOrderLineItemsQuoted}" var="W">
+                                    <tr>
+                                        <td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;text-align:right"><label>{!W.serialNumber}</label></td>
+                                        <td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd"><label>{!W.productName}</label></td>
+                                        <td style="padding:5.6px 3.2px;font-size:14.4px;word-break:break-word;border-left:1px solid #bdbdbd;border-bottom:1px solid #bdbdbd;text-align:right"><label>{!W.qunatity}</label></td>
+                                    </tr>
+                                </apex:repeat>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                
+                <!--<tr>
+<td style="width:100%;padding:9.6px 3.2px;border-top: 1px solid #e4e4e4;">
+<table style="width:100%;border-collapse: collapse; table-layout: fixed;">
+<tbody>
+<tr>
+<td>
+<h4 style="padding-bottom: 6px;font-size: 16.8px;margin:0;">Payment Terms :</h4>
+</td>
+</tr>
+<tr>
+<td>
+<ul style="list-style-position: inside;font-size: 14.4px;padding:0px;margin:0px">
+<li>Payment due upon receipt.</li>
+<li>For Cheque mode of Payment, mark all Cheques payable to “{!ContactAccountdetails.sigmaerpdev2__Account__r.Name} Pvt. Ltd”.</li>
+<li>Taxes subject to vary based on location.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>-->
+                <tr>
+                    <td style="padding:5.6px 3.2px" colspan="4">&nbsp;</td>
+                    <td style="padding:5.6px 3.2px" colspan="4">&nbsp;</td>
+                </tr>
+                             
+            </tbody>                        
+        </table>
+        
+    </body>
+    
+</apex:page>

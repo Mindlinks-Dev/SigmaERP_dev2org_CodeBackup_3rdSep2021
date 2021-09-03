@@ -1,0 +1,99 @@
+<aura:component controller="LocationSearch" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    
+    <aura:attribute name="recordName" type="String" default=""/>    
+    <aura:attribute name="recordId" type="String" default="" />
+    <aura:attribute name="finalList" type="List" />
+    <aura:attribute name="expanded" type="Boolean" default=""/>
+    <aura:attribute name="rowLength" type="Integer" default="0" />
+    
+    <aura:attribute name="currentCount" type="Integer" default="0" />
+    <aura:attribute name="initialRows" type="Integer" default="8" />
+    <aura:attribute name="rowsToLoad" type="Integer" default="8" />
+    <aura:attribute name="totalNumberOfRows" type="Integer" />
+    <aura:attribute name="loadMoreStatus" type="String" default="Load More" />
+    
+    <aura:attribute name="totalCount" type="Integer" />
+    
+    <div class="banner-bg">
+        <div class="content-bg">            
+            <div class="content">
+                <article class="slds-card">
+                    <div class="slds-card__header slds-grid slds-m-bottom_none slds-p-around--xx-small">
+                        <div class="slds-media__figure">                           
+							<span class="slds-icon_container slds-icon-standard-poll" title="Description of icon when needed">
+								<lightning:icon iconName="standard:flow" alternativeText="Approved" size="Medium"/> 
+							</span>                            		
+                        </div>
+                        <div class="slds-media__body">						
+                            <h2 class="slds-page-header__title slds-align-middle slds-m-top_xxx-small" title="Location Search">Location Search</h2>                        	
+                        </div>                                           
+                        <img src="/resource/sigmaerpdev__PropSearch" width="75" height="25" title="Location" />                
+                    </div>
+                    <div class="slds-card__body">
+						<div class="main-content" style="width:60%;">
+							<div class="slds-form-element__group"> 
+								<div class="slds-grid">                                   
+									<div class="slds-col slds-size_1-of-3 slds-p-horizontal_small">                                       
+                                        <label class="slds-form-element__label" for="Start Date:">Location</label>                                        
+                                        <c:LookupSObject aura:id="AccName" recID="{!v.recordId}" searchString="{!v.recordName}" 
+                                                       label="Account" pluralLabel="Accounts"
+                                                       sObjectAPIName="Account" 
+                                                       instanceId="Supplier,Vendor"
+                                                       SRString="Location"
+                                                       listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                       listIconClass="slds-icon-standard-account" />
+                                     </div>	
+								</div>
+							</div>
+						</div>
+					</div>
+                    
+                    <div class="slds-text-align_left slds-m-left--small slds-m-top_xx-small slds-p-bottom--medium" > 
+                        <lightning:button class="slds-button slds-button_brand" onclick="{!c.FetchLoc}">Search</lightning:button>
+                        <lightning:button class="slds-button slds-button_neutral" onclick="{!c.goToHome}">Cancel</lightning:button>                       
+                    </div>                     
+                </article>
+            </div>
+        </div>
+    </div>
+    <aura:if isTrue="{!v.expanded}">
+        <lightning:card> 
+         <div class="slds-card__header slds-grid slds-m-top-xx-large slds-m-bottom_none slds-p-around--xx-small" style="background:#fff4d2;">                        
+             <div class="slds-media__figure"></div>
+             <div class="slds-media__body">                
+                 <span style="font-size:14px;color:black;margin-left: 6px;">
+                     Search Results [ <span id="locColor">Location</span>, <span id="zoneColor">Zone</span>, <span id="binColor">Bin</span> ]
+                 </span>                            
+             </div>
+        </div>
+        <aura:if isTrue="{!v.rowLength > 0}">
+             <div class="slds-card__body slds-table_bordered">
+                 <div class="slds-scrollable table-scroll slds-table slds-table_bordered1">
+                     <aura:iteration items="{!v.finalList}" var="locationList">                                                          
+                     	<c:DisplayLocationsOuter innerList1="{!locationList}" />                                                                
+                     </aura:iteration>      
+                 </div>
+             </div> 
+             <div class="slds-text-align_center">
+             	<a onclick="{!c.loadMoreData}">{!v.loadMoreStatus}</a>
+             </div>
+             <aura:set attribute="else">
+                 <div class="slds-text-align_center">
+                     No records found for your search criteria.
+                 </div>
+             </aura:set>
+                 
+         </aura:if>
+        </lightning:card>
+    </aura:if>
+    
+    <div class="demo-only slds-hide" aura:id="mySpinner" style="height: 6rem;">
+    	<div class="slds-spinner_container">
+        	<div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+            	<span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

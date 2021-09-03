@@ -1,0 +1,149 @@
+<aura:component controller="CreateCustomerCntrl" implements="force:appHostable,forceCommunity:availableForAllPageTypes" access="global">
+   
+    <aura:registerEvent name="customerRegEvent" type="c:CustomerEvent"/>  
+    <aura:attribute name="accList" type="Account[]"/>
+    <aura:attribute name="cust" type="Account"
+                    default="{'sobjectType':'Account',
+                             'unknown_custom_field':'', 
+                             'Name':'',
+                             'sigmaerpdev__LastName__c':'',
+                             'sigmaerpdev__Address__c':'',
+                             'sigmaerpdev__City__c':'',
+                             'sigmaerpdev__State__c':'',
+                             'sigmaerpdev__Zip__c':'',
+              				 'sigmaerpdev__Country__c':'',
+                             'sigmaerpdev__Phone':'', 
+                             'sigmaerpdev__Email__c':'',
+                             'sigmaerpdev__CardFirst_Name__c':'',
+                             'sigmaerpdev__CardLast_Name__c':'',
+                             'sigmaerpdev__CardType__c':'',
+                             'sigmaerpdev__CardLastFourDigit__c':'',
+                             'sigmaerpdev__CardExpiryDate__c':''
+                             }"  
+                    />
+    
+<!--<form >-->
+   <div class="slds-spinner_container slds-hide" aura:id="spinner">
+        <div class="slds-spinner--brand slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>  
+ <div class="slds-modal__content">
+		<header class="site-masthead slds-grid slds-wrap slds-box slds-theme_shade slds-theme_alert-texture" style="padding:1rem 2rem;"><div class="slds-align-middle">
+		<button class="slds-button slds-button_neutral" onclick="{!c.backToCreateOrders}" aura:id="back">Back</button></div><div class="site-masthead-title slds-col slds-has-flexi-truncate slds-align-middle"><div class="slds-media slds-media--center slds-media--responsive"><span class="slds-media__figure"></span><div class="slds-media__body"><div class="slds-grid slds-grid--align-center"><span class="slds-hide docsearch-category"></span><h1 title="Button Groups" class="slds-page-header__title slds-truncate">Customer Information</h1></div></div></div></div></header>
+	
+     
+     
+     <div class="slds-box" id="body_NC" style="">
+         <div id="content_NC">
+		 <br/>
+		 		<div class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			 <label class="slds-size--1-of-2 slds-m-right_small" >
+          		 <ui:inputText aura:id="firstName" 
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.cust.Name}"
+                          placeholder="First Name"/>  
+     			 </label>
+        
+                 <label class="slds-size--1-of-2 slds-m-right_small">
+                  <ui:inputText aura:id="lastName" 
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.cust.sigmaerpdev__LastName__c}"
+                          placeholder="Last Name"/>   
+                     
+          		 </label>
+                
+                 </div>
+				 
+				<div class="slds-form-element__row">
+      <label class="slds-size--1-of-2 slds-m-right_small">
+                 <ui:inputText aura:id="country" 
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.cust.sigmaerpdev__Country__c}"
+                                  placeholder="Country"/>    
+			  
+      </label>
+      <label class="slds-size--1-of-2 slds-m-right_small">
+                 <ui:inputText aura:id="state" 
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.cust.sigmaerpdev__State__c}"
+                                  placeholder="State"/>       
+      </label>
+	  
+    </div> 
+	
+	    <div class="slds-form-element__row">
+      <label class="slds-size--1-of-2 slds-m-right_small">
+                <ui:inputText aura:id="city" 
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.cust.sigmaerpdev__City__c}"
+                                  placeholder="City"/>     
+								  
+								  
+      </label>
+	  <label class="slds-size--1-of-2 slds-m-right_small">
+              <ui:inputText aura:id="zip" 
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.cust.sigmaerpdev__Zip__c}"
+                                  placeholder="Zip Code"/>      
+      </label>
+    </div>
+	
+	    <div class="slds-form-element__row">
+      <label class="slds-size--1-of-2 slds-m-right_small">
+               <ui:inputText aura:id="Phone" 
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.cust.Phone}"
+                                  placeholder="Phone"/>           
+      </label>
+	  <label class="slds-size--1-of-2 slds-m-right_small">
+          <ui:inputText aura:id="Email" 
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.cust.sigmaerpdev__Email__c}"
+                                  placeholder="Email" size="50" />                 
+      </label>
+    </div>
+	
+	 <div class="slds-form-element__row">
+      <label class="slds-size--1-of-2 slds-m-right_small">
+                <ui:inputTextArea aura:id="address" 
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.cust.sigmaerpdev__Address__c}"
+                                  placeholder="Address" />         
+      </label>
+    </div>
+  			</div>
+			
+		</div>
+	     <br/>       
+      <div  class="slds-form-element">         
+		 <!--<ui:button label="Submit"
+                    class="slds-button slds-button-neutral slds-button-small slds-button-neutral"
+                    labelClass="label"
+                    press="{!c.saveCustomer}" />
+          <ui:button class="slds-button slds-button-neutral slds-button-small slds-button-neutral" 
+                     label="Cancel" 
+                     press="{!c.backToCreateOrders}" />-->
+          <button class="slds-button slds-button_neutral" onclick="{!c.saveCustomer}">Submit</button>
+          <button class="slds-button slds-button_neutral" onclick="{!c.backToCreateOrders}">Cancel</button>
+      </div> 
+     
+    </div>
+         </div>
+     </div>
+     
+    
+<!--</form>  --> 
+</aura:component>

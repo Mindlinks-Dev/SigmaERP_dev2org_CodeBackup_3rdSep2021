@@ -1,0 +1,113 @@
+<aura:component controller ='SigmaOrderHandler' implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>   
+    <aura:attribute name="OrderList" type="Order[]"/>
+    <aura:attribute name="isErrorflag" type="Boolean" default="false"/>
+     <aura:attribute name="errorText" type="String"/>
+   <aura:handler event="c:PageChange" action="{!c.pageChange}"/>
+     <aura:attribute name="displayedSection" type="string" default=""/>
+        <aura:attribute name="sigmaFlag" type="Boolean" default="false"/>
+    <aura:attribute name="Listflag" type="Boolean" default="true"/>
+    <aura:attribute name="soId" type="ID"/>
+<aura:handler name="salesOrderevent" event="c:salesOrderevent" action="{!c.handlesoId}"/>
+    
+    
+
+    <div class="slds-box slds-m-vertical_small " aura:id="mainDiv">
+        <div class="slds-grid slds-grid-mob">
+            <div class="slds-col slds-has-flexi-truncate">
+                <div class="slds-media slds-no-space slds-grow">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-lead">
+                            <lightning:icon iconName="standard:record" size="small" />
+                        </span>
+                    </div>
+                    <div class="slds-media__body">                        
+                        <h1 class="slds-page-header__title slds-p-right_x-small">
+                            
+                            <button class="slds-button slds-button_reset slds-type-focus slds-truncate" aria-haspopup="true" title="">
+                                <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">
+                                    <span class="slds-truncate" title="this should match My Packages">Order</span>
+                                </span>
+                            </button>
+                            
+                        </h1>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="slds-col slds-no-flex slds-grid slds-align-top slds-p-bottom_xx-small">
+                <div class="slds-button-group" role="group"> 
+                    
+                    <lightning:button label="New" name="New"  onclick="{!c.Order}" />
+                    
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <aura:If isTrue="{!v.isErrorflag}">
+            <div class="slds-grid">
+                <div class="slds-col slds-align-bottom">
+                    <p class="slds-text-body_small">
+                        
+                        <ui:message title="Error" severity="error" closable="false">
+                            {!v.errorText}
+                        </ui:message>
+                    </p>
+                </div>
+            </div>
+        </aura:If>
+    
+    <aura:If isTrue="{!v.Listflag}">
+    <div class="slds-grid slds-m-top_large slds-scrollable">
+        <table class="slds-table slds-table_bordered" role="grid" style="border-left: 1px solid rgb(216, 221, 230);border-right: 1px solid rgb(216, 221, 230);">
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col" >
+                        <div class="slds-truncate" title="SL">SL NO</div>
+                    </th>
+                    <th scope="col" >
+                        <div class="slds-truncate" title="InventoryID">Order Name</div>
+                    </th>
+                    <th scope="col" >
+                        <div class="slds-truncate" title="Product">Account Name</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Delivered Qty">Order Status</div>
+                    </th>
+                    <th scope="col"> 
+                                <div class="slds-truncate" title="Payment">Payment</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="All Received Qty">Order Amount</div>
+                    </th>
+                   
+                 </tr>
+            </thead>
+            
+            
+            <tbody>
+                
+                <aura:iteration items="{!v.OrderList}" var="item" indexVar="i">
+                    
+                    <c:StandardOrderChild OrderList="{!item}" serialCount="{!i+1}"/> 
+                    
+                </aura:iteration>
+            </tbody>
+        </table>
+    </div>
+    
+    <c:PaginationComponentForInventory page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+    
+    {!V.body}
+    
+    </aura:If>
+    <aura:If isTrue="{!v.sigmaFlag}">
+        <c:StandardOrderCmp recordId="{!v.soId}"/>
+    </aura:If>
+</aura:component>

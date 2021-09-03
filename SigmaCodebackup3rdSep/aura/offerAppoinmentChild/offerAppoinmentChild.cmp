@@ -1,0 +1,55 @@
+<aura:component >
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   <aura:attribute type="Object" name="offerData" /> 
+     <aura:attribute type="String" name="start" /> 
+     <aura:attribute type="String" name="End" /> 
+    
+    <tr class="slds-hint-parent">
+        <th data-label="Action" scope="row">
+            <div class="slds-truncate" title="startDate">
+            <lightning:input type="radio" name="options" checked="{!v.offerData.selected}" />
+            </div>
+        </th>
+        <td data-label="Day">
+            <div class="slds-truncate" title="day">{!v.offerData.day}</div>
+        </td>
+       <!-- <th data-label="Start Date" scope="row">
+            <div class="slds-truncate" title="startDate">{!v.offerData.startDate}</div>
+        </th>
+        <td data-label="End Date">
+            <div class="slds-truncate" title="endDate">{!v.offerData.endDate}</div>
+        </td>-->
+        <th data-label="Start Date" scope="row">
+            <div class="slds-truncate" title="startDate">{!v.start}</div>
+        </th>
+        <!--td data-label="End Date">
+            <div class="slds-truncate" title="endDate">{!v.End}</div>
+        </td>
+        <td data-label="PromBand">
+            <div class="slds-truncate" title="promBand">{!v.offerData.promBand}</div>
+        </td>
+        <td data-label="PromType">
+            <div class="slds-truncate" title="promType">{!v.offerData.promType}</div>
+        </td>
+        <td data-label="Day">
+            <div class="slds-truncate" title="day">{!v.offerData.day}</div>
+        </td>
+        < commented based on Gareth comment
+        <td data-label="Amount">
+            <div class="slds-truncate" title="offerToken">{!v.offerData.offerToken}</div>
+        </td>
+        <td data-label="Contact">
+            <div class="slds-truncate" title="offerText">{!v.offerData.offerText}</div>
+        </td>
+         <td data-label="Contact">
+            <div class="slds-truncate" title="travelTime">{!v.offerData.travelTime}</div>
+        </td>
+         <td data-label="Contact">
+            <div class="slds-truncate" title="FRU">{!v.offerData.FRU}</div>
+        </td> <td data-label="Contact">
+            <div class="slds-truncate" title="IRU">{!v.offerData.IRU}</div>
+        </td>
+         till here -->
+    </tr>
+     
+</aura:component>

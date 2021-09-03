@@ -1,0 +1,138 @@
+<aura:component controller="SigmaOrderHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>   
+    <aura:attribute name="PropList" type="Proposal__c[]"/>
+    <aura:handler event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:attribute name="errorText" type="String"/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="isErrorflag" type="Boolean" default="false"/>
+    
+    <aura:attribute name="Listflag" type="Boolean" default="true"/>
+    <aura:attribute name="PropFlag" type="Boolean" default="false"/>
+    <aura:attribute name="PropProdFlag" type="Boolean" default="false"/>
+    <aura:attribute name="PropsearchFlag" type="Boolean" default="false"/>
+     <aura:attribute name="proposalid" type="id"/>
+    <div >
+        <aura:If isTrue="{!v.isErrorflag}"> 
+            <div class="slds-grid">
+                <div class="slds-col slds-align-bottom">
+                    <p class="slds-text-body_small">
+                        
+                        <ui:message title="Error" severity="error" closable="false">
+                            {!v.errorText}
+                        </ui:message>
+                    </p>
+                </div>
+            </div>
+   </aura:If> 
+        <aura:If isTrue="{!v.Listflag}"> 
+        <div class="slds-box slds-m-vertical_small" aura:id="mainDiv">
+            <div class="slds-grid slds-grid-mob">
+                <div class="slds-col slds-has-flexi-truncate">
+                    <div class="slds-media slds-no-space slds-grow">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-lead">
+                                <lightning:icon iconName="standard:record" size="small" />
+                            </span>
+                        </div>
+                        <div class="slds-media__body">                        
+                            <h1 class="slds-page-header__title slds-p-right_x-small">
+                                
+                                <button class="slds-button slds-button_reset slds-type-focus slds-truncate" aria-haspopup="true" title="">
+                                    <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">
+                                        <span class="slds-truncate" title="this should match My Packages">Proposal</span>
+                                    </span>
+                                </button>
+                                
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="slds-col slds-no-flex slds-grid slds-align-top slds-p-bottom_xx-small">
+                    <div class="slds-button-group" role="group"> 
+                        
+                        <lightning:button label="New Proposal" name="Proposal"  onclick="{!c.Proposal}" />
+                        <lightning:button label="New Product Proposal"  name="Proposal For Product" onclick="{!c.ProposalForProduct}" />
+                        <lightning:button label="Find Proposal"  name="Proposal For Search" onclick="{!c.ProposalForSearch}" />
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -->
+        
+       
+         <div aura:Id="ProductSection" style="height:78vh;"> 
+                <div class="slds-grid slds-m-top_large slds-scrollable" >
+                    <table class="slds-table slds-table_bordered" role="grid" style="border-left: 1px solid rgb(216, 221, 230);border-right: 1px solid rgb(216, 221, 230);">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="SL">SL NO</div>
+                                </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="PROPOSAL ID">PROPOSAL ID</div>
+                                </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="PROPOSAL NAME">PROPOSAL NAME</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="AGENCY">AGENCY</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="AGENCY">Usage Type</div>
+                                </th>
+                               
+                                <th scope="col">
+                                    <div class="slds-truncate" title="STATUS">STATUS</div>
+                                </th>
+                                
+                            </tr>
+                        </thead>
+                        
+                        
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.PropList}" var="item" indexVar="i">
+                                
+                                <c:ProposalChildCmp PropList="{!item}"  maincomp="{!v.Listflag}" iseditproposal ="{!v.PropFlag}" PropProdFlag="{!v.PropProdFlag}"  serialCount="{!i+1}"  proposalid="{!v.proposalid}"/> 
+            <!-- <sigmamvpdev:ProposalChildCmp PropList="{!item}" maincomp="{!v.Listflag}" iseditproposal ="{!v.PropFlag}" serialCount="{!i+1}" proposalid="{!v.proposalid}"/> 
+                     -->                              
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+                <c:PaginationComponentForInventory page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                
+                {!V.body}
+            </div>
+            
+       </aura:If> 
+    </div>
+    
+  
+   <aura:If isTrue="{!v.PropFlag}">
+       <!-- <iframe src="{!'/apex/sigmaerpdev2__ProposalPage'}" width="100%" height="500px;" frameBorder="0"/>
+   -->
+    <c:Proposal recordId="{!v.proposalid}"/>
+   
+    </aura:If> 
+
+
+    
+    <aura:If isTrue="{!v.PropProdFlag}">
+       <c:ProposalforProduct recordId="{!v.proposalid}"/>
+    </aura:If>
+    
+    <aura:If isTrue="{!v.PropsearchFlag}">
+      <!--  <iframe src="{!'/apex/sigmaerpdev2__ProposalSearch'}" width="100%" height="500px;" frameBorder="0"/> -->
+        <c:ProposalSearch/>
+    </aura:If>
+    
+    
+</aura:component>

@@ -1,0 +1,12 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="banner" type="Boolean" default="false"/>
+    <aura:if isTrue="{!v.banner}">  
+    <div class="banner-bg slds-align_absolute-center">
+            <div class="content-bg">
+                <p class="para1">Welcome To</p>
+                <h3 class="para2">Brewery Store</h3>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

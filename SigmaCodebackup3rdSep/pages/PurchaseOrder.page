@@ -1,0 +1,23 @@
+<apex:page StandardController="Purchase_Order__c" id="mainPage">
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+     var recId = "{!JSENCODE($CurrentPage.parameters.id)}";
+     
+        $Lightning.use("sigmaerpdev:TestAppForPurchaseOrder", function() 
+        {
+         $Lightning.createComponent("sigmaerpdev:NewPurchaseOrder",
+                                           {Id: recId, modeOfEdit: 'Record'}, 
+                                           "lightning",
+                                           function(cmp) 
+                                           {
+                                           //alert('inside'+recId);
+                                           //alert('running inside component studd');
+                                               //  Do some stuff
+                                           }
+                );
+        });
+    </script>
+</apex:page>

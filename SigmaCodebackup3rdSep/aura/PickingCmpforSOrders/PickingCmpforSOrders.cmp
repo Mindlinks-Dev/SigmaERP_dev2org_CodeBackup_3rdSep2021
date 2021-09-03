@@ -1,0 +1,15 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable" access="global" controller="PickingCtrl">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="isSigmaOrder" type="boolean"/>
+      <!--help menu-->
+    <aura:attribute name="currectObject" type="String" default=""/>
+     <aura:attribute name="description" type="String" default="test"/>
+     <aura:attribute name="descriptionBody" type="String" default="test"/>
+    
+    <aura:if isTrue="{!v.isSigmaOrder}"> 
+       	 	<c:Picking isPicking ="true" currectObject="{!v.currectObject}" description="{!v.description}" descriptionBody="{!v.descriptionBody}"/>
+        <aura:set attribute="else">
+            <c:PickingOrder isSigmaOrder="{!v.isSigmaOrder}" currectObject="{!v.currectObject}" description="{!v.description}" descriptionBody="{!v.descriptionBody}" />
+        </aura:set>
+    </aura:if>
+</aura:component>

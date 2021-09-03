@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>Payment_Terms_1__c</fullName>
+        <externalId>false</externalId>
+        <label>Payment Terms 1</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Payment_Terms_2__c</fullName>
+        <externalId>false</externalId>
+        <label>Payment Terms 2</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Payment_Terms_3__c</fullName>
+        <externalId>false</externalId>
+        <label>Payment Terms 3</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <label>Service Quote Payment Terms</label>
+    <visibility>Public</visibility>
+</CustomObject>

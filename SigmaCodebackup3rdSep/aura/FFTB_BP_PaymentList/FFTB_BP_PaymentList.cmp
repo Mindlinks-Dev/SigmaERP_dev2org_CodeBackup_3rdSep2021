@@ -1,0 +1,175 @@
+<aura:component controller="FFTBCtrl">
+    <aura:attribute name="recordId" type="string" default="" />
+    <aura:attribute name="recordName" type="string" default="" />
+    <aura:attribute name="fromDate" type="DateTime"  />
+    <aura:attribute name="endDate" type="DateTime" default="" />
+    <aura:attribute name="orderList" type="List" />
+    <aura:attribute name="showDetails" type="Boolean" default="false" />
+    <aura:attribute name="openModalPopUp" type="Boolean" default="false" />
+    <aura:attribute name="totalAmount" type="Decimal"  />
+    
+    <aura:attribute name="netPayable" type="Decimal"  />
+    <aura:attribute name="bpComm" type="Decimal" default=""  />
+    <aura:attribute name="deducCommAmt" type="Decimal" default=""  />
+    <aura:attribute name="amtPaid" type="Decimal" default=""  />
+    
+    <aura:attribute name="sigmaOrdIdList" type="List" default="" />
+    
+	<lightning:card title="Brewery Producer Payable Amount" iconName="standard:approval"> 
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <tr>
+            	<td style="padding-left:10px;">
+                    <div class="slds-form-element slds-size_1-of-4 slds-mob_1-of-1"> 
+                        <span style="color:#b20000;">*</span> 
+                        <label class="slds-form-element__label slds-no-flex">
+                            <span>Brewery Producer</span>
+                        </label> 
+                        <c:customLookup recordID="{!v.recordId}" recordName="{!v.recordName}"
+                                        whereCondition="{!'AND sigmaerpdev2__Active__c=\'Yes\' AND recordType.Name=\'Vendor\' '}"
+                                        objectAPIName="Account" IconName="standard:account" label="" isSigmaOrder= 'true' />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+            	<td style="padding-left:10px;">
+                    <div class="slds-form-element slds-size_1-of-6"> 
+                        <label class="slds-form-element__label slds-no-flex">
+                            <span>From Date</span>
+                        </label>                              
+                        <ui:inputDate value="{!v.fromDate}" displayDatePicker="true" format="MM/dd/yyyy"/>                                                        
+                        <label class="slds-form-element__label slds-no-flex">
+                            <span>To Date</span>
+                        </label>                              
+                        <ui:inputDate value="{!v.endDate}" displayDatePicker="true" format="MM/dd/yyyy"/>                                                                
+                    </div>
+                </td>
+            </tr><br />
+            <tr>
+            	<td style="padding-left:10px;">                                            	
+                    <button type="button" class="slds-button slds-button_brand" onclick="{!c.getDetails}">Search</button>
+                    <button type="button" class="slds-button slds-button_neutral" onclick="{!c.clearInfo}">Clear</button>
+                </td>
+            </tr><br />
+        </table><br />
+        <aura:if isTrue="{!v.showDetails}">
+            <table style="max-width:75%;" class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped slds-table_col-bordered">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Sales Order Name">Sales Order Name</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Ordered Date">Ordered Date</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Ordered Qty">Ordered Qty</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Order Amount">Order Amount</div>
+                        </th>
+                    </tr>
+                </thead>
+                <aura:if isTrue="{!v.orderList.length > 0}">
+                	<tbody>
+                        <aura:iteration items="{!v.orderList}" var="pr1">
+                            <tr>
+                                <c:FFTBPaymentDetails rowDetails="{!pr1}" />
+                            </tr>
+                        </aura:iteration><br />
+                        <tr>
+                            <td style="padding-left:10px;" colspan="4">
+                                <button type="button" class="slds-button slds-button_success" onclick="{!c.showActualPayments}">Update Payment</button>
+                                <!--<img onclick="{!c.showActualPayments}" src="/resource/sigmaerpdev2__BPMakePymnt" width="150" height="80"  />-->              
+                                
+                            </td> 
+                        </tr>
+                    </tbody>
+                    <aura:set attribute="else">
+                    	<tbody>
+                            <tr>
+                                <td style="text-align:center" colspan="4">
+                                    No records found for your search criteria.                                    
+                                </td> 
+                            </tr>
+                        </tbody>
+                    </aura:set>
+               </aura:if>
+            </table>
+        </aura:if>
+    </lightning:card>
+    
+    <aura:if isTrue="{!v.openModalPopUp}">        
+        <div class="demo-only" style="height: 640px;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">                            
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">BP Payments</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">                        
+                             <table class="slds-table slds-table_striped" width="90%" style="background-color:#FFE042;">
+                                <tr>
+                                    <td style="width:20%;">
+                                        <img src="/resource/sigmaerpdev2__BPPay1" width="160" height="160" />              
+                                    </td>
+                                    <td style="width:70%;">
+                                    	<table class="slds-table slds-table_striped" style="background-color:#d9dee3;">                                                                                          
+                                            <tr>
+                                                <td>
+                                                	Commission (%) : &nbsp;&nbsp;{!v.bpComm}
+                                                </td> 
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                	Total Sales Amount (TSA) ($) : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{!v.totalAmount}
+                                                </td> 
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                	Deductible Comm. Amount (DCA) ($) : &nbsp;&nbsp;{!v.deducCommAmt}
+                                                </td> 
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                 <td>
+                                                	Net Payable Amount ($) [ TSA - DCA ] : &nbsp;&nbsp;&nbsp;{!v.netPayable}
+                                                </td> 
+                                            </tr>
+                                            <!--<tr>
+                                                 <td style="width: 5rem;">
+                                                     <p style="width: 5rem;">
+                                                    	 <lightning:input step=".01" type="number" name="Amount Paid" label="Amount Paid" value="{!v.amtPaid}"
+                                                                      />
+                                                     </p>
+                                                </td> 
+                                            </tr>-->
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        <br/>
+                    </div>   
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closePopUp}">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.updatePaymentRecord}">Paid</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    
+    <div class="demo-only slds-hide" aura:id="mySpinner">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

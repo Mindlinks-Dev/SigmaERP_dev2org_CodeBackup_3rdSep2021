@@ -1,0 +1,56 @@
+.THIS th{
+    background:#f2f2f2 !important;
+    font-weight:bold !important;
+   color:#16325c !important;
+    text-transform:uppercase;
+}
+.THIS table
+{
+    color:black;
+}
+.THIS table a
+{  
+    color:#009ddc;
+    font-weight:bold;
+}
+.THIS table a:hover
+{
+    color:rgb(19, 95, 144);
+}
+.THIS .slds-button_neutral .slds-icon-text-default {
+    fill:#009ddc;
+}
+.THIS .slds-button_brand .slds-icon-text-default {
+    fill:#fff;
+}
+.THIS .slds-button_icon-bare
+{
+    color:#009ddc;
+}
+.THIS .slds-button_icon-bare:hover
+{
+    color:rgb(19, 95, 144);
+}
+.THIS .table-bg
+{
+    width:87%;
+    display:block;
+    height:350px;
+    overflow-y:scroll;
+    
+    margin:4% auto;
+}
+.THIS .brand-btn
+{
+    background:#009ddc;
+    border-color:#009ddc;
+    color:white;
+    font-weight: bold;
+    text-transform:uppercase;
+    
+}
+@media only screen and (max-width: 768px) 
+    {
+    .THIS .slds-col{width:100% !important;}
+    .THIS .slds-grid-flex{display:flex;}
+}

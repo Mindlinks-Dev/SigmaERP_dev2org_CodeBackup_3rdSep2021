@@ -1,0 +1,93 @@
+<aura:component controller="PMController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes,lightning:actionOverride" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="force:refreshView" action="{!c.doRefresh}" />
+   <!-- <aura:attribute name="pageReference" type="Object"/>
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler event="lightning:tabRefreshed" action="{!c.onTabRefreshed }"/> 
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.onPageReferenceChanged}" />-->
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="ProjectData" type="Project2__c" 
+                    default="{'sobjectType': 'Project2__c',
+                             'Name': '',
+                             'sigmaerpdev2__Start_Date__c': '',
+                             'sigmaerpdev2__End_Date__c': '',
+                             'sigmaerpdev2__Template__c':''
+                             }"/>
+    
+    <ltng:require styles="{!$Resource.modal_close}" />
+    
+    <!-- code to start-->
+   <aura:attribute name="spinner" type="Boolean" default="false"/>
+    
+    <aura:if isTrue="{!v.showMessage==true}">
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+            <span class="slds-assistive-text">error</span>
+            <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">  
+            </span>
+            <h2>{!v.message}</h2>
+        </div>
+    </aura:if>
+    <div class="modal-header slds-modal__header">
+        <h2 class="title slds-text-heading--medium">
+            <img class="slds-m-right_x-small" src="{!$Resource.ResourceIcon + '/resource.png'}" width="40"/>Project Management </h2>
+    </div>
+    <div class="slds-modal__content">
+    <aura:if isTrue="{!v.spinner}">
+        <div class="slds-spinner_container" style="position:initial">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- <aura:if isTrue="{v.flag=='addresource'}">-->
+    <lightning:card title="">
+        <div class="slds-grid">
+            <div class="slds-col slds-m-horizontal_small" style="width:40%;">
+                <div class="slds-form-element">
+                    <label class="slds-size--1-of-3" >
+                        Project Name   
+                    </label>
+                  	 	<ui:inputText value="{!v.ProjectData.Name}" disabled="true"/>
+                       
+                </div>
+                <div class="slds-form-element  slds-m-top_x-small">
+                     <label class="slds-size--1-of-3" >
+                        Start Date   
+                    </label>
+                  	 	<ui:inputText value="{!v.ProjectData.sigmaerpdev2__Start_Date__c}" disabled="true"/>
+                    
+                </div>
+               
+                
+            </div>
+            <div class="slds-col slds-m-horizontal_small" style="width:40%;">
+                <div class="slds-form-element">
+                    <label class="slds-size--1-of-3" >
+                        Template   
+                    </label>
+                    <ui:inputText  class="slds-input input uiInput uiInputText uiInput--default uiInput--input" value="{!v.ProjectData.sigmaerpdev2__Template__c}" disabled="true"/>
+                    
+                </div>
+                <div class="slds-form-element  slds-m-top_x-small">
+                    <label class="slds-size--1-of-3" >
+                        End Date   
+                    </label>
+                  	 	<ui:inputText value="{!v.ProjectData.sigmaerpdev2__End_Date__c}" disabled="true"/>
+                    
+                   
+                </div>
+                
+            </div>
+        </div>
+        
+    </lightning:card>
+    <!-- </aura:if>-->
+    </div>
+    <footer class="slds-modal__footer slds-m-top_large">
+        <button class="slds-button slds-button_brand" onclick="{!c.RedirectGantt}">Manage</button>
+       <!-- <button class="slds-button slds-button_brand" onclick="{!c.cancelButton}">Cancel</button>-->
+    </footer> 
+    
+</aura:component>

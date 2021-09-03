@@ -1,0 +1,14 @@
+<aura:component >
+    <aura:attribute name="mainList" type="array" />
+    <aura:attribute name="wrapProdList" type="array" /> 
+    <aura:attribute name="prodId" type="Id" /> 
+    <aura:attribute name="recID" type="Id" /> 
+
+    <aura:attribute name="editStock" type="Boolean" default="false" /> 
+    <aura:attribute name="manfObj" type="Map" />
+    <aura:attribute name="orderItemNewForView" type="array" />
+
+    <aura:iteration items="{!v.mainList.mainWrapProdList}" var="rowData"> 
+    	<c:showProductsListOuterReserveStockView rowDetails="{!rowData}" prodId="{!rowData.prodId}" recID="{!v.recID}" manfObj="{!v.manfObj}" orderItemNewForView="{!v.orderItemNewForView}" />           
+    </aura:iteration>   
+</aura:component>

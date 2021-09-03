@@ -1,0 +1,123 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'Yes', 'value': 'option1'},
+                                                        {'label': 'No', 'value': 'option2'}
+                                                        ]"/>
+    
+    <aura:attribute name="value" type="String" default="option1"/>
+    <div class="slds-m-around_large">
+        <lightning:progressIndicator currentStep="3" type="base" hasError="true" variant="base">
+            <lightning:progressStep label="Step 1" value="1"/>
+            <lightning:progressStep label="Step 2" value="2"/>
+            <lightning:progressStep label="Step 3" value="3"/>
+            <lightning:progressStep label="Step 4" value="4"/>
+        </lightning:progressIndicator>
+    </div>
+    <lightning:card title="Registration">
+        <aura:set attribute="title">
+            <lightning:icon iconName="standard:customer_portal_users" size="small" class="slds-m-right_x-small"/> Registration
+        </aura:set>
+        <div class="slds-p-horizontal_small">
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="text" label="First Name"/>
+                </div>  
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="text" label="Last Name"/>
+                </div>  
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="text" label="Know As"/>
+                </div>  
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="date" label="Date of Birth"/>
+                </div>  
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="email" label="Email"/>
+                </div>  
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="number" label="Mobile Phone Number"/>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="number" label="Home Phone Number"/>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="text" label="Address"/>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="text" label="Town/City"/>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="text" label="Postal Code"/>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning:input type="text" label="Country"/>
+                </div>
+            </div>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            <hr/>
+            <h1 class="slds-card__header-title"><lightning:icon iconName="standard:service_appointment_capacity_usage" size="small" class="slds-m-right_x-small"/> Data Protection Policy</h1>
+            <br/>
+            <lightning:input type="checkbox" label="The privacy of our clients is paramount. Please read our privacy notice on how we use and store your information and confirm that you consent to us using your personal information as described." name="input1"/>
+            <hr/>
+            <h1 class="slds-card__header-title"><lightning:icon iconName="standard:shift_pattern_entry" size="small" class="slds-m-right_x-small"/> Additional Information</h1>
+            <lightning:radioGroup name="radioGroup"
+                                  label="I confirm that I do not have children under the age of 18 years old who reside outside of the EU/EEA"
+                                  options="{! v.options }"
+                                  value="{! v.value }"
+                                  type="radio"/>
+            <br/>
+            <lightning:radioGroup name="radioGroup"
+                                  label="I am registered with a medical professional local to me (e.g. General Practitioner) and I am able to provide details if required"
+                                  options="{! v.options }"
+                                  value="{! v.value }"
+                                  type="radio"/>
+            
+             <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning:select name="select1" label="Do you have any access requirements?" required="true">
+                <option value="">choose one...</option>
+                <option value="1">one</option>
+                <option value="2">two</option>
+                <option value="3">three</option>
+            </lightning:select>
+                </div>  
+                 <div class="slds-col slds-size_1-of-3">
+                     <lightning:select name="select1" label="Will you be attending alone or with a partner?" required="true">
+                <option value="">choose one...</option>
+                <option value="1">one</option>
+                <option value="2">two</option>
+                <option value="3">three</option>
+            </lightning:select>
+                </div>
+                 <div class="slds-col slds-size_1-of-3">
+                     <lightning:select name="select1" label="How did you hear about us?" required="true">
+                <option value="">choose one...</option>
+                <option value="1">one</option>
+                <option value="2">two</option>
+                <option value="3">three</option>
+            </lightning:select> 
+                </div>
+                 
+            </div>
+            
+            
+           
+            
+           
+            <br/>
+            <p>Please note that we will need to gather details of your GP or medical practitioner at a later date after your online booking.</p>
+            <br/>
+            <lightning:input type="checkbox" label="lease confirm you have read our Service Agreement and FAQ" name="input1"/>
+            
+        </div>
+    </lightning:card>
+    <p class="slds-text-align_right slds-p-around_large"><a href="/tavistockbooking/s/" class="slds-button slds-button_brand">Submit</a></p>
+</aura:component>

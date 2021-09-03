@@ -1,0 +1,174 @@
+<aura:component controller="AddNewProductClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">   
+    <!--Init handler which is call doInit js function on component Load-->  
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="change" value="{!v.ProductItem.sigmaerpdev2__Product_Name__c}" action="{!c.populateCode}"/>
+    <!--Event handler for Add and Delete Row Event which is fire from Child Component-->    
+    
+    
+    <aura:handler name="DeleteRowEvt" event="c:DeleteRowEvt" action="{!c.removeDeletedRow}"/>
+    <aura:handler name="AddRowEvt" event="c:AddNewRowEvt" action="{!c.addNewRow}"/>
+    <aura:attribute name="LocationfromEvent"  type="object[]"/>
+    <aura:attribute name="rowIndex" type="String"/>
+    <aura:attribute name="prodtolocList" type="List" />
+    <aura:attribute name="VPlistparam" type="List" />
+    <!--Aura Attribute for store Contact Object List as Array-->  
+    <aura:attribute name="LocationWrapper" type="object"  access="global"/> 
+     
+    <aura:attribute name="ProductLists" type="Vendor_Product__c[]"/> 
+    <!--<aura:handler name="passProductItem" event="c:passProductItem" action="{!c.getValues}"/>-->
+    <aura:attribute name="ProductItem" type="Vendor_Product__c"
+                    default="{'sobjectType' : 'Vendor_Product__c',
+                             'sigmaerpdev2__Product_Name__r.Name' : '',
+                             'sigmaerpdev2__Product_Name__c' : '',
+                             'sigmaerpdev2__VendorProductCode__c' : '',
+                             'sigmaerpdev2__Vendor_Location__r.Name' :'',
+                             'sigmaerpdev2__Vendor_Location__c' :'',
+                             'sigmaerpdev2__Current_Stock__c': '',
+                             'sigmaerpdev2__Buying_Price__c':'',
+                            
+                             'sigmaerpdev2__Last_Updated_Date__c':''
+                             }"/> 
+    
+    <aura:attribute name="ProductFromEvent" type="list"/> 
+    <aura:attribute name="CurrentStock" type="Integer"/>
+    <aura:attribute name="userInfo" type="user"/>  
+    
+    <!-- Lookup Attribute -->
+    <aura:attribute name="ProductId"  type="Id" default="{}"/>      
+    <aura:attribute name="isSigmaOrder"  type="Boolean" default="false"/>
+    <aura:attribute name="productName"  type="String" default=" "/>
+    <aura:attribute name="productcode"  type="String" />
+    
+   <aura:attribute name="addNewProduct" type="boolean" default="false"/>
+    
+     
+  <!--create a component attributs -->
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <p class="vendor-title"><b> {!v.userInfo.Name}</b></p>
+    <!--Header Part-->       
+    <!--Table Part--> 
+    <!-- <aura:handler event="force:refreshView" action="{!c.isRefreshed}" />-->
+  <!--  <aura:if isTrue="{!v.spinner}">
+        <lightning:spinner variant="brand"/>
+    </aura:if>-->
+    
+    <div class="content">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container1 slds-icon-standard-account1" title="account">
+                        <img src="{!$Resource.SigmaIcons + '/Report.png'}" width="50"/>
+                        <span class="slds-assistive-text">Add New Product</span>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title header slds-text-title_caps">
+                        <strong>Add New Product</strong>
+                    </h2>
+                </div>
+                
+            </header>
+        </div>
+        
+        <div class="slds-card__body">  
+            <div class="slds-m-horizontal_x-small1 slds-box1">
+                <div class="slds-grid slds-gutters slds-wrap slds-m-around_xx-small paddingAround">                
+                    <div class="slds-col slds-size_1-of-14 slds-p-top_xx-small">
+                        <!--<lightning:input aura:id="productsLocationInput" type="text" 
+                                             label="Enter New Product" required="true" 
+                                             value="{!v.ProductItem.LocationName}"/>-->
+                        <span style="color:#b20000;">*</span> 
+                        <label class="slds-form-element__label slds-no-flex">
+                            <span>Enter New Product</span>
+                        </label> 
+                        
+                    </div>
+                    <div class="slds-col slds-size_1-of-4">
+                        <c:customLookup  aura:id="productsLocationInput" 
+                                        label=""  recordID="{!v.ProductItem.sigmaerpdev2__Product_Name__c}" recordName="{!v.ProductItem.sigmaerpdev2__Product_Name__r.Name}" 
+                                        objectAPIName="product2" IconName="standard:product" 
+                                        whereCondition="{!'AND Id in (select sigmaerpdev2__Product_Name__c From sigmaerpdev2__Vendor_Product__c where  sigmaerpdev2__Account_Name__r.Name = \''+v.userInfo.Name+'\')'}"
+                                        isSigmaOrder= 'true'/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-14 slds-p-top_xx-small">
+                        <label class="slds-form-element__label slds-no-flex">
+                            <span>Enter Product Code</span>
+                        </label> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-p-top_right_large">
+                        <lightning:input aura:id="productsCodeLocationInput" type="text" 
+                                         label="" variant="label-hidden"
+                                         value="{!v.productcode}"/>
+                    </div> 
+                    <!--<div class="slds-col slds-size_1-of-4">
+                        <label class="slds-form-element__label" for="Product" id="Product">Product</label>
+                        <span style="color:red">* </span>
+                        <c:customLookup recordID="{!v.ProductItem.ProductId}"
+                                        recordName="{!v.ProductItem.ProductName}"
+                                        objectAPIName="Product2"
+                                        IconName="custom:custom96"
+                                        isSigmaOrder= 'true'  /> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-4">
+                        <lightning:input  aura:id="productsInput" label="Enter Stock" required="true" min="1"
+                                         messageWhenRangeUnderflow="Enter minimum 1 Quantity" 
+                                         value="{!v.ProductItem.CurrentStock}" />
+                    </div>
+                        <div class="slds-col slds-size_1-of-4 slds-p-top_large">
+                            <lightning:button type="button" iconName="utility:add" variant="brand" label="Add" onclick="{!c.addNewLocation}"/>
+                        </div>-->
+                </div>
+                
+                <div class="table-scroll  ">
+                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                        <thead> 
+                            <tr class="slds-text-title_caps  slds-gray">
+                                <th scope="col" style="width:6%"><div class="slds-truncate" title="Id">S.No</div></th> 
+                                <th scope="col" style="width:20%;"><div class="slds-truncate" title="Location">Location</div></th>
+                                <!--<th scope="col" style="width:35%;"><div class="slds-truncate" title="Product Name">Product Name</div></th>-->
+                                <!--<th scope="col" style="width:24%;"><div class="slds-truncate" title="Location">Vendor Product code</div></th>-->
+                                <th scope="col" style="width:17%;"><div class="slds-truncate" title="Name">Current Stock</div></th>
+                                <th scope="col" style="width:8%;"><div class="slds-truncate" title="Price">Price</div></th>
+                                <th scope="col" style="width:12%;"><div class="slds-truncate" title="Name">As on Date</div></th>            
+                                <th ><!--<div class="slds-truncate" title="">
+                                <a><lightning:icon size="x-small" iconName="utility:add" variant="inverse" onclick="{!c.addNewRow}" title="Add"/>
+                                </a>
+                                </div>--></th>     
+                            </tr>
+                        </thead>   
+                        <tbody>
+                          
+                           <aura:iteration items="{!v.LocationWrapper.lStrings}" var="item" indexVar="index">
+                            
+                             <!--<aura:iteration items="{!item.lStrings}" var="itemInner" indexVar="index1">-->
+                                    
+                                    
+                                    <c:AddNewProductLineItem LocationInstance="{!v.LocationWrapper}" LocationInstanceInner="{!item}" rowIndex="{!index}" VPlistparamfromparent="{!v.VPlistparam}" LocationInstance1="{!v.ProductItem}" productcodefromparent="{!v.productcode}" />
+                                    
+                               <!--</aura:iteration>-->
+                          </aura:iteration>
+                        
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-no-flex slds-m-horizontal_small">
+        <div class="slds-text-align_center">
+            <lightning:button label="Save" variant="brand" onclick="{!c.Save}"/>
+            <lightning:button label="Cancel" variant="brand" onclick="{!c.cancel}"/>
+        </div>                    
+    </div>
+     <aura:if isTrue="{!v.Spinner}">
+    <div aura:id="spinnerId" class="slds-spinner_container">
+       <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+         <span class="slds-assistive-text">Loading</span>
+         <div class="slds-spinner__dot-a"></div>
+         <div class="slds-spinner__dot-b"></div>
+       </div>
+    </div>
+ </aura:if>
+    
+</aura:component>

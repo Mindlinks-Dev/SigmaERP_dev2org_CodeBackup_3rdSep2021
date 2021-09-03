@@ -1,0 +1,144 @@
+<aura:component controller="AddShipmentProductsLtng" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:registerEvent name="carryShipmentInList" type="c:CarryShipmentRecord"/> 
+     <aura:attribute name="rowIndexVar" type="Integer"/>
+     <aura:attribute name="cuctomerId" type="Id"/>
+    <aura:attribute name="cuctomerId1" type="Id"/>
+    <aura:handler event="c:CarryShipmentEvent" action="{!c.editFlow}"/>
+    <aura:attribute name="ShipmentProduct" type="Shipment_Products__c[]"/>
+    <aura:attribute name="ShipmentProducts" type="Shipment_Products__c" 
+                    default="{'sobjectType': 'Shipment_Products__c',
+                             'sigmaerpdev2__Package_ID__c': '',
+                             'sigmaerpdev2__Customer_Name__c': '',
+                             'sigmaerpdev2__Order__c': '',
+                             'sigmaerpdev2__Shipment_Delivery_Date__c': '',
+                             'sigmaerpdev2__Status__c': '',
+                             'Pkg__Name':'',
+                             'Cust__Name':''
+                             }"/>
+    
+    
+    <aura:registerEvent name="updateLookupIdEvent" type="c:UpdateLookupId"/> 
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    
+    <aura:attribute name="recordName1" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="ShipStatus" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="ShipName" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="status" type="String[]" default=""/>
+    <aura:attribute name="recordId1" type="String" default=""/>
+    
+    <aura:attribute name="errorMsg1" type="String" default=""/>
+    <aura:attribute name="isError1" type="Boolean" default="false"/>
+    
+    <aura:attribute name="Custname" type="String" default=""/>
+    <aura:attribute name="shipCustname" type="String" default=""/>
+    <aura:attribute name="today" type="String" />
+    <aura:attribute name="Orderdate" type="String" />
+    <aura:attribute name="selectedPackageId" type="String" default="" />
+    <aura:attribute name="indexId" type="String" default="" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="isOpenchild" type="boolean" default="false"/>
+    <aura:attribute name="isOpenTablechild" type="boolean" default="false"/>
+     <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+        <aura:renderIf isTrue="{!v.isError1}">
+        <ui:message title="Error" severity="error" closable="false">
+            {!v.errorMsg1}
+        </ui:message>
+        <aura:set attribute="else">
+            
+        </aura:set>
+    </aura:renderIf>
+   
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        
+        <div role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container" style="">
+                
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-float--right" title="Close" aura:id="close" onclick="{!c.closeModel}">
+                        <c:svg class="slds-button__icon slds-button__icon_large" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" style="color:rgb(0, 112, 210);">Add Packages</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-form slds-form_compound">
+                        <div style="width: 102.4%;margin-left: -4px;">
+                        <aura:renderIf isTrue="{!v.isError}">
+                    <ui:message title="Error" severity="error" closable="false">
+                        {!v.errorMsg}
+                    </ui:message>
+                    <aura:set attribute="else">
+                        
+                    </aura:set>
+                </aura:renderIf>  
+                        </div> 
+                        <div class="slds-form-element__group">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size_1-of-2">
+                                    <label class="slds-form-element__label" for="input-01">Package Number
+                                        <span style="color:red">* </span>
+                                    </label>
+                                    <c:LookupSObject aura:id="PackageNumber" 
+                                                            searchString="{!v.recordName1}"
+                                                            SRString="{!v.cuctomerId}"
+                                                            pluralLabel="Package" 
+                                                            sObjectAPIName="sigmaerpdev2__Package__c" 
+                                                            instanceId="MyPackage"
+                                                            listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                            listIconClass="slds-icon-standard-account"
+                                                            />
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-2">
+                                    <label class="slds-form-element__label" for="input-02">Customer Name
+                                       
+                                    </label>
+                                    <ui:outputText aura:id="instructions" 
+                                                   class="slds-input slds-truncate"        
+                                                   value="{!v.Custname}"
+                                                   />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size_1-of-2 slds-truncate">
+                                    <label class="slds-form-element__label" for="input-01">Shipment Delivery Date <span style="color:red">* </span></label><br/>
+                                    <ui:inputDate aura:id="DateTime" 
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.ShipmentProducts.sigmaerpdev2__Shipment_Delivery_Date__c}"
+                                                  displayDatePicker="true"/>
+                                    
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-2">
+                                    <label class="slds-form-element__label" for="input-02">Status
+                                        <span style="color:red">* </span>
+                                    </label>
+                                    <ui:inputSelect aura:id="status"
+                                                    class="slds-input"
+                                                    labelClass="slds-form-element__label"
+                                                    change="{!c.saveStatus}" value="{!v.ShipmentProducts.sigmaerpdev2__Status__c}">
+                                        <aura:iteration items="{!v.status}" var="st">
+                                            
+                                            <ui:inputSelectOption text="{!st}" label="{!st}"/>      
+                                        </aura:iteration>
+                                    </ui:inputSelect>       
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        
+                    </div>	
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral slds-float_left" onclick="{!c.ViewPackage}">View Package</button>
+                    <button class="slds-button slds-button--neutral" aura:id="submit" onclick="{!c.submit}">Submit</button>
+                    <button class="slds-button slds-button--brand" aura:id="closeModel" onclick="{!c.closeModel}">Cancel</button>
+                </footer>
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop--open"></div>
+</aura:component>

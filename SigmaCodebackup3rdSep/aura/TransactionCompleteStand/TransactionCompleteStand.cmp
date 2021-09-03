@@ -1,0 +1,54 @@
+<aura:component controller="SendEmailCntrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute access='global' name='orderSFId' type='String' />
+    <aura:attribute name="transSuccessPage" type="Boolean" default="true"/>
+    
+    <aura:registerEvent name="transSuccessEvent" type="c:TransactionSuccessEvent" /> 
+    
+	<div id="Accspinner" class="slds-spinner_container" style="display:none">
+       <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+         <span class="slds-assistive-text">Loading</span>
+         <div class="slds-spinner__dot-a"></div>
+         <div class="slds-spinner__dot-b"></div>
+       </div>
+    </div>
+	
+    <aura:if isTrue="{!v.transSuccessPage == true}">  
+        <div class="slds-box" style="width:50%;padding:0;margin:auto;margin-top:5%;border: 1px solid #d8dde6;">
+            <div class="slds-page-header">
+                <div class="slds-media">
+                    <div class="slds-media__figure">                        
+                        <span class="slds-icon_container slds-icon-standard-task2">                            
+                            <c:svg class="slds-icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#task2'}" />
+                        </span>
+                    </div>
+                    <div class="slds-media__body">                   
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle slds-m-top_xx-small" title="Transaction Completed">Transaction Completed </h1>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-p-around--large">
+                <div class="slds-align_absolute-center">
+                    <div class="form-element__group">
+                        <div class="slds-form-element__row">
+                            <label class="slds-size--1-of-2" style="text-align:center;">
+                                <span class="slds-form-element__label">
+                                    <lightning:icon iconName="utility:email" size="small" alternativeText="Indicates approval"/> E-mail Receipt</span>
+                            </label>                          
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <div class="slds-align_absolute-center">				
+                    <div class="form-element__group">
+                        <div class="slds-form-element__row">  
+                            <button class="slds-button slds-button--neutral" aura:id="Home_Page" onclick="{!c.showMainPage}">Back to Main</button>
+                            <button class="slds-button slds-button--brand" aura:id="Send" onclick="{!c.sendEmailMethod}">Send</button>						
+                                             
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </aura:if>
+</aura:component>

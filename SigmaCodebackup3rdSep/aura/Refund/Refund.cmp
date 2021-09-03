@@ -1,0 +1,187 @@
+<aura:component controller="cancelOrderControllerLightning" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Id" type="String" description="The current record Id to display" />
+    <aura:attribute name="recordId" type="Id" description="The current record Id to display" />
+    <aura:attribute name="orderStatus" type="String" description="The current record Id to display" />
+     <aura:attribute name="OrderUsageSigma" type="String" description="Order Usage from custom settings" />
+     <aura:attribute name="OrderUsageStand" type="String" description="Order Usage from custom settings" />
+	<aura:attribute name="CredituserAmount" type="decimal" default="0" /> 
+    <aura:attribute name="showCompleteOrderButton" default="false"	type="boolean" description="The current record Id to display" />
+    <aura:attribute name="errFlag" type="Boolean" default="true"/>
+    <div id="Accspinner" class="slds-spinner_container slds-is-fixed" style="display:none">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    
+    <aura:attribute name="isStandardOrder" type="Boolean" default="false" />
+    <aura:attribute name="Customertype" type="String" />
+    
+    <div class="backdrop slds-hide" aura:id="backdrop"></div>
+    <aura:attribute name="OrderstandObject" type="Order"
+                    default="{ 'sobjectType': 'Order',
+                             'id': '',
+                             ' sigmaerpdev2__TotalAmount__c' : '',
+                             'OrderNumber':'',
+                             ' sigmaerpdev2__Total_Amount__c':'',
+                             ' sigmaerpdev2__Orders_Status__c' : '',
+                             ' sigmaerpdev2__Net_Amount__c':''
+                             }"/>
+    
+    <div class="backdrop slds-hide" aura:id="backdrop"></div>
+    <aura:attribute name="OrderObject" type="Sigma_Order__c"
+                    default="{ 'sobjectType': 'Sigma_Order__c',
+                             'Name': '',
+                             ' sigmaerpdev2__TotalAmount__c' : '',
+                             ' sigmaerpdev2__Orders_Status__c' : ''
+                             }"/>
+    
+    <aura:attribute name="standOrderPriceBookList" type="OrderItem[]" default="" />
+    
+    
+    <aura:attribute name="OrderPriceBookList" type="Product_Order_Price_Book__c[]" default="" />
+    <aura:attribute name="selectedStatus" type="String" description="The current record Id to display" />
+    <aura:attribute name="TotalAmount" type="Double" description="The current record Id to display" />
+    <aura:attribute name="quantityToRefund" type="Integer" description="The current record Id to display" />
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/> 
+    
+    <aura:attribute name="CompleteAmountToRefund" type="double" description="The current record Id to display" />   
+ <!--   <aura:If isTrue="{!v.errFlag}"> -->
+    <header class="site-masthead slds-grid slds-wrap" aura:id="IdForCompleteOrderRefund" id="IdForCompleteOrderRefund"><div class="site-masthead-title slds-col slds-has-flexi-truncate slds-align-middle"><div class="slds-media slds-media--center slds-media--responsive"><span class="slds-media__figure"></span><div class="slds-media__body"><div class="slds-grid"><span class="slds-hide docsearch-category">Components</span><h1 title="Button Groups" class="slds-page-header__title slds-truncate">Cancel Orders</h1></div></div></div></div>
+        
+    </header>
+    
+    <header class="site-masthead slds-grid slds-wrap slds-hide" aura:id="IdForPartialOrderRefund" id="IdForPartialOrderRefund">
+        <div class="site-masthead-title slds-col slds-has-flexi-truncate slds-align-middle">
+            <div class="slds-media slds-media--center slds-media--responsive">
+                <span class="slds-media__figure"></span>
+                <div class="slds-media__body">
+                    <div class="slds-grid">
+                        <span class="slds-hide docsearch-category">Components</span>
+                        <h1 title="Button Groups" class="slds-page-header__title slds-truncate">Cancel Orders</h1>
+                    </div></div>
+            </div>
+        </div>
+        
+    </header>
+    <aura:renderIf isTrue="{!v.isError}">
+        <ui:message title="Error" severity="error" closable="false">
+            {!v.errorMsg}
+        </ui:message>
+        <aura:set attribute="else">
+            <div class="slds-card">
+                    
+                    <div class="slds-card slds-size--1-of-2" style="background:white;margin:2% 3.2%;padding:2%;"> 
+                        <aura:if isTrue="{!v.isStandardOrder}" >
+                            <div class="slds-form-element__row slds-size--1-of-1">
+                                <ui:inputText aura:id="TempToDisplayName" label="Order Name"
+                                              disabled="true"
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.OrderstandObject.OrderNumber}"/><br/>
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="slds-form-element__row slds-size--1-of-1">
+                                    <ui:inputText aura:id="TempToDisplayName" label="Order Name"
+                                                  disabled="true"
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.OrderObject.Name}"/><br/>
+                                </div> 
+                            </aura:set>
+                        </aura:if>
+                        
+                        
+                        
+                        <div aura:id="PartialRefundFlow" class="slds-hide">
+                            
+                            
+                            <div class="slds-form-element__control slds-size--1-of-1">
+                                <label class="slds-form-element__label" for="select-01">Select Product</label><br/>
+                                <div class="">
+                                    <ui:inputSelect class="slds-select dynamic" aura:id="ProductSelectSelectDynamic"  value="{!v.selectedStatus}" required="true" change="{!c.showTotalAmount}"/><br/><br/>
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="slds-size--1-of-1">
+                                <div class="slds-form-element__control slds-size--1-of-1">
+                                    <ui:inputText aura:id="RefundingQuantity" label="Quantity"
+                                                  disabled="true"
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.quantityToRefund}"/><br/>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="slds-size--1-of-1">
+                                <div class="slds-form-element__control slds-size--1-of-1">
+                                    <ui:inputText aura:id="ExpectedDeliveryDate" label="Total Amount"
+                                                  disabled="true"
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.TotalAmount}"/><br/>
+                                </div>
+                            </div>
+                             <div class="slds-size--1-of-1">
+                                <div class="slds-form-element__control">
+                                    <ui:inputText aura:id="CreditBalance" label="CreditUserAmount"
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.CredituserAmount}" disabled='true'  /><br/>
+                                </div>
+                            </div>
+                            <div class="slds-button-group" role="group">
+                                <aura:if isTrue="{!v.showCompleteOrderButton == false}"><button class="slds-button slds-button--neutral slds-hide" onclick="{!c.partial_cash_refund}" aura:id="cashRefundbutton">Cash Refund</button></aura:if>
+                                <button class="slds-button slds-button--neutral slds-hide" onclick="{!c.partial_cheque_refund}" aura:id="chequeRefundbutton">Cheque Refund</button>
+                                <button class="slds-button slds-button--neutral slds-hide" onclick="{!c.partial_card_refund}" aura:id="cardRefundbutton">Card Refund</button>
+                                <button class="slds-button slds-button--neutral" onclick="{!c.cancelButton}" aura:id="cancelButton">Cancel</button>
+                            </div>
+                            
+                            <br/>
+                            <div class="slds-popover slds-popover--tooltip slds-nubbin--right slds-size--1-of-2 slds-m-top_medium" role="dialog"><div class="slds-popover__body" style="font-size:1.1rem;padding:4%;">Partial Refund</div></div>
+                        </div>
+                        
+                        
+                        <div aura:id="CompleteRefundFlow" class="slds-hide">
+                            
+                            <div class="slds-size--1-of-1">
+                                <div class="slds-form-element__control">
+                                    <ui:inputNumber aura:id="TotalAmountRefund" label="Total Order Amount"
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  format=".00"
+                                                  value="{!v.CompleteAmountToRefund}" disabled='true'  /><br/>
+                                </div>
+                            </div>
+                            <div class="{!v.Customertype =='Credit Customer'?'slds-size--1-of-1':'slds-hide'}">
+                                <div class="slds-form-element__control">
+                                    <ui:inputNumber aura:id="CreditBalance" label="Confirmed Order Amount
+"
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  format="0.00"
+                                                  value="{!v.CredituserAmount}" disabled='true'  /><br/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-button-group" role="group">
+                                <button class="slds-button slds-button--neutral slds-hide" onclick="{!c.complete_cash_refund}" aura:id="cashRefundbuttonInComplete">Cash Refund</button>
+                                <button class="slds-button slds-button--neutral slds-hide" onclick="{!c.complete_cheque_refund}" aura:id="chequeRefundbuttonInComplete">Cheque Refund</button>
+                                <button class="slds-button slds-button--neutral slds-hide" onclick="{!c.complete_card_refund}" aura:id="cardRefundbuttonInComplete">Card Refund</button>
+                                
+                                <button class="slds-button slds-button--neutral" onclick="{!c.cancelButton}" aura:id="cancelButton">Cancel</button>
+                            </div>
+                            <br/>
+                            <div class="slds-popover slds-popover--tooltip slds-nubbin--right slds-size--1-of-2 slds-m-top_medium" role="dialog"><div class="slds-popover__body" style="font-size:1.1rem;padding:4%;">Complete Refund</div></div>
+                        </div>
+                    </div>  
+            </div>
+        </aura:set>
+    </aura:renderIf>
+  <!--  </aura:If> -->
+</aura:component>

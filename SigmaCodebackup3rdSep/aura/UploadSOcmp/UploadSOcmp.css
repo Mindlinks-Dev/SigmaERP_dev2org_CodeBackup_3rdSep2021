@@ -1,0 +1,25 @@
+.content.THIS 
+{
+    width: 35%;
+    background: white;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.16);
+    position: relative;
+    top: 54px;   
+    margin:0 auto;
+}
+.THIS .slds-icon-text-default {
+	fill:#a41f34;
+}
+.THIS h2
+{
+    color:#a41f34;
+}
+.THIS a {
+    color: Black;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+@media only screen and (max-width: 768px) {
+    .THIS .content{width:94% !important;}
+    .THIS.content{width:94% !important;}
+}

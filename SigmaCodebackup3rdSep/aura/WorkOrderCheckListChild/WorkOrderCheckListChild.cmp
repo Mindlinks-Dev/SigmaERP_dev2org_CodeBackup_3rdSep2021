@@ -1,0 +1,15 @@
+<aura:component >
+    <aura:attribute name="radioButtonDetails" type="Map"/>
+    <aura:attribute name="key" type="String" />
+    <aura:attribute name="listRadioButtons" type="List" />
+    <aura:attribute name="finalValues" type="Object" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doChildInit}"/>
+    <div style="margin-left:10%;">
+        <aura:iteration items="{!v.listRadioButtons}" var="item">
+            <div style="padding-right: 20px;display: initial;">
+                <lightning:input class="radioButton" data-record="{!v.key}" aura:id="assignmentOptions" name="{!item.name}" label="{!item.label}" type="radio" value="{!item.label}" onchange="{!c.handleRadioButtonValue}" checked="{!item.value}"/>
+            </div>
+        </aura:iteration>
+    </div>
+</aura:component>

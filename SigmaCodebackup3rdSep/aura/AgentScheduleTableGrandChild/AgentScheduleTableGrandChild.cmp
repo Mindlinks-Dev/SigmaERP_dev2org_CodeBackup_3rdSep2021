@@ -1,0 +1,47 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute name="eachValue" type="Object"/>
+    <aura:attribute name="slotBusy" type="boolean"/>
+    <aura:attribute name="Breakslot" type="boolean"/>
+    <aura:attribute name="emptySlot" type="boolean"/>
+    <aura:attribute name="BreakValue" type="String"/>
+    <aura:attribute name="woCount" type="Integer"/>
+    <aura:attribute name="woId" type="Integer"/>
+    <aura:attribute name="printWOCount" type="Integer"/>
+    <aura:attribute name="printWO" type="Boolean"/>
+    
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}"></aura:handler>
+    <aura:if isTrue="{!v.slotBusy}">
+        
+        <td data-label="8" aura:id="Time-8" data-record="Time-8"  class="time-slot_tooltip time-cell time-slot tech-busy" onclick="{!c.navigate}">
+            <aura:if isTrue="{!v.printWO}">
+            <div class="slds-text-align_center" style="vertical-align:middle; font-size:small;" title="">{!v.eachValue.workOrderName}</div>
+                <aura:set attribute="else">
+                    <div class="slds-text-align_center" style="vertical-align:middle; font-size:small;" title=""></div>
+                </aura:set>
+                </aura:if>
+            <div class="slds-popover slds-popover_tooltip slds-nubbin_right time-tooltip" role="tooltip">
+                <div class="slds-popover__body">
+                    <p>WorkOrder Id : {!v.eachValue.workOrderName}</p> 
+                    <p>Customer Name: {!v.eachValue.workOrderContact}</p>
+                    <p>Service Location: {!v.eachValue.workOrderZip}</p>
+                </div>
+            </div>
+            
+        </td>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!v.Breakslot}" >
+                <td data-label="8"  class="time-cell time-slot lunch-slot">
+                    <div class="slds-text-align_center" title="">{!v.BreakValue}</div>
+                </td>
+                <aura:set attribute="else">
+                    <td data-label="8" aura:id="Time-8" data-record="{!v.slotKey}"  class="time-slot_tooltip time-slot" onclick="">
+                        
+                    </td>
+                </aura:set>
+            </aura:if>
+        </aura:set>            
+    </aura:if>
+    
+</aura:component>

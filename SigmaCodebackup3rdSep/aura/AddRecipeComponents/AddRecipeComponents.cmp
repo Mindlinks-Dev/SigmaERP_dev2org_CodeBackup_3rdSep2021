@@ -1,0 +1,184 @@
+<aura:component controller="AddRecipeComponentsController"  access="global">
+    <lightning:overlayLibrary aura:id="popupmodal"/>
+    <aura:attribute name="flag" type="string"/>
+    <aura:attribute name="company" type="string"/>
+    <!--<aura:attribute name="companyID" type="string"/>-->
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.SelectedID}"/>
+    <aura:attribute name="recipeID" type="string"/>
+    <aura:attribute name="RecTypeID" type="string"/>
+    <aura:attribute name="recID" type="string"/>
+    <aura:attribute name="Edit" type="Boolean" default="false"/>
+    <aura:attribute name="recipeStagesCost" type="object"/>
+    <aura:attribute name="recpProdID" type="string"/>
+    <aura:attribute name="recipeChildData" type="object"/>
+    <aura:attribute name="disableSubmitBtn" type="boolean" default="false"/>
+    <aura:attribute name="message" type="String" default="" />
+    <aura:attribute name="showMessage" type="boolean" default="false"/>
+    <aura:attribute name="unitOfMeasure" type="String"/> 
+    <aura:attribute name="avgBuyingPrice" type="Decimal"/>
+    
+    <aura:attribute name="mrProdProductId" type="Id"/>
+    
+    <aura:attribute name="Editingdata" type="Map" 
+                    default="{'ProductName':'',
+                             'productID':'',
+                             'oldProductID':'',
+                             'Description':'',
+                             'Quantity':'',
+                             'UnityOfMeasure':''}"/>
+    
+    <aura:attribute name="data" type="Map" 
+                    default="{'ModifiedUnitPrice':'',
+                             'ModifiedQuantity':'',
+                             'UnitPrice':'',
+                             'ProdName':'',
+                             'ProdID':'',
+                             'oldProdID':'',
+                             'Description':'',
+                             'Quantity':'',
+                             'UnityOfMeasure':'',
+                             'StockItem':''}" />
+    
+    <aura:registerEvent name="RecipeManagementEvent" type="c:RecipeManagementEvent" />
+    
+     <aura:attribute name="recordName" type="string" default=""/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.getDetails}"/>
+    <aura:attribute name="MRobjectID" type="String"/>
+    
+    <aura:attribute name="recipeObject" type="Recipe__c" 
+                    default="{'sobjectType': 'Recipe__c',                             
+                             'sigmaerpdev2__Product__c':'',
+                             'sigmaerpdev2__Quantity__c':1,                             
+                             'sigmaerpdev2__Unit_of_Measure__c':'',
+                             'sigmaerpdev2__Recipe_Type__c':'',
+                             'Name':''}"/>
+        
+    <aura:attribute name="recipeProductsObject" type="Map"
+                    default="{'recipeProduct':
+                             {'sobjectType': 'sigmaerpdev2__Recipe_Details__c',
+                             'sigmaerpdev2__Cost__c':null,
+                             'sigmaerpdev2__Dependent_Recipe__c':'',
+                             'sigmaerpdev2__Description__c':'',
+                             'sigmaerpdev2__Product__c':'',
+                             'sigmaerpdev2__Quantity__c':null,
+                             'sigmaerpdev2__Recipe__c':'',
+                             'RecordTypeId':'',
+                             'Name':'',
+                             'sigmaerpdev2__Unit_of_Measure__c':'',
+                             'sigmaerpdev2__Average_Buying_Price__c':null
+                             },
+                             'oldID':''}"/>
+    
+     <aura:attribute name="MRProduct" type="Manufacturing_Products__c"
+                    default="{'sobjectType': 'Manufacturing_Products__c',
+                             'sigmaerpdev2__Cost__c':null,
+                             'sigmaerpdev2__Description__c':'',
+                             'Name':'',
+                             'sigmaerpdev2__Manufacturing_Run__c':'',
+                             'sigmaerpdev2__Modified_Quantity__c':'',
+                             'sigmaerpdev2__Procedure_Name__c':'',
+                             'sigmaerpdev2__Product__c':'',
+                             'sigmaerpdev2__Quantity__c':null,
+                             'RecordTypeId':'',
+                             'sigmaerpdev2__Stock_Item__c':'',
+                             'sigmaerpdev2__Unit_of_measure__c':'',}"/>
+    
+    <aura:if isTrue="{!v.showMessage==true}">
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+            <span class="slds-assistive-text">error</span>
+            <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">  
+            </span>
+            <h2>{!v.message}</h2>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.flag=='createrecipe'}">
+        <lightning:card title="">
+            <span style="color:#b20000;">*</span>Recipe Name<ui:inputText value="{!v.recipeObject.Name}"/><br/>            
+            <span style="color:#b20000;">*</span>Product           		
+            <c:customLookup recordID="{!v.recipeObject.sigmaerpdev2__Product__c}"
+                                      recordName="{!v.recipeObject.sigmaerpdev2__Product__r.Name}"
+                                      objectAPIName="product2"
+                                      IconName="standard:account" 
+                                      whereCondition="{!'AND sigmaerpdev2__Stock_Item__c = true  AND sigmaerpdev2__Type__c = \'Individual\''}"
+                                      context="RecpProduct" isSigmaOrder= 'true' />             
+            <span style="color:#b20000;">*</span>Quantity
+            <!--<ui:inputNumber value="{!v.recipeObject.sigmaerpdev2__Quantity__c}" updateon="keyup" keyup="{!c.callChange}"/>-->
+            <ui:inputNumber value="{!v.recipeObject.sigmaerpdev2__Quantity__c}" disabled="true" />
+            <br/>
+            <span style="color:#b20000;">*</span>Unit of Measure<ui:inputText aura:id="Unit_of_Measure" value="{!v.recipeObject.sigmaerpdev2__Unit_of_Measure__c}" disabled="true"/><br/>
+            
+            <lightning:select required="true" name="select1" label="Recipe Type" value="{!v.recipeObject.sigmaerpdev2__Recipe_Type__c}">
+                <option value="None">--None--</option>
+                <option value="Raw Material">Raw Material</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Finished">Finished</option>
+            </lightning:select><br/>
+            
+            <button class="slds-button slds-button_brand" onclick="{!c.saveRecipe}">Save Recipe</button>
+            <button class="slds-button slds-button_brand" onclick="{!c.close}">Cancel</button>
+        </lightning:card>
+    </aura:if>
+    
+    
+    <aura:if isTrue="{!v.flag=='productcomponent' || v.flag=='additionalproduct' || v.flag=='packagingMaterial'}">
+        <lightning:card title="">
+            <span style="color:#b20000;">*</span>Product			
+            <c:customLookup
+                                      recordID="{!v.recipeProductsObject.recipeProduct.sigmaerpdev2__Product__c}"
+                                      recordName="{!v.recipeProductsObject.recipeProduct.sigmaerpdev2__Product__r.Name}"
+                                      objectAPIName="product2" context="ProductComp" 
+                                      IconName="standard:account" label="" isSigmaOrder= 'true'/>
+            <br/>
+            <span style="color:#b20000;">*</span>Quantity<ui:inputNumber value="{!v.recipeProductsObject.recipeProduct.sigmaerpdev2__Quantity__c}" updateon="keyup" keyup="{!c.callChange}"/><br/><br/>
+            <span style="color:#b20000;">*</span>Unit of Measure<ui:inputText aura:id="Unit_of_Measure" value="{!v.recipeProductsObject.recipeProduct.sigmaerpdev2__Unit_of_Measure__c}" disabled="true"/><br/><br/>            
+            Description<ui:inputTextArea value="{!v.recipeProductsObject.recipeProduct.sigmaerpdev2__Description__c}"/><br/><br/>
+            
+            <button class="slds-button slds-button_brand" onclick="{!c.saveRecipeProds}" disabled="{!v.disableSubmitBtn}">
+                <aura:if isTrue="{!v.flag=='productcomponent'}">Save Product Component</aura:if>
+                <aura:if isTrue="{!v.flag=='additionalproduct'}">Save Non Stock Item</aura:if>
+                <aura:if isTrue="{!v.flag=='packagingMaterial'}">Save Packaging material</aura:if>
+            </button>
+            <button class="slds-button slds-button_brand" onclick="{!c.close}">Cancel</button>
+        </lightning:card>
+    </aura:if>
+    
+    
+    <aura:if isTrue="{!v.flag=='addrecipes'}">
+        <lightning:card title="">
+            Dependent Recipe 			
+            <c:customLookup recordID="{!v.recipeProductsObject.recipeProduct.sigmaerpdev2__Dependent_Recipe__c}" 
+                                      recordName="{!v.recipeProductsObject.recipeProduct.sigmaerpdev2__Dependent_Recipe__r.Name}" 
+                                      objectAPIName="sigmaerpdev2__Recipe__c" context="DependentRecipe" isSigmaOrder= 'true' />
+            <br/>
+            Description <ui:inputTextArea value="{!v.recipeProductsObject.recipeProduct.sigmaerpdev2__Description__c}"/><br/><br/>
+            
+            <button class="slds-button slds-button_brand" onclick="{!c.saveDependenetRecipe}" disabled="{!v.disableSubmitBtn}">
+                Add Dependent Recipe
+            </button>
+            <button class="slds-button slds-button_brand" onclick="{!c.close}">Cancel</button>
+        </lightning:card>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.flag=='MRadditionalproduct' || v.flag=='MRpackagingMaterial'}">
+        <lightning:card title="">
+            <span style="color:#b20000;">*</span>Product			
+            <c:customLookup recordID="{!v.MRProduct.sigmaerpdev2__Product__c}" 
+                                      recordName="{!v.MRProduct.sigmaerpdev2__Product__r.Name}" 
+                                      objectAPIName="product2" context="MRProductInstance" 
+                                      IconName="standard:account" label="" isSigmaOrder= 'true'/>
+            <br/>
+            
+            <span style="color:#b20000;">*</span>Quantity<ui:inputNumber value="{!v.MRProduct.sigmaerpdev2__Quantity__c}" updateon="keyup" keyup="{!c.callChange}"/><br/><br/>
+            <span style="color:#b20000;">*</span>Unit of Measure<ui:inputText aura:id="Unit_of_Measure" value="{!v.MRProduct.sigmaerpdev2__Unit_of_measure__c}" disabled="true"/><br/><br/>           
+            Description<ui:inputTextArea value="{!v.MRProduct.sigmaerpdev2__Description__c}"/><br/><br/>
+            
+            <button class="slds-button slds-button_brand" onclick="{!c.saveMRProds}" disabled="{!v.disableSubmitBtn}">
+                <aura:if isTrue="{!v.flag=='MRadditionalproduct'}">Save Non Stock Item</aura:if>
+                <aura:if isTrue="{!v.flag=='MRpackagingMaterial'}">Save Packaging Material</aura:if>
+            </button>
+            <button class="slds-button slds-button_brand" onclick="{!c.close}">Cancel</button>
+        </lightning:card>
+    </aura:if>
+</aura:component>

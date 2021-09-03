@@ -1,0 +1,51 @@
+<aura:component controller="UserDetailsCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="createAcc" type="Account" default="{'sObjectType':'Account','Name':''}"/>
+    <aura:attribute name="ratingList" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'Yes', 'value': 'Yes'},
+                                                        {'label': 'No', 'value': 'No'}
+                                                        ]"/>
+    <aura:attribute name="value" type="String" default=""/>
+    <aura:attribute name="UserDetails_ShoppingCart" type="boolean"/>
+    <section class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header slds-modal__header_empty">
+                <lightning:buttonIcon class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" iconName="utility:close" variant="bare" alternativeText="close" size="large" title="Close" onclick="{! c.handleCancel }"/>
+                
+            </header>
+            <div class="slds-modal__content">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_2-of-5 user-bg">
+                        
+                        
+                    </div>
+                    <div class="slds-col slds-size_3-of-5 slds-p-vertical_small slds-p-horizontal_large">
+                        <div class="slds-text-align_center">
+                            <img src="{!$Resource.SigmaStore+'/SigmaStore/SigmaStore.png'}" width="80"/>
+                        </div>	
+                        <form>
+                            <lightning:input type="text" aura:id="UserData" label="Name" required="true" value="{!v.createAcc.Name}"/>
+                            <lightning:input type="tel" aura:id="UserData" label="Phone Number" required="true" value="{!v.createAcc.Phone}"/>
+                            <lightning:input type="email" aura:id="UserData" label="Email Address" required="true" value="{!v.createAcc.sigmaerpdev2__Email__c}"/>
+                            <lightning:input type="text" aura:id="UserData" label="Company Name" required="true" value="{!v.createAcc.sigmaerpdev2__Company__c}"/>
+                            <lightning:input type="text"  aura:id="UserData" label="Job Title" required="true" value="{!v.createAcc.sigmaerpdev2__Job__c}"/>
+                            <lightning:radioGroup name="radioGroupRequired" aura:id="UserData"
+                                                  label="Do you use Salesforce currently ?"
+                                                  options="{!v.options }"
+                                                  value="{!v.createAcc.sigmaerpdev2__IsSalesforce__c}"
+                                                  type="radio" required="true"/>
+                            <br/> 
+                            <div class="slds-text-align_center">
+                                <lightning:button variant="destructive" label="Submit" title="Destructive action" onclick="{! c.handleSubmit}"/>
+                                <lightning:button variant="destructive" label="Cancel" title="Destructive action" onclick="{! c.handleCancel }"/>
+                            </div>	
+                        </form>
+                    </div>
+                    
+                </div>            
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

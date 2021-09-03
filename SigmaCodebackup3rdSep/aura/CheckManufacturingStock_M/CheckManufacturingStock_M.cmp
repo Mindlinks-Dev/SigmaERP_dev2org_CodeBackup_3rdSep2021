@@ -1,0 +1,140 @@
+<aura:component controller="ManufacturingRun" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	    
+    <aura:attribute name="orderItemNew" type="array" />
+    <aura:attribute name="orderItemNewForView" type="array" />
+    <aura:attribute Name="recipeObj" type="object" />
+    <aura:attribute Name="manfRunDet" type="object" />
+    <aura:attribute Name="enableSelStock" type="Boolean" default="false" />
+    <aura:attribute name="manfObj" type="Map" />
+    <aura:attribute name="isStockReservedStock" type="Boolean" />
+    <aura:handler name="change" value="{!v.manfObj.sigmaerpdev2__Status__c}" action="{!c.showResvStockBtn}" />
+    <aura:handler name="change" value="{!v.isStockReservedStock}" action="{!c.ShowReservedStock}" />
+    <aura:attribute Name="disableBtnIfStockLow" type="Boolean" default="false" />
+    <aura:attribute Name="showAutoResvBtn" type="Boolean" default="false" />
+    <aura:attribute Name="editReservedStock" type="Boolean" default="false" />  
+    
+    <aura:attribute Name="disableChkStkAfterAutopick" type="Boolean" default="false" /> 
+    
+    <aura:attribute name="enablechkStkAfterRevert" type="Boolean" default="false" />
+    <aura:attribute name="autopickRev" type="Boolean" default="false" /> 
+    
+    <aura:method name="callChild" action="{!c.callChildMethod}" />
+    
+    
+    <aura:handler name="change" value="{!v.manfObj.sigmaerpdev2__Required_Quantity__c}" action="{!c.requiredQtyChanged}" />
+        
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <p class="slds-p-horizontal_small"> 
+        <aura:if isTrue="{!and(v.isStockReservedStock == false, v.editReservedStock == false)}"> 
+            <lightning:card title="Stock Availability" class="slds-card_boundary shadow slds-m-top_x-small">
+                <aura:set attribute="actions">
+                    <div class="slds-col slds-grid slds-align-top">
+                        <button aura:id="chkStockButton" class="slds-button slds-button_brand" onclick="{!c.showStock}" disabled="{!v.disableChkStkAfterAutopick}">Check Stock</button>
+                        <!--<button aura:id="chkStockButton" class="slds-button slds-button_brand" onclick="{!c.showStock}" disabled="{!v.enablechkStkAfterRevert}">Check Stock</button>-->
+                                                
+                        <!--<aura:if isTrue="{!v.manfObj.sigmaerpdev2__Status__c == 'Date Confirmed'}">
+                            <button aura:id="showReserveStockBtn" disabled="{!v.disableBtnIfStockLow}" class="slds-button slds-button_brand slds-hide" onclick="{!c.reserveStock}">Reserve Stock</button>
+                        </aura:if> -->                                                                       
+                    </div>
+                </aura:set>
+                <p class="slds-p-horizontal_small slds-hide" aura:id="showRow" >
+                    <table class="slds-table slds-table_bordered slds-no-row-hover slds-table_cell-buffer" width="100%">
+                        <thead>
+                            <tr class="slds-text-title_caps">                               
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div title="Product">Product</div>
+                                </th>
+                            
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div title="Av. Quantity">Av. Qty</div>
+                                </th>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                    <div title="Req. Qty">Req. Qty</div>
+                                </th>
+                                <!--<aura:if isTrue="{!v.manfObj.sigmaerpdev2__Status__c == 'Planning'}">
+                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        <div class="slds-truncate" title="Stock Available">Stock Status</div>
+                                    </th>
+                                    <aura:set attribute="else">
+                                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                        </th>
+                                    </aura:set>
+                                </aura:if>
+                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);width:5%;">
+                                </th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.orderItemNew}" var="orderItem">
+                                <c:showProductsListForManufacturing_M mainList="{!orderItem}" manfstatusChild="{!v.manfObj.sigmaerpdev2__Status__c}" recID="{!v.manfObj.Id}"
+                                    enableSelStock="{!v.disableBtnIfStockLow}" showAutoReserve="{!v.showAutoResvBtn}" disableChkStkAfterAutopick="{!v.disableChkStkAfterAutopick}" />
+                            </aura:iteration>
+                        </tbody>
+                        <tr>
+                            <td colspan="3" style="padding-top:10px;">                                
+                                Reserve Stock using 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">                                
+                                Auto Stock Reservation
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">                                
+                               Toggle button provided at top
+                            </td>
+                        </tr>
+                    </table>
+                </p>
+            </lightning:card>
+        </aura:if>
+
+        <!-- added to show reserved stock-->
+        <aura:if isTrue="{!v.isStockReservedStock == true}">
+            <lightning:card title="Reserved Stock" class="slds-card_boundary shadow slds-m-top_x-small">
+                <!--<aura:set attribute="actions">
+                    <div class="slds-col slds-grid slds-align-top">                        
+                        <button aura:id="downloadPDF" class="slds-button slds-button_brand" style="float:right;" onclick="{!c.ViewOrDownloadReservedStockPDF}">View/Download PDF</button>                    
+                    </div>                
+                </aura:set>-->
+                <table class="slds-table slds-table_fixed-layout slds-table_bordered slds-no-row-hover slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);width:5%;"></th>
+                            <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);width:35%;">
+                                <div title="Product">Product</div>
+                            </th>
+                            <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);width:30%;">
+                                <div title="Req. Qty">Req. Qty</div>
+                            </th>
+                           <!-- <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);width:10%;">
+                                <div class="slds-truncate" title="UOM">UOM</div>
+                            </th>-->
+                            <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);width:30%;">
+                                    <div class="slds-truncate" title=""></div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.orderItemNewForView}" var="orderItem">
+                            <c:showProductsListReserveStock_M mainList="{!orderItem}" editStock="{!v.editReservedStock}" recID="{!v.manfObj.Id}" manfObj="{!v.manfObj}" orderItemNewForView="{!v.orderItemNewForView}" />
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </lightning:card>
+        </aura:if>
+        <!-- ends here-->
+
+    </p>
+    <div class="demo-only slds-hide" aura:id="mySpinner" style="height: 6rem;">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+
+</aura:component>

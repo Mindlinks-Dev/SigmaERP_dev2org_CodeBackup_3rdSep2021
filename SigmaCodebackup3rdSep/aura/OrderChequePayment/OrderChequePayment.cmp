@@ -1,0 +1,221 @@
+<aura:component controller="OrderPaymentCntrl" access="global">
+        
+    <aura:attribute name="paymentObj" type="Payment__c" description="The current record Id to display" 
+              			 default="{ 'sobjectType' : 'Payment__c' ,
+                             'sigmaerpdev2__Amount__c' : '',
+                             'sigmaerpdev2__Customer_Name__c' :'',
+                             'sigmaerpdev2__SFDC_Account__c' : '',
+                             'sigmaerpdev2__Payment_Time__c' :'',
+                             'sigmaerpdev2__ReceiptNumber__c':'',
+                             'sigmaerpdev2__Cheque_Number__c':'',
+                             'sigmaerpdev2__Bank_Name__c':'',
+                             'sigmaerpdev2__Cheque_Date__c':'',
+                             'sigmaerpdev2__Payment_Mode__c':'',
+                             'sigmaerpdev2__OrderId__c' : '',
+                             'sigmaerpdev2__Order_Type__c' : '', 
+                             'sigmaerpdev2__Order_Created_Via__c' : '',
+                             'sigmaerpdev2__Tax_Amount__c' : '',                                 
+                             'sigmaerpdev2__Federal_Tax__c' : '',
+                             'sigmaerpdev2__Account_Subscription_Interval__c':'',
+                             'sigmaerpdev2__State_Tax__c' : '' ,
+                             'sigmaerpdev2__Sigma_Order__c': '',
+                             'sigmaerpdev2__Amount_Recevied__c':'',
+                             'sigmaerpdev2__Due_Amount__c':'',
+                             'sigmaerpdev2__Paid_Amount__c':''
+                                  
+                              
+                             }"
+     
+               /> 
+    
+     <aura:attribute name="paymentlist" type="Payment__c[]"/> 
+    <aura:registerEvent name="taxEventValues" type="c:TaxEvent"/>  
+    <aura:registerEvent name="transSuccessEvent" type="c:TransactionSuccessEvent" /> 
+    <aura:handler name="init" value="{!this}" action="{!c.doInitForCheque}" />
+    
+    <aura:attribute name="recordId" type="String" description="The current record Id to display" />     
+    <aura:attribute name="chequeReceiptNo" default="1235656" type="String" description="The current record Id to display" />     
+    <aura:attribute name="receivedFrom" default="soupBoyz" type="String" description="The current record Id to display" />  
+    <aura:attribute name="paymentDate" type="DateTime" description="The current record Id to display" />     
+    <aura:attribute name="billAmount" default="5000" type="Double" description="The current record Id to display" />
+    <aura:attribute name="chequeNumber" type="Integer" description="The current record Id to display" />     
+    <aura:attribute name="bankName"  type="String" description="The current record Id to display" />
+    <aura:attribute name="chequeDate" type="DateTime" description="The current record Id to display" />     
+    <aura:attribute name="orderSFId"  type="String" description="The current record Id to display" />     
+    <aura:attribute name="currencySymbol" type="String" description="The current record Id to display"/>     		 
+    <aura:attribute access="global" name="totalTaxAmount" type="String" />
+    <aura:attribute name="cashPaymentFlag" type="Boolean" description="The current record Id to display" />
+    <aura:attribute name="FederalTax" type="String" description="The current record Id to display" />
+    <aura:attribute name="StateTax" type="String" description="The current record Id to display" />
+    <aura:attribute name="billingPerson" type="String" description="The current record Id to display" />
+     <aura:attribute name="subpayment" type="boolean"  />
+     <aura:attribute name="today" type="Date" />
+    <aura:attribute name="Orderdate" type="Date" />
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+	<aura:attribute name="ReceivedAmt" type="Double" description="The current record Id to display" />
+      
+	<aura:attribute name="selectedOrderList" type="Object[]"/> 
+    <aura:attribute name="TotalOrderAmount" type="Double" description="The current record Id to display"/>
+    
+    <aura:attribute name="SigmaOrder" type="Boolean" default="false"/>
+    <aura:attribute name="StndOrder" type="Boolean" default="false"/>
+   
+	<!--<aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>	-->
+	
+	<div id="Accspinner" class="slds-spinner_container" style="display:none">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+	
+   <body aura:id="optionsList"> 
+	<div class="slds-page-header" id="head" >
+	
+        <fieldset class="slds-form-element">
+   			 <div class="slds-form-element__control ">
+        	 <ui:button class="slds-button slds-button--neutral" label="Back" aura:id="back" press="{!c.gotoPaymentOptions}" />
+     		  <legend class="slds-form-element__label " id="Cheque_Payment" >Cheque Payment</legend>
+              </div>
+        </fieldset>
+      </div>
+   <aura:renderIf isTrue="{!v.isError}">
+            <ui:message title="Error" severity="error" closable="false">
+                {!v.errorMsg}
+            </ui:message>
+            <aura:set attribute="else"> 
+  <div class="" id="cheque_payment_body">
+         <div id="cheque_payment_content">		
+<table class="slds-table slds-table--bordered slds-table--cell-buffer">
+  <thead>
+    <tr class="slds-text-title--caps" style="background:#f4f6f9;">
+      <th scope="col">
+        <div class="slds-truncate">RECEIPT NUMBER</div>
+      </th>
+      <th scope="col">
+        <div class="slds-truncate">RECEIVED FROM </div>
+      </th>
+      <th scope="col">
+        <div class="slds-truncate">A SUM OF ({!v.currencySymbol})</div>
+      </th>
+	<th scope="col">
+        <div class="slds-truncate">DATE</div>
+      </th>	
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">
+        <div class="slds-truncate">{!v.paymentObj.sigmaerpdev2__ReceiptNumber__c}</div>
+      </th>
+      <td>
+        <div class="slds-truncate">{!v.paymentObj.sigmaerpdev2__Customer_Name__c}</div>
+      </td>
+      <td>
+        <div class="slds-truncate">{!v.paymentObj.sigmaerpdev2__Amount__c}</div>
+      </td>
+	  <td>
+        <div class="slds-truncate">{!v.paymentDate}</div>
+      </td>
+ 
+    </tr>
+
+  </tbody>
+</table>
+       
+				
+				<fieldset class="slds-form--compound" style="margin-top:5%;">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-3" >
+          		 <span class="slds-form-element__label" >Amount Received ({!v.currencySymbol}) <span class="red">*</span></span>
+     			 </label>
+        
+                 <label class="slds-size--2-of-5">
+          		   <ui:inputText aura:id="cashReceived" class="slds-input" required="true" disabled="false"  updateOn="keyup"/>
+     			 </label>
+        	</div>
+  			</div>
+              
+			</fieldset>
+			
+         <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-3" >
+          		 <span class="slds-form-element__label" >Cheque Number <span class="red">*</span></span>
+     			 </label>
+        
+                 <label class="slds-size--2-of-5">
+          		 <ui:inputText aura:id="chequeNumber" value="{!v.paymentObj.sigmaerpdev2__Cheque_Number__c}" class="slds-input" label=""  required="true" placeholder="" disabled="false"/>
+     			 </label>
+        	</div>
+  			</div>
+              
+			</fieldset>
+    		      
+         
+          <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-3" >
+          		 <span class="slds-form-element__label">Bank Name <span class="red">*</span></span>
+     			 </label>
+        
+                 <label class="slds-size--2-of-5">
+                     <ui:inputText aura:id="bankName" value="{!v.paymentObj.sigmaerpdev2__Bank_Name__c}" class="slds-input" label="" placeholder="" required="true" disabled="false"/>
+     			 </label>
+        	</div>
+  			</div>
+           
+			</fieldset>
+           
+         
+           	<fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row slds-truncate">
+     			  <label class="slds-size--1-of-3" >
+          		 <span class="slds-form-element__label">Date <span class="red">*</span></span>
+     			 </label>
+        
+                 <label class="slds-size--2-of-5">
+   
+          		 <ui:inputDate aura:id="chequeDate" value="{!v.paymentObj.sigmaerpdev2__Cheque_Date__c}" class="slds-input slds-truncate"  displayDatePicker="true" />
+            </label>
+                
+        	</div>
+  			</div>
+                
+			</fieldset>
+         
+        
+             
+        
+		 
+		  <fieldset class="slds-form--compound" style="margin-top:3%;">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-2" >
+          		 <span class="slds-form-element__label"><span class="red">*</span>Cheque subject to realization</span>
+     			 </label>
+                </div>
+             </div>
+         </fieldset>
+             
+         <fieldset class="slds-form--compound">
+    		<div class="form-element__group" style="margin-top:4%;">
+   			 <div class="slds-form-element__row">
+						<button class="slds-button slds-button--neutral" aura:id="Save_Payment" onclick="{!c.save}">Save Payment</button>
+						<button class="slds-button slds-button--neutral" aura:id="Cancel" onclick="{!c.cancelpayment}">Cancel</button>
+                </div>
+             </div>
+         </fieldset>
+    </div>
+       </div>
+       </aura:set>
+        </aura:renderIf>    
+             
+ </body>   
+</aura:component>

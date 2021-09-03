@@ -1,0 +1,50 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+     <aura:attribute name="selectedTabId" type="String" default="1"/>
+    <aura:attribute name="key" type="String" default="1" />
+     <aura:handler name="change" value="{!v.key}" action="{!c.selectTab}"/>
+    
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner variant="brand" style="position: fixed" alternativeText="Loading" size="large" />
+    </div>
+    <div class="slds-grid slds-page-header" style="border-radius:4px 4px 0 0">
+        <div class="slds-col">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-opportunity" title="opportunity">
+                                <lightning:icon iconName="custom:custom90" size="medium"/>
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-page-header__title slds-truncate">Stock Management</span>
+                                    </h1>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>
+    <!--TabSet-->
+    <lightning:tabset selectedTabId="{!v.selectedTabId}" onselect="{! c.handleSelect }" aura:id='tabs'>
+        <lightning:tab id="1" label="Stock Adjustment"  >                
+            <c:StockAdjustmentLocation/>
+        </lightning:tab>
+        <lightning:tab id="2" label="Stock Movement">
+            <c:StockMovementsOne/>
+        </lightning:tab>
+        <lightning:tab id="3" label="Stock Check">
+            <c:StockCheckDetails/>
+        </lightning:tab>
+       <lightning:tab id="4" label="Stock Conversion" >
+           <!-- <div class="slds-box">Stock Conversion</div>-->
+           <c:StockConversion/>
+        </lightning:tab>
+    </lightning:tabset>
+</aura:component>

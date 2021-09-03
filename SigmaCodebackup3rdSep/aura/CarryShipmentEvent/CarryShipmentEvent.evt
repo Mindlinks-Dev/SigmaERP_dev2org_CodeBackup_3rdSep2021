@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION">
+    <aura:attribute name="shipment" type="Shipment_Products__c"/>
+    <aura:attribute name="rowIndex" type="Integer"/> 
+</aura:event>

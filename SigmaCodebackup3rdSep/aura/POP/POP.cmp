@@ -1,0 +1,59 @@
+<aura:component >
+    <aura:attribute name="fromCurrToCurrecyRate" type="Map" />
+    <aura:attribute name="Pur_Order" type="Purchase_Order__c" access="global"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="vendorid" type="ID"/>
+    <aura:attribute name="isConfirmed" type="Boolean" access="global"/>
+    <aura:attribute name="isCancelled" type="Boolean" access="global"/>
+    <aura:attribute name="issrps" type="Boolean" access="global"/>
+    <aura:attribute name="configData" type="Object"/>
+    <aura:attribute name="vplist" type="Object[]" access="global"/>
+    <aura:attribute name="deletedList" type="Object[]"/>
+    <aura:attribute name="PurchOrder" type="Object" access="global"/>
+    <aura:attribute name="companyName" type="String"/>
+    <aura:attribute name="UsingVendorProductPrice" type="Boolean"/>
+    <!--Used For Tax exempted-->
+    <aura:attribute name="taxTreatmentData" type="Map" />
+    
+    <aura:handler name="DeleteRowEvt" event="c:RowDel" action="{!c.removeDeletedRow}"/>
+    <aura:registerEvent name="SigmaComponentEvent" type="c:SigmaComponentEvent" />    
+    <aura:method name="currencyChangeAuraMethod" description="Sample method with parameter">
+    </aura:method>
+    
+    <div class="slds-box slds-p-around_none slds-m-top_small">
+        <lightning:card title="Line Items" iconName="action:new_note">
+            <!--lightning:button variant="neutral" label="Add Product" iconName="utility:add" onclick="{!c.check}"/-->
+            <table class="slds-table slds-table_striped slds-table_bordered slds-table_fixed-layout1 slds-no-row-hover slds-max-medium-table_stacked-horizontal" style="table-layout:fixed;">
+                <thead style="background:#fafaf9;">
+                    <tr class="slds-line-height_reset"><!--slds-text-title_caps-->
+                        <th scope="col" style="width:3%"><div class="slds-truncate" style="color:#16325c;"></div></th>
+                        <th scope="col" style="width:14%"><div class="slds-truncate" style="color:#16325c;">Product</div></th>
+                        <!--<th scope="col" style="width:10%"><div class="slds-truncate" style="color:#16325c;">Description</div></th>-->
+                        <th scope="col"><div class="slds-truncate" style="color:#16325c;">Quantity</div></th>
+                        
+                       
+                        
+                        <th scope="col" ><div class="slds-truncate" style="color:#16325c;">Buying  Price</div></th>
+                        <th scope="col" style="width:7%"><div class="slds-truncate" style="color:#16325c;">Discount(%)</div></th>
+                        <th scope="col" style="width:10%"><div class="slds-truncate" style="color:#16325c;">Expected Delivery Date </div></th>
+                        <th scope="col" style="width:10%"><div class="slds-truncate" style="color:#16325c;">Status </div></th>
+                            <th scope="col" style="width:10%"><div class="slds-truncate" style="color:#16325c;">Tax Code</div></th>
+                       
+                        <th scope="col" ><div class="slds-truncate" style="color:#16325c;">Tax Rate(%)</div></th>
+                        <th scope="col" ><div class="slds-truncate" style="color:#16325c;">Tax Amount</div></th>
+                        <th scope="col"><div class="slds-truncate" style="color:#16325c;">Net Amount</div></th>
+                        <th scope="col"><div class="slds-truncate" style="color:#16325c;">Total Amount</div></th>
+                    </tr>
+                </thead>
+             
+                <tbody>
+                    <aura:iteration items="{!v.vplist}" var="obj" indexVar="row">
+                   <!--<c:POPLIter aura:id="POPline" taxTreatmentData="{!v.taxTreatmentData}"  Pur_Order="{!v.Pur_Order}" isConfirmed="{!v.isConfirmed}" isCancelled="{!v.isCancelled}" issrpflag="{!v.issrps}" recordId="{!v.recordId}" configData="{!v.configData}" vpline="{!obj}" rowIndex="{!row}" companyName="{!v.companyName}" />-->
+                      
+                       <c:POPLIter aura:id="POPline"  vendorid="{!v.vendorid}" taxTreatmentData="{!v.taxTreatmentData}" fromCurrToCurrecyRate="{!v.fromCurrToCurrecyRate}" Pur_Order="{!v.Pur_Order}" isConfirmed="{!v.isConfirmed}" isCancelled="{!v.isCancelled}" issrpflag="{!v.issrps}" recordId="{!v.recordId}" configData="{!v.configData}" vpline="{!obj}" rowIndex="{!row}" companyName="{!v.companyName}" UsingVendorProductPriceflow="{!v.UsingVendorProductPrice}"/>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </lightning:card>
+    </div>
+</aura:component>

@@ -1,0 +1,677 @@
+<aura:component Controller="StandardOrderCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+     <ltng:require scripts="{!join(',',
+                           $Resource.jQueryConfirm + '/SigmaLibraries/StripLibraries/jquery.js',
+                           $Resource.jQueryConfirm + '/SigmaLibraries/StripLibraries/jquery-confirm.min.js')}" 
+                  styles="{!$Resource.jQueryConfirm + '/SigmaLibraries/StripLibraries/jquery-confirm.min.css'}" />
+   
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:attribute name="showSA" type="boolean" default="false" />
+    <aura:attribute type="boolean" name="openSelectManual" default="false"/>
+    <aura:attribute type="Boolean" name="isallocated" default="false" />
+    
+    <!--<aura:attribute name="Lookup" type="Order" /> -->
+    <aura:attribute name="Lookupacc" type="Account" />    
+    <aura:attribute name="standOrder" type="Order" default="{'sobjectType': 'Order',
+                                                            
+                                                            }" />
+    <aura:attribute name="CreatedBy" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="recordName" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="transactionName" type="String" default="" description="The current record Id to display" />
+    <aura:attribute type="List" name="orderLinesData" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="productPrices" type="List[]" />
+    <aura:attribute name="orderLineIdentifier" type="Integer" default="1"/>
+    <aura:attribute name="ilpliIdAllocatedQuantMap" type="Map" default="{}" />
+    <aura:attribute type="Inventory_Location_Product_Line_Item__c[]" name="originalILPLIData" />
+    <aura:attribute type="Integer" name="ManualSelectIndex" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+    <aura:attribute name="isError" type="Boolean" default="false" />
+    <aura:attribute name="errorOLMessage" type="String" default="" />
+    <aura:attribute name="isOrderLineError" type="Boolean" default="false" />
+    <aura:attribute name="idListStr" type="String"/>
+    <aura:attribute name="accRelatedData" type="Object"/>
+    <aura:attribute name="defaultConfigValues" type="Boolean" default="" />
+    <aura:attribute name="hide" type="boolean"/>
+    <aura:attribute name="isbackorder" type="boolean" default = "false"/>
+    <aura:attribute name="defualtallocate" type="String"/>
+    <aura:attribute name="discount" type="decimal"/>
+        <aura:attribute name="isupdate" type="Boolean"  default="false" />
+    <!-- <aura:attribute type="Boolean" name="isMannualPickingStandOrder" default="false"  />-->
+    
+    <!--Attribute for ProductImage Show -->
+   <aura:attribute name="productimageexist" type="boolean" default ="false"/>
+   <aura:attribute name="ProductImageData" type="ContentDocumentLink" /> 
+   <aura:attribute name="ProductView" type="Boolean" default="false" />
+    
+    <!-- code added on 25/08/2019-->
+    <aura:attribute name="slideDevName" type="String"/>
+    <aura:attribute name="RemainCB" type="decimal"/>
+    <aura:attribute name="currencyname" type="String"/><!--code added on 30-08-2019 -->
+    
+    <!-- Attribute to show error msg -->
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError1" type="Boolean" default="false"/> 
+    <aura:attribute name="isbackordercheck" type="boolean"/>
+    
+    
+    <aura:attribute name="autoAllocFlag" type="Boolean" default="false" />
+    <aura:attribute name="showAutoResvButton" type="Boolean" default="false" />
+    <aura:attribute name="nopickpackshipment" type="Boolean" Default="false" description="The current record Id to display"/> 
+    
+    <aura:attribute name="splitIndex" type="Integer" />
+    <aura:attribute name="openSplitModal" type="Boolean" default="false" />
+    <aura:attribute name="splitBackOrderLines" type="object" default="{'splitList': '','backList':''}"/>
+    
+    <aura:attribute name="Warranty" type="object"/>
+	<aura:attribute name="showwarranty" type="boolean" default="false"/>
+    
+    <aura:handler name="change" value="{!v.recordName}" action="{!c.getAccountData}" />
+    <aura:handler name="SigmaComponentEvent" event="c:SigmaComponentEvent" action="{!c.handleComponentEvent}" /> 
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.handleAccountIdUpdate}"/>
+    <aura:handler name="change" value="{!v.currencyname}" action="{!c.clearcurrency}" />
+    <div class="slds-spinner_container slds-is-fixed slds-hide" aura:id="spinner">
+        <lightning:spinner class="slds-is-fixed" alternativeText="Loading" size="large" />
+    </div>
+    <lightning:navigation aura:id="navService"/>
+    
+    <lightning:card title="Standard Order" iconName="standard:orders">
+        <div id='HeaderErrorDiv' class="{!v.isError ? '':'slds-hide'}">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                <span class="slds-assistive-text">error</span>
+                <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+                    <lightning:icon iconName="utility:error" size="x-small" alternativeText="section" />
+                </span>
+                <h1>{!v.errorMessage}</h1>
+                <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="{!c.closeErrorMessage}">
+                    <lightning:icon iconName="action:close" size="x-small" alternativeText="section" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- code added on 25/08/2019-->
+        <aura:set attribute="actions">
+            
+            <div class="slds-col">
+                <label class="slds-checkbox_toggle slds-grid">
+                    <span class="slds-form-element__label slds-m-bottom_none" style="padding-top:6.7px;"><b>Auto Stock Reservation :</b></span>                                              
+                    <ui:inputCheckbox aura:id="selectorBox" value="{!v.autoAllocFlag}" disabled="{!v.defualtallocate == 'Allocated'}"/>
+                    <span class="slds-checkbox_faux_container" aria-live="assertive" style="padding-top:4px;">
+                        <span class="slds-checkbox_faux"></span>                                
+                    </span>
+                </label>                   
+            </div> 
+            
+        </aura:set>
+        
+        <aura:set attribute="footer">
+            <lightning:button variant="brand" label="Add Order Lines" onclick="{! c.AddOrderLine }" class="slds-float_left buttonOverlay" disabled ="{!v.recordId !=undefined}"/>
+            <aura:if isTrue="{!v.recordId==undefined}">
+                <lightning:button class="buttonOverlay" variant="brand" label="Save" onclick="{! c.saveData }" />
+                <aura:set attribute="else">
+                    <lightning:button class="buttonOverlay" variant="brand" label="Update" onclick="{! c.saveData }" />
+                </aura:set>
+            </aura:if>
+            <lightning:button class="buttonOverlay" variant="neutral" label="Cancel" type="reset" onclick="{! c.cancelStandOrder }" />
+        </aura:set>
+        
+        <aura:renderIf isTrue="{!v.isError1}">
+            <ui:message title="Error" severity="error" closable="false">
+                {!v.errorMsg}
+            </ui:message>
+            <aura:set attribute="else">
+                
+                <div class="" role="list">
+                    <div class="slds-grid slds-wrap paddingAround" style="padding: 1rem;">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+                            <div class="slds-m-right_x-large">
+                                <label class="slds-size--1-of-3" >
+                                    <span class="slds-form-element__label">Customer Name: {!v.orderID}</span>
+                                </label>
+                                <aura:if isTrue="{!and(empty(v.recordId),empty(v.StandOrderWrap[0].transID))}">
+                                    
+                                    <c:LookupSObject aura:id="AccName" searchString="{!v.recordName}" 
+                                                     label="Account" pluralLabel="Accounts"
+                                                     sObjectAPIName="Account" 
+                                                     instanceId="Supplier,Vendor"
+                                                     SRString="Customer"
+                                                     listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                     listIconClass="slds-icon-standard-account"
+                                      />  
+                                    <aura:set attribute="else">
+                                        <ui:inputText value="{!v.recordName}"  class="slds-input" disabled="true"/>
+                                    </aura:set>
+                                </aura:if> 
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+                            <div class="slds-m-right_x-large">
+                                <label class="slds-size--1-of-3">
+                                    <span class="slds-form-element__label">Customer Type</span>
+                                </label>
+                                <!--<force:inputField value="{!v.stappOrder.stapp__Customer_Type__c}" />-->
+                                <ui:inputText  class="slds-input input uiInput uiInputText uiInput--default uiInput--input" value="{!v.standOrder.sigmaerpdev2__Customer_Type__c}" disabled="true"/>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+                            <div class="slds-m-right_x-large">
+                                <label class="slds-size--1-of-3" >
+                                    <span class="slds-form-element__label">Billing person:</span>
+                                </label>
+                                <aura:if isTrue="{!and(empty(v.recordId),empty(v.StandOrderWrap[0].transID))}">
+                                    <label class="slds-size--2-of-5">
+                                        
+                                        <c:LookupSObject aura:id="ContactName" 
+                                                         searchString="{!v.CreatedBy}" 
+                                                         label="Contact" pluralLabel="Contacts" 
+                                                         sObjectAPIName="Contact"
+                                                         instanceId="MyContact"
+                                                         SRString="{!v.recordName}"
+                                                         listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#new_contact'}"
+                                                         listIconClass="slds-icon-standard-contact"
+                                                         />  
+                                        
+                                    </label>
+                                    <aura:set attribute="else">
+                                        <ui:inputText value="{!v.CreatedBy}"  class="slds-input" disabled="true"/>
+                                    </aura:set>
+                                </aura:if> 
+                            </div> 
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+                            <div class="slds-m-right_x-large">
+                                <label class="slds-size--1-of-3" >
+                                    <span class="slds-form-element__label">Order Date:</span>
+                                </label>
+                                
+                                <label class="slds-size--2-of-5 slds-truncate">
+                                    <ui:inputDate aura:id="DateTime"
+                                                  class="slds-input "
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.standOrder.sigmaerpdev2__Delivary_Date__c}"
+                                                  displayDatePicker="true" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+                            <div class="slds-m-right_x-large">
+                                <lightning:select aura:id="status" label="Status" value="{!v.standOrder.sigmaerpdev2__Orders_Status__c}" onchange="{!c.handleStatusChange}" required="true" disabled="{!v.standOrder.sigmaerpdev2__Orders_Status__c =='Canceled'|| v.standOrder.sigmaerpdev2__Paid_Amount__c >0}" >
+                                    <option value="Pending">Pending</option>
+                                    <!--<option value="Order Confirmed"  disabled="{!v.standOrder.sigmaerpdev2__Customer_Type__c == 'Cash Customer' || v.standOrder.sigmaerpdev2__AccountId__c ==null}">Order Confirmed  </option>-->
+                                   <!-- <aura:if isTrue="{!and(v.standOrder.sigmaerpdev2__Customer_Type__c == 'Cash Customer', or(v.standOrder.sigmaerpdev2__Is_Payment_Made__c == false, v.standOrder.sigmaerpdev2__Is_Payment_Made__c == undefined))}">
+                                        <option value="Order Confirmed" disabled="true">Order Confirmed</option>
+                                        <aura:set attribute="else">    
+                                            <option value="Order Confirmed" disabled="{!v.standOrder.AccountId == null}">Order Confirmed</option>                                    
+                                        </aura:set>
+                                    </aura:if> -->
+                                    <option value="Order Confirmed"  disabled="{!v.standOrder.sigmaerpdev2__Customer_Type__c == 'Cash Customer' || v.standOrder.AccountId ==null}">Order Confirmed  </option>
+                                    <option value="Shipped" disabled="true">Shipped</option>
+                                   <aura:if isTrue="{!v.defualtallocate =='Reserve'}">
+                                <option value="Delivered" disabled="true">Delivered</option>
+                             <aura:set attribute="else">                                    
+                                  <option value="Delivered" disabled="{!v.standOrder.sigmaerpdev2__Orders_Status__c == 'Pending' || v.recordId==undefined }">Delivered</option>                                    
+                                </aura:set>
+                                    </aura:if> 
+                                   <!-- <option value="Delivered" disabled="true">Delivered</option> -->
+                                    <!--<option value="Canceled" disabled="{!v.recordId==undefined}">Canceled</option>
+                <option value="Closed" disabled="{!v.recordId==undefined}">Closed</option>-->
+                                    <option value="Canceled" disabled="true">Canceled</option>
+                                    <option value="Closed" disabled="true">Closed</option>
+                                </lightning:select>
+                            </div>
+                        </div>
+                        <!-- <div class="form-element__group">-->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+                            <div class="slds-m-right_x-large">   
+                                <div class="slds-form-element__row">
+                                    <label class="slds-size--1-of-3" >
+                                        <span class="slds-form-element__label">Exchange Currency : </span>
+                                    </label>
+                                    
+                                    <label class="slds-size--2-of-5">
+                                        <aura:if isTrue="{!and(v.standOrder.sigmaerpdev2__Customer_Type__c=='Cash Customer',v.standOrder.sigmaerpdev2__Orders_Status__c!='Order Confirmed')|| v.recordId==undefined }">
+                                        <c:LookupSObject aura:id="currName" searchString="{!v.currencyname}" 
+                                                         label="Currency" pluralLabel="Currencies"
+                                                         sObjectAPIName="sigmaerpdev2__Currency__c" 
+                                                         instanceId="Currency"
+                                                         SRString="All"
+                                                         listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                         listIconClass="slds-icon-standard-account"
+                                                         />
+                                 	<aura:set attribute="else">
+									<ui:inputText value="{!v.currencyname}"  class="slds-input" disabled="true"/>
+									</aura:set>
+										</aura:if> 
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="{!v.standOrder.sigmaerpdev2__Customer_Type__c =='Credit Customer'?'slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12':'slds-hide'}">
+                            <div class="slds-m-right_x-large">
+                                <label class="slds-size--1-of-3">
+                                    <span class="slds-form-element__label">Remaining Credit Balance  </span>
+                                </label>
+                                <!--<force:inputField value="{!v.stappOrder.stapp__Customer_Type__c}" />-->
+                                <ui:inputText  class="slds-input input uiInput uiInputText uiInput--default uiInput--input" value="{!v.RemainCB}" disabled="true"/>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+                         <div class="slds-m-right_x-large">
+                                <label class="slds-size--1-of-3">
+                                    <span class="slds-form-element__label">Discount </span>
+                                </label>
+                            <ui:inputNumber label="" value="{!v.discount}" updateOn="keyup" change = "{!c.handleDiscountChange}" disabled="{!v.standOrder.sigmaerpdev2__Is_Payment_Made__c}"/>
+                        </div>
+                        </div>
+                        <div class="{!v.standOrder.sigmaerpdev2__Customer_Type__c=='Credit Customer'?'slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12':'slds-hide'}">
+                            <label class="slds-form-element__label">Stopped Order</label>
+                            <lightning:input type="checkbox" label="" name="Stopped Order" value="{!v.standOrder.sigmaerpdev2__Stopped_Order__c}" checked="{!v.standOrder.sigmaerpdev2__Stopped_Order__c}" onchange="{!c.stoppedOrderValueChange}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+                            <div class="slds-m-right_x-large">
+                                <fieldset class="slds-form--compound">
+                                    <div class="form-element__group">
+                                        <td>
+                                            <label class="slds-size--1-of-4" >
+                                                <span class="slds-form-element__label">No Picking, Package And Shipment:</span> 
+                                            </label>
+                                            <input label="NoPackageShipment" type="checkbox" name="vehicle" value="{!v.nopickpackshipment}" onclick="{!c.NoPackageShipment}" id="noPackShip" disabled ="{!v.recordId || v.defualtallocate == 'Allocated'}"/>  
+                                        </td> 
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-section slds-is-open">
+                    <h3 class="slds-section__title" style="border-radius: .25rem;border: 1px solid rgb(221, 219, 218);">
+                        <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.SAToggle}">
+                            <lightning:icon iconName="{!v.showSA == true ? 'utility:chevrondown':'utility:chevronright'}" size="x-small" alternativeText="section" />
+                            <span class="slds-truncate" title="Shipping Address" style="padding-left: 1%;">Shipping Address</span>
+                        </button>
+                    </h3>
+                    
+                    <div aura:id="SATogle" aria-hidden="false" class="slds-section__content slds-hide" role="list" style="padding-top:0;">
+                        <div class="slds-grid slds-wrap slds-box paddingAround" style="border-top: none !important;">
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+                                <div class="slds-m-right_x-large">     
+                                    <lightning:input aura:id="fields" label="Shipping Street" value="{!v.standOrder.sigmaerpdev2__Shipping_Street__c}" />
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_3-of-12">
+                                <div class="slds-m-right_x-large"> 
+                                    <lightning:input aura:id="fields" label="Shipping City" value="{!v.standOrder.sigmaerpdev2__ShippingCity__c}" />
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_3-of-12">
+                                <div class="slds-m-right_x-large">   
+                                    <lightning:input aura:id="fields" label="Shipping State" value="{!v.standOrder.sigmaerpdev2__ShippingState__c}" />
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_3-of-12">
+                                <div class="slds-m-right_x-large"> 
+                                    <lightning:input aura:id="fields" label="Shipping Country" value="{!v.standOrder.sigmaerpdev2__ShippingCountry__c}" />
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_3-of-12">
+                                <div class="slds-m-right_x-large">   
+                                    <lightning:input aura:id="fields" label="Shipping Zip" value="{!v.standOrder.sigmaerpdev2__ShippingPostalCode__c}" />
+                                </div>
+                            </div>   
+                            
+                        </div>  
+                    </div>
+                </div>
+                <div style="border-radius: .25rem;border: 1px solid rgb(221, 219, 218);">
+                    <div class="slds-page-header" style="padding: 0.4rem;">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                                    <lightning:icon iconName="standard:product_item" size="small" alternativeText="section" />
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Order Lines">Order Lines</h1>
+                            </div> 
+                        </div>
+                        <div class="slds-media__body slds-text-align_right">
+                            <span class="slds-avatar slds-avatar_circle slds-avatar_x-small">
+                                <abbr class="slds-avatar__initials slds-icon-standard-account" title="Split Orders" style="background: #d9f7f7;"/>
+                            </span> Split Orders
+                            <span class="slds-avatar slds-avatar_circle slds-avatar_x-small">
+                                <abbr class="slds-avatar__initials slds-icon-standard-account" title="Back Orders" style="background: bisque;"/>
+                            </span> Back Orders
+                        </div>
+                        <div id='LineItemsErrorDiv'>
+                            <div  class="{!v.isOrderLineError ? '':'slds-hide'}">
+                                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                                    <span class="slds-assistive-text">error</span>
+                                    <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+                                        <lightning:icon iconName="utility:error" size="x-small" alternativeText="section" />
+                                    </span>
+                                    <h1>{!v.errorOLMessage}</h1>
+                                    <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="{!c.closeErrorMessage}">
+                                        <lightning:icon iconName="action:close" size="x-small" alternativeText="section" />
+                                        <span class="slds-assistive-text">Close</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="">
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-no-row-hover slds-max-medium-table_stacked-horizontal">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col" style="width: 5%;">
+                                        <div class="" title="ACTION">ACTION</div>
+                                    </th>
+                                    <!--   <th class="{!v.defaultConfigValues.StappObjectConfiguration.stapp__SO_On_Hold__c ? '':'slds-hide'}" scope="col" style="width: 3%;">
+         <div class="" title="HOLD">HOLD</div>
+        </th>  -->
+                                    <th scope="col" style="width: 11%;">
+                                        <div class="" title="PRODUCT">PRODUCT
+                                            <span style="color:red">*</span>
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width: 6%;">
+                                        <div class="" title="View Product">View Product
+                                            
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width: 6%;">
+                                        <div class="" title="QTY">Quantity
+                                            <span style="color:red">*</span>
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width: 7%;">
+                                        <div class="" title="QTY">Order Quantity
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width: 8%;">
+                                        <div class="" title="QTY">Available Quantity
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width: 8%;">
+                                        <div class="" title="Price">UNIT Price
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width: 8%;">
+                                        <div class="" title="Discount">Discount(%)
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width: 6%;">
+                                        <div class="" title="Total">Total
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width: 8%;">
+                                        <div class="" title="Delivary Date">Delivery Date
+                                        </div>
+                                    </th>
+                                    <th scope="col" style="width: 6%;">
+                                        <div class="" title="Status">Status
+                                        </div>
+                                    </th>
+                                    <!--  <aura:if isTrue="{!v.defaultConfigValues}">-->
+                                    <th scope="col" style="width: 8%;">
+                                        <!--<aura:if isTrue="{!and(v.defaultConfigValues == true, v.autoAllocFlag == false)}">-->
+                                        <aura:if isTrue="{!v.autoAllocFlag == false}">
+                                            <div class="slds-truncate" title="ALLOCATION">
+                                                ALLOCATION
+                                            </div>
+                                        </aura:if>
+                                    </th>
+                                    <th scope="col" style="width: 6%;">
+                                        <div class="" title="Warranty">Warranty
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.orderLinesData}" var="item" indexVar="index">
+                                    <c:StandardOrderLines StandardOrderLines="{!item.orderLines}" standOrder="{!v.standOrder}" indexNum="{!index}" 
+                                                          productName="{!item.productName}" availableQuantity="{!item.availableQuantity}" isDisabled="{!item.isDisabled}" isDisplay="{#item.isDisplay}"
+                                                          accRelatedData="{!v.accRelatedData}" allocatedAs="{!item.allocatedAs}" isConfirmedOL="{#item.isConfirmedOL}" defaultValues="{!v.defaultConfigValues}" hide="{!v.hide}"
+                                                          defualtInventorystatus="{!v.defualtallocate}" isbackorder="{v.isbackorder}" autoMode="{!v.autoAllocFlag}" BackOrdercheckbox="{!item.BackOrdercheckbox}" recordId="{!v.recordId}" isbackordercheck ="{!v.isbackordercheck}" 
+                                                          />
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>	
+            </aura:set>
+        </aura:renderIf>
+    </lightning:card>
+    
+    <!-- Code Starts Here to upload Product Image on 13-05-2020-->
+    
+    <aura:if isTrue="{!v.ProductView}">
+       
+       <c:viewProductImage ProductImageDataSet ="{!v.ProductImageData}" productimageexist ="{!v.productimageexist}" ProductView ="{!v.ProductView}"/>  
+                    
+           
+    </aura:if>
+    
+    <aura:if isTrue="{!v.openSelectManual}">
+        <div>
+            <section role="dialog" class="slds-modal slds-fade-in-open" style="top:50px;">
+                <div class="slds-modal__container" style="height: 470px;width: 90%;max-width: 100%;">
+                    <header class="slds-modal__header">
+                        <button onclick="{!c.closeSelectManualModal}" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <lightning:icon iconName="utility:close" size="small" alternativeText="Close" />
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">Available Stock</h2>
+                    </header>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="">
+                                    <div class="slds-truncate" title="PRODUCT" style="color:#16325c;">Product</div>
+                                </th>                    
+                                <th scope="col">
+                                    <div class="slds-truncate" title="ORDERED QUANTITY" style="color:#16325c;">Ordered Quantity</div>
+                                </th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr> 
+                                <td>
+                                    <ui:inputText aura:id="manualSelectProdName" label="" class="slds-input" labelClass="slds-form-element__label" value="" disabled="true"/>                                 
+                                </td>
+                                <td>            
+                                    <ui:inputText aura:id="orderedQuant" label="" class="slds-input" labelClass="slds-form-element__label" value="" disabled="true"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="slds-modal__content slds-p-around_medium slds-size--1-of-1" style="max-height:20rem;min-height:10rem;overflow:auto;">
+                        <ui:inputCheckbox aura:id="checkbox" labelClass="slds-p-horizontal--small slds-float--left" label="Auto Select" change="{!c.handleAutoSelectCheckBox}"/>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Location" style="color:#16325c;">Location</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="SerialNo" style="color:#16325c;">Serial No.</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Lot" style="color:#16325c;">Lot</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="BIN" style="color:#16325c;">Bin</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Received Date" style="color:#16325c;">Received Date</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Available Quantity" style="color:#16325c;">Available Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Enter Quantity" style="color:#16325c;">Enter Quantity</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.originalILPLIData}" var="item" indexVar="i">
+                                    <c:PackageILPLIManualSelect ilpliIndividualData="{!item}"  indexNum="{!i}" isMannualPicking="{!v.isallocated}" />
+                                </aura:iteration>
+                            </tbody> 
+                        </table>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closeSelectManualModal}">Cancel</button>
+                        <button class="slds-button slds-button_neutral" onclick="{!c.selectedIPPLI}">Ok</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    
+    <!--code to handle split orderline 04-03-2020  -->
+    <aura:if isTrue="{!v.openSplitModal}">
+        <div class="SigmaOrderModal">
+            <section role="dialog" class="slds-modal slds-fade-in-open" style="top:50px;">
+                <div class="slds-modal__container" style="width: 94%;margin:0 auto;">
+                    <header class="slds-modal__header">
+                        <button onclick="{!c.closeSplitModal}" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <lightning:icon iconName="utility:close" size="small" alternativeText="Close" />
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">'{!v.splitBackOrderLines.prodName}' Quantity Management</h2>
+                    </header>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="">
+                                    <div class="slds-truncate" title="Parent Qty" style="color:#16325c;">Parent Qty</div>
+                                </th>                    
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Available Qty" style="color:#16325c;">Available Qty</div>
+                                </th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr> 
+                                <td>
+                                    <lightning:input type="number" label="" aura:id="ParentQty" value="{!v.splitBackOrderLines.parentQty}" disabled="{!v.splitBackOrderLines.isConfirmed}"/>
+                                </td>
+                                <td>
+                                    <lightning:input label="" aura:id="AvailQty" value="{!v.splitBackOrderLines.availQty}" disabled="true"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning:tabset selectedTabId="one">
+                            <lightning:tab label="Split Orders" id="one">
+                                <aura:iteration items="{!v.splitBackOrderLines.splitList }" var="so" indexVar="index">
+					
+                 
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-size_1-of-12">
+                                            <lightning:input type='number' label="" value="{!index+1}" readonly="true"/>
+                                        </div>
+                                        <div class="slds-size_11-of-12">
+                                            <lightning:input type='number' label="" aura:id="SplitOrders" value="{!so.qty}" disabled="{!so.isConfirmed}"/>
+                                        </div>			
+                                      
+                                   </div>
+                                </aura:iteration>
+                                <lightning:button class='slds-m-top_medium' variant="neutral" label="Add" onclick="{!c.addSplitOrderLines}" />
+                            </lightning:tab>
+                        </lightning:tabset>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closeSplitModal}">Cancel</button>
+                        <button class="slds-button slds-button_neutral" onclick="{!c.splitOrderLine}">Ok</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    <!--code end 04-03-2020 -->
+     <aura:if isTrue="{!v.showwarranty}">
+        <div class="SigmaOrderModal">
+            <section role="dialog" class="slds-modal slds-fade-in-open" style="top:50px;">
+                <div class="slds-modal__container" style="width: 90%;margin:auto;">
+                  <header class="slds-modal__header">
+                        <button onclick="{!c.closeSplitModal}" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <lightning:icon iconName="utility:close" size="small" alternativeText="Close" />
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">Product Warranty</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_medium">
+						<div class="slds-grid slds-gutters">
+							<div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:input type="date" name="input" label="Start Date" value="{!v.Warranty.productstartdate}" disabled="true"/>
+							</div>
+						
+						
+							<div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:input type="number" name="input" label="Duration" value="{!v.Warranty.productduration}" onchange = "{!c.handleenddate}"/>
+							</div>
+						
+						
+							<div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:select aura:id="status" label="Interval" value="{!v.Warranty.productinterval}" onchange="{!c.handleenddate}">
+								<option value="Day">Day</option>
+								<option value="Month">Month</option>
+								<option value="Year">Year</option>
+							</lightning:select>
+							</div>
+						
+							<div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:input type="date" name="input" label="End Date" value="{!v.Warranty.productenddate}" disabled="true"/>
+							</div>
+						</div>
+						
+                    </div>
+                    <header class="slds-modal__header">
+                       <h2 class="slds-text-heading_medium slds-hyphenate">Service Warranty</h2>
+                    </header>
+                     <div class="slds-modal__content slds-p-around_medium">
+						<div class="slds-grid slds-gutters">
+							<div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:input type="date" name="input" label="Start Date" value="{!v.Warranty.servicestartdate}" disabled="true"/>
+							</div>
+						
+						
+							<div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:input type="number" name="input" label="Duration" value="{!v.Warranty.servicesduration}" onchange = "{!c.handleserviceenddate}"/>
+							</div>
+						
+						
+							<div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:select aura:id="status" label="Interval" value="{!v.Warranty.servicesinterval}" onchange="{!c.handleserviceenddate}">
+								<option value="Day">Day</option>
+								<option value="Month">Month</option>
+								<option value="Year">Year</option>
+							</lightning:select>
+							</div>
+						
+							<div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12">
+							<lightning:input type="date" name="input" label="End Date" value="{!v.Warranty.servicesenddate}" disabled="true"/>
+							</div>
+						</div>
+						
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closeSplitModal}">Cancel</button>
+                        <button class="slds-button slds-button_neutral" onclick="{!c.Savewarranty}">Ok</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+	<!-- warranty code end -->
+    
+</aura:component>

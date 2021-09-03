@@ -1,0 +1,34 @@
+.THIS .textClass{
+    color: red;
+    font-size: 90%;
+}
+.THIS .slds-page-header
+{
+    background:#f4f4f4 !important;
+}
+.THIS th
+{
+    background:rgb(250, 250, 249) !important;
+}
+.THIS .slds-spinner_container
+{
+    position:fixed !important;
+}
+.THIS.slds-spinner_container
+{
+    position:fixed !important;
+}
+.THIS .dateField{
+    padding: 0 1rem 0 .75rem;
+    line-height: 1.875rem;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(217, 219, 221);
+    border-radius: .25rem;
+    padding-right: 2rem;
+}
+@media only screen and (max-width: 768px) 
+{
+    .THIS .slds-grid{display:block !important;}
+    .THIS .slds-col{width:100% !important;}
+    .THIS label{display:block !important;margin-top:10px !important;}
+}

@@ -1,0 +1,52 @@
+<aura:component controller="stockupdate" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="mycolumn" type="Object[]"/>
+    <aura:attribute  name="productList" type="Object[]" />
+    <!--<aura:attribute  name="productList" type="Inventory_Location_Product__c[]"/>-->
+    <aura:attribute name="pageNumber" type="Integer" default="1"/>
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="isLastPage" type="Boolean" default="false"/>
+    <aura:attribute name="dataSize" type="Integer" default="0"/> 
+    
+    <aura:handler name="init" value="{!this}" action="{!c.fetchproducts}"/>
+    
+    <div class="content">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container1 slds-icon-standard-account1" title="account">
+                        <img src="{!$Resource.SigmaIcons + '/Report.png'}" width="50"/>
+                        <span class="slds-assistive-text">Stock Update</span>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title header slds-text-title_caps">
+                        <strong>Stock Update</strong>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body">
+            <lightning:datatable aura:id="productTable"
+                                 data="{!v.productList }" 
+                                 columns="{!v.mycolumn }" 
+                                 keyField="Id"
+                                 hideCheckboxColumn="true"
+                                 showRowNumberColumn="true"
+                                 onsave="{!c.handleSave}"
+                                 />
+        </div>
+    </div>
+    <div class="slds-clearfix">
+        <div class="slds-page-header" role="banner">
+            <div class="slds-float_right">            
+                <lightning:button label="Prev" iconName="utility:chevronleft" iconPosition="left"
+                                  onclick="{!c.handlePrev}" disabled="{! v.pageNumber == 1}"/>
+                <lightning:button label="Next" iconName="utility:chevronright" iconPosition="right"
+                                  disabled="{! v.isLastPage}" onclick="{!c.handleNext}"/>
+            </div>
+            <p class="slds-page-header__title">Page {!v.pageNumber} | Showing records from {! ((v.pageNumber-1)*v.pageSize)+' to '+((v.pageNumber-1)*v.pageSize+v.dataSize)}</p>
+        </div>
+    </div>
+    
+    
+</aura:component>

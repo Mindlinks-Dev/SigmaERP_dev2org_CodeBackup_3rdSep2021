@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#0070D2</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <label>SigmaERP365</label>
+    <navType>Standard</navType>
+    <tabs>standard-home</tabs>
+    <tabs>standard-Account</tabs>
+    <tabs>standard-Contact</tabs>
+    <tabs>standard-Product2</tabs>
+    <tabs>Product_Inventory_Modules</tabs>
+    <tabs>Purchase_Order_Modules</tabs>
+    <tabs>SalesOrderModules</tabs>
+    <tabs>Stock_Management_Modules</tabs>
+    <tabs>ManufacturingModules</tabs>
+    <tabs>SubscriptionDetail__c</tabs>
+    <tabs>Proposal_Search</tabs>
+    <tabs>Project2__c</tabs>
+    <tabs>standard-Opportunity</tabs>
+    <tabs>Default_Parameters</tabs>
+    <tabs>Sigma_Order__c</tabs>
+    <tabs>UseandDelete</tabs>
+    <tabs>Tax_Treatment__c</tabs>
+    <tabs>Tax_Code__c</tabs>
+    <tabs>Company__c</tabs>
+    <tabs>Sigma_Module_Configuration__c</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>SigmaERP365_UtilityBar</utilityBar>
+</CustomApplication>

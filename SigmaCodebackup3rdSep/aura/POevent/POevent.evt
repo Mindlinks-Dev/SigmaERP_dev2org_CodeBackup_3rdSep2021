@@ -1,0 +1,10 @@
+<aura:event type="COMPONENT" description="Component event for stapp app" >
+    <aura:attribute type="Map" name="data"/>
+    <aura:attribute type="string" name="flag"/>
+    <aura:attribute type="string" name="flag1"/>
+    <aura:attribute type="string" name="customerId"/>
+    
+    <aura:attribute name="recordByEvent" type="sObject" access="global"/>
+    <aura:attribute name="objectAPIName" type="string" access="global"/>
+    <aura:attribute name="context" type="string" access="global"/>
+</aura:event>

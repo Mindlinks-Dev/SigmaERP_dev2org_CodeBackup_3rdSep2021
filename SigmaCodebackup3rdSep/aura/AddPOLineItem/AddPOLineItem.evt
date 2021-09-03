@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="AddPOLineItem" type="Purchase_Order_Product__c"/>
+</aura:event>

@@ -1,0 +1,332 @@
+<aura:component Controller="AddShipmentProductsLtng" access="global" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,force:hasRecordId" >
+    <ltng:require styles="{!$Resource.increasepopupsize}" />
+    <aura:attribute name="Shipment" type="Shipment__c" 
+                    default="{'sobjectType': 'Shipment__c',
+                             'sigmaerpdev__Account__c': '',
+                             'sigmaerpdev__Delivery_Person__c': '',
+                              ' sigmaerpdev__Delivery_Person1__c':'',
+                             'sigmaerpdev__Description__c': '',
+                             'sigmaerpdev__Shipment_Date__c': '',
+                             'sigmaerpdev__Truck_No__c': '',
+                             'sigmaerpdev__Status__c': '',
+                             'sigmaerpdev__WayBill__c':'',
+                             'sigmaerpdev__track_url__c':'',
+                             'sigmaerpdev__concenment__c':'',
+                             'sigmaerpdev__Selected_Courier__c':''
+                             }"/> 
+    <aura:attribute name="ShipmentProducts" type="Shipment_Products__c" 
+                    default="{'sobjectType': 'Shipment_Products__c',
+                             'sigmaerpdev__Package_ID__c': '',
+                             'sigmaerpdev__Customer_Name__c': '',
+                             'sigmaerpdev__Order__c': '',
+                             'sigmaerpdev__Shipment_Delivery_Date__c': '',
+                             'sigmaerpdev__Status__c': ''
+                             
+                             }"/>
+    
+    <!-- Look up Set up -->
+    <aura:attribute name="Id" type="String"    default=""/>
+    <aura:attribute name="pkgstatus" type="String"    default=""/>
+    <aura:attribute name="pkgcancelstatus" type="String"    default=""/>
+    <aura:attribute name="VendorId" type="String"    default="" description="The current record Id to display" /> 
+    <aura:attribute name="recordName" type="String"  default="" description="The current record Id to display" />
+    <aura:attribute name="recordName1" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="recordName2" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="recordName3" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="status" type="String[]"    default=""/>
+    <aura:attribute name="ShipmentProduct" type="Shipment_Products__c[]"  />
+    <aura:attribute name="today" type="String" />
+    <aura:attribute name="Orderdate" type="String" />
+    <aura:attribute name="myMap" type="Map"/>
+    <aura:attribute name="courierlist" type="List" />
+    <aura:attribute type="String" name="selectedCourier"/>
+    
+    <aura:attribute name="pkname" type="String" /> 
+    <aura:attribute name="custname" type="String"    default="" description="The current record Id to display" /> 
+     <aura:attribute type="String" name="dpName"/>
+    
+    <aura:attribute name="SAccount" type="String"    default=""/>
+    <aura:attribute name="SContact" type="String"    default=""/>
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    
+    <aura:attribute name="recordId" type="String" default="" description="The current record Id to display" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
+    
+     <aura:attribute name="curRecordID" type="String" />
+    <div class="backdrop1 slds-hide" aura:id="backdrop1"></div>
+	<div id="Accspinner" class="slds-spinner_container slds-is-fixed" style="display:none">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+	
+    <!--code for Success and Failure Alerts-->
+     <div class="slds-notify_container slds-is-relative slds-hide" aura:id="successAlert">
+    <div class="slds-notify slds-notify_toast slds-theme--success" aura:id="successAlertTheme" role="alert" style="z-index:10000;margin-top:0;">
+      <span class="slds-assistive-text">success</span>
+      <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" aura:id="iconsuccess" title="Description of icon when needed">
+        <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#success'}" />
+	</span>
+	<span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top slds-hide" aura:id="iconwarning" title="Description of icon when needed">     
+		<c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#warning'}" />
+	</span>	
+      <div class="slds-notify__content">
+        <h2 class="slds-text-heading_small record-header" style="position:relative;left:34%;">
+		<span aura:id="recordCreatedHeader" class="" >Record Created Successfully.</span>
+		<span aura:id="recordNotCreatedHeader" class="slds-hide">Failed to create record.</span>
+		<span aura:id="recordUpdtatedHeader" class="slds-hide">Record Updated Successfully.</span>
+		<span aura:id="recordNotUpdtatedHeader" class="slds-hide">Record update failed.</span>
+		</h2>		
+		
+      </div>
+	  <div aura:id="recordCreatedOK" class="closeButton"  style="position:relative;left:40%;">
+      <button class="slds-button" title="Close" onclick="{!c.recordCreatedOK}" style="color:white !important;">
+        <c:svg class="slds-button__icon slds-button__icon_large"  xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+        <span class="slds-assistive-text">Close</span>
+      </button>
+	  </div>
+	  <div aura:id="recordCreatedCancel" class="slds-hide closeButton" style="position:relative;left:40%;">
+	  <button class="slds-button" title="Close" onclick="{!c.recordCreatedCancel}" style="color:white !important;">
+        <c:svg class="slds-button__icon slds-button__icon_large" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+        <span class="slds-assistive-text">Close</span>
+      </button>
+	  </div>
+    </div>	
+	<div class="slds-backdrop slds-backdrop--open" style="opacity:0.6;"></div>
+  </div>
+<!--End of Success and Failure Alerts-->
+    
+        <div class="slds-box" style="padding:0;">
+        <div class="slds-page-header" style="">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-work-order" title="Description of icon when needed">
+                        <c:svg class="slds-icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/custom-sprite/svg/symbols.svg#custom98'}" />
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Shipments">Shipments</h1>
+                </div>
+            </div>
+        </div>
+      <br/>
+    <aura:renderIf isTrue="{!v.isError}">
+        <ui:message title="Error" severity="error" closable="false">
+            {!v.errorMsg}
+        </ui:message>
+        <aura:set attribute="else">
+            
+        </aura:set>
+    </aura:renderIf> 
+    
+    <!-- Input Form using components -->
+    <div class="container">
+        <div style="width:60%;margin:auto;" class="main">
+        <div class="slds-grid slds-grid--pull-padded-medium">
+            
+            <div class="slds-col slds-p-horizontal--medium" style="">  
+                <div class="slds-m-bottom_small">
+                    <div class="slds-form-element__control"> 
+                         
+                        <lightning:select name="levels" messageWhenValueMissing="Choose one!" label="Logistics Name" aura:id="levels" onchange="{!c.onPicklistChange}" required="true">
+                           <span style="color:red;">*</span>
+                            <option text="-None-" value="--None--"/>
+                            <aura:iteration items="{!v.courierlist}" var="st">
+                                <option text="{!st}" value="{!st}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    <!--label class="slds-form-element__label" for="email">Logistics Name <span style="color:red">* </span> </label>                 
+                    <c:LookupSObject aura:id="pAccount" 
+                                            searchString="{!v.recordName}" 
+                                            label="Account" 
+                                            SRString="Logistics"
+                                            pluralLabel="Accounts" 
+                                            sObjectAPIName="Account" 
+                                            instanceId="MyPAccount"
+                                            listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                            listIconClass="slds-icon-standard-account"
+                                            /-->
+                </div>
+                
+               
+                <div class="slds-m-bottom_small">      
+					<label class="slds-form-element__label" for="Description">Description</label> 
+                    <ui:inputText aura:id="Description" 
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.Shipment.sigmaerpdev__Description__c}"/> 
+                </div>
+               <div class="slds-m-bottom_small">  
+					<label class="slds-form-element__label" for="Truck Number">Truck Number</label> 
+                    <ui:inputText aura:id="TruckNo"
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.Shipment.sigmaerpdev__Truck_No__c}"/>	
+                </div>
+                <div class="slds-m-bottom_small">    
+					<label class="slds-form-element__label" for="WayBill/Ref">WayBill/Ref</label> 
+                    <ui:inputText aura:id="waybill"
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.Shipment.sigmaerpdev__WayBill__c}"/> 
+                </div>
+                
+            </div>
+            
+            <div class="slds-col slds-p-horizontal--medium" style="">  
+                <div class="slds-m-bottom_x-small">  	
+                     <!--label class="slds-form-element__label" for="Truck_Number">Delivery Person</label-->
+                             <label class="slds-form-element__label" for="Truck_Number"><span style="color:red;">*</span>Delivery Person</label>
+                                <ui:inputText aura:id="deleverPerson" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.dpName}"/>
+                            
+                   <!-- <label class="slds-form-element__label" for="Delivery Person">Delivery Person </label>   
+                    <c:LookupSObject aura:id="Delivery_Person" 
+                                            searchString="{!v.recordName1}" 
+                                            SRString="{!v.recordName}"
+                                            label="Account" 
+                                            pluralLabel="Contacts" 
+                                            sObjectAPIName="Contact" 
+                                            instanceId="MyPContact"
+                                            listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                            listIconClass="slds-icon-standard-account"/> -->
+                </div>    
+                
+               
+                
+                
+                <div class="slds-m-bottom_small">  
+                    <label class="slds-form-element__label" for="Status">Status</label> 
+                    <ui:inputText aura:id="instructions" label=""
+                                  class="slds-input instructions"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.status}"
+                                  disabled="true"
+                                  />    
+                </div>
+               <div class="slds-m-bottom_small">  
+				<label class="slds-form-element__label" for="Tracking URL">Tracking URL</label> 
+                    <ui:inputText aura:id="trackingurl" 
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.Shipment.sigmaerpdev__track_url__c}"/>	
+                </div>
+                <div class="slds-m-bottom_small">  
+					<label class="slds-form-element__label" for="Consignment Number">Consignment Number</label> 
+                    <ui:inputText aura:id="consignment"
+                                  class="slds-input"
+                                  labelClass="slds-form-element__label"
+                                  value="{!v.Shipment.sigmaerpdev__concenment__c}"/> 
+                </div>
+            </div>
+            
+        </div>
+        </div>
+		
+       <header class="slds-page-header slds-media slds-media--center slds-has-flexi-truncate slds-m-top_xx-small" style="background:transparent">
+                
+                <div class="slds-media__figure" data-aura-rendered-by="1263:0">
+                    <span class="slds-icon_container slds-icon-action-new-note slds-icon_container--circle" style="background:#50e3c2;color:white;">
+                        <c:svg class="slds-button__icon slds-button__icon_medium" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/action-sprite/svg/symbols.svg#new_note'}" />
+                    </span>
+                    
+                </div>
+                <div class="slds-media__body" data-aura-rendered-by="1264:0">
+                    <h2 id="header" data-aura-rendered-by="1265:0">                            
+                        <span class="slds-text-heading--small slds-truncate slds-m-right--xx-small" title="Add Shipment Products" data-aura-rendered-by="1267:0">
+                            Add Packages</span>                 <!--  Add Shipment Products -->           
+                    </h2>
+                </div>
+            </header>
+        
+        <div class="slds-card">                        
+          <div class="slds-scrollable">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title--caps">                      
+                        <th scope="col" class="slds-size--1-of-3">
+                            <div class="slds-truncate" title="Package Number" style="color:#16325c;">Package Number <span style="color:red">*</span></div>
+                        </th>
+                        
+                        <th scope="col" class="slds-size--1-of-3">
+                            <div class="slds-truncate" title="Customer Name" style="color:#16325c;">Customer Name</div>
+                        </th>
+                        
+                        <th scope="col" class="slds-size--1-of-3">
+                            <!--div class="slds-truncate" title="Shipment Delivery Date" style="color:#16325c;">Shipment Delivery Date <span style="color:red">*</span></div-->
+                                    <div class="slds-truncate" title="Shipment Delivery Date" style="color:#16325c;">Status<span style="color:red">*</span></div>
+                        </th>  
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                    <tr>             
+                       
+                        <td style="">
+                            
+                            <div class="slds-size--4-of-5" title="{!v.pkname}">
+                               
+                                <ui:inputText aura:id="instructions" label=""
+                                              class="slds-input instructions"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.pkname}"
+                                              disabled="true"
+                                              />
+                                
+                            </div>
+                        </td>
+                        <td data-label="Prospecting" style="">
+                            <div class="slds-size--4-of-5" title="{!v.custname}" style="position:absolute;top:9px;">
+                                <ui:inputText aura:id="instructions" 
+                                               class="slds-input slds-truncate"        
+                                               value="{!v.custname}"
+												disabled="true"
+                                               />
+                            </div>
+                        </td>
+                        <td style="">     
+                            <div class="slds-size--4-of-5" title="{!v.ShipmentProducts.Shipment_Delivery_Date__c}">
+                                <!--ui:inputDate aura:id="DateTime" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.ShipmentProducts.sigmaerpdev__Shipment_Delivery_Date__c}"
+                                              displayDatePicker="true"/-->
+                                 <ui:inputText aura:id="instructions" 
+                                               class="slds-input slds-truncate"        
+                                               value="{!v.ShipmentProducts.sigmaerpdev__Status__c}"
+												disabled="true"
+                                               />
+                                
+                            </div>         
+                        </td>
+                        
+                     
+                    </tr>  
+                   
+                </tbody> 
+            </table>
+			</div>
+            <aura:if isTrue="{!v.Id == ''}">
+                <div align="center" class="slds-m-around_small">
+                    <button class="slds-button slds-button--brand" onclick="{!c.createShipment}">Submit</button>
+                    <button class="slds-button slds-button--brand" 
+                            onclick="{!c.cancelButton}" style="margin-right:0.6%;">Cancel</button>        
+                    
+                </div>
+                <aura:set attribute="else">
+                   
+                </aura:set>
+            </aura:if>
+        </div>       
+    </div>	
+	</div>
+</aura:component>

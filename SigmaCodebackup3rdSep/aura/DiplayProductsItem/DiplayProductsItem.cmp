@@ -1,0 +1,107 @@
+<aura:component controller="DisplayProducts" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="Product" type="object[]" />
+    <aura:attribute name="completeWrap" type="object" />
+    <aura:attribute name="parentcmp" type="Boolean" default="true"/>
+    <aura:attribute name="isShipcmp" type="boolean" default="false"/>
+    <aura:attribute name="SelectedRetailercode" type="String" description="retailer Code Id"/>
+    <aura:attribute name="onselectcustomeid" type="String" /> 
+    
+    <aura:attribute name="quickview" type="Boolean" default="false" />
+    <aura:attribute name="catalogVertical" type="Boolean" default="true" />
+    <aura:attribute name="quickviewedProduct" type="Object" />
+    
+    <aura:attribute name="hideproduct" type="Boolean" default="true"/>
+    <aura:attribute name="closeNotification" type="Boolean" default="true"/>
+    <aura:attribute name="CartValue" type="Integer"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.myAction}" />
+    
+    <aura:If isTrue="{!v.hideproduct}">
+        <lightning:card>
+            
+            <aura:set attribute="actions">
+                <aura:If isTrue="{!v.parentcmp}">
+                    <lightning:button label="VIEW CART" variant="brand" onclick="{!c.Shipcmp}" iconName="utility:cart"/> 
+                </aura:If>
+            </aura:set>
+            <aura:set attribute="title">
+                <aura:If isTrue="{!v.parentcmp}">
+                    <h1 class="title"><span>FEATURED PRODUCTS</span> | TOP SELLERS</h1>
+                    <hr class="title-hr"/>
+                </aura:If>
+            </aura:set>
+            <div class="slds-box1">
+                <aura:if isTrue="{!v.closeNotification}">
+                    <section class="slds-notification" style="width:99%;margin:1% auto;">
+                        <div class="slds-notification__body" id="dialog-body-id-42">
+                            <div class="slds-notification__target slds-media" href="javascript:void(0);">
+                                <lightning:icon iconName="utility:info_alt"  class="slds-media__figure"  alternativeText="Connected" title="medium (default)" />
+                                <div class="slds-media__body">
+                                    <h2 class="slds-text-heading_small1 slds-m-bottom_xx-small" style="font-size:14px;"><b>Sigma stores offers a wide range of value added business and technical components that you can pick and choose for your needs on the salesforce platform.<br/>Each of the components will work seamlessly with Sales Cloud, Service Cloud, Marketing cloud and Manufacturing cloud.
+                                       You just need to add interested products to CART and submit your request. No payments or commitment is needed.
+                                        </b>
+                                    </h2>
+                                </div>
+                            </div>
+                            <lightning:buttonIcon onclick="{!c.closeNotification}" class="slds-button slds-button_icon slds-button_icon-container slds-notification__close"  iconName="utility:close" variant="bare" alternativeText="Settings" iconClass="dark" title="Settings" />
+                            
+                        </div>
+                    </section>
+                </aura:if>
+                <div class="slds-grid_vertical-align-end">                        
+                    <div class="products-grid slds-grid slds-wrap">
+                        <aura:iteration items="{!v.completeWrap.productList}" var="tempValue" indexVar="key">
+                            <div class="slds-col slds-col-block slds-size_1-of-4 slds-text-align_center slds-m-bottom_medium">
+                                <div class="product-item">                                        
+                                    <div class="item-inner">
+                                        <div class="product-thumbnail">
+                                            <div class="icon-sale-label sale-left">New</div>
+                                            <div class="btn-quickview">
+                                                <a onclick="{!c.quickviewcmp}" name="{!key}">
+                                                    <span><lightning:icon size="x-small" name="sdgh" iconName="utility:preview" alternativeText="View Details" /> View Details</span>
+                                                </a>
+                                            </div> 
+                                        </div>
+                                        <div class="pro-box-info">
+                                            <aura:if isTrue="{!tempValue.ProductImageAvail}">
+                                                <div class="product-item-photo">
+                                                    <img src="{!tempValue.VendorCommURL +'/sfc/servlet.shepherd/version/download/'+tempValue.Attachementsid}" style="block-size: inherit;"/>
+                                                </div>
+                                                <aura:set attribute="else">  
+                                                    <div class="product-item-photo">
+                                                        <!--<a class="product-item-photo no-item-img" style="{!'background:url('+$Resource.NoImageFound+')'}"></a>-->
+                                                        <img src="{!$Resource.NoImageFound}" style="block-size: inherit;"/>
+                                                    </div>
+                                                </aura:set>
+                                            </aura:if>
+                                            
+                                            <div class="slds-p-vertical_x-small">
+                                                <hr style="margin:8px;"/>
+                                                <p class="slds-truncate"><b>{!tempValue.Name}</b></p>
+                                                <p class="price slds-truncate" >Price : <lightning:formattedNumber value="{!tempValue.ProductPrice}" style="currency" currencyCode="USD" currencyDisplayAs="code"/> /User/Month</p>
+                                                <p>
+                                                    <lightning:input variant="label-hidden" class="slds-size_1-of-2 hide-label input-qty"  type="number" value="{!tempValue.quantity}" placeholder="No.of Users" name="{!key}" id="Quant"/>
+                                                </p>
+                                            </div>
+                                            <button class="slds-button slds-button_destructive slds-button_balck" data-record="{!key}" onclick="{!c.saveproddata}">
+                                                <lightning:icon iconName="utility:cart" alternativeText="Approved" variant="inverse" size="small" class="add-cart"/>ADD TO CART</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                    </div>
+                </div>
+            </div>
+        </lightning:card>
+    </aura:If>
+    
+    
+    <aura:If isTrue="{!v.isShipcmp}">
+        <c:ViewCart SelectedRetailerName="{!v.SelectedRetailer}" SelectedRetailer="{!v.SelectedRetailercode}" />
+    </aura:If>
+    <aura:If isTrue="{!v.quickview}">
+        <c:QuickviewProduct recordId="{!v.recordId}" completeWrap="{!v.completeWrap.productList}" quickviewprod="{!v.quickview}" quickviewedProduct="{!v.quickviewedProduct}" onselectcustomeid="{!v.onselectcustomeid}"/>    
+    </aura:If>  
+</aura:component>

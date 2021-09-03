@@ -1,0 +1,54 @@
+<aura:component controller="InventoryClass"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	  <aura:attribute name="ILList" type="Inventory_Location__c"/>
+    <aura:attribute name="serialCount" type="Integer"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="LightView" type="boolean" default="false"/>
+    <aura:attribute name="IsCommunityUser" type="boolean" default="false"/>
+    <tr>
+        <td >
+            <div class="slds-truncate" title="">{!v.serialCount}</div>
+        </td>
+       
+        <aura:if isTrue="{!v.LightView}">
+            <th scope="row">
+                <span> 
+                    <div class="slds-truncate" title="ILList"><a style="{!v.IsCommunityUser ? 'pointer-events: none;' : ''}" href="{!'/one/one.app?#/sObject/'+ v.ILList.Id + '/view'}" onclick="{!c.openRecords}">{!v.ILList.Name}</a></div>
+                </span>
+            </th>
+            <aura:set attribute="else">
+                <th scope="row">
+                    <span> 
+                        <div class="slds-truncate" title="ILList"><a style="{!v.IsCommunityUser ? 'pointer-events: none;' : ''}" href="{!'/'+v.ILList.Id}"  onclick="{!c.openRecords}">{!v.ILList.Name}</a></div>
+                    </span>
+                </th>                   
+            </aura:set>
+        </aura:if>        
+        <td>
+            <div class="slds-truncate" title="">{!v.ILList.sigmaerpdev2__Location__r.Name}</div>
+        </td>
+        
+        <!-- <td  class="slds-text-align_right">
+            <div class="slds-dropdown-trigger slds-dropdown-trigger_click" aura:id="dropdownContent">
+                <button class="slds-button slds-button_icon slds-button_icon-border-filled slds-button_icon-x-small" title="Show More" aura:id="dropdown" onclick="{!c.dropdown}">
+                    <lightning:icon iconName="utility:down" size="x-small" alternativeText="section" />
+                    <span class="slds-assistive-text">Show More</span>
+                </button>
+                
+                <div class="slds-dropdown slds-dropdown_right">
+                    <ul class="slds-dropdown__list" role="menu">                    
+                        <li class="slds-dropdown__item" role="presentation">
+                            <a href="javascript:void(0);" role="menuitem" tabindex="0" onclick="{!c.DeleteRecord}">
+                                <span class="slds-truncate" title="Delete Record">Delete</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+            </div>
+        </td> -->
+        
+    </tr>
+    
+    {!V.body}
+    
+</aura:component>

@@ -1,0 +1,52 @@
+<aura:component controller="ClonePOController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:registerEvent name="UpdatePOLineItem" type="c:UpdatePOLineItem"/>
+    <aura:attribute name="productname" type="Purchase_Order_Product__c" default="{ 'sobjectType':'Purchase_Order_Product__c' }"/>
+    <aura:attribute name="popDetails" type="Purchase_Order_Product__c" default="{ 'sobjectType':'Purchase_Order_Product__c' }"/>
+    <aura:attribute name="PurchaseOrderData" type="Purchase_Order__c" default="{ 'sobjectType':'Purchase_Order__c' }"/>
+    <aura:attribute name="objInfo" type="Purchase_Order_Product__c" default="{sobjectType : 'Purchase_Order_Product__c'}" />
+    <aura:attribute name="popid" type="string" />
+    <aura:attribute name="popup" type="boolean"/>
+    <aura:attribute name="podetails" type="boolean"/>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Edit PO line items</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size--1-of-2">
+                        <div onkeyup="{! c.handleKeyUp }">
+                            <c:MycustomlookUp  objectAPIName="Product2" label="Product" IconName="standard:contact" recordID="{!v.popDetails.sigmaerpdev2__Product__c}" recordName="{!v.popDetails.sigmaerpdev2__Product__r.Name}"/>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size--1-of-2">
+                        <lightning:input name="input2" value="{!v.popDetails.sigmaerpdev2__Quantity__c}" onchange="{!c.validateQuantity}" label="Quantity" />
+                    </div>
+                    <div class="slds-col slds-size--1-of-2">
+                        <lightning:input name="input3" value="{!v.popDetails.sigmaerpdev2__Discount__c}" label="Discount(%)" onchange="{!c.validateQuantity}" />
+                    </div>
+                    <div class="slds-col slds-size--1-of-2">
+                        <lightning:input name="input4" readonly="true" value="{!v.popDetails.sigmaerpdev2__Total_Buying_Price__c}" label="Buying Price" />
+                    </div>
+                    <div class="slds-col slds-size--1-of-2">
+                        <lightning:input name="input5" value="{!v.popDetails.sigmaerpdev2__Expected_Delivery_Date__c}" label="Expected Delivery Date" type="date"/>
+                    </div>
+                    
+                    <!--<lightning:input name="input6" value="{!v.popDetails.sigmaerpdev__Status__c}" label="Status" type="picklist"/>-->
+                    <div class="slds-col slds-size--1-of-2">
+                        <ui:inputSelect  aura:id="statuspop" value="{!v.popDetails.sigmaerpdev2__Status__c}" label="Status"   change="{!c.onPicklistChange}"/>
+                    </div>
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                <button class="slds-button slds-button_brand" onclick="{!c.update}">Update</button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

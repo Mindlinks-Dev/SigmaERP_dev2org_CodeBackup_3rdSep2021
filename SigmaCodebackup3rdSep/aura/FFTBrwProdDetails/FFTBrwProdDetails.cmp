@@ -1,0 +1,49 @@
+<aura:component controller="FFTBCtrl">
+    <aura:attribute name="rowDetails"  type="object" />    
+    <td style="width:8%;text-align:center;">
+    	{!v.rowDetails.sigmaerpdev2__Brewery_Name__c} 
+    </td>
+    <td style="width:6%;text-align:center;">
+    	{!v.rowDetails.sigmaerpdev2__Registration_Status__c}
+    </td>
+    <!--<td style="width:4%;text-align:center;">
+    	{!v.rowDetails.sigmaerpdev2__Currency_code__c}
+    </td>-->
+    <td style="width:4%;text-align:center;">
+    	{!v.rowDetails.sigmaerpdev2__Date_of_Registration__c}
+    </td>
+    <!--<td style="width:3%;text-align:center;">  
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Commision_Fees__c != null}">
+            {!v.rowDetails.sigmaerpdev2__Commision_Fees__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td>-->
+    <td style="width:8%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Email__c != null}">
+            {!v.rowDetails.sigmaerpdev2__Email__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td>
+    <td style="width:4%;text-align:center;">
+        <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Contact_Number__c != null}">
+            {!v.rowDetails.sigmaerpdev2__Contact_Number__c}
+            <aura:set attribute="else">
+            	NA
+            </aura:set>
+        </aura:if>
+    </td>
+    <td data-label="Action" style="width:2%;padding-left:40px;">                
+        <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right"  onselect="{!c.handleMenuSelect}">                               
+            <aura:if isTrue="{!v.rowDetails.sigmaerpdev2__Registration_Status__c == 'Active'}">
+            	<lightning:menuItem label="Deactivate" value="Deactivate" iconName="action:deactivate" />  
+                <aura:set attribute = "else">
+                	<lightning:menuItem label="Activate" value="Activate" iconName="action:activate" />  
+                </aura:set>
+            </aura:if>           
+        </lightning:buttonMenu> 
+     </td>
+</aura:component>

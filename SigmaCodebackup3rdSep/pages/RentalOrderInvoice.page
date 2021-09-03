@@ -1,0 +1,155 @@
+<apex:page StandardController="Sigma_Order__c"  extensions="GenerateInvoice"  renderAs="Pdf" applyHtmlTag="false"  showHeader="false" cache="true" action="{!getOrderData}"
+           readOnly="true">
+  
+    <apex:includeScript value="{!$Resource.jquery_min_JS}"/>
+   
+      <apex:includeScript value="{!$Resource.ajaxmoment}"/> 
+    
+    <script src="/soap/ajax/34.0/connection.js" type="text/javascript"></script>
+    <script src="/soap/ajax/34.0/apex.js" type="text/javascript"></script>    
+    
+    <script  type="text/javascript">
+    alert('result');
+    $(document).ready(function() { 
+        alert('result1');
+        sforce.connection.sessionId = '{!$Api.Session_ID}'; 
+        var SOObj = new sforce.SObject("sigmaerpdev2__Sigma_Order__c");
+        
+        SOObj= [select id ,sigmaerpdev2__AccountId__c,sigmaerpdev2__Delivary_Date__c,sigmaerpdev2__Discount__c,sigmaerpdev2__Discount_Amount__c,sigmaerpdev2__Net_Amount__c,sigmaerpdev2__Net_Quantity__c,sigmaerpdev2__Order_Number__c,sigmaerpdev2__Orders_Status__c,sigmaerpdev2__Quantity__c,sigmaerpdev2__TotalAmount__c,sigmaerpdev2__Date__c from sigmaerpdev2__Sigma_Order__c where Id =: objId];
+       
+        var INObj = new sforce.SObject("Invoice__c");
+       
+        INObj.sigmaerpdev2__SO__c = SOObj.id;
+        result = sforce.connection.insert([INObj]); 
+        alert('result'+result);
+    }
+                      </script>
+    <div style="page-break-after:auto;">
+        <apex:form id="Form">
+            <apex:pageBlock id="invoiceBlock">
+                <center><h3 style="align:center;">Rental Order</h3></center>
+                <table id="invoiceBlock">
+                    <tr>
+                        <td>
+                            
+                            <apex:image url="{!URLFOR(defaultparam.Logo__c)}" style="width:80px;height:80px;border-radius: 50%;" />
+                        </td>
+                        <td style="padding-left: 360px;">
+                            <p>Company Name:{!HTMLENCODE(defaultparam.sigmaerpdev2__Company_Name__c)}<br/>
+                                Phone       :{!HTMLENCODE(defaultparam.sigmaerpdev2__Company_Phone__c)}<br />
+                                Email       :{!HTMLENCODE(defaultparam.sigmaerpdev2__Company_Email__c)}<br/>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <h1>Order Number :{!orderData[0].Name}</h1>
+                ------------------------------------------------------------------------------------------------------------------------------------
+                <p><b>Customer Details</b></p>
+                <table id="detail">
+                    <tr>
+                        <td>
+                            Customer name: {!HTMLENCODE(TEXT(orderData[0].AccountId__r.Name))}<br/>
+                            Customer Email: {!HTMLENCODE(TEXT(orderData[0].AccountId__r.sigmaerpdev2__Email__c))}<br/>
+                            Customer Address: <br/>
+                            {!HTMLENCODE(TEXT(orderData[0].AccountId__r.sigmaerpdev2__Address__c))}<br/>
+                            {!HTMLENCODE(TEXT(orderData[0].AccountId__r.sigmaerpdev2__City__c))}<br/>
+                            {!HTMLENCODE(TEXT(orderData[0].AccountId__r.sigmaerpdev2__State__c))}<br/>
+                            {!HTMLENCODE(TEXT(orderData[0].AccountId__r.sigmaerpdev2__Country__c))}<br/>
+                            {!HTMLENCODE(TEXT(orderData[0].AccountId__r.sigmaerpdev2__Zip__c))}
+                        </td>
+                        <td style="padding-left:200px;"></td>
+                    </tr>
+                </table>
+                ------------------------------------------------------------------------------------------------------------------------------------
+                <p><b>Order Details</b></p>
+                
+                <div style="text-align:center">
+                    <apex:pageBlockTable value="{!orderData}" var="SO" border="1">
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Reference ID</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(SO.Name)}" escape="false" /><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Tax Amount</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(TEXT(SO.Tax_Amount__c))}" escape="false"/><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Total Amount</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(TEXT(SO.TotalAmount__c))}" escape="false" /><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Order Created Type</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(SO.Order_Created_Via__c)}" escape="false" /><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Status</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(SO.Orders_Status__c)}" escape="false"/><br/>
+                        </apex:column>
+                        <br/>
+                    </apex:pageBlockTable><br /> 
+                </div>
+                -----------------------------------------------------------------------------------------------------------------------------------------
+                <p><b>Order Line Details</b></p>
+                <div style="text-align:center">
+                    <apex:pageBlockTable value="{!productOrderData}" var="POPB" border="1">
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Reference ID</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(POPB.Name)}" escape="false"/><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Product</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(POPB.sigmaerpdev2__Product__r.Name)}" escape="false"/><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Quantity</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(TEXT(POPB.Quantity__c))}" escape="false" /><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Rented days</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(TEXT(POPB.Total_Rental_Days__c))}" escape="false" /><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Price/Interval</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(TEXT(POPB.Amount_Per_Interval__c))}" escape="false"/><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Billing Interval</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(POPB.Billing_Interval__c)}" escape="false"/><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Total Price</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(TEXT(POPB.Amount_without_discount__c))}" /><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;">
+                            <apex:facet name="header">Discount(%)</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(TEXT(POPB.Discounts__c))}" /><br/>
+                        </apex:column>
+                        
+                        <apex:column style="width:10%;" >
+                            <apex:facet name="header">Subtotal</apex:facet>
+                            <apex:outputText value="{!HTMLENCODE(TEXT(POPB.Total_Price__c))}"/><br/>
+                        </apex:column>
+                        <br/>
+                    </apex:pageBlockTable>
+                </div>
+                <br />
+                <br />
+                <p><b>For any clarification please e-mail us: hr@mindlinkssolution.com.</b></p>
+                <br /><br /><br />
+            </apex:pageBlock>
+        </apex:form>
+    </div>
+</apex:page>

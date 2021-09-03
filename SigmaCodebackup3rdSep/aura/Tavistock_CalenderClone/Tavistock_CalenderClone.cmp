@@ -1,0 +1,117 @@
+<aura:component Controller="AppointmentHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="items" type="Object" access="PRIVATE"/>
+    <aura:attribute name="selected" type="String" default=""/>
+    <aura:attribute name="gotoRegistrationPage" type="boolean" default="false"/>
+    <aura:attribute name="showAppointmentpage" type="boolean" default="true"/>
+    <aura:attribute name="hideback" type="boolean" default="false" />
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>
+    <aura:attribute name="MainWrapper" type="object"/>
+    <aura:attribute name="SelectedAppointment" type="object"/>
+    <aura:attribute name="LogoutURL" type="String"/>
+    <aura:attribute name="SelectedDate" type="Date"/>
+    <aura:attribute name="SelectedDateTime1" type="String"/>
+    <aura:attribute name="SelectedDateTime2" type="String"/>
+    
+    <aura:handler event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:handler name="AppointmentEvent" event="c:AppointmentEvent" action="{!c.handleSelectedAppointment}"/>
+    <lightning:spinner aura:id="mySpinner"  size="medium" />
+    
+    
+    <aura:if isTrue="{!v.showAppointmentpage}">
+        <lightning:card title="Calendar">
+            <aura:set attribute="title">
+                <lightning:icon iconName="standard:event" size="small" class="slds-m-right_x-small"/> Available slots
+            </aura:set>
+            
+            <div class="slds-grid slds-m-around_medium slds-box">
+                <div class="slds-col slds-size_1-of-8">
+                    <p><b>Duration</b></p>
+                    <p>{!v.MainWrapper.duration}</p>
+                </div>
+                <div class="slds-col slds-size_1-of-8">
+                    <p><b>Deposit</b></p>
+                    <p><lightning:formattedNumber value="{!v.MainWrapper.deposit}"
+                    style="currency"
+                    currencyCode="GBP"
+                    minimumFractionDigits="2"/></p>
+                </div>
+                <div class="slds-col slds-size_1-of-8">
+                    <p><b>Date</b></p>
+                    <p>{!v.SelectedDate}</p>
+                </div>         
+                <div class="slds-col slds-size_2-of-8">
+                    <p><b>Time</b></p>
+                    <p>{! v.SelectedDateTime1 } &nbsp;&nbsp;  {! v.SelectedDateTime2 }</p>
+                </div>
+            </div>
+            
+            
+            
+            <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="AppointmentDate">select</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="AppointmentDate"> Appointment Date</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="Period">Period</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="Time">Time</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="Duration">Duration</div></strong>
+                        </th>
+                        <th scope="col">
+                            <strong><div class="slds-truncate" title="Duration Interval">Duration Interval</div></strong>
+                        </th>
+                    </tr> 
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.MainWrapper.AppointmentList}" var="InnerWrap" indexVar="index">
+                        <c:IndAppointment Innerwrapper="{!InnerWrap}" itemIndex="{!index}"/>                                      
+                    </aura:iteration>
+                </tbody>
+            </table> 
+            
+            <footer class="slds-card__footer footer">
+                <div class="slds-text-align_center">
+                    <c:PaginationComponentForInventory page="{!v.MainWrapper.page}" pages="{!v.MainWrapper.pageSize}" total="{!v.MainWrapper.total}"/>
+                    
+                </div>
+            </footer>
+            
+            <div class="slds-no-flex slds-m-left_medium slds-m-right_medium slds-text-align_right">
+                
+                <lightning:button variant="brand" iconPosition="right" iconName="utility:forward" class="slds-button slds-button_brand" onclick="{!c.gotoRegistrationPage}">Continue</lightning:button>
+            </div>
+            
+            <p class="slds-text-align_center slds-p-around_large slds-text-heading_small">If you can't find an appointment, contact us at <a>appointments@tavistockrelationships.org</a> and we maybe able to offer an alternative</p>
+        </lightning:card>
+        
+    </aura:if>  
+    
+    
+    
+    <!--<p class="slds-text-align_right slds-p-around_large"><a href="/tavistockbooking/s/registration-clone" class="slds-button slds-button_brand">Continue</a></p>-->
+    
+    
+    
+    <aura:if isTrue="{!v.gotoRegistrationPage}">
+        <c:Tavistock_RegistrationClone hideback="{!v.hideback}" LogoutURL="{!v.LogoutURL}" SelectedAppointment="{!v.SelectedAppointment}" Amount="{!v.MainWrapper.deposit}"/>
+        <aura:if isTrue="{!v.hideback==false}">
+            <div class="slds-no-flex slds-m-left_medium slds-m-top_medium slds-m-bottom_medium">
+                
+                <lightning:button variant="brand" iconName="utility:back" label="Back"  class="slds-button slds-button_brand" onclick="{!c.backToAppointmentPage}">Back</lightning:button>
+            </div>
+        </aura:if> 
+    </aura:if>    
+    
+    
+</aura:component>

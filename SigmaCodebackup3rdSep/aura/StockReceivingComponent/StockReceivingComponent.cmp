@@ -1,0 +1,288 @@
+<aura:component Controller="NewStockreceiving" implements="force:appHostable,forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId" access="global" >   
+    
+    <aura:attribute name="stockReceive" type="Stock_In__c" default="{ 'sobjectType':'Stock_In__c',
+                                                                                 'sigmaerpdev2__Vendor__c':'',
+                                                                                 'sigmaerpdev2__Location__c':'',
+                                                                                 'sigmaerpdev2__Delivery_Person__c':''}"/>
+    <aura:attribute name="StockReceivingWrap" type="List" /><!--default="[{'transID':'','transName':'','TransLineItems':[]}]"/>-->
+    <aura:attribute type="boolean" name="openModal" default="false"/>
+    <aura:attribute type="Map[]" name="serials"/>
+    <aura:attribute type="String" name="selectedProdName"/>
+    <aura:attribute type="Boolean" name="isShowDispatchedQuantity" default ='false' />
+    
+    
+    <aura:attribute type="Map" name="eventData"/>
+    <aura:attribute name="recordId" type="String" /> 
+    <aura:attribute name="recordName"     type="String" 
+                    description="The current record Id to display" />
+    <aura:attribute name="recordName1"    type="String"  description="The current record Id to display" /> 
+    <aura:attribute name="recordName2"    type="String"  description="The current record Id to display" /> 
+    <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="configValues" type="map" default="" />
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/> <!-- to handle lookups-->  
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>
+    <aura:handler name="POevent" event="c:POevent" action="{!c.handleSRComponentEvent}"/>
+    <!--To show error-->
+    <aura:attribute name="isError" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+    <aura:attribute type="Boolean" name="disableSave" default="false"/>
+    
+    <aura:attribute name="scannedProductBarCodeValue" type="string"/>
+    <aura:attribute name="scannedProductName" type="string"/>
+    <aura:handler name="change" value="{!v.scannedProductBarCodeValue}" action="{!c.barCodeClear}" />
+    <aura:attribute name="productFoundFlag" type="boolean" default="false"/>
+    <aura:attribute name="vendorId" type="String" /> 
+	<aura:attribute name="contactId" type="String" />
+	<aura:attribute name="locationId" type="String" />
+	  <aura:attribute name="vendorName" type="String" /> 
+	<aura:attribute name="contactName" type="String" />
+	<aura:attribute name="locationName" type="String" />
+	<aura:handler name="change" value="{!v.vendorId}"  action="{!c.ChangeVendorId}"/>
+    
+	<aura:handler name="change" value="{!v.contactId}" action="{!c.ChangeContactId}"/>
+    
+	<aura:handler name="change" value="{!v.locationId}" action="{!c.ChangeLocationId}"/>
+    
+	
+	
+    <lightning:card title="Stock Receiving" iconName="standard:account">
+        <div id='HeaderErrorDiv' class="{!v.isError ? '':'slds-hide'}">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                <span class="slds-assistive-text">error</span>
+                <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+                    <lightning:icon iconName="utility:error" size="x-small" alternativeText="section" />
+                </span>
+                <h1>{!v.errorMessage}</h1>
+                <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="{!c.closeErrorMsg}">
+                    <lightning:icon iconName="action:close" size="x-small" alternativeText="section" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+        </div>
+        <aura:set attribute="footer">
+            <lightning:button class="slds-float_left buttonOverlay" variant="brand" label="Add PO" onclick="{!c.addSRP}"/>
+            <center>
+               <!--<lightning:button class="buttonOverlay" variant="brand" label="Save" onclick="{!c.saveData}" disabled="{!v.disableSave}" />-->
+               <aura:if isTrue="{!or(v.recordId == '', v.recordId == undefined)}">
+                    <lightning:button class="buttonOverlay" variant="brand" label="Save" onclick="{!c.saveData}" disabled="{!v.disableSave}" />
+                    <aura:set attribute="else">
+                    	<lightning:button class="buttonOverlay" variant="brand" label="Update" onclick="{!c.saveData}" disabled="{!v.disableSave}" />
+                    </aura:set>
+                </aura:if>                
+                <lightning:button class="buttonOverlay" variant="neutral" label="Cancel" type="reset" onclick="{! c.handleCancel }" />
+            </center>
+        </aura:set>
+        <div class="slds-form slds-align_absolute-center slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12" role="list">
+            <div class="slds-grid slds-wrap slds-box paddingAround">
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12"  Id = "VendorID">
+                 <!--   <label class="slds-form-element__label"><span style="color:red">*</span>Vendor</label>
+                    <aura:if isTrue="{!and(empty(v.recordId),empty(v.StockReceivingWrap[0].transID))}">
+                        
+                        <sigmaerpdev:LookupSObject aura:id="Vendor" 
+                                                   searchString="{!v.recordName}" 
+                                                   label="Vendor" 
+                                                   SRString="Vendor"
+                                                   pluralLabel="Accounts" 
+                                                   sObjectAPIName="Account" 
+                                                   instanceId="MyVendor"
+                                                   listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                   listIconClass="slds-icon-standard-account" />
+                        <aura:set attribute="else">
+                            <ui:inputText value="{!v.recordName}" disabled="true"/>
+                        </aura:set>
+                    </aura:if> -->
+                     <label class="slds-form-element__label"><span style="color:red">*</span>Vendor </label>
+                   
+                    
+                    <aura:if isTrue="{!and(empty(v.recordId),empty(v.StockReceivingWrap[0].transID))}">
+                        <c:customLookup recordID="{!v.vendorId}" recordName="{!v.vendorName}" whereCondition="{!'AND sigmaerpdev2__Active__c=\'Yes\' AND recordType.Name=\'Vendor\' '}"  objectAPIName="Account" IconName="standard:account" label="" isSigmaOrder= 'true'/>
+                        <aura:set attribute="else">
+                            
+                            <aura:if isTrue="{!(empty(v.vendorName))}">
+                                 <ui:inputText value="{!v.stockReceive.sigmaerpdev2__Vendor__r.Name}" disabled="true"/>
+                                <aura:set attribute="else">
+                                      <ui:inputText value="{!v.vendorName}" disabled="true"/>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </aura:set>
+                    </aura:if>
+                </div>  
+                
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12" Id = "ContactID">
+                    <label class="slds-form-element__label">Contact</label>
+                <!--<sigmaerpdev:LookupSObject aura:id="Delivery_Person" 
+                                     searchString="{!v.recordName1}" 
+                                     SRString="{!v.recordName}"
+                                     label="Account" 
+                                     pluralLabel="Contacts" 
+                                     sObjectAPIName="Contact" 
+                                     instanceId="MyContact"
+                                     listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                     listIconClass="slds-icon-standard-account"
+                                     />  -->
+                    
+                     <c:customLookup recordID="{!v.contactId}" recordName="{!v.contactName}" whereCondition="{!'AND AccountId=\''+v.vendorId+'\'' }" objectAPIName="Contact" IconName="standard:contact" label="" isSigmaOrder= 'true'/>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12" Id = "LocId">
+                <!--    <label class="slds-form-element__label"><span style="color:red">*</span>Receiving Location</label>
+                    <sigmaerpdev:LookupSObject aura:id="ReceivingLocation" 
+                                               searchString="{!v.recordName2}"
+                                               label="Account"
+                                               SRString="Receiving Location"
+                                               pluralLabel="Accounts" 
+                                               sObjectAPIName="Account" 
+                                               instanceId="MyAccount2"
+                                               listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                               listIconClass="slds-icon-standard-account"
+                                               /> -->
+											   
+				<label class="slds-form-element__label"><span style="color:red">*</span>Location</label>
+                 <!--   <aura:if isTrue="{!and(empty(v.recordId),empty(v.StockReceivingWrap[0].transID))}">
+                    	<sigmaerpdev:LookupSObject aura:id="ActualLocation" 
+                                                        searchString="{!v.recordName2}"
+                                                        SRString="Location"
+                                                        label="Account" 
+														pluralLabel="Accounts" 
+                                                        sObjectAPIName="Account" 
+														instanceId="MyAccount2"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                        listIconClass="slds-icon-standard-account" /> 
+              		 <aura:set attribute="else">
+                         <ui:inputText value="{!v.recordName2}" disabled="true"/>
+                     </aura:set>
+                    </aura:if>-->
+                    
+                    <aura:if isTrue="{!and(empty(v.recordId),empty(v.StockReceivingWrap[0].transID))}">
+                        <c:customLookup recordID="{!v.locationId}" recordName="{!v.locationName}" whereCondition="{!'AND recordType.Name=\'Location\' AND ID in (select sigmaerpdev2__Location__c from sigmaerpdev2__Inventory_Location__c where sigmaerpdev2__Location_Type__c=\'Warehouse\')'}" objectAPIName="Account" IconName="standard:account" label="" isSigmaOrder= 'true'/>
+                        <aura:set attribute="else">
+                             <aura:if isTrue="{!(empty(v.locationName))}">
+                                 <ui:inputText value="{!v.stockReceive.sigmaerpdev2__Location__r.Name}" disabled="true"/>
+                                <aura:set attribute="else">
+                                      <ui:inputText value="{!v.locationName}" disabled="true"/>
+                                </aura:set>
+                            </aura:if>
+                            <!--ui:inputText value="{!v.stockReceive.sigmaerpdev2__Location__r.Name}" disabled="true"/-->
+                        </aura:set>
+                    </aura:if>
+
+                  <!--    <stapp:customLookup recordID="{!v.stockReceive.stapp__Receiving_Sites__c}" recordName="{!v.stockReceive.stapp__Receiving_Sites__r.Name}" whereCondition="{!'AND recordType.Name=\'Warehouse\' AND ID in (select stapp__Locations__c from stapp__Inventory_Location__c where stapp__Company__c=\''+v.stockReceive.stapp__Company__c+'\')'}" objectAPIName="stapp__Location__c" IconName="standard:account" label=""/>-->
+                </div>
+                
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12" Id = "truckN">
+                    <lightning:input label="Truck number" value="{!v.stockReceive.sigmaerpdev2__Truck_Number__c}" />
+                    
+                    
+                    
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12"  Id = "DateTimeID" >
+                    <lightning:input type="datetime" name="input1" label="Received DateTime"  required="true"  class="field" value="{!v.stockReceive.sigmaerpdev2__Received_Date_Time__c}" displayDatePicker="true"  disabled="{!!empty(v.recordId)}"/>
+                </div>
+                <!--div dir="rtl">
+                    <div class="slds-form-element">
+                        <label class="slds-checkbox_toggle slds-grid">
+                            <b>ShowDispatchedQuantity</b>
+                            <span class="slds-form-element__label slds-m-bottom_none"></span>
+                            <input type="checkbox" name="checkbox-toggle-18" value="checkbox-toggle-18" aria-describedby="checkbox-toggle-18" checked="" onclick="{!c.showDispoatchQty}" />
+                            <span id="checkbox-toggle-18" class="slds-checkbox_faux_container" aria-live="assertive">
+                                <span class="slds-checkbox_faux"></span>
+                                <span class="slds-checkbox_on"></span>
+                                <span class="slds-checkbox_off"></span>
+                            </span>
+                        </label>
+                    </div>
+                </div-->
+                
+            </div>
+            
+        </div>
+        <div>
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title">
+                    <button class="slds-button slds-section__title-action">
+                        <span class="slds-truncate" title="Stock Receiving Items">Stock Receiving Items</span>
+                    </button>
+                </h3>
+            </div>
+         <!--   <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="{'slds-col slds-size_1-of-3 slds-form-element_horizontal':'slds-hide'} slds-form-element_horizontal">
+                        <lightning:input class=""
+                                         aura:id="basketScanedCode"
+                                         name="enter-search"
+                                         type="search"
+                                         value="{!v.scannedProductBarCodeValue}"
+                                         label="Product Bar Code"
+                                         error=""
+                                         onchange="{!c.afterProductScaned}"
+                                         />
+                        <div aura:id="productNameDispaly" class="">
+                            <strong class="{!v.productFoundFlag? '':''}" style="{!v.productFoundFlag? v.scannedProductName!='Not Found'?'-webkit-text-stroke-width: medium;color: green;':'-webkit-text-stroke-width: medium;color: red;':'color: white'}">{!v.scannedProductName}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+            <div class="slds">
+                <aura:iteration items="{!v.StockReceivingWrap}" var="item" indexVar="i">
+                    <c:StockReceivingLineItem recId="{!v.recordId}" isShowDispatchedQuantity="{!v.isShowDispatchedQuantity}" transactionID="{#item.transID}"  transactionName="{#item.transName}" StockRecievingProdList="{!item.TransLineItems}" isVerified="{!item.isVerified}" vendor="{!v.stockReceive.sigmaerpdev2__Vendor__c}"   indexNum="{!i}" locationId="{!v.stockReceive.sigmaerpdev2__Location__c}" StockReceivingWrap="{!v.StockReceivingWrap}" />
+                </aura:iteration>
+            </div>
+            
+        </div> 
+        
+    </lightning:card>
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner class="slds-is-fixed" alternativeText="Loading" size="large" />
+    </div>
+    <aura:if isTrue="{!v.openModal}">
+        <div class="StockReceivingModal">
+            <section role="dialog" class="slds-modal slds-fade-in-open" style="top:50px;">
+                <div class="slds-modal__container" style="">
+                    <header class="slds-modal__header">
+                        <button onclick="{!c.closeModal}" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <lightning:icon iconName="utility:close" size="small" alternativeText="Close"/>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Serial Number</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="padding-top: 2px;border:1px solid rgb(221, 219, 218)">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate slds-align_absolute-center" title="Serial Number">Serial Number</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.serials}" var="num" indexVar="i">
+                                    <tr>
+                                        <th>
+                                            {!i+1}
+                                        </th>
+                                        <th scope="row" >
+                                            <ui:inputText value="{!num.sigmaerpdev2__Serial_Number__c}"/>
+                                        </th>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <!--<button type="button" class="slds-float_left slds-button slds-button_neutral" onclick="{!c.autoSerial}">Auto Serial</button>-->
+                        <button type="button" class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+                        <button type="button" class="slds-button slds-button_brand" onclick="{!c.addSerialNumber}">Add</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>       
+    
+</aura:component>

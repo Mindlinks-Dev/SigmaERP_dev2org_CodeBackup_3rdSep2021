@@ -1,0 +1,10 @@
+<aura:component >    
+	<aura:attribute name="innerList1" type="List" />
+    <table width="50%" border="0" class="slds-table slds-table_striped">
+        <aura:iteration items="{!v.innerList1.locList}" var="locListInner">
+            <tr>
+                <c:DisplayLocations locationId="{!locListInner.locId}" innerList="{!locListInner}" />   
+            </tr>
+        </aura:iteration>
+    </table>
+</aura:component>

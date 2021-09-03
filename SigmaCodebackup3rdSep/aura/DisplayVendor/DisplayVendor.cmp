@@ -1,0 +1,82 @@
+<aura:component controller="GenerateMultiplePO" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.loadData}"/>
+    
+    <!--Declare Attributes-->  
+    <aura:attribute name="wrapperList" type="object"/>
+    <aura:attribute name="selectedRecordId" type="String" />
+    <aura:attribute name="SelectedProductId" type="Id" />
+    <aura:attribute name="VendorName" type="String" />
+    <aura:attribute name="VendorLocationName" type="String" />
+    <aura:attribute name="BuyingPrice" type="Decimal" />
+    <aura:attribute name="CurrentStock" type="Integer" />
+    <aura:attribute name="vendorEmail" type="String" />
+    <aura:attribute name="VendorLocationId" type="String" />
+    
+    <aura:registerEvent name="SendDataEvt" type="c:SendDataEvt"/>
+    <div class="slds-modal__content slds-p-around--large" style="height:500px;border-left:1.2px solid black;border-right:1.2px solid black;">
+        
+        <div class="slds-truncate" title="Product Name:">
+            <h1><b> Product Name </b> : {!v.wrapperList.ProductName} &nbsp; <br/><b>Product Code&nbsp; </b> : {!v.wrapperList.ProductCode}</h1>  
+            <!-- Product Name: </h1> 
+               {!v.wrapperList.ProductName} &nbsp;
+            <h1 class="slds-page-header__title">  
+          Product Code: </h1>
+             {!v.wrapperList.ProductCode} <br/>-->
+        </div>
+        <Br/>
+        <!--https://www.lightningdesignsystem.com/components/data-tables/-->
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_fixed-layout">
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th  scope="col" style="width: 80px;">
+                        <div class="slds-truncate" title="Select">Select</div>
+                    </th>
+                    <th  scope="col">
+                        <div class="slds-truncate" title="Vendor Name">Vendor Name</div>
+                    </th>
+                    <th  scope="col">
+                        <div class="slds-truncate" title="Vendor Code">Vendor Code</div>
+                    </th>
+                    <th  scope="col">
+                        <div class="slds-truncate" title="Location">Location</div>
+                    </th>
+                    <th  scope="col">
+                        <div class="slds-truncate" title="Current Stock">Current Stock</div>
+                    </th>
+                    <th  scope="col">
+                        <div class="slds-truncate" title="Price">Price</div>
+                    </th>
+                </tr>
+            </thead>
+            <!--table body start, 
+        Iterate contact list as a <tr>
+        -->
+            <tbody>
+                <aura:iteration items="{!v.wrapperList.lstVendorProd}" var="ven" indexVar="index">
+                    <tr>
+                        <td  scope="row">
+                            <!-- <ui:inputCheckbox aura:id="checkbox"  label="" text="{!ven.Id}" change="{!c.onCheck}"/>-->
+                            <ui:inputRadio  name="checkThis" class="slds-radio"  labelClass="{!ven.sigmaerpdev2__Vendor_Location__r.Name}" text="{!ven.sigmaerpdev2__Account_Name__c}" change="{!c.onRadio}"/>
+                        </td>
+                        <td  scope="row">
+                            <div class="slds-truncate" title="{!ven.sigmaerpdev2__Account_Name__r.Name}">{!ven.sigmaerpdev2__Account_Name__r.Name}</div>
+                        </td>
+                        <td scope="row">
+                            <div class="slds-truncate" title="{!ven.sigmaerpdev2__VendorProductCode__c}">{!ven.sigmaerpdev2__VendorProductCode__c}</div>
+                        </td>
+                        <td scope="row">
+                            <div class="slds-truncate" title="{!ven.sigmaerpdev2__Vendor_Location__r.Name}">{!ven.sigmaerpdev2__Vendor_Location__r.Name}</div>
+                        </td>
+                        <td scope="row">
+                            <div class="slds-truncate" title="{!ven.sigmaerpdev2__Current_Stock__c}">{!ven.sigmaerpdev2__Current_Stock__c == '' || ven.sigmaerpdev2__Current_Stock__c == NULL ? 0 : ven.sigmaerpdev2__Current_Stock__c}</div>
+                            <!--<div class="slds-truncate" title="{!ven.sigmaerpdev2__Current_Stock__c}">{!ven.sigmaerpdev2__Current_Stock__c}</div>-->
+                        </td>
+                        <td  scope="row">
+                            <div class="slds-truncate" title="{!ven.sigmaerpdev2__Buying_Price__c}">{!ven.sigmaerpdev2__Buying_Price__c}</div>
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+    </div>
+</aura:component>

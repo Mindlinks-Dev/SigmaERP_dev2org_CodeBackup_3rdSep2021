@@ -1,0 +1,7 @@
+<aura:event type="COMPONENT">
+    <!-- Add aura:attribute tags to define event shape.
+         One sample attribute here. -->
+    <aura:attribute name="poList" type="Purchase_Order_Product__c[]"/>
+    <aura:attribute name="isEdit" type="boolean" default="false"/> 
+    <aura:attribute name="rowIndex" type="Integer"/> 
+</aura:event>

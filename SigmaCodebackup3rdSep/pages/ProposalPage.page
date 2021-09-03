@@ -1,0 +1,767 @@
+<apex:page >
+
+</apex:page>
+<!--<apex:page StandardController="Proposal__c" Extensions="ProposalController" sidebar="false" showHeader="false">
+    
+    <style>
+        td{border:0 !important}
+        .pbTitle h2{font-size:22px !important;color:#1797c0 !important;margin-left:4% !important;}
+        label{color:black;font-size:105% !important;}
+        body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock{background-color:transparent !important;}
+        body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock{border:0 !important;}
+        .apexp .bPageBlock.apexDefaultPageBlock .pbHeader>table{border:0 !important;}
+        body .apexp .bPageBlock.apexDefaultPageBlock .pbHeader{border:0 !important;}
+        .apexp .detailList .list .headerRow th{border:0 !important;}
+        .Custom20Tab .tertiaryPalette, .individualPalette .Custom20Block .tertiaryPalette{background:#1797c0 !important;padding:1% !important;}
+        .homeTab .tertiaryPalette{background:#1797c0 !important;padding:1% !important;}
+        .individualPalette .Custom9Block .tertiaryPalette{background:#1797c0 !important;padding:1% !important;}
+        .input_select{ width: 53%;border-radius: 2px;margin-bottom: 1%;padding: 1%;}
+        .input_text{width:50% !important;border-radius:2px;padding:1%;margin-bottom:1%;}
+        .output_text{display:block !important;margin-top:3px !important;margin-bottom:3px !important;}
+        input{border:1px solid rgb(216, 221, 230) !important;color:#16325c !important;}
+        select{border:1px solid rgb(216, 221, 230) !important;color:#16325c !important;border-radius:4px;padding:1%;margin-bottom:1%;}
+        textarea{border:1px solid rgb(216, 221, 230) !important;color:#16325c !important;}
+        
+        .input_select1{ width: 32%;border-radius: 4px;margin-bottom: 1%;padding: 0.5%;}
+        .input_text1{width:52.4% !important;border-radius:4px;padding:0.5%;margin-bottom:1%;}
+        .input_text2{width:70% !important;border-radius:4px;padding:0.5%;margin-bottom:1%;height:50px;}
+        
+        .input_text_discounts{width:22.4% !important;border-radius:4px;padding:0.5%;margin-bottom:1%;}
+        
+        .button_primary{background:#1797c0 !important;color:white !important;font-size:12px !important;box-shadow:inset 0 1px rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2) !important;padding:4px 12px !important;border:1px solid #1c65b2 !important;font-weight:normal !important;border-radius:50px !important;}
+        
+        .Industry_header{position:relative;top:-2px;}
+        .Industry_td{padding-left:2.4%;}
+        .apexp .bPageBlock .detailList{background:white !important;box-shadow:0 6px 8px 4px rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)!important;padding:0.2% 1.2% !important;}
+        .bg{background:#f4f4f4;}
+        .bg1{background-image: url({!URLFOR($Resource.gee_image,'gee_image/gee_bg4.jpg')}) !important;background-repeat:no-repeat !important;}
+        .ownership{width:98%;margin-left:1%;}
+        .terms{width:98%;margin-left:1%;margin-right:2%;margin-bottom:1.5%;}
+        .notes{width:98%;margin-left:1%;} 
+        .notes_title{color:#1797c0;}
+        .inventory_pricing{width:29.5%;}
+        .chkbox{position:relative;top:-8px;}
+        .line_items{width:98%;margin-left:1%;}
+        h4{font-size:130%;}
+        .product_name{color:#0070d2;font-size:120%;font-weight:bold;}
+        .th{background: #e9e9e9;border-top: 1px solid #d8dde6;border-bottom: 1px solid #d8dde6;padding: 1% 1.2% 1% 0.2%;color:#16325c;width:1%;}
+        .choose_prod_select{margin-left:1% !important;margin-right:1% !important;border-radius:30px !important;padding:0.4% !important;}
+        .btn_edit{background: white !important;color: #0070d2 !important;width: 100%;border: 1px solid #d8dde6 !important;}
+        .btn_delete{width:70%;color: #0070d2 !important;background: white !important;border: 1px solid #d8dde6 !important;}
+        .btn_submit{background: white !important;border-radius:4px !important;cursor:pointer;color: #0070d2 !important;border: 1px solid #d8dde6 !important;padding:7px 10px !important;}
+        .btn_cancel{background: white !important;border-radius:4px !important;cursor:pointer;color: #0070d2 !important;border: 1px solid #d8dde6 !important;padding:7px 10px !important;}
+        
+        .customPopup {
+           background-color: white;           
+            left: 210px;
+            position: fixed;
+            z-index: 100;
+            width: 64%;
+            height: 340px;
+            top: 90px;
+            bottom: 0;
+            border-radius: 4px;
+        }
+        
+        .rowColors {
+        background-color: #f6f6f6;
+        }
+        #tableID { overflow: auto;height: 120px;display: block;width:70%;height:160px;}
+       
+       
+    @media only screen and (max-width: 768px) 
+    {
+    .detailList tr td{display:block !important;width:130% !important;}
+    label{display:block !important;}
+    }
+       
+        
+    </style> 
+    <apex:actionstatus id="statusmenu"> 
+        <apex:facet name="start"> 
+            <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb; height: 100%;opacity:0.65;width:100%;">
+                <div class="waitingHolder" style="top: 890.2px; width: 91px;"> 
+                    <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." />
+                    <span class="waitingDescription">Loading...</span>
+                </div> </div>
+        </apex:facet> 
+    </apex:actionstatus>
+    
+    <div class="bg" id="mainDiv">  
+        
+        <apex:form >
+            <apex:actionFunction action="{!changeDiscountMethods}" name="changeDiscountMethod" rerender="reloadDiscValues,reloadDiscValuesEuro" />
+          
+            <apex:actionFunction name="callSetFocus" action="{!setFocusToError}" rerender="jsPanel" />
+            
+            <apex:pageBlock title="{!headerInfo}">
+                
+                <div class="ownership">
+                    
+                    <apex:pagemessages id="pnlMessages"></apex:pagemessages>
+                    <apex:PageBlockSection columns="" showHeader="true" title="Ownership" id="ownerShip">
+                        <apex:outputPanel title="Campaign Name">
+                            <tr>
+                                <td><apex:outputLabel >Proposal Name :<b style="color:red;">*</b></apex:outputLabel></td>
+                                <td><apex:inputText value="{!Name}" styleClass="input_text"/></td>
+                                <td><apex:outputLabel >Customer :<b style="color:red;">*</b> </apex:outputLabel></td>
+                                <td><apex:inputField value="{!campObject.Client__c}" styleClass="input_text"/></td>
+                            </tr> 
+                            
+                            <tr> 
+                                <td><apex:outputLabel >Agency : </apex:outputLabel></td>
+                                <td><apex:inputField value="{!campObject.Agency__c}" styleClass="input_text"/></td>
+                                <td><apex:outputLabel >Contact : </apex:outputLabel></td>
+                                <td><apex:inputField value="{!campObject.Contact__c}" styleClass="input_text"/></td>
+                            </tr>
+                            
+                            <tr>
+                                <td><apex:outputLabel >Billing Contact :<b style="color:red;">*</b> </apex:outputLabel></td>
+                                <td> <apex:inputField value="{!campObject.Billing_Contact__c}" styleClass="input_text"/></td>
+                                 <td><apex:outputLabel >Status : <b style="color:red;">*</b></apex:outputLabel></td>
+                                <td><apex:inputField value="{!campObject.Status__c}" styleClass="input_text1"/></td>
+                                
+                              
+                            </tr>
+                            
+                            <tr> 
+                                <td><apex:outputLabel >Sales Exec. 1 :<b style="color:red;">*</b> </apex:outputLabel></td>
+                                <td><apex:inputField value="{!campObject.Account_Executive__c}" styleClass="input_text"/></td>
+                                <td><apex:outputLabel >Ownership :<b style="color:red;">*</b></apex:outputLabel></td>
+                                <td><apex:inputText value="{!Ownership}"  styleClass="input_text"/>% </td>
+                            </tr>  
+                            
+                            <tr>
+                                <td><apex:outputLabel >Sales Exec. 2 : </apex:outputLabel></td>
+                                <td><apex:inputField value="{!campObject.Account_Executive1__c}" styleClass="input_text"/></td>
+                                
+                                <td><apex:outputLabel >Ownership : </apex:outputLabel></td>
+                                <td> <apex:inputText value="{!Ownership1}" styleClass="input_text"/>% </td>
+                            </tr>
+                            <tr>
+                                <td><apex:outputLabel >Sales Exec. 3 : </apex:outputLabel></td>
+                                <td><apex:inputField value="{!campObject.Account_Executive2__c}" styleClass="input_text"/></td>
+                                <td>  <apex:outputLabel >Ownership : </apex:outputLabel></td>
+                                <td><apex:inputText value="{!Ownership2}" styleClass="input_text"/>%</td>
+                            </tr>
+                            
+                            <apex:outputPanel rendered="{!if(CompleteList.size > 0, true,false)}">
+                                <tr> 
+                                    
+                                    <td><apex:outputLabel >Start Date :</apex:outputLabel></td>
+                                    <td style="display:block;margin:1% 0 2% 0;"><apex:outputfield value="{!campObject.Start_Date__c}" styleClass="output_text" /></td>
+                                    <td><apex:outputLabel >End Date :</apex:outputLabel></td>
+                                    <td style="display:block;margin:1% 0 2% 0;"><apex:outputfield value="{!campObject.End_Date__c}" styleClass="output_text"/></td>
+                                    
+                                </tr>
+                            </apex:outputPanel>                     
+                            <apex:outputPanel rendered="{!if(CompleteList.size == 0, true,false)}">
+                                <tr>
+                                    <td><apex:outputLabel >Start Date :</apex:outputLabel></td>
+                                    <td style="display:block;margin:1% 0 2% 0;"><apex:inputfield value="{!campObject.Start_Date__c}" styleClass="input_text" /></td>
+                                    <td><apex:outputLabel >End Date :</apex:outputLabel></td>
+                                    <td style="display:block;margin:1% 0 2% 0;"><apex:inputfield value="{!campObject.End_Date__c}" styleClass="input_text"/></td>
+                                </tr>
+                            </apex:outputPanel>
+                            
+                          
+                        </apex:outputPanel>
+                    </apex:PageBlockSection>
+                </div>
+                <div class="terms">
+                    <apex:PageBlockSection columns="" showHeader="true" title="Discounts"> 
+                        <apex:outputPanel title="">
+                            <table border="0" cellpadding="1" cellspacing="1" width="135%">
+                                <tr>                            
+                                    <td width="55%" style="padding-top:4px;padding-bottom:8px;">Discount Method 
+                                        <apex:outputPanel rendered="{!if(discountMethodOptionValue == 0, true,false)}"><apex:outputText >None</apex:outputText></apex:outputPanel>
+                                        <apex:outputPanel rendered="{!if(discountMethodOptionValue == 1, true,false)}"><apex:outputText >Product</apex:outputText></apex:outputPanel>
+                                        <apex:outputPanel rendered="{!if(discountMethodOptionValue == 2, true,false)}"><apex:outputText >Location</apex:outputText></apex:outputPanel>
+                                        <apex:outputPanel rendered="{!if(discountMethodOptionValue == 3, true,false)}"><apex:outputText >Proposal</apex:outputText></apex:outputPanel>&nbsp;&nbsp;
+                                        <input type="button" id="Change" value="Change" class="btn_submit" onclick="javascript:changeDiscountStatus();" />
+                                    </td>                           
+                                </tr>                       
+                                <tr id="changeDiscount" name="changeDiscount" style="visibility:hidden;">                           
+                                    <td style="width:275px;padding-left:75px" nowrap="nowrap">
+                                        <apex:selectRadio onclick="setValueInHiddenField(this.value)" id="discountOptionValue" value="{!discountMethodOptionValue}" styleClass="chkbox">
+                                            <apex:selectOption itemLabel="None" itemValue="0"></apex:selectOption>
+                                            <apex:selectOption itemLabel="Proposal" itemValue="3"></apex:selectOption>
+                                            <apex:selectOption itemLabel="Product" itemValue="1"></apex:selectOption>
+                                            <apex:selectOption itemLabel="Location" itemValue="2"></apex:selectOption>
+                                        </apex:selectRadio>
+                                    </td>
+                                  
+                                    <td width="3%">
+                                        <input type="button" value="Apply" id="Apply" class="btn_submit" onclick="javascript:applyNewDiscount();" status="statusmenu" />
+                                    </td> 
+                                    <td width="3%">
+                                        <input type="button" value="Cancel" class="btn_cancel" onclick="javascript:cancelDiscount();" />
+                                    </td>
+                                </tr>                        
+                            </table>
+                            <input type="hidden" id="hiddenDiscountOption" value="{!discountMethodOptionValue}" />
+                           
+                        </apex:outputPanel>
+                    </apex:pageBlockSection>            
+                </div>          
+                
+                <div class="terms">
+                    <apex:PageBlockSection columns="" showHeader="true" title="Terms">
+                        <apex:outputPanel title="Terms">
+
+                            <tr>
+                               <td><apex:outputLabel >Proposal Submitted Date :&nbsp;&nbsp;</apex:outputLabel></td>
+                                <td><apex:inputField value="{!campObject.Proposal_Submitted_Date__c}" styleClass="input_text"/></td>
+                                
+                                <td><apex:outputLabel >Estimated Close Date :</apex:outputLabel></td>
+                                <td><apex:inputField value="{!campObject.Estimated_Close_Date__c}" styleClass="input_text"/></td>
+                              
+                                  
+                            </tr>
+                                       
+                            <tr name="discountTableRow" style="visibility:hidden;">                                                     
+                               <apex:outputPanel rendered="{! IF((currencyType == 'Euro'), false,true)}"> 
+                                    <td><apex:outputLabel > Proposal Discount Amount($) :</apex:outputLabel></td>
+                                    <td><apex:inputText value="{!campObject.Field_Discount_Amount__c}" styleClass="input_text_discounts" /></td>
+                                </apex:outputPanel>
+                                
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                            </tr>
+                            
+                          
+                            
+                            <!-- for Agency Commission -->
+                            <!--<tr>
+                                <td><h5 class="notes_title">Agency Commission</h5></td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                            </tr>
+                            
+                            <tr>
+                               <apex:outputPanel rendered="{! IF((currencyType == 'Euro'), false,true)}"> 
+                                    <td><apex:outputLabel >Amount($) :</apex:outputLabel></td>
+                                    <td><apex:inputText value="{!campObject.Agent_Commission__c}" styleClass="input_text1"/></td> 
+                                </apex:outputPanel>
+                              
+                            </tr>
+                            
+                            <tr>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <!-- Till here -->
+                          
+                            <!--<tr>
+                                <td><h5 class="notes_title">Other Discounts</h5></td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                            </tr> 
+                           <tr>
+                                
+                                <apex:outputPanel rendered="{! IF((currencyType == 'Euro'), false,true)}"> 
+                                    <td><apex:outputLabel >Amount($) :</apex:outputLabel></td>
+                                    <td><apex:inputText value="{!campObject.Other_Discount__c}" styleClass="input_text1" style="width:250px;"/></td> 
+                                </apex:outputPanel>
+                               
+                                <td><apex:outputLabel >Other Discounts Description :</apex:outputLabel></td>
+                                <td><apex:inputTextArea value="{!campObject.Other_Discount_Comments__c}" styleClass="input_text2" style="width:250px;"/></td>                                         
+                            </tr>
+                            
+                            <tr>
+                                <td><h5 class="notes_title">Other Charges</h5></td>
+                             </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                            </tr> 
+                           <tr>
+                              <apex:outputPanel rendered="{! IF((currencyType == 'Euro'), false,true)}"> 
+                                    <td><apex:outputLabel >Amount($) :</apex:outputLabel></td>
+                                    <td><apex:inputText value="{!campObject.Other_Charges__c}" styleClass="input_text1"/></td> 
+                                </apex:outputPanel>
+                            
+                                <td><apex:outputLabel >Other Charges Description :</apex:outputLabel></td>
+                                <td><apex:inputTextArea value="{!campObject.Other_Charges_Comments__c}" styleClass="input_text2"/></td>                        
+                            </tr>    
+                          <div class="notes">                     
+                                <tr><td><h5 class="notes_title">Notes</h5></td></tr>
+                                <tr><td>&nbsp;</td></tr>
+                                <tr>
+                                    <td><apex:outputLabel >Proposal Description :</apex:outputLabel> </td>
+                                    <td><apex:inputTextArea value="{!notesDescription}" styleClass="input_text2"/>
+                                    </td></tr>
+                            </div> 
+                        </apex:outputPanel>                    
+                    </apex:PageBlockSection>  
+                    
+                </div>
+                
+                <apex:actionFunction name="passInternalBusinessToController" reRender="none">
+                    <apex:param name="internalBusiness" assignTo="{!internalBusiness}" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction name="passBillingOptionToController" reRender="none">
+                    <apex:param name="billingOption" assignTo="{!billingOption}" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction name="passBillingFrequencyToController" reRender="none" >
+                    <apex:param name="billingFrequency" assignTo="{!billingFrequency}" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction name="passBillingDetailToController" reRender="none" >
+                    <apex:param name="billingDetail" assignTo="{!billingDetail}" value=""/>
+                </apex:actionFunction>
+                
+                <apex:actionFunction name="passConsolidatedBillingToController" reRender="none">
+                    <apex:param name="consolidatedBilling" assignTo="{!consolidatedBilling}" value=""/>
+                </apex:actionFunction>
+            </apex:pageBlock>
+            
+            <div class="line_items">
+                <apex:pageBlock >
+                    <apex:pageBlockSection title="Add Products" id="LineItemId" columns="1">
+                        <div class="inventory_pricing">   
+                            
+                            <apex:outputPanel id="prdsec">     
+                                
+                                
+                                <label>Choose Products :</label><apex:selectList value="{!prdct}" size="1" styleClass="choose_prod_select" style="width:145px"> 
+                                <apex:selectOptions value="{!ProductList}"/> 
+                                </apex:selectList>
+                                <label>Start Date : <b style="color:red;">*</b></label><apex:inputField value="{!DateIlp.Start_Date__c}"/>
+                                <label>End Date : <b style="color:red;">*</b></label><apex:inputField value="{!DateIlp.End_Date__c}"/>&nbsp;
+                                
+                                <apex:commandButton value="Add" oncomplete="window.scrollTo(0,0);setFocusToErrorMessage();" action="{!productDetails}" rerender="popup,pnlMessages" style=""  status="statusmenu" styleClass="button_primary" rendered="{!if(OldCampStatus == 'Signed' || OldCampStatus == 'Cancelled' || OldCampStatus == 'Contract Pending' ,false,true )}"/>
+                                
+                            </apex:outputPanel>
+                            
+                        </div>
+                        <apex:pageBlockTable value="{!CompleteList}" var="item1" columnsWidth="" rendered="{!CompleteList.size > 0}">
+                            
+                            
+                            <apex:inputHidden value="{!item1.ProID}" id="theHiddenInput"/>
+                            
+                            <apex:column headerValue="Product Name" value="{!item1.Productname}"/>
+                            
+                            <apex:column headerValue="Start Date" value="{!item1.LineItem.Start_Date__c}"/>
+                            <apex:column headerValue="End Date" value="{!item1.LineItem.End_Date__c}"/>
+                            
+                            <apex:column headerValue="Units" value="{!item1.LineItem.Quantity__c}"/>
+                          
+                            <apex:column headerValue="Total Cost($)" value="{!item1.LineItem.Cost__c}" rendered="{! IF((currencyType == 'Euro'), false,true)}"/>
+                           
+                            <apex:column headerValue="Discount($)" rendered="{! IF((currencyType == 'Euro'), false,true)}"> 
+                                <apex:outputPanel id="reloadDiscValues">                        
+                                    <apex:outputText value="{!HTMLENCODE(Text(item1.LineItem.Discount__c))}" rendered="{!if(discountMethodOptionValue == 1,true,false)}" escape="false" />
+                                    <apex:outputText value="{!HTMLENCODE(Text(item1.LineItem.Sum_Location_Discount__c))}" rendered="{!if(discountMethodOptionValue == 2,true,false)}" escape="false"/>                     
+                                </apex:outputPanel>
+                            </apex:column>
+                           
+                           //only signed status is retained now,hence this change.
+                            <apex:column rendered="{!if(OldCampStatus == 'Signed' || OldCampStatus == 'Cancelled' || OldCampStatus == 'Contract Pending' ,false,true )}">                
+                                <apex:commandButton value="Edit"  action="{!EditFeature}" rerender="popup"  status="statusmenu" styleClass="btn_edit" oncomplete="window.scrollTo(0,0);">
+                                    <apex:param name="param1" id="y1" value="{!item1.ProID}" assignTo="{!WrapProId}" />
+                                </apex:commandButton>
+                            </apex:column>
+                            
+                            <!--<apex:column rendered="{!if(OldCampStatus == 'Signed' || OldCampStatus == 'Completed' || OldCampStatus == 'Cancelled' ,false,true )}">-->
+                          <!--  //only signed status is retained now,hence this change.
+                          <!--  <apex:column rendered="{!if(OldCampStatus == 'Signed' || OldCampStatus == 'Cancelled' || OldCampStatus == 'Contract Pending' ,false,true )}">    
+                                <apex:commandButton value="Delete" onclick="if(!confirm('Are you sure you want to delete this product from the campaign? Cannot be undone.')){return false;}" action="{!DeleteFeature}" status="statusmenu" rerender="LineItemId,ownerShip" styleClass="btn_delete">
+                                    <apex:param name="param2" id="y2" value="{!item1.ProID}" assignTo="{!WrapProId}" />
+                                </apex:commandButton>
+                              
+                            </apex:column>
+                            
+                        </apex:pageBlockTable>
+                        
+                        <apex:outputPanel >
+                            <apex:commandButton value="Save"  action="{!SaveChange}" oncomplete="setFocusToErrorMessage();" style="" rerender="pnlMessages"  status="statusmenu" styleClass="button_primary" />  
+                            <apex:outputPanel id="jsPanel">
+                                <input type="hidden" id="hiddenerrorOccurred" value="{!errorOccurred}" />
+                            </apex:outputPanel>
+                           
+                            <apex:commandButton value="Cancel" action="{!CancelMainflow}"  style=""  rerender="none" styleClass="button_primary"/>
+                             </apex:outputPanel>
+                        
+                    </apex:pageBlockSection> 
+                </apex:pageBlock> 
+            </div>
+            <br /><br/>
+           
+            <apex:outputPanel id="popup">
+                <apex:outputPanel styleClass="popupBg" layout="block" rendered="{!displayPopUp}"/>
+                
+                <apex:pageBlock >
+                    <apex:outputPanel styleClass="customPopup" layout="block" rendered="{!displayPopUp}">                           
+                        
+                        <apex:pageMessages id="proderror"></apex:pageMessages> 
+                        
+                        <apex:repeat value="{!WrapList}" var="Individual">                  
+                            <div class="slds-modal--header">
+                            <label class="product_name"><span style="color:black;">Product Name : </span>{!Individual.ProName}</label><br /><br />
+                            </div>
+                            
+                            <div class="slds-modal--content">
+                            <!-- for date change in popup -->
+                           <!-- <label class="product_name"><span style="color:black;">Start Date : </span></label><apex:inputField value="{! Individual.lineItemDate.Start_Date__c}"> <apex:actionSupport event="onchange"  action="{!checkNewDateList}" rerender="popup" status="statusmenu1"/>  </apex:inputField>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <label class="product_name"><span style="color:black;">End Date : </span></label><apex:inputField value="{! Individual.lineItemDate.End_Date__c}"> <apex:actionSupport event="onchange"  action="{!checkNewDateList}" rerender="popup" status="statusmenu1"/>  </apex:inputField> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <!-- till here -->
+                            
+                          <!--  <script>getDiscountMethod();</script>
+                            <apex:outputPanel style="margin-top:14px;" layout="block">                   
+                                <table width="100%" cellpadding ="2" cellspacing = "2"> 
+                                    <apex:variable var="rowNum" value="{!1}" /> 
+                                        <apex:repeat value="{!Individual.WrapperIlpList}" var="item1">
+                                            <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                                                <tr>
+                                                <td width="100%">  
+                                                    <script>showSelectedDiv('{!rowNum}');</script>
+                                             </td>
+                                    </tr>    
+                    <tr>                                
+                        <td width="100%" style="padding:0;">  
+                            <!--<div id="showHide_{!item1.marketName}" style="display:none;">-->
+                           <!-- <div id="showHide_{!rowNum}" style="display:none;">
+                                <table width="100%" cellpadding ="1" cellspacing = "1">
+                                    <tr>
+                                      
+                                        <th class="th" style="width:10%;">Location</th>
+                                        <!--<th class="th"># of Screens</th>-->
+                                     <!--   <th class="th"># Avails</th>
+                                        <th class="th"># Days</th>
+                                        
+                                        <th class="th">
+                                            <apex:outputPanel rendered="{! IF((currencyType == 'Euro'), false,true)}"> 
+                                                Total Cost($)
+                                            </apex:outputPanel>
+                                          
+                                        </th>
+                                        <th class="th">Units</th>
+                                        <th class="th" style="">Select</th>                                                  
+                                        <th name="discountLocationHeader" class="th" style="visibility:hidden;">
+                                            <apex:outputPanel rendered="{! IF((currencyType == 'Euro'), false,true)}"> 
+                                                Discount Amount($)
+                                            </apex:outputPanel>
+                                            
+                                        </th>                                                                                                        
+                                    </tr>
+                                    <apex:repeat value="{!item1.ilpUiList}" var="innerList"> 
+                                        <tr class="rowColors">
+                                           
+                                                <apex:outputPanel rendered="{!IF((innerList.warningMessage == null), false,true)}"> 
+                                                    <apex:image id="warningImage" value="{!$Resource.Warning}" width="15" height="15" title="{!innerList.warningMessage}"/>
+                                                </apex:outputPanel>
+                                           
+                                            <td width="%"><apex:outputText value="{!HTMLENCODE(innerList.LocationName)}"   escape="false"/></td>
+
+                                            <td width="%"><apex:outputText value="{!HTMLENCODE(Text(innerList.uiMinScreen))}"   escape="false"/></td>
+                                            <td width="%"><apex:outputText value="{!HTMLENCODE(Text(innerList.daysCount))}"  escape="false" /></td>
+                                        
+                                            
+                                            <td width="%">
+                                                <apex:outputPanel rendered="{! IF((currencyType == 'Euro'), false,true)}"> 
+                                                    <apex:outputText value="{! IF((HTMLENCODE(Text(innerList.pp.Cost__c)) == null), '0.00', innerList.pp.Cost__c) }"  escape="false"/>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{! IF((currencyType == 'Euro'), true,false)}"> 
+                                                    <apex:outputText value="{! IF((HTMLENCODE(Text(innerList.pp.Cost__c)) == null), '0.00', innerList.pp.Cost_Euro__c) }"  escape="false" />
+                                                </apex:outputPanel>
+                                            </td>
+                                            <td width="%"><apex:InputText value="{!innerList.Quantity}" style="width:35px" /></td>
+                                            <td width="%">
+                                               <!-- <apex:outputPanel rendered="{! IF((innerList.pp.Cost__c == null || innerList.pp.Cost__c == 0.00 ), false,true)}"> 
+                                                   --><!-- <apex:inputCheckbox value="{!innerList.checkBox}"  id="inputId"/>
+                                               <!-- </apex:outputPanel>
+                                                <apex:outputPanel rendered="{! IF((innerList.pp.Cost__c == null || innerList.pp.Cost__c == 0.00 ), true,false)}"> 
+                                                    <b Style="color:red;"> Product Pricing not available</b>
+                                                </apex:outputPanel>-->
+                                          <!--  </td>
+                                            <td width="%" class="discountLocationValueTd" style="display:none;"><apex:InputText value="{!innerList.locationDiscount}" styleClass="discountLocationValue" style="width:102px;" html-placeholder="$" /></td>                                                     
+                                            
+                                        </tr>                                               
+                                    </apex:repeat>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </apex:repeat>                                        
+            </table>
+        </apex:OutputPanel>
+        
+        <apex:outputPanel >
+            <table width="100%" align="center">                       
+                <tr id="productLevelDiscount" style="display:none;margin-top:14px;">
+                    <td><apex:outputLabel >
+                        <apex:outputPanel rendered="{! IF((currencyType == 'Euro'), false,true)}"> 
+                            Product Discount Amount($) :
+                        </apex:outputPanel>
+                       
+                        </apex:outputLabel></td>
+                    <td><apex:inputText value="{!Individual.lineitemDiscount}" styleClass="input_text1"/></td>                    
+                </tr>
+            </table>
+        </apex:OutputPanel>        
+        </div>
+        
+     
+                          
+            <div class="slds-modal--footer">
+             <apex:outputPanel rendered="{! IF((Individual.WrapperIlpList.size > 0 ), true,false)}"> 
+            <apex:commandButton value="Submit"  action="{!SubmitValues}" style="margin-right:4px;background:#0070d2 !important;color:white !important;" rerender="LineItemId,popup,JustDo,proderror,ownerShip"  status="statusmenu1" styleClass="btn_submit" />                            
+            </apex:outputPanel>
+            <apex:commandButton value="Cancel" action="{!CancelPopUp}" style="" styleClass="btn_cancel" />
+  
+            </div>
+            <apex:actionstatus id="statusmenu1"> 
+                <apex:facet name="start"> 
+                    <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb; height: 100%;opacity:0.65;width:100%;">
+                        <div class="waitingHolder" style="top: 150px; width: 91px;"> 
+                            <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." />
+                            <span class="waitingDescription">Loading...</span>
+                        </div> 
+                    </div>
+                </apex:facet> 
+            </apex:actionstatus>
+       
+    </apex:repeat>
+    
+</apex:outputPanel>
+</apex:pageBlock>
+</apex:outputPanel>     
+</apex:form>
+</div>
+
+<script>
+window.onload = new function(){
+ var selOption = document.getElementById('hiddenDiscountOption').value;                  
+    var disc = document.getElementsByName('discountTableRow');                          
+    if(selOption == 3){     
+        disc[0].style.visibility = 'visible';
+    }else{                  
+        disc[0].style.visibility = 'hidden';
+    }}
+</script>
+<script language="javascript">
+function getInternalBuisiness(internalBusiness)
+{
+    //alert('selected facility value '+internalBusiness);
+    //passInternalBusinessToController(internalBusiness);
+}
+
+function getBillingOption(billingOption){
+    //alert('Inside a getBillingOption ::');
+    //alert('Billing Option Value is ::'+billingOption);
+    //passBillingOptionToController(billingOption);
+    
+}
+function getBillingFrequency(billingFrequency){
+    //alert('Inside a getBillingFrequency ::');
+    //alert('BillingFrequency  Value is ::'+billingFrequency);
+    //passBillingFrequencyToController(billingFrequency);
+}
+
+function getBillingDetail(billingDetail){
+    //alert('Inside a getBillingDetail ::');
+    //alert('BillingDetail  Value is ::'+billingDetail);
+    //passBillingDetailToController(billingDetail);
+}
+
+function getConsolidatedBilling(consolidatedbilling){
+    //alert('Inside a getBillingDetail ::');
+    //alert('BillingDetail  Value is ::'+consolidatedbilling);
+    //passConsolidatedBillingToController(consolidatedbilling);
+} 
+
+function expandCollapse(rowId) {        
+    var selMarket = document.getElementById('showHide_'+rowId);        
+    var imgId = document.getElementById('changeImage_'+rowId);         
+    if (selMarket.style.display == 'none') {                   
+        imgId.src= "{!JSINHTMLENCODE($Resource.Minus_Symbol)}";
+        imgId.title="Remove market from campaign";   
+        selMarket.style.display = 'block';            
+    } else {            
+        imgId.src= "{!JSINHTMLENCODE($Resource.Plus_Symbol)}"; 
+        imgId.title="Add market to campaign";   
+        selMarket.style.display = 'none';
+    }
+} 
+
+function showSelectedDiv(rowNum){       
+    if(rowNum == 2)
+    {
+        var imgId = document.getElementById('changeImage_'+rowNum); 
+        var selMarket = document.getElementById('showHide_'+rowNum);           
+        selMarket.style.display = 'block';
+        imgId.src= "{!JSINHTMLENCODE($Resource.Minus_Symbol)}"; 
+    }
+}
+
+function setValueInHiddenField(selOption){
+    var hiddenValue = document.getElementById('hiddenDiscountOption');
+    hiddenValue.value = selOption;    
+}
+
+function getDiscountMethod(){   
+    var selValue =  document.getElementById('hiddenDiscountOption').value;  
+    //alert('selValue=='+selValue);
+    var inValueCount = document.getElementsByClassName("discountLocationValueTd");
+    var discountHeader = document.getElementsByName('discountLocationHeader');          
+    var productLevelDiscount = document.getElementById('productLevelDiscount'); 
+    
+    //var inValue = document.getElementsByClassName("discountLocationValue");   
+    if(selValue == 0){              
+        productLevelDiscount.style.display = 'none';        
+        for(i=0;i<discountHeader.length;i++){           
+            discountHeader[i].style.visibility='hidden';
+        }           
+        for(i=0;i<inValueCount.length;i++){         
+            inValueCount[i].style.display='none';
+        }       
+    }else if(selValue == 1){
+        productLevelDiscount.style.display = 'block';
+        for(i=0;i<discountHeader.length;i++){           
+            discountHeader[i].style.visibility = 'hidden';
+        }
+        for(i=0;i<inValueCount.length;i++){         
+            inValueCount[i].style.display = 'none';
+        }   
+    }
+        else if(selValue == 2){             
+            productLevelDiscount.style.display = 'none';
+            for(i=0;i<discountHeader.length;i++){           
+                discountHeader[i].style.visibility='visible';
+            }
+            for(i=0;i<inValueCount.length;i++){         
+                inValueCount[i].style.display='block';
+            }
+            
+            /*var totalDiscount = 0;
+        for(i=0;i<inValue.length;i++){          
+            if(!isNaN(inValue[i].value)){               
+                totalDiscount = totalDiscount + parseInt(inValue[i].value);
+            }
+        }*/         
+        }   
+    
+}
+
+function showText(){
+    document.getElementById("discountInformation").innerHTML='<table bgcolor="#ffffe0" border="1"><tr><td>None - No discounts are applied.</td></tr>'+
+        '<tr><td>Campaign - A single discount amount is applied to the entire campaign.</td></tr>'+
+        '<tr><td>Product - Discounts are applied at the product level.<br />These discounts are entered while adding new products to the campaign.</td></tr>'+
+        '<tr><td>Location - Discounts are applied at the individual location level.<br />These discounts are entered while adding new products to the campaign.</td></tr></table>';
+}
+
+function hide(){
+    document.getElementById("discountInformation").innerHTML="";
+}
+
+function changeDiscountStatus(){    
+    var statusrow = document.getElementsByName('changeDiscount');           
+    if(statusrow[0].style.visibility == 'visible'){
+        statusrow[0].style.visibility = 'hidden';       
+    }else if(statusrow[0].style.visibility == 'hidden'){
+        statusrow[0].style.visibility = 'visible';      
+    }
+}
+
+function applyNewDiscount(){
+    var selOption = document.getElementById('hiddenDiscountOption').value;
+    var disc = document.getElementsByName('discountTableRow');   
+    var mydisc =  document.getElementsByClassName('input_text_discounts'); 
+    var r = confirm("Are you sure you want to change the discount method?All previous discounts will be removed.");
+     if (r == true) {
+        changeDiscountMethod();
+        document.getElementById("changeDiscount").style.visibility="hidden";
+        
+        if(selOption == 3){
+            disc[0].style.visibility = 'visible';
+        }else{ 
+            disc[0].style.visibility = 'hidden';
+            mydisc[0].value = 0.00;
+            mydisc[1].value = 0.00;
+        }
+    }else {
+        return;
+    }   
+}
+
+function cancelDiscount(){
+    var statusrow = document.getElementsByName('changeDiscount');
+    statusrow[0].style.visibility = 'hidden';
+    document.getElementById("Apply").style.display="block";
+    
+}
+
+function setFocusToErrorMessage(){    
+    callSetFocus();     
+}
+
+function showTopSection(){
+    var hiddenVal = document.getElementById('hiddenerrorOccurred').value;   
+    if(hiddenVal){      
+        document.getElementById('mainDiv').scrollIntoView();
+    }   
+}
+
+</script> 
+<style type="text/css">
+    .popup
+    {
+    background-color: white;
+    border-width: 2px;
+    border-style: solid;
+    z-index: 9999;
+    padding:10px;
+    position: fixed;
+    width: 65%;
+    margin:0 auto;
+    top:25%;
+    border-radius:8px;
+    box-shadow:0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)!important;
+    left:16%;
+    }
+    
+    .popupBg
+    {
+    background-color:black;
+    opacity: 0.8;
+    filter: alpha(opacity = 70);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 99;
+    }
+    
+.slds-modal--header {
+    position: relative;
+    border-top-right-radius: 0.25rem;
+    border-top-left-radius: 0.25rem;
+    border-bottom: 2px solid #dddbda;
+    padding: 1.5rem 0  0.5rem 0;
+    text-align: center;
+    font-size:14px;
+}
+    .slds-modal--footer {
+    border-top: 2px solid #dddbda;
+    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    padding: 0.75rem 1rem;
+    background-color: #f3f2f2;
+    text-align: right;
+    -webkit-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+}
+.slds-modal--content{
+    padding: 1rem;
+    overflow: hidden;
+    overflow-y: auto;
+    height:190px;
+    max-height:190px;
+}
+</style>
+</apex:page>-->

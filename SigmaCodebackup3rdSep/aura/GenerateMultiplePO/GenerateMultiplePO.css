@@ -1,0 +1,9 @@
+.THIS .slds-pill__label,.THIS.slds-pill__label{
+    width:220px;
+}
+.THIS th,th.THIS {
+    background:lightgray !important; 
+}
+.THIS td,.THIS th{
+    padding:4px;
+}

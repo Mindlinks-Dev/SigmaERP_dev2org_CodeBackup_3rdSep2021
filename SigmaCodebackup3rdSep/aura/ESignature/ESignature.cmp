@@ -1,0 +1,24 @@
+<aura:component controller="SignatureCtrl"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <ltng:require afterScriptsLoaded="{!c.Init}"/>
+    <aura:attribute name="Attachmentdata" type="object" />
+    <aura:attribute name="productTransfers" type="Object"/>
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <aura:attribute name="valid" type="boolean" default="true"/>
+    <aura:attribute name="productvalidation" type="object" />
+
+    
+    <canvas id='blank' style='display:none'></canvas>
+    <aura:if isTrue="{! v.spinner }"> 
+        
+        <lightning:spinner alternativeText="Loading" variant="brand" />
+    </aura:if>
+    
+        <div>
+            <canvas aura:id="can" style="border:2px solid #ddd;background: transparent;"></canvas>
+        </div>
+        <div style="margin: 7px;">
+            <button class="slds-button slds-button_brand" onclick="{!c.erase}">Clear</button>
+            <button class="slds-button slds-button_brand" onclick="{!c.save}" disabled="{!v.valid}">Save</button>
+        </div>
+   
+</aura:component>

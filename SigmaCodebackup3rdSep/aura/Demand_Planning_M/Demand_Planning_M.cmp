@@ -1,0 +1,164 @@
+<aura:component controller="demandplanning" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+    <aura:attribute name="recordName" type="String" default=""/>    
+    <aura:attribute name="recordId" type="String" default="" />
+    <aura:attribute name="finalList" type="List" />
+	<aura:attribute name="finalList1" type="List" />
+    <aura:attribute name="expanded" type="boolean" default="false" />
+    <aura:attribute name="search" type="string"/>
+    
+    <aura:attribute name="rowLength" type="Integer" default="0" />
+    
+    <aura:attribute name="Sigmaord" type="String" description="Order Usage from custom settings" />
+     <aura:attribute name="Stdord" type="String" description="Order Usage from custom settings" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="mobileScreenFlag" type="boolean" default="false"/>
+    <aura:attribute name="isStandardOrder" type="Boolean" default="false" />
+    <aura:attribute name="selFromDate" type="DateTime" />
+    <aura:attribute name="selToDate" type="DateTime" /> 
+    <aura:attribute name="custType" type="String" />
+    
+    <aura:attribute name="statusType" type="String" />
+    <aura:attribute name="salesInvoiceFilter" type="String" />
+    <aura:attribute name="status" type="string"  />
+    
+    <aura:attribute name="PageNumber" type="integer" default="1"/>
+    <aura:attribute name="TotalPages" type="integer" default="0"/>
+    <aura:attribute name="TotalRecords" type="integer" default="0"/>
+    <aura:attribute name="RecordStart" type="integer" default="0"/>
+    <aura:attribute name="RecordEnd" type="integer" default="0"/>
+    <aura:attribute name="totalbackorderqty" type="integer" default="0"/>
+    <aura:attribute name="availqty" type="integer" default="0"/>
+    <aura:attribute name="today" type="Date" />
+    
+    <aura:attribute name="recToDisplay" type="Integer" default="50" />
+    <aura:handler name="change" value="{!v.recordId}" action="{!c.lookupChanged}" />
+    <aura:attribute name="categoryid" type="String"  />
+    
+    
+    <lightning:card iconName="standard:search">
+        <aura:set attribute="title">
+            <span>Demand Planning<br />
+                [<label>Current Date : </label>
+                <ui:outputDate value="{!v.today}" />]</span>
+        </aura:set>
+        
+        <div class="slds-card__body slds-card__body_inner">            
+           
+            <div class="slds-grid slds-wrap slds-gutters">   
+                
+                <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-8" >
+                    <div style="padding-top:5px;" id="TempToDisplayProduct"><label>Product <span style="color:red;">*</span></label>
+						<c:customLookup recordID="{!v.recordId}" recordName="{!v.recordName}" SearchKeyWord="{!v.search}" objectAPIName="product2" IconName="standard:product" label="" isSigmaOrder= 'true' whereCondition="AND sigmaerpdev2__Stock_Item__c=true" />
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1" style="padding-top:5px;"  id="TempToDisplayProCategory"> 
+                    <!--<lightning:input  type="string" name="Product Category" value="{!v.categoryid}" label="Product Category" />-->
+                     <div style="padding-top:7px;">Product Category
+                    <lightning:input type="string" name="Product Category" value="{!v.categoryid}"  variant="label-hidden" />     
+                        </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1" style="padding-top:5px;"  id="TempToDisplayFrom">
+                    <label>From Date<span style="color:red;">*</span></label>
+                    <ui:inputDate aura:id="fromDate" label="" class="field" value="{!v.selFromDate}" displayDatePicker="true" /> 
+                </div>	
+                <div class="slds-col slds-size_1-of-1" style="padding-top:5px;"  id="TempToDisplayTo">
+                    <label>To Date<span style="color:red;">*</span></label>
+                    <ui:inputDate aura:id="toDate" label="" class="field" value="{!v.selToDate}" displayDatePicker="true" /> 
+                </div>
+                <div class="slds-col slds-size_1-of-1" style="padding-top:5px;"  id="TempToDisplayStatus"> 
+                    <label>Status</label>
+                    <ui:inputSelect aura:id="status" value="{!v.status}" class="uiInputSelect slds-select">
+                        <ui:inputSelectOption text="All" label="All" />
+                        <ui:inputSelectOption text="Pending" label="Pending"/>
+                        <ui:inputSelectOption text="Order Confirmed" label="Order Confirmed"/>						
+                    </ui:inputSelect>
+                </div>
+                <div class="slds-col slds-size_1-of-1" style="padding-top:5px;"> 
+                    <lightning:input type="number" name="Total BackOrder Quantity" readonly="true" value="{!v.totalbackorderqty}" label="Total BackOrder Quantity" />     
+                </div>
+                <div class="slds-col slds-size_1-of-1" style="padding-top:5px;"> 
+                    <lightning:input type="number" name="Available Quantity" readonly="true" value="{!v.availqty}" label="Available Quantity" />     
+                </div>
+                
+            </div> 
+            
+            
+        </div> 
+        <div class="slds-card__body slds-card__body_inner">
+            <lightning:button class="slds-button slds-button_brand" onclick="{!c.FetchCustInfo}">Search</lightning:button>
+            <lightning:button class="slds-button slds-button_neutral" onclick="{!c.clear}">Clear</lightning:button>                       
+            <!--<aura:if isTrue="{!v.rowLength > 0}">
+                <div style="float:right;">
+                    <lightning:button variant="brand" label="Print" onclick="{!c.pdfdownload}" class="print-hide" />
+                </div>
+            </aura:if>-->
+        </div>  
+        
+        
+    </lightning:card>
+    
+    <aura:if isTrue="{!v.expanded}">
+        <lightning:card iconName="standard:timesheet">             
+            <aura:set attribute="title">
+                <span>Search Results 1</span> 
+                <!--<lightning:button class="slds-button slds-button_brand" onclick="{!c.downloadCsv}">Download As CSV</lightning:button> <br/>-->
+            </aura:set>
+            
+            <aura:if isTrue="{!v.rowLength > 0}">
+                <div class="slds-card__body slds-scrollable--x">
+                    <table class="slds-table slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+								<th scope="col" width="3%" style="background-color: #d1cdff;font-weight: bold;">
+                                </th>                                
+                                <th scope="col" width="4%" style="background-color: #d1cdff;font-weight: bold;">
+                                    Order Name
+                                </th>                                    
+                                <th scope="col" width="7%" style="background-color: #d1cdff;font-weight: bold;">
+                                    Customer Name
+                                </th>
+                                <th scope="col" width="4%" style="background-color: #d1cdff;font-weight: bold;">
+                                    Created Date
+                                </th>                                
+                                <!--<th scope="col" width="12%"  style="background-color: #d1cdff;font-weight: bold;">
+                                    Order Type
+                                </th>-->                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.finalList}" var="sList">                                                          
+                                <c:DisplaySigmaOrder_M innerList1="{!sList}" fromMobile="{!v.mobileScreenFlag}" />                                                                
+                            </aura:iteration>   
+                        </tbody>
+                    </table>
+                </div> 
+				 <div class="slds-card__body slds-card__body_inner">
+                    <div class="slds-page-header" role="banner">
+                        <div class="slds-float_right">            
+                            <lightning:button disabled="{!v.PageNumber == 1}" variant="brand" aura:id="prevPage" label="Prev" onclick="{!c.handlePrev}" />            
+                            <lightning:button disabled="{!v.PageNumber == v.TotalPages}" aura:id="nextPage" variant="brand" label="Next" onclick="{!c.handleNext}"/>
+                        </div>
+                        <p class="slds-text-align_left">{!v.RecordStart}-{!v.RecordEnd} of {!v.TotalRecords} | Page {!v.PageNumber} of {!v.TotalPages}</p>
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-text-align_center">
+                        No records found for your search criteria.
+                    </div>
+                </aura:set>
+            </aura:if>
+				
+        </lightning:card>
+    </aura:if>    
+    <div class="demo-only slds-hide" aura:id="mySpinner" >
+        <div class="slds-spinner_container" >
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large" >
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+
+</aura:component>

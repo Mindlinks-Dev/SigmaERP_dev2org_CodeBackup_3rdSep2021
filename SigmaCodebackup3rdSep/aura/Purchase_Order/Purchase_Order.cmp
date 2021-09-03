@@ -1,0 +1,285 @@
+<aura:component controller="Purchase_Order" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global">
+    
+   <!-- <ltng:require scripts="{!join(',',
+                           $Resource.StappLibraries + '/StripLibraries/jquery.js',
+                           $Resource.StappLibraries + '/StripLibraries/jquery-confirm.min.js')}" 
+                  styles="{!join(',',
+                          $Resource.StappLibraries + '/StripLibraries/jquery-confirm.min.css',
+                          $Resource.StappCustomCSS + '/StockRecievingCustomCSS.css')}" />-->
+    <aura:attribute name="recordName" type="String" default="" description="The current record name to display" />
+    <aura:attribute name="recordName1" type="String"/>
+    <aura:attribute name="recordName2" type="String"/>
+    <aura:attribute name="recordName3" type="String"/>
+    <aura:attribute name="fromCurrToCurrecyRate" type="Map" />
+    <aura:attribute name="configData" type="Object"/>
+    <aura:attribute name="isConfirmed" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="isCancelled" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="issrp" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="rec" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="todayDate" type="Date" />
+    <aura:attribute name="PurchaseOrderProducts" type="Purchase_Order_Product__c" default="{ 'sobjectType': 'Purchase_Order_Product__c'}"/>	
+    <aura:attribute name="Pur_Order" type="Purchase_Order__c"  default="{ 'sobjectType': 'Purchase_Order__c'}" access="global"/>
+    <aura:attribute name="orderLinesData" type="Object[]" access="global"/>
+    <aura:attribute name="vpline" type="Purchase_Order_Product__c"/>
+    <aura:attribute name="vplist" type="Purchase_Order_Product__c[]" />
+    <aura:attribute name="deletedList" type="Object[]"/>
+    <aura:attribute name="PurchOrder" type="Object"/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="disableSave" type="Boolean" default="false"/>
+    <aura:attribute name="errorMessage" type="String" default="" />
+    <aura:attribute name="Status" type="List"/>
+    <aura:attribute name="tabId" type="String" default="1"/>
+    <aura:attribute name="totalGross" type="String" default="0.00"/>
+    <aura:attribute name="totalNet" type="String" default="0.00"/>
+    <aura:attribute name="totalTax" type="String" default="0.00"/>
+    <aura:handler name="change" value="{!v.tabId}" action="{!c.handleChange}"/>
+    <aura:attribute name="isOpen" type="Boolean" default="false"/>
+    <aura:attribute name="UsingVendorProductPrice" type="Boolean" default="false"/>
+    
+    <aura:attribute name="POIdForClone" type="String" default=""/>
+    <aura:attribute name="vendorId" type="ID" />
+    <aura:attribute type="List" name="taxDataList"/>
+    <!--Used For Tax exempted-->
+    <aura:attribute name="taxTreatmentData" type="Map" />
+    <aura:attribute name="locationData" type="Map"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!--Handled events to get the Data from Account-->
+    <aura:handler name="change" value="{!v.Pur_Order.sigmaerpdev2__Product_Supplier__c}" action="{!c.getAccountData}" />
+     <aura:handler name="change" value="{!v.Pur_Order.sigmaerpdev2__Company__c}" action="{!c.getCompanyData}" />
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>
+    
+    <aura:handler name="SigmaComponentEvent" event="c:SigmaComponentEvent" action="{!c.handleComponentEvent}" />
+    <aura:handler name="change" value="{!v.isError}" action="{!c.errorHide}"/>
+    <aura:attribute type="Boolean" name="taxHideAndShow" default="true"/>
+    
+    <lightning:spinner alternativeText="Loading" size="large" aura:id="mySpinner" class="slds-hide"/>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <!--<div id="dragDiv" style="position: fixed;z-index: 3;background-color: #d5d1d9;width: 22%;height: 7%;top: 42%;left: 74%;padding: 11px;box-shadow: inset 4px 4px 3px 0px rgba(0, 0, 0, 0.16)">
+        <lightning:button class="slds-float_left"  variant="neutral" label="Add Product" iconName="utility:add" onclick="{!c.addProduct}"/>
+        <aura:if isTrue="{!v.recordId==undefined}">
+            <lightning:button variant="brand" label="Save" iconName="utility:check" iconPosition="left" onclick="{!c.onClickSave}" disabled="{!v.disableSave}" />
+            <aura:set attribute="else">
+                <lightning:button variant="brand" label="Update" iconName="utility:check" iconPosition="left" onclick="{!c.onClickSave}" disabled="{!v.disableSave}"/>
+            </aura:set>
+        </aura:if>
+        <lightning:button variant="brand" label="Cancel" iconName="utility:close" iconPosition="left" onclick="{!c.onClickCancel}"/>
+    </div>-->
+    <!--<div id="taxHideShowDiv" style="transition: right 0.5s linear 0s,rotate 2s linear 0s;right: 0px;top: 214px;position: absolute;transform: rotate(180deg);z-index: 1;" onclick="{!c.taxHideShow}">
+        <lightning:icon iconName="utility:macros" size="small" alternativeText="section" />
+    </div>-->
+   
+    <lightning:card title="Purchase Order" iconName="action:new_note">
+        <div id='HeaderErrorDiv' class="{!v.isError ? '':'slds-hide'}">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                <span class="slds-assistive-text">error</span>
+                <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+                    <lightning:icon iconName="utility:error" size="x-small" alternativeText="section" />
+                </span>
+                <h1>{!v.errorMessage}</h1>
+                <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="{!c.closeErrorMessage}">
+                    <lightning:icon iconName="action:close" size="x-small" alternativeText="section" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+        </div>
+        <lightning:tabset variant="scoped" aura:id="tabs" selectedTabId="{!v.tabId}">
+            <lightning:tab label="Info" id="1">
+                <div class="" role="list">
+                    <div class="slds-grid slds-wrap paddingAround">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <!--<aura:if isTrue="{!(empty(v.recordId))}">-->
+                            <aura:if isTrue="{!v.orderLinesData.length==0}">
+                                <label class="slds-form-element__label"><span style="color:red">*</span>Vendor</label>
+                                <c:customLookup recordID="{!v.Pur_Order.sigmaerpdev2__Product_Supplier__c}" recordName="{!v.Pur_Order.AccountName}" objectAPIName="Account"
+                                                
+                                                
+                                                whereCondition="{!'AND sigmaerpdev2__Active__c=\'Yes\' AND recordType.Name=\'Vendor\' '}"  
+                                                IconName="custom:custom106" label=""
+                                                isSigmaOrder="true"/>
+                             
+                                
+                                <aura:set attribute="else">
+                                    <lightning:input label="Vendor" title='' value="{!v.Pur_Order.AccountName}" disabled="true"/>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <aura:if isTrue="{!v.orderLinesData.length==0}">
+                                <label class="slds-form-element__label"><span style="color:red">*</span>Contact</label>
+                                <c:customLookup recordID="{!v.Pur_Order.sigmaerpdev2__Contact__c}" recordName="{!v.Pur_Order.ContactName}" whereCondition="{!'AND AccountId=\''+v.Pur_Order.sigmaerpdev2__Product_Supplier__c+'\' AND AccountId!=null'}" objectAPIName="Contact"
+                                                IconName="custom:custom106" label=""  isSigmaOrder="true"/>
+                                
+                                <aura:set attribute="else">
+                                    <lightning:input label="Contact" title='' value="{!v.Pur_Order.ContactName}" disabled="true"/>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <aura:if isTrue="{!v.orderLinesData.length==0}">
+                                <label class="slds-form-element__label"><span style="color:red">*</span>Vendor Location</label>
+                              <!--  <c:customLookup recordID="{!v.Pur_Order.sigmaerpdev2__Vendor_Location__c}" recordName="{!v.Pur_Order.LocationName}"   objectAPIName="Account" whereCondition="{!'AND recordType.Name=\'Location\' AND ID in (select sigmaerpdev2__Location__c from sigmaerpdev2__Inventory_Location__c where sigmaerpdev2__Location_Type__c=\'Vendor Inventory Location\')'}" 
+                                                IconName="custom:custom106" label=""  isSigmaOrder="true"/>-->
+                                <c:customLookup recordID="{!v.Pur_Order.sigmaerpdev2__Vendor_Location__c}" recordName="{!v.Pur_Order.LocationName}"   objectAPIName="Account" whereCondition="{!'AND recordType.Name=\'Location\' AND ID in (select sigmaerpdev2__Vendor_Location__c from sigmaerpdev2__Vendor_Product__c where sigmaerpdev2__Vendor_Contact__r.Name= \''+v.Pur_Order.ContactName+'\')'}" 
+                                                IconName="custom:custom106" label=""  isSigmaOrder="true"/>
+                                <aura:set attribute="else">
+                                    <lightning:input label="Location" title='' value="{!v.Pur_Order.LocationName}" disabled="true"/>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <!--<aura:if isTrue="{!(empty(v.recordId))}">-->
+                            <aura:if isTrue="{!v.orderLinesData.length==0}">
+                                <label class="slds-form-element__label"><span style="color:red">*</span>Company</label>
+                               <c:customLookup recordID="{!v.Pur_Order.sigmaerpdev2__Company__c}" recordName="{!v.Pur_Order.CompanyName}" objectAPIName="sigmaerpdev2__Company__c"
+                                                IconName="custom:custom106" label=""  isSigmaOrder="true"/>
+                                
+                                <aura:set attribute="else">
+                                    <lightning:input label="Company" title='' value="{!v.Pur_Order.CompanyName}" disabled="true"/>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                      
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input type="date" label="Purchase Order Date" value="{!v.Pur_Order.sigmaerpdev2__Order_Date__c}"/> <!--min="{!v.todayDate}"-->
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                          <!-- <span style="color:red">*</span>-->
+                            <lightning:input type="date" label="Due  Date" value="{!v.Pur_Order.sigmaerpdev2__Expected_Date__c}"  required="true"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            
+                            <lightning:select aura:id="status" label="Status" value="{!v.Pur_Order.sigmaerpdev2__Status__c}"  required="true">
+                                <option value="Submitted" disabled="{!or(v.isConfirmed,v.isCancelled)}">Submitted</option>
+                               <!-- <option value="Confirmed" disabled="{!v.isCancelled}"> Confirmed</option>
+                                <option value="Cancelled" disabled="{!or(v.issrp,v.rec)}"> Cancelled</option>-->
+                            </lightning:select>
+                            
+                            
+                            
+                        </div>
+                      
+                        <!--<div class="{!v.configData.stappConfg.stapperptra__Is_Stapp_Stand_alone__c ? 'slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12':'slds-hide'}">-->
+                            <!--<aura:if isTrue="{!(empty(v.recordId))}">-->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <aura:if isTrue="{!v.orderLinesData.length==0}">
+                                <label class="slds-form-element__label"><span style="color:red">*</span>Tax Treatment</label>
+                                <c:customLookup recordID="{!v.Pur_Order.sigmaerpdev2__Tax_Treatment__c}" recordName="{!v.Pur_Order.TaxTreatmentName}" objectAPIName="sigmaerpdev2__Tax_Treatment__c" 
+                                                IconName="custom:custom106" label=""  isSigmaOrder="true" whereCondition="{!'AND sigmaerpdev2__Company__c =\''+v.Pur_Order.sigmaerpdev2__Company__c+'\' AND sigmaerpdev2__Tax_Type__c in (\'Purchase\',\'Sales and Purchase\')'}"/>
+                                
+                                <aura:set attribute="else">
+                                    <lightning:input label="Tax Treatment" title='' value="{!v.Pur_Order.TaxTreatmentName}" disabled="true"/>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                       <!-- </div>-->
+                         <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                        <label class="slds-form-element__label" for="Vendor">Exchange Currency
+                            
+                        </label>
+                        <div class="slds-3-of-4" id="TempToDisplayCurrency">
+                            
+                           <!-- <c:LookupSObject aura:id="currName" searchString="{!v.recordName1}" 
+                                             label="Currency" pluralLabel="Currencies"
+                                             sObjectAPIName="sigmaerpdev2__Currency__c"
+                                             instanceId="Currency"
+                                             SRString="All"
+                                             listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                             listIconClass="slds-icon-standard-account"
+                                             />-->
+                             <c:customLookup recordID="{!v.Pur_Order.sigmaerpdev2__Currency__c}" recordName="{!v.Pur_Order.currName}" objectAPIName="sigmaerpdev2__Currency__c" 
+                                             IconName="custom:custom106" label=""  isSigmaOrder="true"/>
+                                
+                        </div>
+                    </div> 
+                    </div>
+                </div>
+            </lightning:tab>
+            <lightning:tab label="Billing Info" id="3">
+                <div class="" role="list">
+                    <div class="slds-grid slds-wrap paddingAround">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input label="Street"  type="text" value="{!v.Pur_Order.sigmaerpdev2__Street__c}" /> 
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input label="City"  type="text" value="{!v.Pur_Order.sigmaerpdev2__City__c}" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input  label="State/Province" value="{!v.Pur_Order.sigmaerpdev2__State_Province__c}" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input  label="Country" value="{!v.Pur_Order.sigmaerpdev2__Country__c}" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input  label="Zip/Postal Code" value="{!v.Pur_Order.sigmaerpdev2__Zip_Postal_Code__c}" />
+                        </div>
+                    </div>
+                </div>
+            </lightning:tab>
+            <lightning:tab label="Shipping Info" id="4">
+                <div class="" role="list">
+                    <div class="slds-grid slds-wrap paddingAround">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input label="Shipping Street"  type="text" value="{!v.Pur_Order.sigmaerpdev2__Shipping_Street__c}" /> 
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input label="Shipping City"  type="text" value="{!v.Pur_Order.sigmaerpdev2__Shipping_City__c}" step="0.01" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input  label="Shipping State/Province" value="{!v.Pur_Order.sigmaerpdev2__Shipping_State_Province__c}" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input  label="Shipping Country" value="{!v.Pur_Order.sigmaerpdev2__Shipping_Country__c}" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input  label="Shipping Zip/Postal Code" value="{!v.Pur_Order.sigmaerpdev2__Shipping_Zip_Postal_Code__c}" />
+                        </div>
+                    </div>
+                </div>
+            </lightning:tab>
+            <lightning:tab label="Notes" id="5">
+                <div class="" role="list">
+                    <div class="slds-grid slds-wrap paddingAround">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input label="Description"  type="text" value="{!v.Pur_Order.sigmaerpdev2__Description__c}" /> 
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+                            <lightning:input label="Legal Note"  type="text" value="{!v.Pur_Order.sigmaerpdev2__Legal_Note__c}" /> 
+                        </div>
+                    </div>
+                </div>
+            </lightning:tab>
+        </lightning:tabset>
+        
+        <aura:if isTrue="{!v.isOpen}">
+            <c:POP aura:id="popLines" recordId="{!v.recordId}" vendorid="{!v.vendorId}" Pur_Order="{!v.Pur_Order}" taxTreatmentData="{!v.taxTreatmentData}" fromCurrToCurrecyRate="{!v.fromCurrToCurrecyRate}" isConfirmed="{!v.isConfirmed}" isCancelled="{!v.isCancelled}" issrps="{!v.issrp}" vplist="{!v.orderLinesData}" configData="{!v.configData}" companyName="{!v.Pur_Order.CompanyName}" deletedList="{!v.deletedList}" UsingVendorProductPrice="{!v.UsingVendorProductPrice}"/>
+        </aura:if>
+    </lightning:card>
+    
+    <footer class="slds-modal__footer">
+        <aura:if isTrue="{!v.POIdForClone!=undefined}">
+            <lightning:button class="slds-float_left"  variant="brand" label="Add Product" iconName="utility:add" onclick="{!c.addProduct}"/>
+            <aura:set attribute="else">
+                <lightning:button class="slds-float_left"  variant="brand" label="Add Product" iconName="utility:add" onclick="{!c.addProduct}" disabled="{!or(v.isCancelled,v.issrp)}"/>
+            </aura:set>
+        </aura:if>
+       <div class="slds-float_left" style="position: absolute;right: 243px;">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                <!--<b>Total Gross : {!v.totalGross}</b>-->
+                <b>Total Gross : <lightning:formattedNumber value="{!v.totalGross}" minimumFractionDigits="2"/></b><!--style='currency' currencyCode='{!v.Pur_Order.CurrencyIsoCode}'-->
+            </h2>
+        </div>
+        
+        <aura:if isTrue="{!v.recordId==undefined}">
+            <lightning:button variant="brand" label="Save" iconName="utility:check" iconPosition="left" onclick="{!c.onClickSave}" disabled="{!v.disableSave}" />
+            <aura:set attribute="else">
+                <lightning:button variant="brand" label="Update" iconName="utility:check" iconPosition="left" onclick="{!c.onClickSave}" disabled="{!v.disableSave}"/>
+            </aura:set>
+        </aura:if>
+        
+        <lightning:button variant="neutral" label="Cancel" iconName="utility:close" iconPosition="left" onclick="{!c.onClickCancel}"/>
+    </footer>
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner style="position: fixed" alternativeText="Loading" size="large" />
+    </div>
+</aura:component>

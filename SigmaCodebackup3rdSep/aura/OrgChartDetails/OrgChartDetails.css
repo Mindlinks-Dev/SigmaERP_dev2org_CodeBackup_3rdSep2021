@@ -1,0 +1,43 @@
+.THIS {
+	border-left: solid 1px #D8DDE6;
+    margin-left: 54px;
+}
+
+.THIS .master {
+	margin-left: -54px;
+    background-color: #F0F8FC;
+    /*background-color: #F7F9FB;*/
+}
+
+.THIS .master .profile {
+	height: 80px;
+	width: 80px;
+}
+
+.THIS li {
+    margin-left: 12px;
+}
+
+.THIS .profile {
+	border-radius: 50%;
+    margin-right: 10px;
+	height: 32px;
+	width: 32px;
+}
+
+.THIS .manager {
+    margin-left: 24px;
+}
+
+.THIS .manager .slds-media__body {
+	margin-left: 24px;
+}
+
+.THIS .master .slds-lookup__result-text {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.THIS .slds-lookup__list {
+    margin-left: -40px;
+}

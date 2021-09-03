@@ -1,0 +1,116 @@
+<aura:component implements="force:appHostable" controller="RecipeManagement">
+    
+    <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="currentCount" type="Integer" default="0"/>
+    <aura:attribute name="initialRows" type="Integer" default="10"/>
+    <aura:attribute name="rowsToLoad" type="Integer" default="10"/>
+    <aura:attribute name="totalNumberOfRows" type="Integer"/>
+    <aura:attribute name="loadMoreStatus" type="String" default="Load More"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:attribute name="recipedataList" type="Object"/>
+    <aura:attribute name="recipedata" type="Object"/>
+    <aura:attribute name="flag" type="string"/>
+    <aura:handler event="c:RecipeManagementEvent" action="{!c.updateRecipesList}"/>
+    <aura:handler name="RecipeManagementComponentEvent" event="c:RecipeManagementComponentEvent" action="{!c.handleEditFlow}"/>
+    <lightning:overlayLibrary aura:id="createRecipeModal"/>
+    
+    <aura:attribute name="hideMRHeader" type="Boolean" default="false" />
+    
+    <aura:if isTrue="{!v.hideMRHeader == false}">        
+        <lightning:card title="">    	                         
+            <span style="padding-left:4px;font-size:12px;">{!'Recipes ('+v.totalNumberOfRows+')'}</span>                  
+        </lightning:card>
+    </aura:if>
+    
+    <div aura:id="RecipeManagementDetails" class="slds-hide">
+        <c:RecipeManagementDetailsMob recipeData="{!v.recipedata}"/>
+    </div>
+    
+    <div aura:id="dataList">
+        <aura:if isTrue="{!and(v.totalNumberOfRows > 0, v.totalNumberOfRows != null)}"> 
+            <lightning:card title="">
+                <aura:set attribute="actions">
+                    <lightning:button label="New" onclick="{!c.createRecipe}"/>
+                </aura:set>
+                <aura:set attribute="footer">
+                    <a onclick="{!c.loadMoreData}">{!v.loadMoreStatus}</a>
+                </aura:set>
+               
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                    <div class="slds-truncate" title="Recipe Name">Recp. Name</div>
+                                </th>                                
+                                <th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                    <div class="slds-truncate" title="Product Name">Prod. Name</div>
+                                </th>
+                                <!--<th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                    <div class="slds-truncate" title="Quantity">Quantity</div>
+                                </th>-->                               
+                                <th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                    <div class="slds-truncate" title="Action"></div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.recipedataList}" var="recp">
+                                <c:RecipeManagementItemsMob recipeItems="{!recp}"/>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+               
+            </lightning:card>
+            <aura:set attribute ="else">
+                <lightning:card title="Recipes (0)" iconName="custom:custom5" class="paddingBottom">
+                    <aura:set attribute="actions">
+                        <lightning:button label="New" onclick="{!c.createRecipe}"/>
+                    </aura:set>               
+                    <div class="slds-scrollable">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                        <div class="slds-truncate" title="Recipe Name">Recipe Name</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                        <div class="slds-truncate" title="Status">Status</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                        <div class="slds-truncate" title="Quantity">Quantity</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                        <div class="slds-truncate" title="Unit Of Measure">Unit Of Measure</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                        <div class="slds-truncate" title="Product Name">Product Name</div>
+                                    </th>
+                                    <th scope="col" style="background-color: rgba(229, 240, 250, 0.81);">
+                                        <div class="slds-truncate" title="Action"></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5">
+                                        <div style="padding-left:47%;">No records found</div>
+                                    </td>
+                                </tr> 
+                            </tbody>
+                        </table>
+                    </div>
+                </lightning:card>
+            </aura:set>
+        </aura:if>
+    </div>
+    <div class="demo-only slds-hide" aura:id="mySpinner" style="height: 6rem;">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>    
+</aura:component>

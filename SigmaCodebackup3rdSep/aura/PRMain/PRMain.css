@@ -1,0 +1,17 @@
+.THIS .slds-card__header{
+        /*background-color: #b5ddff;*/
+    background-color: #007bff;
+}
+.THIS.scrollerSize {
+    height: 780px;
+}
+
+@media (max-width: 48em)
+    {
+    .THIS th,th.THIS,.THIS td,td.THIS {
+        font-size:90% !important;
+    }
+        .THIS table,table.THIS{
+            padding-bottom:20px !important;
+    }
+}

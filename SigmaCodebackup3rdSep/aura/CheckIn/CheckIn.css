@@ -1,0 +1,19 @@
+.THIS lightning-input.radioButton.slds-form-element{
+    display: table-row-group;
+    
+}
+.hrclass.THIS{
+    margin: 0%;
+    margin-bottom: 4%;
+}
+
+.radioButton.THIS{
+    
+}
+
+.THIS .pgraph{
+    font-size:16px;
+    padding-bottom: 3%;
+    width: 45%;
+    max-width: 50%;
+}

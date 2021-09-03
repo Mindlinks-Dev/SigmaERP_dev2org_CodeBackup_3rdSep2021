@@ -1,0 +1,24 @@
+<apex:page controller="PaymentCntrl" id="mainPage" sidebar="false" standardStylesheets="true" showHeader="false">
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+     var recId = "{!RecordId}";
+     
+        $Lightning.use("sigmaerpdev2:sigmaorderPayment", function() 
+        {
+         $Lightning.createComponent("sigmaerpdev2:PaymentCalling",
+                                           {recordId: recId,
+                                           frommagento: true},
+											"lightning",
+                                           function(cmp) 
+                                           {
+                                               //alert('recId'+recId);
+                                           //alert('running inside component studd');
+                                               //  Do some stuff
+                                           }
+                );
+        });
+    </script>
+</apex:page>

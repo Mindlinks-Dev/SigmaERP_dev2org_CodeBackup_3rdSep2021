@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION">
+    <aura:attribute name="popup" type="Object"/>
+    <aura:attribute name="rowIndex" type="Integer"/> 
+     <aura:attribute name="index" type="Integer"/> 
+   
+</aura:event>

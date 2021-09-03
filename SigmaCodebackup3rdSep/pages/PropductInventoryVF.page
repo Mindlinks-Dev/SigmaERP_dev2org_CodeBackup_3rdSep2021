@@ -1,0 +1,16 @@
+<apex:page standardController="Order" sidebar="false">
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+        $Lightning.use("sigmaerpdev:ProductInventoryAPP", function() {
+          $Lightning.createComponent("sigmaerpdev:InventoryClassComponent",
+          {  },
+          "lightning",
+          function(cmp) {
+              //alert('inside  Order');
+          });
+        });
+    </script>
+</apex:page>

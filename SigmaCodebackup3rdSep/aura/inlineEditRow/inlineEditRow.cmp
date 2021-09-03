@@ -1,0 +1,151 @@
+<aura:component controller="inlineEditCtrl">
+    <!-- on component load, fetch picklist values dynamically from apex controller -->   
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/> <!-- to handle lookups-->  
+    <aura:attribute name="productList" type="Vendor_Product__c[]"/>
+    <!--declare aura attributes-->
+    <aura:attribute name="objInfoForPicklistValues" type="Vendor_Product__c" default="{sobjectType : 'Vendor_Product__c'}" description="object information to fetch picklist values"/>
+    <aura:attribute name="ratingPicklistOpts" type="string[]" description="store picklist options values"/> 
+    <aura:attribute name="showSaveCancelBtn" type="boolean"/>
+    <aura:attribute name="showErrorClass" type="boolean" default="false"/>
+    <aura:attribute name="sNo" type="string" />
+    <aura:attribute name="singleRec" type="sobject" default="{'sobjectType' : 'Vendor_Product__c',
+                                                             'sigmaerpdev2__Product_Name__c' : '',
+                                                             'Vendor Code' : '',
+                                                             'Location' :'',
+                                                             'CurrentStock': ''
+                                                             }"/>
+    
+    <aura:attribute name="nameEditMode" type="boolean" default="false" />
+    <aura:attribute name="locationEditMode" type="boolean" default="false" />
+    <aura:attribute name="today" type="Date" />
+    
+    <aura:attribute name="locationName" type="String" />
+    <aura:attribute name="locationId" type="String" />
+    <aura:handler name="change" value="{!v.locationId}" action="{!c.ChangeLocationId}"/>
+    
+    <aura:attribute name="viewProductImageModal" type="boolean" default="false"/>
+     <aura:attribute name="pictureList" type="List"/>
+    <aura:attribute name="contents" type="List" default="[]"/>
+    <!--<aura:attribute name="contents" type="String" />-->
+    <aura:attribute name="sObjectName" type="String" default="sigmaerpdev2__Vendor_Product__c"/>
+    <!--<aura:attribute name="prefixURL" type="String" default="/sfc/servlet.shepherd/version/download/"/>-->
+    
+    <aura:attribute name="prefixURL" type="String" default="/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ/"/>
+     
+    <!--Table Row Start-->  
+    <tr>
+        <td>{!v.sNo}</td>
+        <td ><p class="break-word">{!v.singleRec.sigmaerpdev2__Product_Name__r.Name}</p></td>
+        <td><lightning:buttonIcon size="medium" name="{!v.sNo}" aura:id="{!'ProdImg'+v.contents}" class="slds-m-left_x-large" 
+                                  iconName="utility:photo" variant="bare" onclick="{! c.getproductimagedata }" title="View Product Image" />
+        </td>
+        <td><p class="break-word">{!v.singleRec.sigmaerpdev2__VendorProductCode__c}</p></td>
+        <td> 
+            <p class="break-word">{!v.singleRec.sigmaerpdev2__Vendor_Location__r.Name}</p>
+            <!-- <c:customLookup recordID="{!v.locationId}" recordName="{!v.locationName}" whereCondition="{!'AND recordType.Name=\'Location\' AND ID in (select sigmaerpdev2__Location__c from sigmaerpdev2__Inventory_Location__c where sigmaerpdev2__Location_Type__c=\'Vendor Inventory Location\')'}" objectAPIName="Account" IconName="standard:account" label="" isSigmaOrder= 'true' />
+            -->
+        </td>
+        <td>
+            <lightning:input type="number" variant="label-hidden" value="{!v.singleRec.sigmaerpdev2__Current_Stock__c}" min="1" pattern="[0-9]*"/>
+           <!--<ui:inputNumber  class="slds-input" value="{!v.singleRec.sigmaerpdev2__Current_Stock__c}"  />-->
+        </td>
+        <td>
+            <lightning:input variant="label-hidden" aura:id="lastUpdatedDate" type="date" value="{!v.singleRec.sigmaerpdev2__Last_Updated_Date__c}" onchange="{!c.ondateChange}"
+                             />
+        </td>
+        
+    </tr>
+    <!--<tr>
+       <td><div class="slds-truncate">{!v.sNo}</div></td>
+       
+        <td ondblclick="{!c.inlineEditProductName}" class="{! v.showErrorClass == true ? 'slds-cell-edit slds-has-error' : 'slds-cell-edit'}">
+            <span class="slds-grid slds-grid_align-spread">
+                {!v.singleRec.sigmaerpdev2__Product_Name__r.Name}-->
+    <!-- show input and output section based on boolean flag --> 
+    <!-- <aura:if isTrue="{!v.nameEditMode == false}">
+                    <span class="slds-truncate" title=" Product Name">{!v.singleRec.sigmaerpdev2__Product_Name__c}</span>
+                    <button onclick="{!c.inlineEditProductName}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0" title="Edit Name">
+                      <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+                    </button>-->
+    
+    <!-- Inline Edit Section in else case-->  
+    <!-- <aura:set attribute="else">
+                        <section  tabindex="0" class="slds-popover slds-popover_edit" role="dialog" style="position: absolute; top: 10px">
+                            <div class="slds-popover__body">
+                                <div class="slds-form-element slds-grid slds-wrap">
+                                    <div class="slds-form-element__control slds-grow">
+                                        <ui:inputText class="slds-input inputFieldWidth"
+                                                      labelClass="slds-form-element__label slds-form-element__label_edit slds-no-flex"
+                                                      aura:id="inputId"
+                                                      blur="{!c.closeProductNameBox}"
+                                                      change="{!c.onProductNameChange}"
+                                                      required="true"
+                                                      label=" Product Name"
+                                                      value="{!v.singleRec.sigmaerpdev2__Product_Name__r}" />
+                                    </div>
+                                </div>
+                            </div>
+                            <span id="form-end" tabindex="0"></span>
+                        </section>  
+                    </aura:set>  
+                </aura:if> 
+            </span>
+        </td>
+        
+        <td>
+            <div class="slds-truncate">{!v.singleRec.sigmaerpdev2__VendorProductCode__c}</div>
+        </td>
+        
+        <td ondblclick="{!c.inlineEditLocation}" class="slds-cell-edit">
+            <span class="slds-grid slds-grid_align-spread">-->
+    <!-- show input and output section based on boolean flag --> 
+    <!--<aura:if isTrue="{!v.LocationEditMode == false}">
+                    <span class="slds-truncate" title="Location">{!v.singleRec.Location}</span>
+                    <button onclick="{!c.inlineEditLocation}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0" title="Edit Rating">
+                        <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+                    </button>-->
+    
+    <!-- Inline Edit Section in else case-->  
+    <!-- <aura:set attribute="else">
+                        <section  tabindex="0" class="slds-popover slds-popover_edit" role="dialog" style="position: absolute; top: 0px">
+                            <div class="slds-popover__body">
+                                <div class="slds-form-element slds-grid slds-wrap">
+                                    <div class="slds-form-element__control slds-grow">
+                                        <label class="slds-form-element__label"></label>
+                                        <ui:inputSelect aura:id="Location"
+                                                        class="slds-select inputFieldWidth"
+                                                        blur="{!c.closeLocationBox}"
+                                                        change="{!c.onLocationChange}"
+                                                        value="{!v.singleRec.Location}"
+                                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <span id="form-end" tabindex="0"></span>
+                        </section>  
+                    </aura:set>  
+                </aura:if> 
+            </span>
+        </td> 
+    </tr>-->
+    
+    <aura:renderIf isTrue="{!v.viewProductImageModal}">
+        <section class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.viewProductImageModal}">
+                        <lightning:icon iconName="utility:close" size="medium" variant="inverse"/>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-modal__title slds-hyphenate">{!v.singleRec.sigmaerpdev2__Product_Name__r.Name}</h2>
+                    
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <img src="{!'/servlet/servlet.FileDownload?file='+'v.contents'}"  width="100%"/>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:renderIf>
+</aura:component>

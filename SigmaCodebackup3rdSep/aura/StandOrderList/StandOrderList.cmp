@@ -1,0 +1,25 @@
+<aura:component >
+    
+    <aura:attribute name="OrderList" type="Object[]"/>
+    <aura:attribute name="indexVar" type="Integer"/>
+    
+    <tr class="slds-hint-parent"> 
+        <td class="">            
+            <label class="slds-checkbox">
+                <ui:inputCheckbox aura:id="checkbox"  value="{!v.OrderList.selected}"/>
+                <span class="slds-checkbox--faux" />
+            </label>
+        </td>	
+        <th scope="row">
+            <div class="slds-truncate" title="">{!v.OrderList.OrderNumber}</div>
+        </th>
+        <th scope="row">
+            <div class="slds-truncate" title="">{!v.OrderList.sigmaerpdev2__Due_Amount__c}</div>
+        </th>
+        <th scope="row">
+            <div class="slds-truncate" title="">{!v.OrderList.sigmaerpdev2__Net_Amount__c}</div>
+        </th>
+        
+    </tr>
+    
+</aura:component>

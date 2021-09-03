@@ -1,0 +1,478 @@
+<apex:page Controller="UseAndDeleteClass">
+  <!-- Begin Default Content REMOVE THIS -->
+ 
+<apex:form >
+    <html>
+        <head>
+            <title> Utility Page </title>
+        </head>
+        <body>
+
+            <apex:tabPanel switchType="client" selectedTab="Schedule Class" id="theTabPanel">
+            <apex:tab label="Schedule Class" name="Schedule Class" id="tabOne" >
+            
+            <div style="text-align:  center; font-size: 15px;">
+                <p>
+                    Press Schedule button to schedule BatchClassforUpdateRecords class
+                </p>
+                <apex:commandbutton value="Schedule" action="{!toschedule}" />
+
+                <!--
+                <p>
+                    batchid : <apex:outputText value="{!batchid}" />
+                </p>
+                -->
+            </div>
+            </apex:tab>
+<!-- first tab ends -->
+            <apex:tab label="Delete Inbound Activity Data" name="Delete Inbound Activity Data" id="tabTwo" >
+                <br/>
+                Number of rows deleted: <apex:outputText value="{!size }" />
+                <br/>
+                <br/>
+                <br/>
+                <apex:pageBlock >
+                
+                
+                  <apex:pageBlockSection columns="1" title="to delete SRPLI">
+                    Note: to delete SRPLI
+                    <apex:commandbutton value="delete SRPLI" action="{!todeletesrpli}" />
+                    </apex:pageBlockSection>
+                    
+                
+                 <apex:pageBlockSection columns="1" title="to delete SRP">
+                    Note: to delete SRP("Before clicking this SRP Button Inactive the Stock Receiving Product Triger")
+                    <apex:commandbutton value="delete SRP" action="{!todeletesrp}" />
+                    </apex:pageBlockSection>
+                
+                 <apex:pageBlockSection columns="1" title="to delete SR">
+                    Note: to delete SR
+                    <apex:commandbutton value="delete SR" action="{!todeletesr}" />
+                    </apex:pageBlockSection>
+                    
+                    
+                    <apex:pageBlockSection columns="1" title="to delete PO and POP">
+                    Note: to delete Pushase Order and Purchase order Product
+                    <apex:commandbutton value="delete PO" action="{!todeletepo}" />
+                    </apex:pageBlockSection>
+                
+                </apex:pageBlock>
+                
+            </apex:tab>
+<!-- second tab ends -->
+            <apex:tab label="Delete Inventory Data" name="Delete Inventory Data" id="tabthree">
+                <br/>
+                Number of rows deleted: <apex:outputText value="{!size }" />
+                <br/>
+                <br/>
+                <br/>
+                <div class="row">
+
+                   <div class="column" style="">
+                        <h2>to delete Vendor Product</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete VP" action="{!todeletevendor}" />
+                        </div>
+                    </div>
+                    <div class="column" style="">
+                        <h2>to delete Vendor Incidence</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete vendor Incidence" action="{!todeletevendoreincidence}" />
+                        </div>
+                    </div>
+                    <div class="column" style="">
+                        <h2>to delete Vendor Evaluation</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete vendor evaluation" action="{!todeletevendorevaluation}" />
+                        </div>
+                    </div>
+                    
+                    <div class="column" style="">
+                        <h2>to delete  Product</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete Product" action="{!todeleteproduct}" />
+                        </div>
+                    </div>
+
+                    <div class="column" style="">
+                        <h2>to delete ILPLI</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete ILPLI" action="{!todeleteilpli}" />
+                        </div>
+                    </div>  
+                    
+                    <div class="column" style="">
+                        <h2>to delete ILP</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete ILP" action="{!todeleteilp}" />
+                        </div>
+                    </div>
+                    
+                    <div class="column" >
+                        <h2>to delete inventory history</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete ILP history" action="{!todeleteilphistory}" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                
+                    <div class="column" >
+                        <h2>to delete inventory transaction</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete inventory trans" action="{!todeleteinventorytrans}" />
+                        </div>
+                    </div>
+                    
+                    <div class="column" >
+                        <h2>to delete Product Transaction</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete Prod Transaction " action="{!todeletept}" />
+                        </div>
+                    </div>
+                    
+                    <div class="column" >
+                        <h2>to delete PSN</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete PSN " action="{!todeletepsn}" />
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="row">
+                    
+                    <div class="column" >
+                        <h2>to delete Product Price</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete ProductPrice " action="{!todeleteprodprice}" />
+                        </div>
+                    </div>
+                    
+                     <div class="column" >
+                        <h2>to delete Product Inventory History</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete ProductInvHistory " action="{!todeleteprodinvhist}" />
+                        </div>
+                    </div>
+                    
+                    <div class="column" >
+                        <h2>to delete Product Inventory </h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete PI" action="{!todeleteprodinv}" />
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="row">
+                
+                    <div class="column" >
+                        <h2>to delete lot product</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete lot produc" action="{!todeletelotprod}" />
+                        </div>
+                    </div>
+                    
+                    <div class="column" >
+                        <h2>to delete lot</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete lot" action="{!todeletelot}" />
+                        </div>
+                    </div>
+                </div>
+            </apex:tab>
+<!-- third tab ends -->
+            <apex:tab label="Delete Outbound Activity Data" name="Delete Outbound Activity Data" id="tabfour">
+                <br/>
+                Number of rows deleted: <apex:outputText value="{!size }" />
+                <br/>
+                <br/>
+                <br/>
+                <apex:pageBlock >
+            
+                                     
+                  
+                    
+                    <apex:pageBlockSection columns="1" title="to delete Sigma Order and order Line">
+                    Note: to delete Sigma Order and Order Line
+                    <apex:commandbutton value="delete SO" action="{!todeleteso}" />
+                    </apex:pageBlockSection>
+                
+                    <apex:pageBlockSection columns="1" title="to payment ">
+                    Note: to delete payment
+                    <apex:commandbutton value="delete payment" action="{!todeletepayment}" />
+                    </apex:pageBlockSection>
+                
+                    <apex:pageBlockSection columns="1" title="to picking slip ">
+                    Note: to delete picking slip
+                    <apex:commandbutton value="delete picking slip" action="{!todeletepickingslip}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to order ">
+                    Note: to delete order
+                    <apex:commandbutton value="delete order" action="{!todeleteorder}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to order lines ">
+                    Note: to delete order lines
+                    <apex:commandbutton value="delete order line" action="{!todeleteorderline}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to order payment">
+                    Note: to delete order payment
+                    <apex:commandbutton value="delete order payment" action="{!todeleteorderpayment}" />
+                    </apex:pageBlockSection>
+                
+                    <apex:pageBlockSection columns="1" title="to delete PP and PPLI">
+                    Note: to delete PP and PPLI
+                    <apex:commandbutton value="delete PP" action="{!todeletepp}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to delete Package">
+                    Note: to delete Package
+                    <apex:commandbutton value="delete Package" action="{!todeletepackage}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to delete shipment">
+                    Note: to delete shipment and shipment product
+                    <apex:commandbutton value="delete shipment " action="{!todeleteshipment}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to delete Inventory Allocation">
+                    Note: to delete Inventory Allocation
+                    <apex:commandbutton value="delete Inventory Allocation" action="{!todeleteinventoryallocation}" />
+                    </apex:pageBlockSection>
+                    
+                     <apex:pageBlockSection columns="1" title="to delete pricebook">
+                    Note: to delete pricebook
+                    <apex:commandbutton value="delete pricebook" action="{!todeletepricebook}" />
+                    </apex:pageBlockSection>
+                
+                
+                </apex:pageBlock>
+                
+            </apex:tab>
+<!-- four tab ends -->
+<!--Fifth tab starts-->
+            
+
+            <apex:tab label="Delete FFP Data" name="Delete FFP Data" id="tabfive">
+                <br/>
+                Number of rows deleted: <apex:outputText value="{!size }" />
+                <br/>
+                <br/>
+                <br/>
+                <div class="row">
+
+                    <div class="column" style="">
+                        <h2>to delete product stock</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete product stock" action="{!todeleteproductstock}" />
+                        </div>
+                    </div>
+                    <div class="column" style="">
+                        <h2>to delete invoice</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete Invoice" action="{!todeleteinvoice}" />
+                        </div>
+                    </div>
+
+                   <div class="column" style="">
+                        <h2>to delete work order</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete wo" action="{!todeletewo}" />
+                        </div>
+                    </div>
+                    
+                    <div class="column" style="">
+                        <h2>to delete  work order assignment</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete wo assignment" action="{!todeletewoassign}" />
+                        </div>
+                    </div>
+
+                    <div class="column" style="">
+                        <h2>to delete work order inve track</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete wo inv track" action="{!todeletewoinvtrack}" />
+                        </div>
+                    </div>  
+                    
+                    
+                    
+                    <div class="column" >
+                        <h2>to delete todeletewolines</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete todeletewolines" action="{!todeletewolines}" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                
+                    <div class="column" >
+                        <h2>to delete work type</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete work type" action="{!todeleteworktype}" />
+                        </div>
+                    </div>
+                    
+                    <div class="column" >
+                        <h2>to delete work type binding</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete work type binding " action="{!todeleteworktypebinding}" />
+                        </div>
+                    </div>
+                    <div class="column" >
+                        <h2>to delete products needed</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete products needed " action="{!todeleteproductneeded}" />
+                        </div>
+                    </div>
+                    
+                       <div class="column" >
+                        <h2>to delete product request</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete product request" action="{!todeleteproductrequest}" />
+                        </div>
+                    </div> 
+                    
+                     <div class="column" >
+                        <h2>to delete product request line item</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete product request line ite" action="{!todeleteproductrequestlineitem}" />
+                        </div>
+                    </div> 
+                        
+                        <div class="column" >
+                        <h2>to delete product transfer</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="product transfer" action="{!todeleteproducttransfer}" />
+                        </div>
+                    </div>  
+                    <div class="column" >
+                        <h2>to delete product transfer line item</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="product transfer line item" action="{!todeleteproducttransferlineitem}" />
+                        </div>
+                    </div>  
+                      <div class="column" >
+                        <h2>to delete service quote</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="service quote" action="{!todeleteservicequote}" />
+                        </div>
+                    </div>  
+                    <div class="column" >
+                        <h2>to delete service quote line item</h2>
+                        <div class="insidecolumn">
+                            <apex:commandbutton value="delete service quote line item" action="{!todeleteservicequotelineitem}" />
+                        </div>
+                    </div>
+                                              
+                </div>
+                <div class="row">                                   
+                </div>
+            </apex:tab>
+<!-- fifth tab ends -->
+
+            <apex:tab label="Delete Add-On Modules Data" name="Delete other Modules Data" id="tabsix">
+                <br/>
+                Number of rows deleted: <apex:outputText value="{!size }" />
+                <br/>
+                <br/>
+                <br/>
+                <apex:pageBlock >
+
+                    <apex:pageBlockSection columns="1" title="to delete Sigma Linkage and its Items">
+                    Note: to delete Sigma Linkage and Sigma Linkage Item
+                    <apex:commandbutton value="delete SL " action="{!todeletesl}" />
+                    </apex:pageBlockSection>
+                    
+                    
+                    <apex:pageBlockSection columns="1" title="to delete stock movement">
+                    Note: to delete stock movement
+                    <apex:commandbutton value="delete stock move " action="{!todeletesm}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to delete stock movement product">
+                    Note: to delete stock movement product
+                    <apex:commandbutton value="delete stock move prod" action="{!todeletesmp}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to delete stock adjustment">
+                    Note: to delete stock adjustment and stock adjustment product
+                    <apex:commandbutton value="delete stock adj " action="{!todeletesa}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to delete SOA and SOALI">
+                    Note: to delete SOA and SOALI
+                    <apex:commandbutton value="delete SOA " action="{!todeletesoa}" />
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection columns="1" title="to delete sub line item">
+                    Note: to delete sub line item
+                    <apex:commandbutton value="delete sub line item" action="{!todeletesublineitem}" />
+                    </apex:pageBlockSection>
+                                   
+                    <apex:pageBlockSection columns="1" title="to delete subscription">
+                    Note: to delete subscription
+                    <apex:commandbutton value="delete subscription" action="{!todeletesub}" />
+                    </apex:pageBlockSection>
+                                  
+                    <apex:pageBlockSection columns="1" title="to delete account subscriptionintervals">
+                    Note: to delete subscriptionintervals
+                    <apex:commandbutton value="delete acc sub inter  " action="{!todeleteaccsubinter}" />
+                    </apex:pageBlockSection>
+                                
+                    <apex:pageBlockSection columns="1" title="to delete account subscription">
+                    Note: to delete subscription
+                    <apex:commandbutton value="delete acc sub   " action="{!todeleteaccsub}" />
+                    </apex:pageBlockSection>
+                    
+                </apex:pageBlock>
+                
+            </apex:tab>
+            </apex:tabPanel>
+    
+        </body>
+    </html>
+    
+<style>
+.pbSubheader
+{
+background-color: grey!important;
+}
+.activeTab 
+{
+color:black;font-size:20px;
+}
+
+.column 
+{
+float: left;
+width: 30%;
+padding: 10px;
+border-style: solid;
+border-width: 1px;
+border-color: black;
+text-align: center;
+margin: 0.5%;
+font-size: 14px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.insidecolumn
+{
+
+}
+
+</style>
+
+</apex:form>
+</apex:page>

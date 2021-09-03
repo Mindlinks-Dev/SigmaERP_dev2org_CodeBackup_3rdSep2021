@@ -1,0 +1,500 @@
+<aura:component controller="ManufacturingRun" implements="flexipage:availableForAllPageTypes,force:appHostable" access="global">        
+    <aura:attribute name="mainWrapperList" type="array"/>
+    <aura:attribute name="UnitPrice" type="Decimal" default="0.00"/>
+    <aura:attribute name="TotalCost" type="Decimal" default="0.00"/> 
+    <aura:attribute name="manfObj" type="Map"/>
+    <aura:attribute name="SMData" type="object"/>
+    <aura:attribute name="prodQuan" type="Decimal"/>
+    <aura:attribute name="prodAttributeType" type="String" />
+    <aura:attribute name="openModal" type="Boolean" default="false" />
+    <aura:attribute name="serials" type="Map[]" />  
+    
+    <aura:attribute name="autoSerialName" type="String" />
+    <aura:attribute name="showAutoSerNumEntryFlg" type="Boolean" default="false" /> 
+    <aura:attribute name="showManSerNumEntryFlg" type="Boolean" default="false" />
+    
+    <aura:attribute name="enableSaveForUplAndMan" type="Boolean" default="false" />
+        
+    <aura:attribute name="origProdQty" type="Decimal" />
+    
+    <aura:attribute name="passedQty" type="Decimal" />
+    <aura:attribute name="failedQty" type="Decimal" />
+    <aura:attribute name="qcComments" type="String" />  
+    <aura:attribute name="barCodeVal" type="String" />  
+    
+    <aura:attribute name="isBarCodeAlreadyThere" type="Boolean" />
+    
+    <aura:attribute name="sysWastg" type="Decimal" />
+    <aura:attribute name="usrWastg" type="Decimal" default="0" />    
+    <aura:attribute name="totWastg" type="Decimal" default="0" />
+    <aura:attribute name="showWastg" type="boolean" default="false" />
+    <aura:attribute name="showWastageBlk" type="boolean" default="true" />  
+    
+    <aura:attribute name="dataobjNewDefLoc" type="String" default="" />
+    
+    <aura:attribute name="dataobjNewDmgdLoc" type="String" default="" />
+    <aura:attribute name="dataobjNewDmgdLocId" type="ID" default="" />
+    
+    <aura:attribute name="usrWastgInterimVal" type="Decimal" default="0" />
+    
+    <aura:handler name="change" value="{!v.totWastg}" action="{!c.strUserWstg}" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.getSMData}"/>
+    <aura:handler name="change" value="{!v.manfObj.sigmaerpdev2__Produced_Quantity__c}" action="{!c.calculateUnitPrice}"/>
+    <aura:handler name="change" value="{!v.UnitPrice}" action="{!c.calculateUnitPrice}"/>
+    <aura:handler name="change" value="{!v.TotalCost}" action="{!c.calculateUnitPrice}"/>
+    
+    <aura:attribute name="disableAfterSerNum" type="boolean" default="false" />
+    
+    <aura:attribute name="showReply" type="String" default="" />
+    
+    <aura:attribute name="testActv1" type="String" />
+    <aura:handler name="change" value="{!v.testActv1}" action="{!c.testActvCtrl}"/>
+    
+    <aura:attribute name="detTabClk1" type="Boolean" /> 
+    <aura:handler name="change" value="{!v.detTabClk1}" action="{!c.valtabchanged}"/>
+    
+    <!--<aura:handler name="change" value="{!v.passedQty}" action="{!c.copyPassedQtyToProdQn}"/>--> 
+    
+    <aura:if isTrue="{!v.manfObj.sigmaerpdev2__Status__c != 'Produced'}">
+        <lightning:card class="slds-text-align_center slds-m-top_x-small slds-size_8-of-8" title="Status should be Produced before proceeding to Post Production activities">        	
+        </lightning:card>
+    </aura:if>
+    
+    <aura:if isTrue ="{!and(v.manfObj.sigmaerpdev2__PI_updated__c == false, v.manfObj.sigmaerpdev2__Status__c == 'Produced')}">    
+        <div align="center"> 
+            <lightning:card title="">
+                 <div class="slds-form slds-form_compound slds-p-around_medium">        
+                        <fieldset class="slds-form-element">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div style="float:left;">
+                                        <img src="/resource/sigmaerpdev2__QC" width="95" height="5" title="Quality Check" />
+                                    </div> 
+                                </div>
+                            </div>
+                     </fieldset>
+               	 </div>  	
+            </lightning:card>            
+           
+            
+            <lightning:card title="Quality Check (QC)" class="slds-text-title_caps slds-text-align_left slds-card_boundary shadow slds-m-top_x-small slds-size_3-of-4">               
+                 <div class="slds-form slds-form_compound slds-p-around_medium">        
+                     <fieldset class="slds-form-element">
+                         <div class="slds-form-element__group">
+                             <div class="slds-form-element__row">
+                                 <div align="left" class="slds-form-element slds-size_1-of-6">
+                                    <!--<label class="slds-form-element__label">Produced Qty : {!v.origProdQty}</label>-->
+                                     <!--<label class="slds-form-element__label"><b>Produced Qty : {!v.manfObj.sigmaerpdev2__Produced_Quantity__c}</b></label>-->
+                                     <label class="slds-form-element__label"><b>
+                                         Produced Qty
+                                         <ui:inputNumber class="slds-input" value="{!v.manfObj.sigmaerpdev2__Produced_Quantity__c}" labelClass="slds-form-element__label" disabled="{!v.disableAfterSerNum == true}" />                                                                                      
+                                         </b>
+                                     </label>
+                                 </div>
+                             </div>
+                             <br />
+                             <div class="slds-form-element__row">
+                                 <div align="left" class="slds-form-element slds-size_1-of-1">                                 
+                                     <ui:inputCheckbox class="myCheckbox" aura:id="checkbox" label="&nbsp;&nbsp;QC Passed" value="{!v.manfObj.sigmaerpdev2__QC_Passed__c}"/>
+                                     <br />
+                                     <aura:if isTrue ="{!v.manfObj.sigmaerpdev2__QC_Passed__c == true}">
+                                         <div align="left" class="slds-form-element slds-size_1-of-7" style="padding-left:20px;">
+                                             <label class="slds-form-element__label"><aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c==false}"><span style="color:red">* </span></aura:if><span style="color:green">Passed Qty</span></label>
+                                             <ui:inputNumber class="slds-input" value="{!v.passedQty}" labelClass="slds-form-element__label" updateOn="keyup" keyup="{!c.updateFailedQty}" disabled="{!v.disableAfterSerNum == true}" />                                             
+                                         </div><br />
+                                         <div align="left" class="slds-form-element slds-size_2-of-2" style="padding-left:20px;width:140px">
+                                                <label class="slds-form-element__label"><aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c==false}"></aura:if><span style="color:red">Failed Qty</span></label>
+                                             <ui:inputNumber disabled="true" class="slds-input" value="{!v.failedQty}" labelClass="slds-form-element__label" />                                             
+                                             <aura:if isTrue="{!v.failedQty > 0}">
+                                                 <div style="padding-top:9px;width:500px">                                             
+                                                    <ui:inputCheckbox value="true" class="myCheckbox" aura:id="checkbox2" label="&nbsp;&nbsp;Include QC Failed Qty Cost" change="{!c.onCheckQCFail}" />
+                                                 </div>
+                                             </aura:if>
+                                         </div><br />                                      
+                                         
+                                         
+                                            <!--<lightning:card title="Failed Stock" class="slds-text-title_caps slds-text-align_left slds-card_boundary shadow slds-m-top_x-small slds-size_3-of-4">
+                                                <div align="left" class="slds-form-element slds-size_1-of-4" style="padding-left:20px;width:140px;">
+                                                <label class="slds-form-element__label"><aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c==false}"></aura:if><span style="color:red">Failed Qty</span></label>
+                                                <ui:inputNumber disabled="true" class="slds-input" value="{!v.failedQty}" labelClass="slds-form-element__label" />
+                                                <br />
+                                                <aura:if isTrue="{!v.failedQty >= 1}">                                             
+                                                    <label class="slds-form-element__label">                                            	
+                                                        <span style="color:red">*</span>                                               
+                                                         Move to Location
+                                                    </label>                                                                                                
+                                                    <div style="display:table;">                               		
+                                                        <sigmaerpdev2:customLookup recordID="{!v.dataobj.locId}" recordName="{!v.dataobj.locName}" IconName="standard:address" objectAPIName="Account" isSigmaOrder= 'true' />                                    
+                                                    </div> 
+                                                </aura:if></div>
+                                            </lightning:card>-->
+                                         
+                                                                            
+                                         <aura:if isTrue="{!v.failedQty > 0}">
+                                             <div align="left" class="slds-form-element slds-size_1-of-2" style="padding-left:20px;">
+                                                 <lightning:textarea name="myTextArea" value="{!v.qcComments}" label="Reason for Failure" maxlength="500" />
+                                             </div>
+                                         </aura:if>                                       
+                                     </aura:if>
+                                 </div>
+                             </div>
+                         </div>
+                     </fieldset>
+                </div>
+            </lightning:card>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue = "{!v.isBarCodeAlreadyThere == false}">  
+        <aura:if isTrue ="{!and(v.manfObj.sigmaerpdev2__QC_Passed__c == true, v.manfObj.sigmaerpdev2__PI_updated__c == false)}">
+            <div align="center"> 
+                <lightning:card title="">
+                     <div class="slds-form slds-form_compound slds-p-around_medium">        
+                         <fieldset class="slds-form-element">
+                             <div class="slds-form-element__group">
+                                 <div class="slds-form-element__row">
+                                     <div style="float:left;">
+                                         <img src="/resource/sigmaerpdev2__BarcodeGen1" width="105" height="15" title="Bar code Generation" />
+                                     </div> 
+                                 </div>
+                             </div>
+                         </fieldset>
+                     </div>  	
+                </lightning:card>
+                <lightning:card title="Bar code Generator" class="slds-text-align_left slds-card_boundary shadow slds-m-top_x-small slds-size_3-of-4">               
+                    <div class="slds-form slds-form_compound slds-p-around_medium">        
+                        <fieldset class="slds-form-element">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <!--<div align="left" class="slds-form-element slds-size_1-of-4" style="padding-left:20px;">-->
+                                        <table border="0" width="100%">
+                                        	<tr>
+                                                <td style="width:60%;">
+                                                    <label class="slds-form-element__label">Bar code Value</label>
+                                            		<ui:inputText value="{!v.barCodeVal}" />                                             
+                                                </td>
+                                                <td style="width:40%;">
+                                                	<aura:if isTrue="{!v.showReply != ''}">                                                
+                                                       <div style="padding-top:25px;padding-left:5px;">
+                                                            <aura:if isTrue="{!v.showReply == 'Available'}">
+                                                                <span style="color:green"><img src="/resource/sigmaerpdev2__BCAvailable" width="65" height="5" />{!v.showReply}</span> 
+                                                                <aura:set attribute="else">
+                                                                    <span style="color:red"><img src="/resource/sigmaerpdev2__BCNotAvailable" width="30" height="5" />{!v.showReply}</span>
+                                                                </aura:set> 
+                                                            </aura:if>    
+                                                     	</div>
+                                                    </aura:if>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                            	<td width="50%">
+                                                	<!-- new code to be moved back-->
+                                                    <div style="padding:left:10px;padding-top:10px;">
+                                                        <lightning:button variant="brand" label="Check Availability" onclick="{!c.checkBCAvailability}" />                                                     
+                                                    </div>
+                                                    <!-- ends here -->
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        	
+                                        
+                                    <!--</div>  -->                          
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </lightning:card>
+            </div>
+        </aura:if>
+    </aura:if>
+    
+    <aura:if isTrue ="{!v.manfObj.sigmaerpdev2__QC_Passed__c == true}">
+   		<div align="center">
+            <lightning:card title="">
+                 <div class="slds-form slds-form_compound slds-p-around_medium">        
+                        <fieldset class="slds-form-element">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div style="float:left;">
+                                        <img src="/resource/sigmaerpdev2__StockMovement" width="95" height="5" title="Stock Movement" />
+                                    </div> 
+                                </div>
+                            </div>
+                     </fieldset>
+               	 </div>  	
+            </lightning:card> 
+                    
+            <lightning:card title="Stock &amp; Batch updates of the Produced Goods" class="slds-text-title_caps slds-text-align_left slds-card_boundary shadow slds-m-top_x-small slds-size_3-of-4">                                             
+                <!--<aura:set attribute="actions">                                       
+                    <lightning:button variant="brand" aura:id="saveManuRun" label="Save" onclick="{!c.saveStock}" disabled="{!v.manfObj.sigmaerpdev2__PI_updated__c==true}"/>  
+                </aura:set> <br/>-->
+                
+                <div>
+                    <div class="slds-form slds-form_compound slds-p-around_medium"> 
+                        <fieldset class="slds-form-element">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div align="left" class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label"><aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c==false}"><span style="color:red">*</span></aura:if>Produced Qty (After QC)</label>
+                                        <ui:inputNumber class="slds-input" value="{!v.manfObj.sigmaerpdev2__Produced_Quantity__c}" labelClass="slds-form-element__label" disabled="{!or(v.manfObj.sigmaerpdev2__PI_updated__c == true, v.disableAfterSerNum == true)}" updateOn="keyup" keyup="{!c.calculateUnitPrice}"/>
+                                       <!--<ui:inputNumber class="slds-input" value="{!v.passedQty}" labelClass="slds-form-element__label" disabled="{!or(v.manfObj.sigmaerpdev2__PI_updated__c==true, v.disableAfterSerNum == true)}" updateOn="keyup" keyup="{!c.calculateUnitPrice}"/>-->
+                                               
+                                    </div>
+                                    <div align="left" class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label"><aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c==false}"><span style="color:red">*</span></aura:if>Batch Number</label>
+                                        <ui:inputText class="slds-input" value="{!v.SMData.manfObject.sigmaerpdev2__Batch_Number__c}" labelClass="slds-form-element__label" disabled="{!v.manfObj.sigmaerpdev2__PI_updated__c==true}"/>
+                                                         
+                                    </div>
+                                    <div align="left" class="slds-form-element slds-size_1-of-4 slds-truncate">
+                                        <label class="slds-form-element__label"><aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c==false}"><span style="color:red">*</span></aura:if>Expiry date of Batch</label>
+                                        <ui:inputDate class="slds-input" labelClass="slds-form-element__label" displayDatePicker="true" value="{!v.SMData.manfObject.sigmaerpdev2__Expiry_date_of_Batch__c}" disabled="{!v.manfObj.sigmaerpdev2__PI_updated__c==true}"/>
+                                    </div>
+                               </div>
+                            </div>
+                            <br />
+                            <!--<div align="left" class="slds-form-element slds-size_1-of-3">
+                                <aura:if isTrue="{!v.showWastageBlk == true}">
+                                    <lightning:button variant="neutral" label="Show Wastage Charges" onclick="{!c.addWastage}"/>                                                               
+                                	<aura:set attribute="else">
+                                    	<lightning:button variant="neutral" label="Hide Wastage Charges" onclick="{!c.hideWastage}"/>
+                                    </aura:set>
+                                </aura:if>                           	
+                            </div>-->
+                            <aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c == false}">                            
+                                <div style="padding-top:9px;width:500px">                                             
+                                    <ui:inputCheckbox class="myCheckbox" aura:id="checkbox3" label="&nbsp;&nbsp;Add Wastage Charges" change="{!c.addWastagetoTotal}" />
+                                </div>
+                            </aura:if>
+                        </fieldset><br />
+                        <aura:if isTrue="{!and(v.showWastg == true, v.manfObj.sigmaerpdev2__PI_updated__c == false)}">                        
+                            <fieldset class="slds-form-element">
+                                <div class="slds-form-element__group">
+                                    <div class="slds-form-element__row">
+                                        <div align="left" class="slds-form-element slds-size_1-of-4">
+                                            <label class="slds-form-element__label">System calculated wastage</label>
+                                            <ui:inputNumber class="slds-input" value="{!v.sysWastg}" labelClass="slds-form-element__label" disabled="true" />
+                                        </div>
+                                        <div align="left" style="padding-left:9px;padding-top:19px;font-size:20px;width:30px;">
+                                            +
+                                        </div>
+                                        <div align="left" class="slds-form-element slds-size_1-of-4">
+                                            <label class="slds-form-element__label">User added wastage</label>
+                                            <ui:inputNumber class="slds-input" value="{!v.usrWastg}" labelClass="slds-form-element__label" updateOn="keyup" keyup="{!c.addUsrWastage}" />                                        
+                                        </div>
+                                        <div align="left" style="padding-left:9px;padding-top:19px;font-size:20px;width:30px;">
+                                            =
+                                        </div>
+                                        <div align="left" class="slds-form-element slds-size_1-of-4">
+                                            <label class="slds-form-element__label">Total wastage charges</label>
+                                            <ui:inputNumber class="slds-input" value="{!v.totWastg}" labelClass="slds-form-element__label" disabled="true" />                                        
+                                        </div>                                      
+                                    </div>
+                                </div>
+                            </fieldset><br />
+                        </aura:if>
+                        <fieldset class="slds-form-element">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <!--<div align="left" class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label"><aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c==false}"><span style="color:red">*</span></aura:if>Produced Qty (After QC)</label>
+                                        <ui:inputNumber class="slds-input" value="{!v.manfObj.sigmaerpdev2__Produced_Quantity__c}" labelClass="slds-form-element__label" disabled="{!v.manfObj.sigmaerpdev2__PI_updated__c==true}" updateOn="keyup" keyup="{!c.calculateUnitPrice}"/>
+                                    </div>-->
+                                    <div align="left" class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label">Unit Price</label>
+                                        <ui:inputText class="slds-input" value="{!v.UnitPrice}" labelClass="slds-form-element__label" disabled="true" />
+                                        <!--<ui:inputNumber class="slds-input" value="{!v.manfObj.sigmaerpdev2__Unit_Price__c}" labelClass="slds-form-element__label" disabled="true"/>-->
+                                    </div>
+                                    <div align="left" class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label">Total Cost</label> 
+                                        <ui:inputText class="slds-input" value="{!v.TotalCost}" labelClass="slds-form-element__label" disabled="true" />
+                                        <!--<ui:inputNumber class="slds-input" value="{!v.manfObj.sigmaerpdev2__Total_Cost__c}" labelClass="slds-form-element__label" disabled="true"/>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset><br />
+                        
+                        <!--<fieldset class="slds-form-element">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div align="left" class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label"><aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c==false}"><span style="color:red">*</span></aura:if>Batch Number</label>
+                                        <ui:inputText class="slds-input" value="{!v.SMData.manfObject.sigmaerpdev2__Batch_Number__c}" labelClass="slds-form-element__label" disabled="{!v.manfObj.sigmaerpdev2__PI_updated__c==true}"/>
+                                    </div>
+                                    <div align="left" class="slds-form-element slds-size_1-of-4 slds-truncate">
+                                        <label class="slds-form-element__label"><aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c==false}"><span style="color:red">*</span></aura:if>Expiry date of Batch</label>
+                                        <ui:inputDate class="slds-input" labelClass="slds-form-element__label" displayDatePicker="true" value="{!v.SMData.manfObject.sigmaerpdev2__Expiry_date_of_Batch__c}" disabled="{!v.manfObj.sigmaerpdev2__PI_updated__c==true}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>-->
+                        <aura:if isTrue="{!and(v.prodAttributeType == 'SERIALIZED', v.manfObj.sigmaerpdev2__PI_updated__c == false)}">  
+                            <fieldset>
+                                <div class="slds-form-element__group">
+                                    <div class="slds-form-element__row">
+                                        <div align="left" class="slds-form-element slds-size_1-of-3">                                	
+                                            <td data-label="Serial Number">                                         
+                                                <lightning:button variant="success" label="Add Serial Number" title="Serial Number" onclick="{!c.showSerialNumber}"/>                                            
+                                            </td>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset> 
+                        </aura:if>                    
+                        <br/>
+                        <div class="slds-form-element__group">
+                            <div class="slds-form-element__row">
+                                <aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c == false}">                                  
+                                	<img align="top" src="/resource/sigmaerpdev2__DefLocArrow2" width="55"
+                                                 height="10" title="" style="padding-right:10px;padding-top:5px;" />
+                                </aura:if>
+                                <div align="left" class="slds-form-element slds-size_1-of-4">
+                                    <label class="slds-form-element__label" style="color:green;">                                       
+                                        Default Storage Location  
+                                    </label>                                 
+                                    <ui:inputText aura:id="locn" label=""
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.dataobjNewDefLoc}"
+                                                  disabled="true" />
+                                </div>
+                             </div>
+                            <!-- code needs to be moved back-->
+							<div class="slds-form-element__row" style="padding-top:15px;">                            
+                            	<aura:if isTrue="{!v.failedQty > 0}">
+                                    <aura:if isTrue="{!v.manfObj.sigmaerpdev2__PI_updated__c == false}">                                  
+                                		<img align="top" src="/resource/sigmaerpdev2__DefLocArrow2" width="55"
+                                                 height="10" title="Failed Quantities will be moved to this location" style="padding-right:10px;" />
+                                	</aura:if>
+                                	<div align="left" class="slds-form-element slds-size_1-of-3">
+                                        <label class="slds-form-element__label" style="color:red;" title="Failed Quantities will be moved to this location">                                       
+                                            Default Damaged Goods Location 
+                                        </label>                                 
+                                        <ui:inputText aura:id="locn1" label="" 
+                                                      class="slds-input"
+                                                      labelClass="slds-form-element__label"
+                                                      value="{!v.dataobjNewDmgdLoc}"
+                                                      disabled="true" />                                        
+                                    </div>									                                      
+                                </aura:if>
+                            </div>
+                            
+                            <!-- ends here-->
+                        </div><hr />
+                        <aura:iteration items="{!v.SMData.ListOfILs}" var="mainwrapper" indexVar="index" >   
+                            <div align="left">
+                                <a style="text-align: left" aura:id="{!index+'ip'}" data-index="{!index}" onclick="{!c.handleRemove}"><span style="text-align: left">{!(v.manfObj.sigmaerpdev2__PI_updated__c==true) ? '' : 'Remove'}</span></a>&nbsp;&nbsp;
+                            </div>
+                            <fieldset class="slds-form-element">
+                                <div align="left" class="slds-form-element__group">
+                                    <div class="slds-form-element__row">
+                                        <c:AddStorageLocations dataobj="{!mainwrapper}" manfObject="{!v.manfObj}" dataobjNewDmgdLocId="{!v.dataobjNewDmgdLocId}" />   
+                                    </div><br/>
+                                </div>
+                            </fieldset>
+                        </aura:iteration>
+                                           
+                        <fieldset class="slds-form-element">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div>                        
+                                        <button aura:id="addProducts" class="slds-button slds-button--neutral slds-m-around--small" onclick="{!c.addStorageLoc}" disabled="{!v.manfObj.sigmaerpdev2__PI_updated__c==true}">
+                                            Add Storage Locations 
+                                        </button>            
+                                    </div>
+                                    <div style="padding:left:20px;padding-top:12px;">
+                                    	<lightning:button variant="brand" aura:id="saveManuRun" label="Save and Move Stock" onclick="{!c.saveStock}" disabled="{!v.manfObj.sigmaerpdev2__PI_updated__c==true}"/>  
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </lightning:card>
+        </div>
+        
+        <aura:if isTrue="{!v.openModal}">        
+            <div>            
+                <section role="dialog" class="slds-modal slds-fade-in-open" style="top:25px;">               
+                    <div class="slds-modal__container" style="width:75%;height:75%;">
+                        <header class="slds-modal__header">
+                            <button onclick="{!c.closeModal}" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <lightning:icon iconName="utility:close" size="small" alternativeText="Close"/>
+                            </button>
+                            <h4 id="modal-heading-01" class="slds-text-heading_small slds-hyphenate">SERIAL&nbsp;&nbsp;NUMBER</h4><br />
+                        <div class="slds-grid slds-wrap">
+								<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_2-of-5">
+								<lightning:input type="file" aura:id="file" label=" (csv files only)" name="Mapping" multiple="false" accept=".csv" onchange="{!c.uploadFile}" />
+								</div>
+								<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-41 slds-m-top_large">
+								<button type="button" class="slds-button slds-button_neutral" onclick="{!c.showAutoSerialize}" data-index="{!i}">Generate Automatically</button>
+								</div>
+								<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-4 slds-m-top_large">
+								 <button type="button" class="slds-button slds-button_neutral" onclick="{!c.showManualEntry}" data-index="{!i}">Enter Manually</button>
+								</div>
+							</div>
+                        </header>
+                        <aura:if isTrue="{!v.showManSerNumEntryFlg == true}">
+                            <div class="slds-modal__content slds-p-around_medium">                       
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="padding-top: 2px;border:1px solid rgb(221, 219, 218)">                            
+                                    <tbody>                               
+                                        <aura:iteration items="{!v.serials}" var="num" indexVar="i">                                     
+                                            <tr>
+                                                <td>
+                                                    {!i+1}
+                                                </td>
+                                                <td>
+                                                   <ui:inputText value="{!num.SerialNo}" />                                               
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="slds-button slds-button_neutral" onclick="{!c.clearNumbers}" data-index="{!i}">Clear</button>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.showAutoSerNumEntryFlg == true}">
+                            <div class="slds-modal__content slds-p-around_medium">                       
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="width:100%;padding-top: 2px;border:1px solid rgb(221, 219, 218)">                                                            
+                                    <tr>
+                                        <td>
+                                            <div class="slds-size_2-of-3">
+                                                <label class="slds-form-element__label">
+                                                    <span style="color:red">*</span>Enter Format:
+                                                </label>
+                                                <ui:inputText value="{!v.autoSerialName}" />
+                                            </div>                                        
+                                        </td>
+                                        <td>
+                                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.autoSerialize}">Generate_And_Save</button>
+                                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+                                        </td>
+                                    </tr>                                                                                                 
+                                </table>
+                            </div>
+                        </aura:if>
+                        <footer class="slds-modal__footer"> 
+                            <aura:if isTrue="{!v.enableSaveForUplAndMan == true}">                        
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.addSerialNumber}">Save</button>
+                            </aura:if>
+                        </footer>                    
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </aura:if>
+    </aura:if>
+    
+    <div class="manProd slds-hide" aura:id="manProdSpinner" style="height: 6rem;">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

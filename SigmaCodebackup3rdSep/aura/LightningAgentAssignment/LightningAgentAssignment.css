@@ -1,0 +1,110 @@
+.THIS .section-title{
+    margin-bottom: 0.6rem;
+    font-size: 1.05rem;
+    background: #f0f0f0;
+    padding: 0.45rem 1rem;
+    border-radius: 4px;
+}
+.THIS dd.slds-item_detail.slds-truncate {
+    font-size: 0.85rem;
+}
+.THIS .title-tip{
+    font-style: italic;
+}
+.THIS .time-slot{
+    border-right: 1px solid #e0e0e0;
+}
+.THIS .time-slot:nth-child(4){
+    border-left: 1px solid #e0e0e0;
+}
+.THIS .tech-leave{
+    background: #BDBDBD !important;    
+    font-weight: 600;
+}
+.THIS .lunch-slot{
+    background: #dedede !important;
+    font-weight: 600;
+}
+.THIS .tech-busy, .THIS .color-busy{
+    background: #E53935 !important;
+}
+.THIS .slds-table_bordered:not(.slds-no-row-hover) tbody tr:hover > td.time-cell:hover, 
+.THIS .slds-table_bordered:not(.slds-no-row-hover) tbody tr:hover > td.time-cell.time-slot-empty:hover + td.time-cell.time-slot-empty{
+    background: #43A047;
+}
+
+.THIS .tech-selected, .THIS .color-selected{
+    background: #43A047!important;
+}
+.THIS .color-block{
+    display: block;
+    width: 40px;
+    height: 20px;
+}
+.THIS .color-text{
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+.THIS .time-allocation-table thead th:first-child, .THIS .time-allocation-table tbody td:first-child {
+    padding-left: 1rem;
+}
+.THIS .time-allocation-table thead th:last-child, .THIS .time-allocation-table tbody td:last-child {
+    padding-right: 1rem;
+}
+.THIS .content-wrapper{
+    height: 52vh;
+    overflow: auto;
+}
+.THIS .time-allocation-table thead tr:nth-child(2) th {
+    font-weight: 600;
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+}
+.THIS .input-lightning-icon-left span.slds-icon_container.slds-icon-utility-search {
+    width: 1rem;
+    height: 1rem;
+    position: absolute;
+    top: 50%;
+    margin-top: -.5rem;
+    line-height: 1;
+    fill: #b0adab;
+    left: .75rem;
+}
+.THIS .input-with-btn .slds-input {
+    border-radius: .25rem 0 0 .25rem;
+}
+.THIS .slds-button_icon.btn-icon {
+    border-radius: 0 .25rem .25rem 0;
+    border-left: none;
+}
+.THIS .slds-button_icon.btn-icon {
+    border-radius: 0 .25rem .25rem 0;
+    border-left: none;
+}
+.THIS .slds-button_icon.btn-icon svg{
+    fill: #026fd3;
+}
+.THIS .time-slot_tooltip{
+    position: relative;
+}
+.THIS .time-slot_tooltip{
+    position: relative;
+}
+.THIS .time-tooltip{
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    visibility: hidden;
+    pointer-events: none;
+    right: calc(100% + 12px);
+    transform: translate(0, -50%);
+}
+.THIS .time-tooltip-right{
+    right: inherit;
+    left: 100%;
+}
+.THIS .time-slot_tooltip:hover .time-tooltip{
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}

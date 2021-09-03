@@ -1,0 +1,64 @@
+<aura:component access="global">
+    <aura:attribute name="ProdInv" type="Object" />
+    <aura:attribute name="recId" type="Id" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="LightView" type="String" default="false"/>
+    <tr>
+        <td scope="col">
+          <!--  <div style="color:rgb(0, 95, 178);"> -->
+                <!-- ui:outputText value="{!v.ProdInv.Name}"/-->
+               <!-- <a href="{!'/one/one.app?#/sObject/'+ v.ProdInv.Id + '/view'}" onclick="{!c.IlpName}">{!v.ProdInv.Name}</a> -->
+            <span> 
+            <div class="slds-truncate" title="SigmaOrder"><a href="{!'/one/one.app?#/sObject/'+ v.sigmaList.Id + '/view'}" onclick="{!c.IlpName}">{!v.ProdInv.Name}</a></div>
+            </span>
+          <!--  </div> -->
+        </td>
+        
+        <td scope="col">
+            <aura:If isTrue="{!v.ProdInv.sigmaerpdev__Product_Name__c != null}">				
+                <ui:outputText value="{!v.ProdInv.sigmaerpdev__Product_Name__c}"/>				
+                <aura:set attribute="else">					
+                    <ui:outputText value="N/A"/>
+                </aura:set>
+            </aura:If>
+        </td>
+        <td scope="col">
+            <aura:If isTrue="{!v.ProdInv.sigmaerpdev__Available_Qty__c != null}">				
+                <ui:outputText value="{!v.ProdInv.sigmaerpdev__Available_Qty__c}"/>				
+                <aura:set attribute="else">					
+                    <ui:outputText value="N/A"/>
+                </aura:set>
+            </aura:If>
+        </td>
+        <td scope="col">
+            <aura:If isTrue="{!v.ProdInv.sigmaerpdev__Shipped_Qty__c != null}">				
+                <ui:outputText value="{!v.ProdInv.sigmaerpdev__Shipped_Qty__c}"/>				
+                <aura:set attribute="else">					
+                    <ui:outputText value="N/A"/>
+                </aura:set>
+            </aura:If>
+        </td>
+         <td scope="col">
+            <aura:If isTrue="{!v.ProdInv.sigmaerpdev__Reserved_Qty__c != null}">				
+                <ui:outputText value="{!v.ProdInv.sigmaerpdev__Reserved_Qty__c}"/>				
+                <aura:set attribute="else">					
+                    <ui:outputText value="N/A"/>
+                </aura:set>
+            </aura:If>
+        </td>
+        <td scope="col">
+            <aura:If isTrue="{!v.ProdInv.sigmaerpdev__Delivered_Qty__c != null}">				
+                <ui:outputText value="{!v.ProdInv.sigmaerpdev__Delivered_Qty__c}"/>				
+                <aura:set attribute="else">					
+                    <ui:outputText value="N/A"/>
+                </aura:set>
+            </aura:If>
+        </td>
+        <!--td>
+             <lightning:button onclick="{!c.editRecord}"
+                                  variant="brand"
+                                  label="Edit"
+                                  />
+        </td-->
+    </tr>
+</aura:component>

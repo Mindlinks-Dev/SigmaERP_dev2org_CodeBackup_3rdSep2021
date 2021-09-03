@@ -1,0 +1,214 @@
+<apex:page standardController="Work_Order__c" extensions="MR_SignaturePadController"  docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false" >
+ <!-- <div id="my-timeline" style="height:100%; border: 1px solid #aaa">  -->       
+   <!-- <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" ></link>  
+ <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+ <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
+    <apex:stylesheet value="{!URLFOR($Resource.SLDS214,'assets/styles/salesforce-lightning-design-system.css')}"/>
+    <script type='text/javascript' src="{!URLFOR($Resource.sPad,'')}"></script>
+      <script type='text/javascript' src='/canvas/sdk/js/publisher.js'></script> 
+     <script type='text/javascript' src="{!URLFOR($Resource.canvasPublisher,'')}"> </script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+    <script> var previousOnload = window.onload; window.onload = function() { if (previousOnload) { previousOnload(); } onLoad();} </script>
+    <script>
+        var signaturePad;
+        var canvas;
+        var recId = '{!$CurrentPage.parameters.Id}'
+        // alert($CurrentPage.parameters.name);
+        //alert(recId);
+        var signatureData;
+        Sfdc.canvas.publisher.subscribe({name: "publisher.showPanel",
+            onData:function(e) {
+                Sfdc.canvas.publisher.publish({name:"publisher.setValidForSubmit", payload:"true"});
+        }});
+     
+        Sfdc.canvas.publisher.subscribe({ 
+            name:"publisher.post",
+            onData: function(e){
+                uploadSignature();
+            }    
+        })
+        function onLoad(){
+            canvas = document.getElementById('sPad');
+            resizeCanvas();
+            signaturePad = new SignaturePad(canvas);
+        }    
+        function sPadClear(){
+            signaturePad.clear();
+        }
+ 
+        function uploadSignature(){
+            // alert ('uploadsignature');
+            signatureData = signaturePad.toDataURL().replace(/^data:image\/(png|jpg);base64,/, "");
+             
+            Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.MR_SignaturePadController.uploadSignature}', signatureData, recId,
+                        function(result, event){
+                            if(!!result && event.status){
+                                var res = JSON.parse(result);
+                                if(res.success){
+                                   alert('signature saved successfully' ); 
+                                }else{
+                                    alert('Error:' +  res.message);
+                                }    
+                            }else {
+                                alert('Error in calling controller to upload signature');
+                            }
+                            Sfdc.canvas.publisher.publish({name:"publisher.close",payload:{refresh:"true"}});
+                    },{escape: false});
+                 
+        }
+     
+        function resizeCanvas() {
+            var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+        }
+    </script>    
+         
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Lato');
+        
+        .sPad{
+        width: 100%;
+        height: 200px;
+        background-color: GhostWhite;       
+        }
+        .headerRow{
+        display: none;
+        }
+        .list{
+        width: 100%;
+        }
+        .dataCell{
+        text-align: center;
+        padding: 1rem;
+        border-bottom: 2px solid #d4d4d4;
+        border-left: 2px solid #d4d4d4;
+        border-right: 2px solid #d4d4d4;
+        }
+        .dataCell span{
+        font-size: larger;
+        font-weight: 500;
+        font-family: 'Lato', sans-serif;
+        }
+        .cuf-content{
+        padding: 0;
+        }
+        .ext-chrome{
+        margin: 0;
+        }
+        .button-style{
+        padding: 0.5rem 1rem;
+        text-align: center;
+        vertical-align: middle;
+        background-color: rgb(37, 116, 169);
+        color: rgb(255, 255, 255);
+        border-color: rgb(37, 116, 169);
+        border-radius: 0.25rem;
+        font-size: 12px;
+        float: right;
+        
+        position: absolute;
+        top: 4rem;
+        right: 1rem;
+        }
+        .dataRow td:nth-child(2){
+        border-left: none;
+        border-right: none;
+        }
+        @media screen and (min-device-width: 320px) and (max-device-width: 567px){
+        .dataCell{
+        padding: 0.75rem;
+        }
+        .dataCell span{
+        font-size: small;
+        font-weight: 600;
+        font-family: 'Lato', sans-serif;
+        }
+        .button-style{
+        position: absolute;
+        top: 4rem;
+        right: 1.5rem;
+        }
+        .apexp{
+        border-top: 2px solid #d4d4d4;
+        }
+        .sPad {
+        width: 100%;
+        height: 560px;
+        background-color: GhostWhite;
+        }
+        }
+        @media screen and (min-device-width: 568px) and (max-device-width: 767px){
+        .sPad {
+        width: 100%;
+        height: 230px;
+        background-color: GhostWhite;
+        }
+        .apexp{
+        border-top: 2px solid #d4d4d4;
+        }
+        .button-style{
+        position: absolute;
+        top: 5rem;
+        right: 1.5rem;
+        }
+        }
+        @media screen and (min-device-width: 768px) and (max-device-width: 991px){
+        .button-style{
+        position: absolute;
+        top: 5rem;
+        right: 2rem;
+        }
+        .apexp{
+        border-top: 2px solid #d4d4d4;
+        }
+        .sPad{
+        width: 100%;
+        height: 825px;
+        background-color: GhostWhite;       
+        }
+        }
+        @media screen and (min-device-width: 992px) and (max-device-width: 1199px){
+        .button-style{
+        position: absolute;
+        top: 5.5rem;
+        right: 2.5rem;
+        }
+        .apexp{
+        border-top: 2px solid #d4d4d4;
+        }
+        .sPad {
+        width: 100%;
+        height: 570px;
+        background-color: GhostWhite;
+        }
+    </style>
+    <!--<apex:pageBlock>
+        <apex:pageBlockSection columns="3" title="" >
+            <apex:outputField styleClass=""  value="{!Work_Order__c.Name }" style="padding:20px;"/>
+            <apex:outputField value="{!Work_Order__c.Work_Type__r.name}" style="padding:20px;"/>
+            <apex:outputField value="{!Work_Order__c.FFP_MR_Contact__r.name}" style="padding:20px;"/>
+        </apex:pageBlockSection>
+    </apex:pageBlock>-->
+   <apex:pageBlock >
+        <apex:pageBlockTable value="{!Work_Order__c}" var="Work_Order__c"  >
+               <apex:column value="{!Work_Order__c.Name }" width="20%"/> 
+              <apex:column value="{!Work_Order__c.Work_Type__r.name}" width="20%" />
+               <apex:column value="{!Work_Order__c.FFP_MR_Contact__r.name}" width="20%"/> 
+        </apex:pageBlockTable>
+    </apex:pageBlock> 
+    <body onload="onLoad();" >
+        <div class="slds-grid slds-m-around--small slds-grid--vertical " style="overflow:hidden; height:100%;">
+                <button class="slds-col slds-m-bottom--small slds-button slds-button--neutral uiButton--default uiButton--brand button-style button-default" onclick="sPadClear();">Clear</button>
+             
+            <div class="slds-col slds-col-rule--top slds-col-rule--right slds-col-rule--bottom slds-col-rule--left">
+              <canvas class="sPad" id="sPad" />
+            </div>
+        </div>
+    </body> 
+     <!--  </div> -->
+    
+</apex:page>

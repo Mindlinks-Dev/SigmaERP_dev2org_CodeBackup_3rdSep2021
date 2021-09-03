@@ -1,0 +1,128 @@
+<aura:component controller="newPackageControllerLtng" implements="flexipage:availableForAllPageTypes"  access="global">
+     <!-- newly added-->
+    <aura:attribute name="transactionLineItemObj" type="Product_Order_Price_Book__c" />    
+    <aura:attribute name="rowIndex" type="Integer" />  
+    <aura:attribute name="wrapList" type="array" /> 
+    <aura:attribute name="prodId" type="Id" />    
+    <aura:attribute name="Quantity" type="Decimal" />    
+    <aura:attribute name="prodName" type="String" /> 
+    <aura:attribute name="prodAttributeType" type="String" /> 
+    <aura:attribute name="status" type="String[]" default=""/>     
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />    
+    <aura:attribute name="selStatus" type="String"/>     
+    <!-- -->
+    
+    <!-- added for autopick or manual-->
+    <aura:attribute name="selTransLineItemId" type="Id" default="" /> 
+    <aura:attribute name="packQtyShow" type="String" default="" />  
+    
+    <!--ends here-->
+    <table>
+        <thead>   
+            
+            <tr>
+                <th style="width:9%;">
+                </th>
+                <th scope="col" style="">
+                    <div class="slds-truncate" title="PRODUCT" style="color:#16325c;">Product</div>
+                </th>                    
+                <th scope="col">
+                    <div class="slds-truncate" title="ORDERED QUANTITY" style="color:#16325c;">Ordered Quantity</div>
+                </th> 
+                <th scope="col">
+                    <div class="slds-truncate" title="ORDERED QUANTITY" style="color:#16325c;">Packaged Quantity</div>
+                </th>  
+            </tr>
+        </thead>
+        
+        <tbody>
+            <tr> 
+                <td>
+                    
+                    <aura:if isTrue="{!and(v.Quantity > 0,v.wrapList.length > 0)}" >
+                        <!--<img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.selTransLineItemId}" src="{!$Resource.NPlus}"
+                             width="15" height="15" title="Show Stock" />  -->
+						
+						<a onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.selTransLineItemId}">
+						<lightning:icon aura:id="addIcon" iconName="utility:add" size="x-small" alternativeText="Expand"/>		
+						<lightning:icon aura:id="dashIcon" class="slds-hide" iconName="utility:dash" size="x-small" alternativeText="sss" />		
+						</a>
+                    </aura:if> 
+                </td>
+                <td scope="row" data-label="Product">
+                    <div class="slds-truncate" title="Product Name"> 
+                        <ui:inputText aura:id="transLineItem" label=""
+                                      class="slds-input"
+                                      labelClass="slds-form-element__label"
+                                      value="{!v.prodName}"
+                                      disabled="true"/>                                 
+                    </div>
+                </td>
+                <td scope="row" data-label="Ordered Quantity">            
+                    <div class="slds-truncate" title="Ordered Quantity">              
+                        <ui:inputText aura:id="QReceived" label=""
+                                      class="slds-input"
+                                      labelClass="slds-form-element__label"
+                                      value="{!v.Quantity}"
+                                      disabled="true"                              
+                                      />
+                    </div>
+                </td>
+                <td scope="row" data-label="Package Quantity">            
+                    <div class="slds-truncate" title="Package Quantity">              
+                        <ui:inputText aura:id="QReceived" label=""
+                                      class="slds-input"
+                                      labelClass="slds-form-element__label"
+                                      value="{!v.packQtyShow}"
+                                      disabled="true"                              
+                                      />
+                    </div>
+                </td>
+                
+            </tr>
+        </tbody>
+    </table>	
+    <br/>
+    
+    <aura:if isTrue="{!v.wrapList.length > 0}">
+        <div id="{!'showHide_'+v.selTransLineItemId}" style="display:none;">
+            <table class="slds-table">
+                <aura:if isTrue="{!v.prodAttributeType =='SERIALIZED'}">                               
+                    <button class="slds-button slds-button--neutral fill-qty-btn" 
+                            onclick="{!c.autoFillQuantity}" style="position:relative;left:26px;margin-bottom:14px;">Fill Quantity</button>
+                </aura:if>
+                
+                <tr class="th-mobile">                        
+                    <th scope="col">
+                        <div class="slds-truncate" title="Quantity" style="color:#16325c;">Enter Quantity <span style="color:red">*</span></div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Lot" style="color:#16325c;">Lot</div>
+                    </th>
+                    <th scope="col" style="">
+                        <div class="slds-truncate" title="Expiry Date" style="color:#16325c;">Expiry Date</div>
+                    </th>
+                    <aura:if isTrue="{!v.prodAttributeType =='SERIALIZED'}">                               
+                        <th scope="col">
+                            <div class="slds-truncate" title="Serial Number" style="color:#16325c;">Serial Number</div>
+                        </th>
+                    </aura:if> 
+                    <th scope="col">
+                        <div class="slds-truncate" title="Location" style="color:#16325c;">Location</div>
+                    </th> 
+                    <th scope="col">
+                        <div class="slds-truncate" title="Available Quantity" style="color:#16325c;">Available Quantity</div>
+                    </th> 
+                </tr>
+                <tbody>
+                    <aura:iteration items="{!v.wrapList}" var="psn" indexVar="index" >                       
+                        <c:newShowInnerMatrix orderedQn="{!v.Quantity}" rowId="{!v.selTransLineItemId}" aura:id="cComp" wrapList="{!psn}" index="{!index}" prodAttributeTypeInner="{!v.prodAttributeType}" />
+                    </aura:iteration>
+                </tbody>				
+            </table>
+        </div>
+        <aura:set attribute="else">
+            <div style="margin-left:45%;">No Stock Available</div>
+        </aura:set>
+    </aura:if>
+</aura:component>

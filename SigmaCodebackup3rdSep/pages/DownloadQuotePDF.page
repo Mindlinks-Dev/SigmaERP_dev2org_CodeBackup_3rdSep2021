@@ -1,0 +1,209 @@
+<apex:page standardController="Service_Quote__c" extensions="GenerateQuotePDFContrl" action="{!PropLineItemMethod}" renderAs="pdf" applyBodyTag="false" > 
+    <head>
+        <style>            
+            .grid{display:inline-block;width:100%;}
+            .col{display:inline-block;vertical-align:top;}
+            .size-1-of-2{width:49%;}  
+            .align-r{text-align:right;}
+            thead{background:#008B8B}
+            tfoot{font-weight:bold;}
+            table{width:100%;}
+            td{padding:4px;}
+            .table th{border:1px solid gray;}
+            .table td{border:1px solid gray;}
+        </style>
+    </head>
+    <apex:includeScript value="{!$Resource.jquery_min_JS}"/> 
+    <apex:includeScript value="{!$Resource.ajaxmoment}"/>      
+    
+    <script src="/soap/ajax/34.0/connection.js" type="text/javascript"></script>
+    <script src="/soap/ajax/34.0/apex.js" type="text/javascript"></script>  
+    
+    
+    
+    <apex:pageBlock >
+        <apex:form id="Form">
+            
+           <span  style="padding-left: 500px;"><b>Service Quote: {!servicequotename}</b></span>  
+            <span style="padding-left: 500px;">Date: {!dt}</span>
+            
+            <!-- <table id="invoiceBlock">
+<tr>
+<td >
+<p>{!defaultparam.Company_Name__c}<br/>
+{!defaultparam.Company_Phone__c}<br />
+{!defaultparam.Company_Email__c}<br/>
+</p>
+
+</td>
+<td style="padding-left: 410px;">
+<!--<img src= "https://c.ap2.content.force.com/servlet/servlet.ImageServer?id=01528000000M4em&oid=00D28000000XPUT" style="width:80px;height:80px;border-radius: 50%;" />
+
+<apex:image url="{!URLFOR($Resource.mindlinkslogo)}" style="width:80px;height:80px;border-radius: 50%;" /></td> -->
+            <!-- <apex:image url="{!URLFOR(defaultparam.Logo__c)}" style="width:80px;height:80px;border-radius: 50%;" />
+</td>
+</tr>
+</table>-->
+            <h4 style="margin-bottom:0;"> Work Order Details </h4>
+            -------------------------------------------------------------------------------------------------------------------------------------
+         <div class="grid">
+                <div class="col size-1-of-2">
+                    <table style="font-size:10pt;">
+                        <tr> <td>Work Order Name</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Work_Order__r.Name}"/></td> 
+                        </tr>
+                        <tr> <td>Account</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Work_Order__r.sigmaerpdev2__Account__r.Name}"/></td> 
+                        </tr>
+                        <tr> <td>Work Type</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Work_Order__r.sigmaerpdev2__Work_Type__r.Name}"/></td> 
+                        </tr> 
+                        <tr> <td>Work Order Status</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Work_Order__r.Status__c}"/></td> 
+                        </tr> 
+                        <tr> <td>Product</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Work_Order__r.Product__r.Name}"/></td> 
+                        </tr>  
+                    </table>
+                </div>
+                <!--   <div class="col size-1-of-2">
+<table style="font-size:10pt;">
+<tr> <td>Name</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Account__r.Name}"/></td> 
+</tr>
+<tr> <td>Email</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Account__r.Email__c}"/></td> 
+</tr>
+<tr> <td>Street</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Account__r.Address__c}"/></td> 
+</tr>
+<tr> <td>City</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Account__r.City__c}"/></td> 
+</tr>
+<tr> <td>State</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Account__r.State__c}"/></td> 
+</tr>
+<tr> <td>Country</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Account__r.Country__c}"/></td> 
+</tr>
+<tr> <td>Zip</td><td style="padding-left:10px;">  :</td><td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.sigmaerpdev2__Account__r.Zip__c}"/></td> 
+</tr>
+</table>
+</div> -->
+            </div>
+            
+            
+            
+            
+            <!-- <h4>Quote details </h4> 
+-------------------------------------------------------------------------------------------------------------------------------------
+<table style="font-size:10pt;">
+
+<tr><td>Quote Name  </td><td style="padding-left:10px;"> :</td>
+<td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.Name}"/></td> <td style="width:70px"></td>
+</tr>
+<tr>
+<td>Status </td><td style="padding-left:10px;">:</td> 
+<td style="padding-left:10px;"><apex:outputText value="{!Service_Quote__c.Status__c}"/></td>
+</tr>
+</table> -->
+            -------------------------------------------------------------------------------------------------------------------------------------- 
+            
+            
+            <!--  <apex:pageBlockTable value="{!PropLineItem}" var="POPB" border="1" style="text-align:center;font-size:10pt;" >
+<apex:column style="width:10%;background-color:#DCDCDC;">
+<apex:facet name="header" >Reference Id</apex:facet>
+<apex:outputText value="{!HTMLENCODE(POPB.Name)}" /><br/>
+</apex:column> 
+<apex:column style="width:10%;">
+<apex:facet name="header">Product</apex:facet>
+<apex:outputText value="{!HTMLENCODE(POPB.sigmaerpdev2__Product__r.Name)}" /><br/>
+<apex:facet name="footer">
+</apex:facet>
+</apex:column>
+<apex:column style="width:10%;">
+<apex:facet name="header">Service Contract</apex:facet>
+<apex:outputText value="{!HTMLENCODE(POPB.sigmaerpdev2__Service_Contract__r.Name)}" /><br/>
+</apex:column>
+<apex:column style="width:10%;">
+<apex:facet name="header">Unit Price</apex:facet>
+<apex:outputText value="{!HTMLENCODE(Text(POPB.Unit_Price__c))}" /><br/>
+</apex:column>
+<apex:column style="width:10%;">
+<apex:facet name="header">Quantity</apex:facet>
+<apex:outputText value="{!HTMLENCODE(Text(POPB.Quantity__c))}" /><br/>
+<apex:facet name="footer">Total Price</apex:facet>
+</apex:column>
+<apex:column style="width:10%;">
+<apex:facet name="header">Amount</apex:facet>
+<apex:outputText value="{!HTMLENCODE(Text(POPB.Price__c))}" /><br/>
+<apex:facet name="footer">
+<apex:outputText value="{!HTMLENCODE(Text(lineItemsTotal))}" /> </apex:facet><br/>
+</apex:column>
+
+
+</apex:pageBlockTable>  -->
+            <h4 style="margin-top:0;"> Quote Details:  </h4>
+            <table class="table" cellspacing="0">
+                <thead>
+                    
+                    <tr>
+                        <th class="align-r">SL.No</th>
+                        <th>Product</th>
+                        <th>Service Contract</th>
+                        <th class="align-r">Unit Price($)</th>
+                        <th class="align-r">Quantity</th>
+                        <!--<th style="padding:5.6px 4.8px;background:#e4e4e4;text-transform:uppercase;font-size: 15.2px;letter-spacing: 0.48px;border:1px solid #bdbdbd"><label>Quote</label></th>-->
+                        <th class="align-r">Amount($)</th>
+                    </tr>
+                    
+                </thead>
+                <tbody>
+                    <apex:variable value="{!1}" var="rowNum"/>
+                    <apex:repeat value="{!PropLineItem}" var="POPB" >
+                        
+                        <tr>
+                            <td class="align-r">
+                                <apex:outputText value="{!FLOOR(rowNum)}"/> 
+                                <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                            </td>
+                            <td>{!POPB.sigmaerpdev2__Product__r.Name}</td>
+                            <td>{!POPB.sigmaerpdev2__Service_Contract__r.Name}</td>
+                            <td class="align-r">{!POPB.Unit_Price__c}</td>
+                            <td class="align-r">{!POPB.Quantity__c}</td>
+                            <td class="align-r">{!POPB.Price__c}</td>
+                        </tr>
+                    </apex:repeat>
+                    
+                    <tr >
+                        <td colspan="4" style="border:0;">&nbsp;</td>
+                        <td class="align-r"><b>Total Cost</b></td>
+                        <td class="align-r"><b>{!lineItemsTotal}</b></td>
+                    </tr> 
+                </tbody>
+            </table>
+            <br/>   
+       -------------------------------------------------------------------------------------------------------------------------------------
+            
+            <h4 style="margin-top:0;"> Payment Terms:  </h4>
+            <ul><li> <apex:outputText value="{!servicequotepaymentterms.Payment_Terms_1__c}"/></li>
+                <li> <apex:outputText value="{!servicequotepaymentterms.Payment_Terms_2__c}"/></li>
+                <li> <apex:outputText value="{!servicequotepaymentterms.Payment_Terms_3__c}"/></li>
+            </ul>
+            <!--<table>
+<tr>
+<td style="width:450px"></td><td>Other Charges</td> <td> : </td>
+
+
+<td style="padding-left:30px;border-bottom:1px solid gray;color:#008000">+<apex:outputText value="{!sigmadev__Proposal__c.sigmadev__Other_Charges__c}"/></td>
+</tr>
+<tr>
+<td style="width:450px"></td><td>Other Discount</td> <td> : </td>
+
+<td style="padding-left:30px;border-bottom:1px solid gray;color:Red;">-<apex:outputText value="{!sigmadev__Proposal__c.sigmadev__Other_Discount__c}"/></td>
+</tr>
+<tr>
+<td style="width:450px;"></td ><td style="border-bottom:1px solid gray;">Proposal Discount</td> <td style="border-bottom:1px solid gray;"> : </td>
+
+<td style="padding-left:30px;border-bottom:1px solid gray;color:Red;">-<apex:outputText value="{!sigmadev__Proposal__c.sigmadev__Field_Discount_Amount__c}"/></td>
+</tr>
+
+<tr>
+<td style="width:450px;"></td><td style="padding-left:30px;border-bottom:1px solid gray;color:Black solid;background-color:#DCDCDC;">Net Amount</td> <td style="border-bottom:1px solid gray;color:Black solid;background-color:#DCDCDC;"> : </td>
+
+<td style="padding-left:30px;border-bottom:1px solid gray;color:Black solid;background-color:#DCDCDC;"><apex:outputText value="{!sigmadev__Proposal__c.sigmadev__Total_Amount__c}"/></td>
+</tr>
+
+</table>-->
+        </apex:form> 
+    </apex:pageBlock>
+</apex:page>

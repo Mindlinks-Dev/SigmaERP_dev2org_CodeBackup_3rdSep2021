@@ -1,0 +1,8 @@
+.THIS.demo-only {
+  z-index: 10000;
+  position: fixed;   
+}
+.THIS .myCheckbox{
+  display: inline-block;
+  float: left;
+}

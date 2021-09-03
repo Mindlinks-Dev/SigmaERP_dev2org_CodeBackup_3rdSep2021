@@ -1,0 +1,227 @@
+<aura:component controller="newPurchaseOrderControllerLightning" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="recordName3" type="string" /> 
+    <aura:attribute name="rowIndexVar" type="Integer"/>
+    <aura:registerEvent name="carrypoList" type="c:CarryPORecord"/>
+    <aura:handler event="c:CarryPOEvent" action="{!c.editFlow}"/>
+    <aura:attribute name="tempVendor" type="Id"/>
+     <aura:attribute name="Productid" type="Id"/>
+    <aura:handler name="change" value="{!v.Productid}" action="{!c.handlePOIdValueChange}" />
+    <aura:attribute name = "productName" type="string"/>
+     <aura:attribute name="Vendorid" type="Id"/>
+    <aura:attribute name="Id" type="ID" /> 
+    <aura:attribute name="pocloneid" type="string" /> 
+    <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+    <aura:attribute name="isStockreceived" type="boolean" default="true"/>
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>
+    <aura:attribute name="PurchaseOrderProduct" type="Purchase_Order_Product__c[]" />
+    
+    <aura:attribute name="PurchaseOrderProducts" type="Purchase_Order_Product__c" 
+                    default="{ 'sobjectType': 'Purchase_Order_Product__c',
+                             'sigmaerpdev2__Product__c': '',
+                             'sigmaerpdev2__Buying_Price__c': '',
+                             'sigmaerpdev2__Expected_Delivery_Date__c': '',
+                             'sigmaerpdev2__Quantity__c': '',
+                             'sigmaerpdev2__Status__c': '',
+                             'sigmaerpdev2__Total_Buying_Price__c':'',
+                             'sigmaerpdev2__Vender_Products__c':'',
+                             'sigmaerpdev2__VendorPrice__c':'',
+                             'sigmaerpdev2__Product__r.Name':'',
+                             'Product_name': '',
+                             'sigmaerpdev2__Remaining_to_come__c':''
+                             }"/>	
+    
+    <aura:attribute name="NewPurchaseOrder" type="Purchase_Order__c"/>
+    <aura:attribute name="recordName2" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="status" type="String[]" default="Open"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="pkgProdStatus" type="String" default=""/>
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>
+    <aura:attribute name="isOpenchild" type="boolean" default="false"/>
+    <aura:attribute name="isOpenTablechild" type="boolean" default="false"/>
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    
+    <div role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open ">
+        <div class="slds-modal__container" style="">
+            
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-float--right" title="Close" aura:id="close" onclick="{!c.closeModel}">
+                    <c:svg class="slds-button__icon slds-button__icon_large" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" style="color:rgb(0, 112, 210);">Add Products</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="slds-form slds-form_compound">
+                    <div style="width: 101.8%;margin-left: -2px;">
+                        <aura:renderIf isTrue="{!v.isError}">
+                            <ui:message title="Error" severity="error" closable="false">
+                                {!v.errorMsg}
+                            </ui:message>
+                            <aura:set attribute="else">
+                                
+                            </aura:set>
+                        </aura:renderIf>  
+                    </div>
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="Product" id="Product">Product</label>
+                                 <span style="color:red">* </span>
+                             <!--c:LookupSObject aura:id="Product" SRString="{!v.tempVendor}" searchString="{!v.recordName2}" label="Product" 
+                                                        pluralLabel="Vendor Products" 
+                                                        sObjectAPIName="sigmaerpdev2__Vendor_Product__c"
+                                                        instanceId="MyVendorProduct"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                      listIconClass="slds-icon-standard-account"/-->
+                            <aura:if isTrue="{!v.Id!=undefined}">
+                                <ui:inputText aura:id="Product"
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.recordName2}"
+                                              disabled="{!v.Id!=undefined }"
+                                              
+                                              />
+                                <aura:set attribute="else">
+                                   <c:customLookup aura:id="Product" recordID="{!v.Productid}" recordName="{!v.recordName2}" objectAPIName="product2" IconName="standard:product" whereCondition="{!'AND Id in (select sigmaerpdev2__Product_Name__c From sigmaerpdev2__Vendor_Product__c where  sigmaerpdev2__Account_Name__c = \''+v.Vendorid+'\')and sigmaerpdev2__Stock_Item__c=true'}" isSigmaOrder= 'true'/>
+        
+                                </aura:set>
+                            </aura:if> 
+                        <!-- sigmaerpdev2__Product_Name__r.sigmaerpdev2__Stock_Item__c sigmaerpdev2__Product_Name__r.sigmaerpdev2__Stock_Item__c=true and-->
+                            </div>
+                              <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="Quantity" id="Quantity">Quantity
+                                    <span style="color:red">*</span>
+                                </label>
+                                 <aura:if isTrue="{!v.pocloneid==undefined}">
+                                <ui:inputNumber aura:id="Quantity" label="" maxlength="5"
+                                                class="slds-input"
+                                                labelClass="slds-form-element__label"
+                                                value="{!v.PurchaseOrderProducts.sigmaerpdev2__Quantity__c}"
+                                                keyup="{!c.validateQuantity}"
+                                                updateOn="keyup"
+                                                
+                                                disabled="{!v.PurchaseOrderProducts.sigmaerpdev2__Remaining_to_come__c>0}"
+                                                 />
+                                     <aura:set attribute="else">
+                                    <ui:inputNumber aura:id="Quantity" label="" maxlength="5"
+                                                class="slds-input"
+                                                labelClass="slds-form-element__label"
+                                                value="{!v.PurchaseOrderProducts.sigmaerpdev2__Quantity__c}"
+                                                keyup="{!c.validateQuantity}"
+                                                updateOn="keyup"
+                                                 />
+        
+                                </aura:set>
+                                  </aura:if>
+                            </div>
+                                  
+                            
+                           
+                        </div>
+                        
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2 slds-truncate">
+                                <label class="slds-form-element__label" for="Discount" id="Discount">Discount(%)</label><br/>
+                                 <aura:if isTrue="{!v.pocloneid==undefined}">
+                                <ui:inputNumber aura:id="Discount" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.PurchaseOrderProducts.sigmaerpdev2__Discount__c}"
+                                              keyup="{!c.discount}"
+                                              updateOn="keyup"
+                                                disabled="{!v.PurchaseOrderProducts.sigmaerpdev2__Remaining_to_come__c>0}"
+                                                 />
+                                     <aura:set attribute="else">
+                                     <ui:inputNumber aura:id="Discount" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.PurchaseOrderProducts.sigmaerpdev2__Discount__c}"
+                                              keyup="{!c.discount}"
+                                              updateOn="keyup"
+                                                 />
+                                     </aura:set>
+                                </aura:if>
+                            </div>
+                             <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="Buying Price" id="Buying Price">Buying Price</label>
+                                <ui:inputCurrency aura:id="BuyingPrice"   maxlength="10"
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.PurchaseOrderProducts.sigmaerpdev2__Buying_Price__c}"
+                                                  change="{!c.validateBuyingPrice}"
+                                                  disabled="true"
+                                                  />
+                            </div>
+                          
+                        </div>
+                        
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2 slds-truncate">
+                                <label class="slds-form-element__label" for="Expected Delivery Date" id="Expected Delivery Date">Expected Delivery Date
+                                 <span style="color:red">* </span></label><br/>
+                                <aura:if isTrue="{!v.pocloneid==undefined}">
+                                <ui:inputDate aura:id="ExpectedDeliveryDate" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.PurchaseOrderProducts.sigmaerpdev2__Expected_Delivery_Date__c}"
+                                              displayDatePicker="true"
+                                              disabled="{!v.PurchaseOrderProducts.sigmaerpdev2__Remaining_to_come__c>0}"
+                                                  
+                                              />
+                                    <aura:set attribute="else">
+                                    <ui:inputDate aura:id="ExpectedDeliveryDate" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.PurchaseOrderProducts.sigmaerpdev2__Expected_Delivery_Date__c}"
+                                              displayDatePicker="true"
+                                                  
+                                              />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01" id="Status">Status</label>
+                                <ui:inputSelect aura:id="statuss" label=""  change="{!c.validateBuyingPrice}"
+                                                class="slds-input input uiInput uiInputText uiInput--default uiInput--input"
+                                                labelClass="slds-form-element__label">
+                                    <aura:iteration items="{!v.status}" var="st">
+                                        <ui:inputSelectOption text="{!st}" label="{!st}" />      
+                                    </aura:iteration>
+                                    
+                                </ui:inputSelect>  
+                            </div>
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                                
+                            </div>
+                           <!-- <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2 slds-truncate">
+                        <label class="slds-form-element__label" for="Tax Code">Tax Code
+                        </label>    
+                            <c:LookupSObject aura:id="TaxCodeName" searchString="{!v.recordName3}" 
+                                             label="Tax Code" pluralLabel="Tax Codes"
+                                             sObjectAPIName="sigmaerpdev2__Tax_Code__c"
+                                             instanceId="TaxCode"
+                                             SRString="All"
+                                             listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                             listIconClass="slds-icon-standard-account"
+                                             />  
+                    </div> 
+                            </div>-->
+                            
+                        
+                    </div>
+                </div>
+                
+            </div>
+            <footer class="slds-modal__footer">
+                
+                <button class="slds-button slds-button--brand" aura:id="submit" id="submit" onclick="{!c.submit}">Submit</button>
+                <button class="slds-button slds-button--neutral" aura:id="closeModel" id="cancel" onclick="{!c.closeModel}">Cancel</button>
+            </footer>
+        </div>
+    </div>
+</aura:component>

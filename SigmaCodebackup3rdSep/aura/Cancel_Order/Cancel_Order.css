@@ -1,0 +1,24 @@
+.THIS {
+}
+
+.THIS.site-masthead {
+    padding: 1rem 2rem;
+    background-color: #16325c;
+    color: #fff;
+}
+.THIS.backdrop
+{
+    top: 16%;
+    position: fixed;    
+    width: 90.2%;
+    height: 63%;    
+    background-color: rgba(0,0,0,0.4);
+    z-index: 1;
+}
+.THIS.slds-modal__container
+{
+    width:112% !important;
+    max-width:112% !important;
+    padding:0 !important;
+    margin-left:-6% !important;
+}

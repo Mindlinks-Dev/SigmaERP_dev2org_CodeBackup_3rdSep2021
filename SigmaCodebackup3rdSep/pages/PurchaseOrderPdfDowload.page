@@ -1,0 +1,199 @@
+<apex:page renderAs="Pdf" applyHtmlTag="false"  showHeader="false" cache="true" action="{!getPurchaseOrderDetails}"
+           readOnly="true" standardStylesheets="false" controller="PurchaseOrderPdfDowloadHelper" >
+            <html>
+        <head>            
+            <style type="text/css">
+                body {
+                    font-family: Arial, Helvetica, sans-serif;font-size:80%;                   
+                }           
+                @page {
+                    size:A4 portrait;    
+                }
+                @page {
+                     @top-center {
+                           content: element(header);
+                   }
+                   @bottom-left {
+                         content: element(footer);
+                   }
+                }
+                div.header {
+                    padding: 10px;
+                    position: running(header);
+                }
+                div.footer {
+                    display: block;
+                    padding: 5px;
+                    position: running(footer);
+                }
+                .pagenumber:before {
+                    content: counter(page);
+                }
+                .pagecount:before {
+                    content: counter(pages);
+                }
+                #PI {
+                    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+                #PI td  {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+            
+                }
+                #PI tbody>tr>td {
+                  font-size: 1px;
+                  font-weight: normal;
+                }
+                #PI th {
+                  font-size: 10px;
+                  font-weight: normal;
+                font-weight: bold;
+                }
+                #PI td>table>tr>th {
+                  font-size: 6px;
+                  font-weight: bold;
+                }
+                #PI td>table>tr>td {
+                  font-size: 6px;
+                  font-weight: bold;
+                }
+                
+                #PI tr:nth-child(even){background-color: #f2f2f2;}
+                #PI tr:hover {background-color: #ddd;}
+                #PI th {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                background-color:#7f8edd;
+                    color: white;
+                }
+                #PI td>table>tr>th {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #ffffff;
+                    color: #7a7a7a;
+                }
+                #PI td>table>tr>td {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #ffffff;
+                    color: #7a7a7a;
+                }
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+               
+                 #PI1 {
+                    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+                #PI1 td  {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+            
+                }
+                #PI1 tbody>tr>td {
+                  font-size: 1px;
+                  font-weight: normal;
+                }
+                #PI1 th {
+                  font-size: 10px;
+                  font-weight: normal;
+                font-weight: bold;
+                }
+                #PI1 td>table>tr>th {
+                  font-size: 6px;
+                  font-weight: bold;
+                }
+                #PI1 table>tr>td {
+                  font-size: 6px;
+                  font-weight: bold;
+                }
+                
+                #PI1 tr:nth-child(even){background-color: #f2f2f2;}
+                #PI1 tr:hover {background-color: #ddd;}
+                #PI1 th {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                background-color:rgb(52, 177, 235);
+                    color: white;
+                }
+                #PI1 td>table>tr>th {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #7f8edd;
+                    color: #7a7a7a;
+                }
+                #PI1 td>table>tr>td {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #ffffff;
+                    color: #7a7a7a;
+                }
+                
+                
+                
+            </style>                  
+        </head>
+        <body>
+           <td><apex:image url="{!$Resource.sigmaerp365logo}" width="160"/></td>
+         <td width="47%" style="font-size:15px;" ><b>P U R C H A S E &nbsp;&nbsp;O R D E R S</b></td>
+                  <apex:repeat value="{!polist}" var="po" >
+                      <table border="PI"  id="PI">
+                        <tr>
+                    <th width="3%" align="center">P.O#</th>
+                    <th width="5%" align="center">ORDER DATE</th>
+                    <th width="3%" align="center">EXPECTED DATE</th>                  
+                </tr>
+                    <tr>
+                         <td valign="top" width="3%" align="center"><apex:outputText value="{!HTMLENCODE(po.POName)}" escape="false" /></td>
+                            
+                             <td valign="top" width="3%" align="center"><apex:outputText value="{0, date, dd/MM/yyyy}">
+                                 <apex:param value="{!po.orderDate}" />
+                             </apex:outputText></td>
+                             <td valign="top" width="3%" align="center"><apex:outputText value="{0, date, dd/MM/yyyy}">
+                                 <apex:param value="{!po.expectedDate}" />
+                             </apex:outputText></td>
+                    </tr>
+                    <table border="PI1"  id="PI1">
+                    <tr>
+                    <th width="3%"  align="center">LineItem. #</th>
+                        <!--th width="3%"  align="center">P.O.P. #</th-->
+                        <th width="5%" align="center">Product</th>
+                         <th width="5%" align="center">Quantity</th> 
+                        <th width="5%" align="center">Expected DelIvery Date</th>
+                    </tr>
+                    <apex:repeat value="{!po.popWrapperList}" var="pop">
+
+                        <tr>
+                             <td valign="top" width="3%" align="center"><apex:outputText value="{!HTMLENCODE(pop.POPName)}" escape="false" /></td>
+                        <td valign="top" width="3%" align="center"><apex:outputText value="{!HTMLENCODE(pop.ProductName)}" escape="false" /></td>
+                            <td valign="top" width="3%" align="center"><apex:outputText value="{!pop.Quantity}" escape="false" /></td>
+                          <td valign="top" width="3%" align="center"><apex:outputText value="{0, date, dd/MM/yyyy}"><apex:param value="{!pop.ExpectedDeliveryDate}" /></apex:outputText></td>
+                          
+                        </tr>
+                    </apex:repeat>
+                    </table>
+                           </table>
+                      <br/><br/>
+
+                </apex:repeat>
+
+        </body>
+    </html>
+</apex:page>

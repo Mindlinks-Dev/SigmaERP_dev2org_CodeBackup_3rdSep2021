@@ -1,0 +1,12 @@
+.THIS .slds-modal__container{
+    width:80% !important;
+    max-width:80% !important;
+}
+.THIS.slds-spinner_container
+{
+    position:fixed;
+}
+.THIS {
+    background-color: #808080;
+    padding: 12px;
+}

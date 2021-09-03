@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION">
+    <aura:attribute name="po" type="Purchase_Order_Product__c"/>
+    <aura:attribute name="rowIndex" type="Integer"/> 
+    <aura:attribute name="POIdForClone" type="string"/>
+</aura:event>

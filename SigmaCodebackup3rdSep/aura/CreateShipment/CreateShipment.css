@@ -1,0 +1,47 @@
+.THIS .slds-page-header{
+    padding:1rem !important;
+}
+.THIS .slds-button--icon-bare
+{
+    float:right !important;
+}
+.THIS .slds-3-of-4
+{
+    width:92% !important;
+}
+.THIS th
+{
+    background:#fafaf9 !important;
+}
+.THIS a:hover
+{
+    text-decoration:none !important;
+}
+.THIS .backdrop1
+{
+    position: absolute;    
+    width: 94%;
+    height: 83.4vh;    
+    background-color: rgba(0,0,0,0.4);
+    z-index: 3;
+}
+.THIS.backdrop1
+{
+    position: absolute;    
+    width: 94%;
+    height:  83.4vh;     
+    background-color: rgba(0,0,0,0.4);
+    z-index: 3;
+}
+
+.THIS .slds-pill{width:100% !important;}
+.THIS.slds-pill{width:100% !important;}
+@media only screen and (max-width: 768px) 
+{
+    .THIS .main{width:94% !important;}
+     .THIS .record-header{left:0 !important;}
+    .THIS .closeButton{left:0 !important;}
+    .THIS .slds-scope .slds-notify_toast{padding: .75rem .5rem .75rem 0.5rem !important;min-width: 21rem !important;margin-top: 0.5rem !important;}
+    .THIS .backdrop1{height:100vh !important;}
+    .THIS.backdrop1{height:100vh !important;}
+}

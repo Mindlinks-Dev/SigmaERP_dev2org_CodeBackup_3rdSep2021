@@ -1,0 +1,94 @@
+<aura:component controller="ManufacturingRun" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+    <aura:attribute name="rowDetails" type="array" />    
+    <aura:attribute name="editStock" type="Boolean" default="false" />   
+    <aura:attribute name="prodId" type="Id" />
+    <aura:attribute name="reservedQty" type="Decimal" />
+    
+    <aura:attribute name="recID" type="Id" /> 
+    <aura:attribute name="manfObj" type="Map" />
+    <aura:attribute name="orderItemNewForView" type="array" />
+    
+    <td style="width:2%;"></td>                                    
+    <td style="width:35%;">        
+        <div title="Product"> 
+            <ui:inputText aura:id="transLineItem" label=""
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.rowDetails.prodName}"
+                          disabled="true"/>                                 
+        </div>
+    </td>
+    <td style="width:45%;">        
+        <div title="Req. Qty" >
+            <input type="text" id="{!'requiredQnt_'+v.prodId}" class="slds-input" disabled="true" labelClass="slds-form-element__label" value="{!v.rowDetails.requiredQnt}" />                                        
+        </div>
+    </td>
+    
+    <!--<td style="width:35%;" class="{!v.manfObj.sigmaerpdev__Status__c == 'Produced'? 'slds-hide' : 'slds-show'}">-->
+    <!--<td style="width:35%;" class="{!v.manfObj.sigmaerpdev2__PI_updated__c == true? 'slds-hide' : 'slds-show'}">
+        <div style="width:100%;margin-left:45%;">
+            <button id="{!'edit_'+v.prodId}" class="slds-button slds-button_brand" disabled="false" onclick="{!c.editStock}">Edit</button>
+            <button id="{!'save_'+v.prodId}" class="slds-button slds-button_brand" disabled="true" onclick="{!c.saveEditedStock}">Save</button>
+            <button id="{!'cancel_'+v.prodId}" class="slds-button slds-button_brand" disabled="true" onclick="{!c.cancelEditStock}">Cancel</button> 
+        </div>       
+    </td> -->   
+    <tr>
+        <td style="width:1%;"></td>
+        <td colspan="4">               
+            
+                <table class="slds-table slds-table_striped slds-table_cell-buffer">
+                    <tr>
+                        <!--<th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;"><b>IL</b></div>
+                        </th>-->
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;"><b>ILP</b></div>
+                        </th> 
+                        <!--<th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;"><b>Zone</b></div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;"><b>Bin</b></div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;"><b>SKU</b></div>
+                        </th>-->
+                        <!--<th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;"><b>Inventory Location</b></div>
+                        </th>-->
+                        <!--<th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;"><b>ILP</b></div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;"><b>ILPLI</b></div>
+                        </th> -->
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Unit Price" style="color:#16325c;"><b>Unit Price</b></div>
+                        </th>                                            
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;"><b>Picked Qty.</b></div>
+                        </th>
+                    </tr>                    
+                    <tbody>			
+                        <aura:iteration items="{!v.rowDetails.wrapProdList}" var="wrapList">
+                            <c:showProductsListReserveStockInner_M innerList="{!wrapList}" />
+                        </aura:iteration>
+                        <tr></tr>
+                    </tbody>            	
+                </table>
+             
+       </td>
+  </tr>
+    
+  <div class="demo-only slds-hide" aura:id="mySpinner" style="height: 6rem;">
+  	<div class="slds-spinner_container">
+    	<div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+        	<span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+  	</div>
+  </div>
+
+</aura:component>

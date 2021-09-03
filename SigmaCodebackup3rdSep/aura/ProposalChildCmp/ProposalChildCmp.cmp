@@ -1,0 +1,78 @@
+<aura:component Controller='SigmaOrderHandler' implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+    
+    <aura:attribute name="PropList" type="Proposal__c[]"/>
+   <aura:attribute name="serialCount" type="Integer"/>
+    <aura:attribute name="PropFlag" type="Boolean" default="false"/>
+     <aura:attribute name="Listflag" type="Boolean" default="true"/>
+     <aura:attribute name="LightView" type="Boolean" default="false"/>
+    <aura:attribute name="proposalid" type="id"/>
+     <aura:attribute name="maincomp" type="Boolean" default="false"/>
+     <aura:attribute name="iseditproposal" type="Boolean"/>
+     <aura:attribute name="PropProdFlag" type="Boolean"/>
+    <tr>
+        <td >
+            <div class="slds-truncate" title="">{!v.serialCount}</div>
+        </td>
+       <!-- <th scope="row">
+            <span> 
+                <div class="slds-truncate" title="PROPOSAL ID"><a href="{!'/one/one.app?#/sObject/'+ v.PropList.Id + '/view'}" onclick="{!c.openRecords}">{!v.PropList.Name}</a></div>
+            </span>
+        </th> -->
+        <aura:if isTrue="{!v.LightView}">
+        <th scope="row">
+            <span> 
+                <div class="slds-truncate" title="PROPOSAL ID"><a href="{!'/one/one.app?#/sObject/'+ v.PropList.Id + '/view'}" onclick="{!c.openRecords}">{!v.PropList.Name}</a></div>
+            </span>
+        </th>
+            <aura:set attribute="else">
+                <th scope="row">
+                    <span> 
+                        <div class="slds-truncate" title="Order"><a href="{!'/'+v.PropList.Id}" onclick="{!c.openRecords}">{!v.PropList.Name}</a></div>
+                    </span>
+                </th>                   
+            </aura:set>
+                </aura:if>
+        <td>
+            <div class="slds-truncate" title="PROPOSAL NAME">{!v.PropList.sigmaerpdev2__Proposal_Name__c}</div>
+        </td>
+        <td>
+            <div class="slds-truncate" title="AGENCY">{!v.PropList.sigmaerpdev2__Agency__r.Name}</div>
+        </td>
+        <td>
+            <div class="slds-truncate" title="Usage Type">{!v.PropList.sigmaerpdev2__Usage_Type__c}</div>
+        </td>
+		<td >
+            <div class="slds-truncate" title="STATUS">{!v.PropList.sigmaerpdev2__Status__c}</div>
+        </td>
+        
+        <td  class="slds-text-align_right">
+            <div class="slds-dropdown-trigger slds-dropdown-trigger_click" aura:id="dropdownContent">
+                <button class="slds-button slds-button_icon slds-button_icon-border-filled slds-button_icon-x-small" title="Show More" aura:id="dropdown" onclick="{!c.dropdown}">
+                    <lightning:icon iconName="utility:down" size="x-small" alternativeText="section" />
+                    <span class="slds-assistive-text">Show More</span>
+                </button>
+                
+                <div class="slds-dropdown slds-dropdown_right">
+                    <ul class="slds-dropdown__list" role="menu">
+                  <li class="slds-dropdown__item" role="presentation">
+                            <a href="javascript:void(0);" role="menuitem" tabindex="0"   onclick="{!c.Navigate}">
+                                <span class="slds-truncate" title="Menu Item One">Edit</span>
+                            </a>
+                        </li> 
+                        <li class="slds-dropdown__item" role="presentation">
+                            <a href="javascript:void(0);" role="menuitem" tabindex="0"   onclick="{!c.handleDeleteprop}">
+                                <span class="slds-truncate" title="Menu Item One">Delete</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+            </div>
+        </td> 
+    </tr>
+    
+    {!V.body}
+    
+    
+</aura:component>

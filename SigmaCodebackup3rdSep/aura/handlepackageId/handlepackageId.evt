@@ -1,0 +1,5 @@
+<!--c:ceEvent-->
+<aura:event type="COMPONENT">
+    <aura:attribute name="packageId" type="Id"/>
+    
+</aura:event>

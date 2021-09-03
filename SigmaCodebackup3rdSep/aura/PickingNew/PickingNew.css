@@ -1,0 +1,12 @@
+.THIS .paddingAround .slds-col
+{
+   padding: .3rem;
+}
+.THIS .checkbox1 {
+   display: inline-flex;
+             border: solid black 2.5px;
+    padding: 17%;
+    margin-left: 30%;
+     margin-right: 10%;
+    margin-bottom: 25%;
+}

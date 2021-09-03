@@ -1,0 +1,44 @@
+<aura:component controller="paymentinvoice" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="recordId" type="List" default=""/>
+    <aura:attribute name="AccountName" type="String" default=""/>
+    <aura:attribute name="amountTobeCharged" type="Double" description="The current record Id to display"/>
+    <aura:attribute name="AccountId" type="List"  default="" description="" />
+    <aura:attribute name="backhide" type="Id"  default="" description="" />
+    <aura:attribute name="isPayment" type="boolean" description="The current record Id to display" />
+
+    <aura:attribute name="selectedSalesInvoice" type="Sigma_Order__c[]" />
+    <aura:attribute name="postcode" type="String"  default="" description="" />
+    
+    <aura:attribute name="contactName" type="List"  default="" description="contact name " />
+    <aura:attribute name="currencySymbol" type="String" description="The currency sysmbol in Default paramater"/>
+    <aura:handler name="init" value="{!this}" action="{!c.myAction}" />
+    <aura:attribute name = "ordercreatedvia" type ="String[]" description =""/>
+    
+    <aura:attribute name="TotalProductAmount" type="String" description="The current record Id to display" />
+    <aura:attribute name="FederalTax" type="String" description="The current record Id to display" />
+    <aura:attribute name="StateTax" type="String" description="The current record Id to display" />
+    <aura:attribute name="TaxType" type="String" description="The current record Id to display" />
+    <aura:attribute name="TaxOnBillAmount" type="String" description="The current record Id to display" />
+    <aura:attribute name="billingPerson" type="List" description="The current record Id to display" />
+    <aura:attribute name="totalBillAmountValue" type="String" description="value for total bill amount" />    
+    
+    <aura:attribute name="flatTaxType" type="String" description="The current record Id to display" />
+    <aura:attribute name="stateTaxType" type="String" description="The current record Id to display" />
+     <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/> 
+    
+    <ltng:require styles="{!$Resource.increasepopupsize}" />
+     <aura:renderIf isTrue="{!v.isError}">
+         <ui:message title="Error" severity="error" closable="false">
+              {!v.errorMsg}
+            </ui:message>
+         <aura:set attribute="else">
+              
+       
+    <div class="testtest">
+        <div class="backdrop slds-hide" aura:id="backdrop"></div>
+        <c:CreditPaymentOptions currencySymbol="{!v.currencySymbol}" customerName="{!v.contactName}" postcode="{!v.postcode}" recordId="{!v.AccountId}" amountTobeCharged="{!v.totalBillAmountValue}" orderSFId="{!v.recordId}" taxAmount="{!v.TaxOnBillAmount}" FederalTax="{!v.FederalTax}" StateTax="{!v.StateTax}" billingPerson="{!v.billingPerson}" />
+    </div>
+         </aura:set>
+    </aura:renderIf>
+</aura:component>

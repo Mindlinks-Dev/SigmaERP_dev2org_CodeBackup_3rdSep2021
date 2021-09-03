@@ -1,0 +1,237 @@
+<apex:page >
+    
+    <apex:remoteObjects >
+        
+        <apex:remoteObjectModel name="Contact">
+            <apex:remoteObjectField name="FirstName" jsShorthand="firstName"/>
+            <apex:remoteObjectField name="LastName" jsShorthand="lastName"/>
+            <apex:remoteObjectField name="Title" jsShorthand="title"/>
+            <apex:remoteObjectField name="Phone" jsShorthand="phone"/>
+            <apex:remoteObjectField name="MobilePhone" jsShorthand="mobilePhone"/>
+            <apex:remoteObjectField name="Email" jsShorthand="email"/>
+            <apex:remoteObjectField name="sigmaerpdev2__Picture__c" jsShorthand="picture"/>
+            <apex:remoteObjectField name="ReportsToId" jsShorthand="managerId"/>
+            <apex:remoteObjectField name="sigmaerpdev2__Include_In_Org_Chart__c" jsShorthand="orgChart"/>
+        </apex:remoteObjectModel>
+        
+    </apex:remoteObjects>
+    
+    <button onclick="importData()">Import Data</button>
+        
+    <script>
+    
+        var orgChart = {
+            firstName: "Amy",
+            lastName: "Taylor",
+            title: "CEO",
+            phone: "617-123-4567",
+            mobilePhone: "617-987-6543",
+            email: "amy@chart.org",
+            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/amy_taylor.jpg",
+            reports: [
+                {
+                    firstName: "Anup",
+                    lastName: "Gupta",
+                    title: "VP of Engineering",
+                    phone: "617-123-4567",
+                    mobilePhone: "617-987-6543",
+                    email: "anup@chart.org",
+                    picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/anup_gupta.jpg",
+                    reports: [
+                        {
+                            firstName: "Lisa",
+                            lastName: "Parker",
+                            title: "Software Architect",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "lisa@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/lisa_parker.jpg"
+                        },
+                        {
+                            firstName: "Brad",
+                            lastName: "Moretti",
+                            title: "Software Architect",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "brad@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/brad_moretti.jpg"
+                        },
+                        {
+                            firstName: "Michelle",
+                            lastName: "Lambert",
+                            title: "Software Architect",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "michelle@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michelle_lambert.jpg"
+                        },
+                        {
+                            firstName: "Tammy",
+                            lastName: "Robinson",
+                            title: "Software Architect",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "tammy@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/tammy_robinson.jpg"
+                        }
+                    ]
+                },
+                {
+                    firstName: "Michael",
+                    lastName: "Jones",
+                    title: "VP of Marketing",
+                    phone: "617-123-4567",
+                    mobilePhone: "617-987-6543",
+                    email: "michael@chart.org",
+                    picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/michael_jones.jpg",
+                    reports: [
+                        {
+                            firstName: "Jennifer",
+                            lastName: "Wu",
+                            title: "Marketing Specialist",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "jen@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jennifer_wu.jpg"
+                        },
+                        {
+                            firstName: "Miriam",
+                            lastName: "Aupont",
+                            title: "Marketing Manager",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "miriam@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/miriam_aupont.jpg"
+                        },
+                        {
+                            firstName: "Olivia",
+                            lastName: "Green",
+                            title: "Marketing Manager",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "olivia@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/olivia_green.jpg"
+                        },
+                        {
+                            firstName: "Robert",
+                            lastName: "Sullivan",
+                            title: "Marketing Manager",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "robert@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/robert_sullivan.jpg"
+                        },
+                        {
+                            firstName: "Victor",
+                            lastName: "Ochoa",
+                            title: "Marketing Specialist",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "victor@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/victor_ochoa.jpg"
+                        }
+                    ]
+                },
+                {
+                    id: 4,
+                    firstName: "Caroline",
+                    lastName: "Kingsley",
+                    title: "VP of Sales",
+                    managerId: 1,
+                    managerName: "Amy Taylor",
+                    phone: "617-123-4567",
+                    mobilePhone: "617-987-6543",
+                    email: "caroline@chart.org",
+                    picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/caroline_kingsley.jpg",
+                    reports: [
+                        {
+                            id: 5,
+                            firstName: "James",
+                            lastName: "Kennedy",
+                            title: "Account Executive",
+                            managerId: 4,
+                            managerName: "Caroline Kingsley",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "james@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/james_kennedy.jpg"
+                        },
+                        {
+                            id: 7,
+                            firstName: "Jonathan",
+                            lastName: "Bradley",
+                            title: "Account Executive",
+                            managerId: 4,
+                            managerName: "Caroline Kingsley",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "jonathan@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/jonathan_bradley.jpg"
+                        },
+                        {
+                            id: 8,
+                            firstName: "Kenneth",
+                            lastName: "Sato",
+                            title: "Account Executive",
+                            managerId: 4,
+                            managerName: "Caroline Kingsley",
+                            phone: "617-123-4567",
+                            mobilePhone: "617-987-6543",
+                            email: "kenneth@chart.org",
+                            picture: "https://s3-us-west-1.amazonaws.com/sfdc-demo/people/kenneth_sato.jpg"
+                        }
+                    ]
+                }
+            ]
+        };
+        
+        function importData() {
+            createContact(orgChart)
+				.then(
+                    function() {
+                        alert("Org chart successfully imported");    
+                    },
+                    function(error) {
+                        alert("A problem has occurred. " + error);
+                    });
+        }
+
+		function createContact(contact) {
+            console.log(contact.lastName);
+            return new Promise(function(resolve, reject) {
+                var contactRO = new SObjectModel.Contact();
+                var contactObj = {
+                    firstName: contact.firstName,
+                    lastName: contact.lastName,
+                    title: contact.title,
+                    phone: contact.phone,
+                    mobilePhone: contact.mobilePhone,
+                    email: contact.email,
+                    picture: contact.picture,
+                    managerId: contact.managerId,
+                    orgChart: true
+                };
+                contactRO.create(contactObj, function(err, contactId) {
+                    console.log(contactId);
+                	if (err) {
+                        console.log(err);
+                		reject(err);
+                	} else {
+                        if (contact.reports) {
+	                        var createReportPromises = [];
+                            for (var j=0; j<contact.reports.length; j++) {
+                                contact.reports[j].managerId = contactId[0];
+                                createReportPromises.push(createContact(contact.reports[j]));
+                            }
+                            Promise.all(createReportPromises).then(resolve, reject);
+						} else {
+                            resolve();
+						}
+            		}
+                });
+			});
+		}            
+                
+        </script>
+
+</apex:page>

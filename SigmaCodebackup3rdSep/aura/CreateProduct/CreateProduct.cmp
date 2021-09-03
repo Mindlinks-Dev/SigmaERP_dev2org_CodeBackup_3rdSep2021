@@ -1,0 +1,318 @@
+<aura:component Controller="CreateProductClass" access="global" implements="flexipage:availableForAllPageTypes,force:appHostable,forceCommunity:availableForAllPageTypes" >
+    <aura:attribute name="isshipmentFlag" type="Boolean" default="false"/>
+    <aura:attribute name="Shipment" type="Product2" 
+                    default="{'sobjectType': 'Product2',
+                             'Name': '',
+                             'sigmaerpdev2__SKU__c': ''
+                             }"/> 
+    
+    <aura:attribute name="ShipmentProduct" type="Shipment_Products__c" 
+                    default="{'sobjectType': 'Shipment_Products__c',
+                             'sigmaerpdev2__Package_ID__c': '',
+                             'sigmaerpdev2__Customer_Name__c': '',
+                             'sigmaerpdev2__Order__c': '',
+                             'sigmaerpdev2__Shipment_Delivery_Date__c': '',
+                             'sigmaerpdev2__Status__c': '',
+                             'Pkg__Name':'',
+                             'Cust__Name':'',
+							 'sigmaerpdev2__Contact_Person__c':''
+                             }"/>
+    <!-- Look up Set up -->
+    <aura:attribute name="Id" type="String"    default=""/>
+    <aura:attribute name="VendorId" type="String"    default="" description="The current record Id to display" /> 
+    <aura:attribute name="recordName" type="String"  default="" description="The current record Id to display" />
+    <aura:attribute name="recordName1" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="recordName2" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="recordName3" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="status" type="String[]"    default=""/>
+    <aura:attribute name="ShipmentProducts" type="Shipment_Products__c[]"  />
+    <aura:attribute name="myMap" type="Map"/>
+    <aura:attribute name="courierlist" type="List" />
+    <aura:attribute type="String" name="selectedCourier"/>
+     <aura:attribute type="String" name="dpName"/>
+    <aura:attribute name="Showcourier" type="Boolean" default="true"/>
+    
+    <aura:handler name="carryShipmentInList" event="c:CarryShipmentRecord" action="{!c.handleStockinList}"/>
+    <aura:attribute name="SAccount" type="String"    default=""/>
+    <aura:attribute name="SContact" type="String"    default=""/>
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+      <aura:attribute name="isShipmentLineItemOpen" type="Boolean" default="true"/>
+    <aura:attribute name="today" type="String" />
+    <aura:attribute name="Shipmentdate" type="String" />
+    <aura:attribute name="cuctomerId" type="Id"/>
+    
+    <aura:handler name="StappComponentEvent" event="c:StappComponentEvent" action="{!c.handleComponentEvent}" />
+    
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <!--  <aura:handler name="clearLookupIdEvent" event="sigmaerpdev:ClearLookupId" action="{!c.handleAccountIdClear}"/> -->
+    
+    <aura:attribute name="recordId" type="Id" default="" description="The current record Id to display" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
+    
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="isOpenprodTable" type="boolean" default="false"/>
+    
+    <aura:attribute name="curRecordID" type="String" />
+        <aura:attribute name="headStatus" type="String"    default=''/>
+    <aura:attribute name="conID" type="String" />
+	<aura:attribute name="conName" type="String" />
+	
+	 <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+     <aura:handler name="change" value="{!v.conID}" action="{!c.clearAfterContactRemove}" />
+    
+    
+    <!--code for Success and Failure Alerts-->
+    <div id="Accspinner" class="slds-spinner_container slds-is-fixed" style="display:none">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    
+    
+    <!--End of Success and Failure Alerts-->
+    
+    <div class="slds-box" style="padding:0 0 1rem 0;">
+        <!-- PAGE HEADER -->
+        <div class="slds-page-header" style="">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-lead">
+                        <c:svg class="slds-icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/custom-sprite/svg/symbols.svg#custom98'}" />
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle slds-m-top_xx-small">Product</h1>
+                </div>
+            </div>
+        </div>
+        <!-- / PAGE HEADER --> 
+        
+        
+        <div class="main-content" style="width: 50%;margin:auto;margin-top:2%;margin-bottom:2%;">
+            <div class="slds-form slds-form_compound">
+                <aura:renderIf isTrue="{!v.isError}">
+                    <ui:message title="Error" severity="error" closable="false">
+                        {!v.errorMsg}
+                    </ui:message>
+                    <aura:set attribute="else">
+                        
+                    </aura:set>
+                </aura:renderIf>  
+                <div class="slds-form-element__group">
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <div class="slds-3-of-4">
+                                <div class="slds-form-element__control" id="tempToDisplayLogistics"> 
+                                    <label class="slds-form-element__label" for="Delivery_Person">Product Name
+                                
+                            </label>
+                            <div class="slds-3-of-4" id="tempToDisplayDescription">
+                                <ui:inputText aura:id="Description"	class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.Shipment.Name}"/>
+                            </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label" for="Delivery_Person">SKU
+                                
+                            </label>
+                            <div class="slds-3-of-4" id="tempToDisplayDescription">
+                                <ui:inputText aura:id="Description"	class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.Shipment.sigmaerpdev2__SKU__c}"/>
+                            </div>
+                        </div>
+                    </div>
+                   <!-- 
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label" for="ReceivingLocation">Truck Number
+                                
+                            </label>
+                            <div class="slds-3-of-4" id="tempToDisplayTruckNumber">
+                                <ui:inputText aura:id="TruckNo" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.Shipment.sigmaerpdev2__Truck_No__c}"/>	
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element slds-size_1-of-2 slds-truncate">
+                            <label class="slds-form-element__label" for="DateTime" >WayBill/Ref</label><br/>
+                            <div class="slds-3-of-4" id="tempToDisplayWayBill">
+                                <ui:inputText aura:id="waybill"
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.Shipment.sigmaerpdev2__WayBill__c}" /> 
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label" for="Truck_Number"><span style="color:red;">*</span>Delivery Person</label>
+                            <div class="slds-3-of-4" id="tempToDisplayDeleveryPerson">
+                                <ui:inputText aura:id="deleverPerson" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.Shipment.sigmaerpdev2__Delivery_Person1__c}"/>
+                               
+                            </div>
+                           
+                        </div>
+                        
+                        <div class="slds-form-element slds-size_1-of-2 slds-truncate">
+                            <label class="slds-form-element__label" for="Truck_Number"><span style="color:red;">*</span>Shipment Date</label><br/>
+                            <div class="slds-3-of-4" id="tempToDisplayShipmentDate">
+                                <ui:inputDate aura:id="DateTime" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.Shipment.sigmaerpdev2__Shipment_Date__c}"
+                                              displayDatePicker="true"/>	
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label" for="Truck_Number"><span style="color:red;">*</span>Status</label>
+                            <div class="slds-3-of-4" id="tempToDisplayShipmentStatus">
+                                <ui:inputSelect aura:id="headerSectionstatus"  
+                                                class="slds-input" required="true" requiredIndicatorClass="redAsterisk"
+                                                labelClass="slds-form-element__label"
+                                                change="{!c.saveStatus}">
+                                    <aura:iteration items="{!v.status}" var="st">
+                                        
+                                        <ui:inputSelectOption text="{!st}" label="{!st}"/>      
+                                    </aura:iteration>
+                                </ui:inputSelect> 
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label" for="Truck_Number">Consignment Number</label>
+                            <div class="slds-3-of-4" id="tempToDisplayConsignment">
+                                <ui:inputText aura:id="consignment" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.Shipment.sigmaerpdev2__concenment__c}"/>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label" for="Truck_Number">Tracking URL</label>
+                            <div class="slds-3-of-4" id="tempToDisplayTrackingUrl">
+                                <ui:inputText aura:id="trackingurl" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.Shipment.sigmaerpdev2__track_url__c}"/>	
+                            </div>
+                        </div>
+                    </div>-->
+                     <div align="center" class="slds-form-element" style="margin:1% 2%;">
+                            <button class="slds-button slds-button--brand" onclick="{!c.createShipment}">Submit</button>
+                            <button class="slds-button slds-button_neutral" 
+                                    onclick="{!c.cancelButton}" style="margin-right:0.6%;">Cancel</button>        
+                            
+                        </div>
+                </div>
+                
+                
+            </div>
+            
+           
+        </div> 	
+        
+        
+        <aura:if isTrue="{!v.isOpenprodTable}"> 
+            <div aura:id="prodTable">
+                <header class="slds-page-header slds-media slds-media--center slds-has-flexi-truncate" style="margin-top:1.4rem;background:transparent">
+                    <div class="slds-media__figure" data-aura-rendered-by="1263:0">
+                        <span class="slds-icon_container slds-icon-action-new-note slds-icon_container--circle" style="background:#f88962;color:white;">
+                            <c:svg class="slds-button__icon slds-button__icon_medium" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/action-sprite/svg/symbols.svg#new_note'}" />
+                        </span>
+                        
+                    </div>
+                    <div class="slds-media__body" data-aura-rendered-by="1264:0">
+                        <h2 id="header" data-aura-rendered-by="1265:0">
+                            
+                            <span class="slds-text-heading--small slds-truncate slds-m-right--xx-small" title="Shipment Products" data-aura-rendered-by="1267:0">
+                                Shipment Items</span>
+                            
+                        </h2>
+                    </div>
+                </header>
+                <div class="slds-scrollable_x">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="">
+                        <thead>
+                            <tr class="slds-text-title_caps" style="background:#fafaf9;">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Action">Action</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Package Number"> Package Number <span style="color:red">*</span></div>
+                                </th>
+                                
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Customer Name">Customer Name</div>
+                                </th>
+                                
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Shipment Delivery Date">Shipment Delivery Date <span style="color:red">*</span></div>
+                                </th>
+                                
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Status">	Status <span style="color:red">*</span> </div>
+                                </th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:ShipmentProductItemList isOpenprodTablechild="{!v.isOpenprodTable}" ShipmentProduct="{!v.ShipmentProducts}" isOpen="{!v.isOpen}"/>
+                        </tbody> 
+                    </table>
+                </div>
+                <div style="text-align:right;margin-top:1rem;margin-right:1rem;">       
+                    <aura:if isTrue="{!v.Id == ''}">
+                        <div align="center" class="slds-form-element" style="margin:1% 2%;">
+                            <button class="slds-button slds-button--brand" onclick="{!c.createShipment}">Submit</button>
+                            <button class="slds-button slds-button--brand" 
+                                    onclick="{!c.cancelButton}" style="margin-right:0.6%;">Cancel</button>        
+                            
+                        </div>
+                        <aura:set attribute="else">
+                            <div align="center" class="slds-form-element" style="margin:1% 2%;">
+                                <button class="slds-button slds-button--brand" onclick="{!c.updateShipmentProduct}">Update</button>
+                                <button class="slds-button slds-button--brand" 
+                                        onclick="{!c.cancelButton}" style="margin-right:0.6%;">Cancel</button>        
+                                
+                            </div>
+                            
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>   
+        </aura:if>
+        
+    </div>  
+    <aura:if isTrue="{!v.isOpen}">
+        
+        <c:ShipmentProductItem isOpenchild="{!v.isOpen}" isOpenTablechild="{!v.isOpenprodTable}" cuctomerId = "{!v.cuctomerId}"/>
+        <div class="slds-backdrop slds-backdrop--open"></div>	
+    </aura:if>
+    <br/><br/>
+   
+      
+</aura:component>

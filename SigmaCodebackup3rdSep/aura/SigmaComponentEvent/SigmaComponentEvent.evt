@@ -1,0 +1,6 @@
+<aura:event type="COMPONENT" description="Component event for sigma app" access="global">
+    <aura:attribute type="Map" name="data" access="global"/>
+    <aura:attribute type="string" name="flag" access="global"/>
+    <aura:attribute type="string" name="flag1" access="global"/>
+    <aura:attribute type="string" name="customerId" access="global"/>
+</aura:event>

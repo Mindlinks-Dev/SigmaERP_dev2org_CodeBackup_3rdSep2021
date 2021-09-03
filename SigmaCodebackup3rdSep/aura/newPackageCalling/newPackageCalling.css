@@ -1,0 +1,102 @@
+.THIS .backdrop1
+{
+    position: absolute;    
+    width: 94%;
+    height: 78vh;    
+    background-color: rgba(0,0,0,0.4);
+    z-index: 1;
+}
+.THIS.backdrop1
+{
+    position: absolute;    
+    width: 94%;
+    height: 78vh;    
+    background-color: rgba(0,0,0,0.4);
+    z-index: 1;
+}
+.THIS .slds-page-header{
+    padding:1rem !important;
+}
+.THIS .slds-button--icon-bare
+{
+    float:right !important;
+}
+.THIS .slds-3-of-4
+{
+    width:92% !important;
+}
+.THIS th
+{
+    background:#fafaf9 !important;
+}
+.THIS a:hover
+{
+    text-decoration:none !important;
+}
+.THIS.site-masthead {
+    padding: 1rem 2rem;
+    color: #fff;
+}
+.THIS .textClass{
+    color: red;
+    font-size: 98%;
+}
+.textClass.THIS {
+    color: red;
+    font-size: 98%;
+}
+.THIS .th1{position:relative;left:150px;}
+.THIS .th2{position:relative;left:176px;}
+.THIS .th3{position:relative;left:210px;}
+
+.THIS .slds-pill{width:100% !important;}
+.THIS.slds-pill{width:100% !important;}
+@media only screen and (max-width: 768px) 
+{
+    .THIS .mob-slds-grid{display:block !important;width:94% !important;}
+    .THIS .main-content{width:90% !important;}
+    .THIS .Sec-header{padding-left:0.2rem !important;margin-top:16%;}
+    .THIS .add-button{text-align:center;}
+    .THIS input{min-height:40px !important;}
+    .THIS select{min-height:40px !important;}
+    .THIS .footer-button button{width:35.4% !important;}
+    
+    .THIS table thead {
+        border: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+    .THIS table tr {
+        border-bottom: 4px solid #ddd;
+        display: block;
+    }
+    .THIS table td {
+        border-bottom: .5px solid #ddd;
+        display: block;
+        font-size: .8em;
+        text-align: right;
+    }
+    .THIS table td:before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+        width:40%;
+        text-align:left;
+    }
+    .THIS .slds-table tr > td:first-child{
+        padding-left:0.5rem !important;
+    }
+    .THIS table td:last-child {
+        border-bottom: 0;
+    }
+    
+    .THIS table td input{width:172px !important;}
+    
+    
+}

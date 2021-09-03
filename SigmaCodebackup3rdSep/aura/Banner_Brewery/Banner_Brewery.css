@@ -1,0 +1,116 @@
+.banner-bg.THIS
+{
+    background:url("/SigmaBrewery/file-asset/sigmaerpdev2__img_14?v=1");
+    background-position:0;
+    background-size:cover;
+    width:100%;
+    height: 100vh;
+    overflow: hidden;
+}
+.THIS.banner-bg:before{
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    height: 125vh;
+}
+.THIS .content-bg 
+{
+    position:relative;
+    text-align:center;
+}
+.THIS .content
+{
+    width:50%;
+    padding:30px 25px;
+    margin:10.8% auto;
+    /*box-shadow:0 6px 15px rgba(0, 0, 0, 0.16);*/
+    border-radius:10px;
+}
+.THIS .header
+{
+    font-size:18px;
+    color:#000;
+    font-weight:bold;
+}
+.THIS .slds-file-selector
+{
+    display:block;
+}
+.THIS .slds-file-selector__dropzone
+{
+    display:flex;
+    background:#F7F7F7;
+}
+.THIS .slds-text-color_error
+{
+    padding:3px 8px;
+}
+.THIS .brand-btn
+{
+    background:rgba(0, 0, 0, 0.5);
+    color:white;
+    border:3px #ffc930 solid;
+    font-weight:bold;
+    padding:10px;
+    margin:10px;
+    letter-spacing: 2px;
+}
+.THIS .brand-btn:hover{
+    text-decoration:none;
+}
+.THIS.content1-bg
+{
+    padding:5% 6%;
+}
+.THIS .content-bg h2
+{
+    margin: 0;
+    color: #212121;
+    font-weight: 500;
+    text-transform: capitalize;
+    font-size: 40px;
+    line-height: 50px;
+    margin-top: 3px;
+     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+}
+.THIS .content-b gp
+{
+    color: #767676;
+    font-size: 14px;
+    line-height: 26px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+    /*margin: 0;
+    margin-top: 22px;*/
+}
+
+
+.THIS .para1
+{
+    color: #ffffff;
+    font-weight: 300;
+    /*margin-top: 17%;
+    letter-spacing: 4.5px;*/
+    text-shadow:1px 1px 1px black, 1px 1px 1px black;
+    margin:20px;
+    line-height:25px;
+    letter-spacing: 2px;
+}
+.THIS .para2
+{
+    text-transform:uppercase;
+     font-size: 25px;
+	color: white;
+    text-shadow:1px 1px 1px black, 1px 1px 1px black;
+        font-weight: bold;
+}
+
+.THIS .slds-modal__container {
+    width: 40% !important;
+    max-width: 40% !important;
+}
+@media screen and (max-width: 600px) {
+    .THIS .content{width:100% !important;}
+}

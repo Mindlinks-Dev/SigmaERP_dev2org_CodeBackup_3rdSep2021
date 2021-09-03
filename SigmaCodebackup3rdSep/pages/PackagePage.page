@@ -1,0 +1,16 @@
+<apex:page StandardController="Sigma_Order__c" >
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+     var recId = "{!JSENCODE($CurrentPage.parameters.id)}";
+        $Lightning.use("sigmaerpdev:PackageApp", function() {
+          $Lightning.createComponent("sigmaerpdev:newPackageCalling",
+          {recordId: recId},
+          "lightning",
+          function(cmp) {
+          });
+        });
+    </script>
+</apex:page>

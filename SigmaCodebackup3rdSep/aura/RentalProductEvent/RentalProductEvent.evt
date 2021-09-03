@@ -1,0 +1,14 @@
+<aura:event type="APPLICATION" description="Product Object Info" access="global">
+    <aura:attribute name="productInfo" type="Product2" required="true" description="The Id of the selected SObject." />
+    <aura:attribute name="productVal" type="String" required="true" description="The id to identify the instance the component" />
+	<aura:attribute name="productQuantity" type="String" required="true" description="The Id of the selected SObject." />
+    <aura:attribute name="productAmount" type="String" required="true" description="The id to identify the instance the component"/>
+    <aura:attribute name="deliverydate" type="Date" required="true" description="The id to identify the instance the component" />
+    <aura:attribute name="ProductDiscount" type="String" required="true" description="The id to identify the instance the component" />
+	<aura:attribute name="startdate" type="Date" required="true" description="The id to identify the instance the component" />
+	<aura:attribute name="duedate" type="Date" required="true" description="The id to identify the instance the component" />
+	<aura:attribute name="returndate" type="Date" required="true" description="The id to identify the instance the component" />
+	<aura:attribute name="rentalstatus" type="String" required="true" description="The id to identify the instance the component" />
+	<aura:attribute name="billinginterval" type="String" required="true" description="The id to identify the instance the component" />
+    <aura:attribute name="amountperinterval" type="Integer" required="true" description="The id to identify the instance the component" />
+</aura:event>

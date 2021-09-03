@@ -1,0 +1,10 @@
+.THIS .background-gray,.THIS.background-gray{
+    background-color: #f5f5f5;
+    border: 1px solid #e6e6e6;
+}
+.THIS tr:nth-child(even) {
+    background-color: #f3f2f2;
+}
+.THIS .background-yellow,.THIS.background-yellow{
+    background-color: #fff9c4 !important;
+}

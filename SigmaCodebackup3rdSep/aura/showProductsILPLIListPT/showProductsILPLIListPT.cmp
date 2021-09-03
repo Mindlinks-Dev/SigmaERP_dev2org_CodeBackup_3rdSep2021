@@ -1,0 +1,73 @@
+<aura:component>	
+        
+    <aura:attribute name="details" type="object" />
+
+    <aura:if isTrue="{!v.details.ilpAvailQuantity != undefined}">
+        <td>
+            <div style="padding-left:2px;">
+                {!v.details.ilpliName}
+            </div>
+        </td>
+        <td>
+            <div style="padding-left:2px;">
+ <aura:if isTrue="{!v.details.lotName != null}">
+                    {!v.details.lotName}
+                    <aura:set attribute="else">
+                        NA
+                    </aura:set>
+                </aura:if>           
+            </div>
+        </td>
+         <td>
+            <div style="padding-left:2px;">
+ <aura:if isTrue="{!v.details.BinName != null}">
+                    {!v.details.BinName}
+                    <aura:set attribute="else">
+                        NA
+                    </aura:set>
+                </aura:if>           
+            </div>
+        </td>
+        <td>
+            <div style="padding-left:2px;">       
+                <aura:if isTrue="{!v.details.prodExpDate != null}">
+                    {!v.details.prodExpDate}
+                    <aura:set attribute="else">
+                        NA
+                    </aura:set>
+                </aura:if>
+            </div> 
+        </td>
+        <td>
+            <div style="padding-left:2px;"> 
+                <aura:if isTrue="{!v.details.serNum != null}">
+                    {!v.details.serNum}
+                    <aura:set attribute="else">
+                        NA
+                    </aura:set>
+                </aura:if>
+            </div>
+        </td>
+        <td>
+            <div style="padding-left:2px;">
+                {!v.details.ilpAvailQuantity}
+            </div>
+        </td>
+        <td>
+            <div style="padding-left:2px;">
+                <ui:inputNumber size="3" class="slds-input" value="{!v.details.selQuantity}" required="true" keyup="{!c.validateQuantity}"
+                                                updateOn="keyup" />
+                <!--<lightning:input type="Number" value="{!v.details.selQuantity}" />-->
+            </div>
+        </td>
+        <aura:set attribute="else">
+            <td colspan="6">
+                <div style="padding-left:200px;">
+                    Stock Not Available
+                </div>
+        	</td>
+        </aura:set>
+    </aura:if>
+    
+   
+</aura:component>

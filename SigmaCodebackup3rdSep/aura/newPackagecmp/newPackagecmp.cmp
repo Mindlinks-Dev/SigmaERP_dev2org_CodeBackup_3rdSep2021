@@ -1,0 +1,283 @@
+<aura:component controller="newPackageControllerLtng" implements="flexipage:availableForAllPageTypes,force:appHostable"  access="global">
+    <ltng:require styles="{!$Resource.increasepopupsize}" />
+    <aura:attribute name="packages" type="Package__c[]"/>
+    <aura:attribute name="package" type="Package__c" 
+                    default="{ 'sobjectType': 'Package__c',
+                             'Name': '',
+                             'sigmaerpdev__Customer__c': '',
+                             'sigmaerpdev__Location__c': '',
+                             'sigmaerpdev__PackagedBy__c': '',
+                             'sigmaerpdev__PackagedDate__c': '',
+                             'sigmaerpdev__Status__c': '',
+                             'sigmaerpdev__Instructions__c': '',
+                             'sigmaerpdev__Delivery_Note__c': ''
+                             }"/>
+    <aura:attribute name="packageProduct" type="PackagedProducts__c" 
+                    default="{ 'sobjectType': 'PackagedProducts__c',
+                             'sigmaerpdev__Order__c': '',
+                             'sigmaerpdev__Package__c':'',	
+                             'sigmaerpdev__Location__c': '',
+                             'sigmaerpdev__Instructions__c': '',
+                             'sigmaerpdev__Package_Date__c': '',
+                             'sigmaerpdev__Status__c': '',
+                             'sigmaerpdev__Sigma_Order__c':''
+                             }"/>
+    
+    <aura:attribute name="recordName" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="location" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="packagedBy" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="customerId" type="String" default="" description="" />
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="id" type="String" default=""/> 
+    <aura:attribute name="selTransId" type="Id" default="" />
+    <aura:attribute name="today" type="Date" />
+    <aura:attribute name="Orderdate" type="Date" />
+    <!-- added for fast entry -->
+    <aura:attribute name="isFromFastEntryMatrix" type="Boolean" default="false" />
+    <aura:attribute name="packageProductsFastEntry" type="array"/>
+    <aura:attribute name="transIdEdit" type="String" default="" />    
+    <aura:attribute name="packageProducts" type="PackagedProducts__c[]"/>
+    <!-- added for autopick or manual-->
+    <aura:attribute name="mainWrapperListInitial" type="array"/>
+    <aura:attribute name="mainWrapperList" type="array"/>
+    <aura:attribute name="removedPackageProducts" type="PackagedProducts__c[]"/>  
+    <aura:attribute name="status" type="String[]" default=""/>
+    <aura:attribute name="PackSelectedStatus" type="String" default=""/>
+    <aura:attribute name="productList" type="Object[]" />
+    <!-- added on 5/1/2018 to stop same transaction from being selected twice-->
+    <aura:attribute name="dupTransId" type="array" default="" />     	
+    <!-- ends here -->
+    
+    <aura:registerEvent name="appEvent1" type="c:setStatusValFromParentSO"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:attribute name="hideAutoShipButtonInChild" type="String" default=""/>
+    
+    <aura:handler name="sampleComponentEventNew" action="{!c.makeStatusReadOnly}" event="c:MakeStatusReadOnlyDuringAutopick" />
+    <aura:attribute name="isCancel" type="Boolean" default="false"/>
+    <aura:attribute name="isStandardOrder" type="Boolean" default="false" />
+    
+    <!-- / PAGE HEADER -->
+    <div class="slds-box" style="padding:0">
+        <div class="backdrop slds-hide" aura:id="backdrop"></div>
+        <div class="slds-page-header" style="margin-bottom:1rem;">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-lead-insights" title="Description of icon when needed">
+                        <c:svg class="slds-icon slds-page-header__icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#product'}" />
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <aura:if isTrue="{!v.id == undefined}">
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle slds-m-top_xx-small" title="Package">Package</h1>
+                        <aura:set attribute="else">
+                            <h1 class="slds-page-header__title slds-truncate slds-align-middle slds-m-top_xx-small" title="Package">Package</h1>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="main-content" style="width: 52%;margin:auto;margin-bottom:1.5%;">
+                <div class="slds-form slds-form_compound">                
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01">Customer <span style="color:red">* </span></label>
+                                <c:LookupSObject aura:id="customer" 
+                                                        SRString="Customer" 
+                                                        searchString="{!v.recordName}" 
+                                                        label="Account" 
+                                                        pluralLabel="Accounts" 
+                                                        sObjectAPIName="Account" 
+                                                        instanceId="MyAccount"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                        listIconClass="slds-icon-standard-account"
+                                                        />
+                                <ui:outputText aura:id="outColor" value="" class="textClass" />
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-02">Location</label>
+                                <c:LookupSObject aura:id="location" SRString="Packaged Location" 
+                                                        searchString="{!v.location}" label="Account" pluralLabel="Accounts" 
+                                                        sObjectAPIName="Account" instanceId="MyAccount2"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                        listIconClass="slds-icon-standard-account"
+                                                        />
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+                
+                <div class="slds-form slds-form_compound">                
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01">Packaged By</label>
+                                <c:LookupSObject aura:id="location" SRString="All"                                       
+                                                 searchString="{!v.packagedBy}" 
+                                                 label="Contact" pluralLabel="Contacts"
+                                                 sObjectAPIName="Contact" instanceId="MyContact"
+                                                 listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                 listIconClass="slds-icon-standard-account"
+                                                 />
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-02">Status <span style="color:red">*</span></label>
+                                <ui:inputSelect aura:id="status" label="" required="true"
+                                                class="slds-input"
+                                                labelClass="slds-form-element__label" change="{!c.onSingleSelectChange}">
+                                    <aura:iteration items="{!v.status}" var="st">
+                                        <aura:if isTrue="{!and(st != 'Delivered', st != 'In Shipment')}">                                        
+                                            <aura:if isTrue="{!st == ''}" > 
+                                                <ui:inputSelectOption text="{!st}" label="{!st}" value="true" /> 
+                                                <aura:set attribute="else">
+                                                    <ui:inputSelectOption label="{!st}" text="{!st}" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:if>
+                                    </aura:iteration>
+                                </ui:inputSelect>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+                
+                <div class="slds-form slds-form_compound">                
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01">Instructions</label>
+                                <ui:inputText aura:id="instructions" label=""
+                                              class="slds-input slds-truncate"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.package.sigmaerpdev__Instructions__c}"
+                                              placeholder="ABC Co."/>
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-02">Packaged Date <span style="color:red">*</span></label>
+                                <div class="slds-truncate">
+                                    <ui:inputDate aura:id="packagedDate"
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.package.sigmaerpdev__PackagedDate__c}"
+                                                  displayDatePicker="true"/>
+                                </div>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+            <header class="slds-media slds-media--center slds-has-flexi-truncate Sec-header" style="background:transparent;padding:0 0 1rem 1rem">
+                <div class="slds-media__figure" >
+                    <span class="slds-icon_container slds-icon-action-new-note slds-icon_container--circle" style="background:#22B0E6;color:white;">
+                        <c:svg class="slds-button__icon slds-button__icon_medium" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/action-sprite/svg/symbols.svg#new_note'}" />
+                    </span>
+                </div>
+                <div class="slds-media__body" >
+                    <h2 id="header" data-aura-rendered-by="495:0">
+                        <span class="slds-text-heading--small slds-truncate slds-m-right--xx-small" title="Package Products">
+                            Add/Edit Package Products</span></h2>
+                </div>
+            </header>
+            <aura:renderIf isTrue="{!v.isError}">
+                <ui:message title="Error" severity="error" closable="false">
+                    {!v.errorMsg}
+                </ui:message>
+                <aura:set attribute="else">
+                    
+                </aura:set>
+            </aura:renderIf>  
+            
+            <div id="showNormalFlow" style="display:block;"> <!-- added to hide or show normal flow in contrast to matrix entry flow -->
+                <div class="" style="padding:0;">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr style="font-size:11.5px;">
+                                <th scope="col" style="width:1%;">
+                                    <div class="slds-truncate" style="color:#16325c;">ACTION</div>
+                                </th>
+                                <th scope="col" style="width:18%;">
+                                    <div class="slds-truncate" style="color:#16325c;" >SO NO. <span style="color:red">*</span></div>
+                                </th>
+                                
+                                <th scope="col" style="">
+                                    <div class="" style="color:#16325c;padding-left:6px;">PRODUCT <span class="th1">ORDERED QTY</span><span class="th2">PACKAGED QTY <span style="color:red">*</span></span><span class="th3">STOCK <span style="color:red">*</span></span></div>
+                                </th>
+                                <th scope="col" style="">
+                                    <div class="slds-truncate" style="color:#16325c;">STATUS <span style="color:red">*</span></div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>	 
+                            <aura:if isTrue="{!v.id == undefined}">
+                                <aura:iteration items="{!v.mainWrapperList}" var="mainwrapper" indexVar="index" > 
+                                    <tr>
+                                        <td scope="row" data-label="Action">
+                                            <div class="slds-truncate" title="Cloudhub" data-record="{!index}">
+                                                <span style="Visibility:hidden;">Remove</span>
+                                                <a aura:id="{!index+'ip'}" data-index="{!index}" onclick="{!c.handleRemoveProductItemClick}">{!(index+1 == 0) ? '' : 'Remove'}</a>
+                                            </div> 
+                                        </td>
+                                        <c:newPackageProduct lineItemsLength="{!v.mainWrapperList}" parentStatus="{!v.PackSelectedStatus}" dupTransIdList="{!v.dupTransId}" AddOrEditFlow="{!v.id}" productListNew1="{!mainwrapper}" package="{!v.package}" customerId="{!v.customerId}" selTransId="{!v.selTransId}" />
+                                    </tr>                                
+                                </aura:iteration> 
+                                <aura:set attribute="else">                                    
+                                    
+                                    <aura:iteration items="{!v.mainWrapperList}" var="mainwrapper" indexVar="index" > 
+                                        <tr>
+                                            <td scope="row" data-label="Action">
+                                                <div class="slds-truncate" title="Cloudhub" data-record="{!index}">
+                                                    <span style="Visibility:hidden;">Remove</span>
+                                                    <a aura:id="{!index+'ip'}" data-index="{!index}" onclick="{!c.handleRemoveProductItemClick}">{!(index+1== 0) ? '' : 'Remove'}</a>
+                                                </div>                                    
+                                            </td>
+                                            <c:newPackageProduct lineItemsLength="{!v.mainWrapperList}" parentStatus="{!v.PackSelectedStatus}" dupTransIdList="{!v.dupTransId}" AddOrEditFlow="{!v.id}" productListNew1="{!mainwrapper}" package="{!v.package}" customerId="{!v.customerId}" />
+                                        </tr>                                
+                                    </aura:iteration> 
+                                </aura:set>
+                            </aura:if>   
+                        </tbody> 
+                    </table>
+                    <div class="add-button">                        
+                        <button  aura:id="addMoreButton" class="slds-button slds-button--neutral slds-m-around--small" onclick="{!c.addContact }">
+                            <c:svg class="slds-button__icon slds-button__icon--left" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#add'}" />
+                            Add Package Product
+                        </button>
+                    </div>
+                    
+                    <div class="slds-m-bottom--small footer-button" style="text-align:center;">
+                        <aura:if isTrue="{!v.id == '' }" >
+                            <button class="slds-button slds-button--brand" onclick="{!c.createPackageforAutoPickManual}">Submit</button>
+                            <button class="{!v.isCancel ? 'slds-hide':'slds-button slds-button--brand'}" onclick="{!c.cancelButton}" disabled="{!v.isCancel}">Cancel</button> 
+                            
+                            <aura:set attribute="else"> 
+                                <button class="slds-button slds-button--brand" onclick="{!c.updatePackageforAutoPickManual}">Update</button>                            
+                                <button class="{!v.isCancel ? 'slds-hide':'slds-button slds-button--brand'}" onclick="{!c.cancelButton}" disabled="{!v.isCancel}">Cancel</button>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div> 
+            </div>
+            
+            
+        </div>
+    </div>
+    <div class="slds-spinner_container slds-hide" aura:id="spinner">
+        <div class="slds-spinner--brand slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    
+    <div aria-hidden="false" aura:id="newAccountSectionId1" role="dialog" class="slds-modal slds-modal--small slds-fade-in-close">
+        
+        <footer class="slds-modal__footer slds-modal__footer_directional">
+            <button class="slds-button slds-button_neutral" onclick="{!c.hidecreateShipmentByPass}">Cancel</button>
+            <button class="slds-button slds-button_brand" onclick="{!c.createByPassShipment}">Save</button>
+        </footer>
+        
+    </div>  
+    <br/><br/>
+</aura:component>

@@ -1,0 +1,35 @@
+<aura:component >    
+    <aura:registerEvent name="RecipeManagementComponentEvent" type="c:RecipeManagementComponentEvent"/>
+	
+    <ltng:require scripts="{!join(',', 
+    $Resource.jQueryConfirm1 + '/jquery.min.js', 
+    $Resource.jQueryConfirm1 + '/jquery-confirm.min.js')}" styles="{!join(',', 
+    $Resource.jQueryConfirm1 + '/jquery-confirm.style.css', 
+    $Resource.jQueryConfirm1 + '/font-awesome.css')}" />
+    
+    <aura:attribute name="recipeItems" type="object"/>
+    <tr>
+        <td scope="row" data-label="{!v.recipeItems.Name}">
+            <div class="slds-truncate" title="{!v.recipeItems.Name}"><a onclick="{!c.viewDetails}">{!v.recipeItems.Name}</a></div>
+        </td>       
+        <td data-label="{!v.recipeItems.sigmaerpdev2__Status__c}">
+            <div class="slds-truncate" title="{!v.recipeItems.sigmaerpdev2__Recipe_Type__c}">{!v.recipeItems.sigmaerpdev2__Recipe_Type__c}</div>
+        </td>        
+        <td data-label="{!v.recipeItems.sigmaerpdev2__Product__r.Name}">
+            <div class="slds-truncate" title="{!v.recipeItems.sigmaerpdev2__Product__r.Name}">{!v.recipeItems.sigmaerpdev2__Product__r.Name}</div>
+        </td>  
+        <td data-label="{!v.recipeItems.sigmaerpdev2__Quantity__c}">
+            <div class="slds-truncate" title="{!v.recipeItems.sigmaerpdev2__Quantity__c}">{!v.recipeItems.sigmaerpdev2__Quantity__c}</div>
+        </td>        
+        <td data-label="{!v.recipeItems.sigmaerpdev2__Unit_of_Measure__c}">
+            <div class="slds-truncate" title="{!v.recipeItems.sigmaerpdev2__Unit_of_Measure__c}">{!v.recipeItems.sigmaerpdev2__Unit_of_Measure__c}</div>
+        </td>        
+        <td data-label="Action" style="width:10%;">
+            <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right" onselect="{!c.handleMenuSelect}">
+                <lightning:menuItem label="Clone" value="Clone" iconName="action:clone" />
+                <lightning:menuItem label="Edit" value="Edit" iconName="action:edit" />                
+                <lightning:menuItem label="Delete" value="Delete" iconName="action:delete" />
+            </lightning:buttonMenu>
+        </td>
+    </tr>
+</aura:component>

@@ -1,0 +1,61 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="banner" type="Boolean" default="false"/>  
+    <aura:attribute name="requestForDemoContent" type="Boolean" default="false"/>
+    
+    <div class="banner-bg slds-align_absolute-center">
+        <div class="content-bg">
+            <div class="content">
+            <p class="para2">Welcome to Brewery Store</p>
+            <h3 class="para1">Grow your business and increase profits through on-line sales. Set up your own online shop, free of charge and sell direct to customers online Fresh from the Brewery.</h3>
+            <br/>
+            
+                <div>                
+                    <aura:if isTrue="{!v.banner}">  
+                    <a class="brand-btn" href="/SigmaBrewery/s/breweryregistration" >Brewery Registration</a>
+                    </aura:if>
+                        <a class="brand-btn" onclick="{!c.clickRequestForDemo}">Request For Demo</a>
+                        
+                </div>
+            
+                </div>
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.requestForDemoContent}">
+        <section role="dialog" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <form action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8" method="POST">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title slds-hyphenate">Request For Demo</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        
+                        <input type="hidden" name="oid" value="00D2x000003sFlp"/>
+                        <input type="hidden" name="retURL" value="https://ssigma-mvp-dev2-dev-ed-developer-edition.ap17.force.com/SigmaBrewery/s/" />
+                        <input type="hidden" value="Request demo" id="title" maxlength="40" name="title" size="20"  />
+                        
+                        <lightning:input label="First Name" aura:id="fieldId" id="first_name" maxlength="40" name="first_name" size="20" type="text" required="true"/>
+                        
+                        <lightning:input label="Last Name" aura:id="fieldId" id="last_name" maxlength="80" name="last_name" size="20" type="text" required="true"/>
+                        
+                        <lightning:input label="Email" aura:id="fieldId" id="email" maxlength="80" name="email" size="20" type="text" required="true"/>
+                        
+                        <lightning:input label="Phone" aura:id="fieldId" id="phone" maxlength="40" name="phone" size="20" type="text" required="true"/>
+                        
+                        <lightning:input label="Company" aura:id="fieldId" id="company" maxlength="40" name="company" size="20" type="text" required="true"/><br/>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_brand" type="submit" name="submit" onclick="{!c.submitForDemo}">Submit</button>
+                        <button class="slds-button slds-button_neutral" onclick="{!c.Cancel}">Cancel</button>  
+                    </footer>
+                </form>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

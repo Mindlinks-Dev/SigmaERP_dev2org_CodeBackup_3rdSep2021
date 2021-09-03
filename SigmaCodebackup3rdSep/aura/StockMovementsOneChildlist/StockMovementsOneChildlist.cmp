@@ -1,0 +1,96 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"  access="global" >
+    <aura:attribute name="FromId" type="String"/>
+    <aura:attribute name="ILPLI" type="object" />
+    <aura:attribute name="FromBinId" type="Id" />
+    <aura:attribute name="ToBinId" type="Id" />
+    <aura:attribute name="TobinName" type="String"/>
+    <aura:attribute name="searchString" type="String"/>
+    <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+    <aura:attribute name="indexNum" type="Integer" /> 
+    <aura:attribute name="recID" type="Id" default="" description="The current record Id to display" />
+    <aura:attribute name="isBinShow" type="boolean" default="false"/>
+    <aura:attribute name="isLocationShow" type="boolean" default="false"/>
+    
+    <aura:handler name="change" value="{!v.recID}" action="{!c.locChange}" />
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:handler name="clearLookupIdEvent" event="c:ClearLookupId" action="{!c.clearsearchString}"/>
+    <aura:handler name="change" value="{!v.ToBinId}" action="{!c.ToBinChange}" />
+    <aura:registerEvent name="CarryStockEvent" type="c:CarryStockEvent"/>
+    
+    <tr style="vertical-align:baseline;">
+        <td scope="col">
+            <div class="">
+                <span class="slds-hide" aura:id="successIcon">
+                    <c:svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#success'}" />
+                </span>
+                <ui:outputText value="{!v.ILPLI.Name}"/>
+            </div>
+        </td>
+        <td scope="col">
+            <div class="">
+                <aura:If isTrue="{!v.ILPLI.sigmaerpdev2__Lot__c != null}">				
+                    <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Lot__r.Name}"/>				
+                    <aura:set attribute="else">					
+                        <ui:outputText value="N/A"/>
+                    </aura:set>
+                </aura:If>
+            </div>
+        </td>
+        <td scope="col">
+            <div class="">
+                <aura:If isTrue="{!v.ILPLI.sigmaerpdev2__Lot__c != null }">				
+                    <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Expiry_Date__c}"/>				
+                    <aura:set attribute="else">					
+                        <ui:outputText value="N/A"/>
+                    </aura:set>
+                </aura:If>
+            </div>
+        </td>
+        <td scope="col">
+            <div class="">
+                <aura:If isTrue="{!v.ILPLI.sigmaerpdev2__Product_Serial_Number__c != null }">
+                    <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Serial_Name__c}"/>            
+                    <aura:set attribute="else">
+                        <ui:outputText value="N/A"/>
+                    </aura:set>
+                </aura:If>
+            </div>
+        </td>
+        <td scope="col">
+            <div class="">
+                <ui:outputText value="{!v.ILPLI.sigmaerpdev2__Available_Quantity__c}"/>
+            </div>
+        </td>
+        <td scope="col" data-label="bucket" id="pickQty">
+            <div class="">
+                <ui:inputNumber  aura:id="bucket" label="" class="bucket slds-input"  placeholder="0" updateOn="keyup" keyup="{!c.validateQuantity}" value="{!v.ILPLI.sigmaerpdev2__bucket_field__c}"/>
+                <!--ui:inputText aura:id="bucket" class="bucket slds-input" placeholder="0" label="" value="{!v.ILPLI.sigmaerpdev2__bucket_field__c}" required="true" updateOn="keyup" keyup="{!c.validateQuantity}"/-->                             
+            </div>
+        </td>
+        
+        <td scope="col" data-label="ToLocation" id="ToLocation">
+            <aura:if isTrue="{!v.isLocationShow}">
+                <div>
+                    <c:LookupSObject aura:id="ToLocation" 
+                                     searchString="{!v.searchString}" 
+                                     label="Inventory Location" pluralLabel="Inventory Locations"
+                                     sObjectAPIName="sigmaerpdev2__Inventory_Location__c" 
+                                     instanceId="To Location"
+                                     SRString="Inventory"
+                                    
+                                     listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                     listIconClass="slds-icon-standard-account" recID="{!v.recID}"/>
+                    <ui:inputText aura:id="bucket1" class="bucket slds-hide"/>
+                </div>
+            </aura:if>
+        </td>
+        <td scope="col" data-label="ToBin" id="ToBin">
+            <aura:if isTrue="{!v.isBinShow}">
+                <div id="ToBin">
+                     <c:customLookup recordID="{!v.ToBinId}" recordName="{!v.TobinName}" aura:id="FromBin" objectAPIName="Sublevel_location__c"  IconName="custom:custom24" isSigmaOrder ="true" whereCondition= "{!'AND recordtype.name=\''+'Bin'+'\' AND sigmaerpdev2__Inventory_Location__c=\''+v.ILPLI.sigmaerpdev2__ILid__c+'\' AND Id!=\''+v.FromBinId+'\''}"/>
+                    <!--c:customLookup recordID="{!v.ToBinId}" recordName="{!v.TobinName}" aura:id="FromBin" objectAPIName="Sublevel_location__c"  IconName="custom:custom24" isSigmaOrder ="true" whereCondition="{!v.ILPLI.sigmaerpdev2__ILid__c ? 'AND recordtype.name=\'Bin\' AND sigmaerpdev2__Inventory_Location__c=\''+v.ILPLI.sigmaerpdev2__ILid__c+'\'':'AND recordtype.name=\'Bin\' AND sigmaerpdev2__Inventory_Location__c=\''+v.ILPLI.sigmaerpdev2__ILid__c+'\' AND Id!=\''+v.FromBinId+'\''}"/-->
+                </div>
+            </aura:if>
+        </td>
+    </tr>
+</aura:component>

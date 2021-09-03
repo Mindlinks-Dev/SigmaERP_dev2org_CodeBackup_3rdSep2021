@@ -1,0 +1,77 @@
+<apex:page >
+<!--<apex:page standardController="Shipment__c"  extensions="generateShipmentSlip"
+renderAs="pdf" applyHtmlTag="false" 
+           showHeader="false" 
+           cache="true"
+           readOnly="true">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <style type="text/css">
+    @page {
+        size:A4 portrait;
+        border: 1px solid black;    
+    }
+
+    </style>
+ </head>
+  
+ 
+  <apex:form id="invoiceForm">
+  <apex:pageBlock id="invoiceBlock">
+   <table id="invoiceBlock">
+                  <tr>
+                  <td>
+                  
+                  <apex:image url="{!URLENCODE(URLFOR($Resource.Reference,'/Sigma_ERP_Docs/Images/servlet.png'))}" style="width:80px;height:80px;border-radius: 50%;" />
+                  </td>
+                  <td>
+                  <p>SigmaERP Products<br />Tel: 080-123-4235<br />Email: info@SigmaERP.com</p>
+                  </td>
+                  <td style="padding-left: 150px;">
+                    Shipment No: {!HTMLENCODE(TEXT(masterShipment[0].Name))}<br/>
+                   Logistic Provider: {!HTMLENCODE(TEXT(masterShipment[0].sigmaerpdev__Account__r.Name))}<br/>
+                   Delivery Person:{!HTMLENCODE(TEXT(masterShipment[0].sigmaerpdev__Delivery_Person__r.Name))}<br/>
+                   Status: {!HTMLENCODE(TEXT(masterShipment[0].sigmaerpdev__Status__c) )}<br/>
+                   Truck No:{!HTMLENCODE(TEXT(masterShipment[0].sigmaerpdev__Truck_No__c))}<br/>
+                   Shipment Date:{!HTMLENCODE(TEXT(masterShipment[0].sigmaerpdev__Shipment_Date__c))}<br/>
+                 
+                  </td>
+                  </tr>
+                  </table>
+                  
+                  <br /><br />
+                  
+                  Product Details::<br />
+                   <apex:repeat value="{!Pkegedproducts}" var="pkg">
+                     Product Name: {!HTMLENCODE(pkg.sigmaerpdev__Product__r.Name)}<br/>
+                    Ordered Quantity :{!HTMLENCODE(TEXT(pkg.Quantity__c))}<br/>
+                    Package Name: {!HTMLENCODE(pkg.sigmaerpdev__Package__r.Name)}<br/>
+                    </apex:repeat> 
+                  
+                 ==============================================<br />
+                   <apex:repeat value="{!shipmentProductData}" var="products" >
+                  
+                   
+                   Shipment Date: {!HTMLENCODE(TEXT(products.Shipment_Delivery_Date__c))}<br/>
+                   Customer Name: {!HTMLENCODE(products.sigmaerpdev__Customer_Name__r.Name)}<br/>
+                   Customer Address: <br/>{!HTMLENCODE('Billing Street:'   +   products.sigmaerpdev__Customer_Name__r.BillingStreet)}<br/>
+                                     {!HTMLENCODE('Billing City:' + products.sigmaerpdev__Customer_Name__r.BillingCity)}<br/>
+                                     {!HTMLENCODE('Billing State:' + products.sigmaerpdev__Customer_Name__r.BillingState)}<br/>
+                                     {!HTMLENCODE('Billing Country:' + products.sigmaerpdev__Customer_Name__r.BillingCountry)}<br/>
+                                     {!HTMLENCODE('Zip Code:' + products.sigmaerpdev__Customer_Name__r.Zip__c)}<br/>
+                   Customer Email: {!products.sigmaerpdev__Customer_Name__r.Email__c}<br/>                  
+             
+                   =================================================<br/>
+                 </apex:repeat>
+                 
+                 
+                
+               
+                       Total Quantity :{!HTMLENCODE(TEXT(TotalQuantity))}
+                  
+                
+  </apex:pageBlock>
+  </apex:form>-->
+  <!-- End Default Content REMOVE THIS -->
+
+</apex:page>

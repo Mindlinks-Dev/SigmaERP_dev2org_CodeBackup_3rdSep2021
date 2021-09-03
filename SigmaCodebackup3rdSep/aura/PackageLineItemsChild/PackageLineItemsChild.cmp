@@ -1,0 +1,208 @@
+<!-- PackageLineIemsChlid  -->
+<aura:component Controller="PackageCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute type="integer" name="orderedQuantity"/>
+    <aura:attribute type="integer" name="indx"/>
+      <aura:attribute type="Id" name="locId" />
+    <aura:attribute name="packRecordId" type="String" />
+    <aura:attribute type="String" name="productName"/>
+    <aura:attribute type="boolean" name="openSelectMalual" default="false"/>
+    <aura:attribute type="boolean" name="isDisable" default="false"/>
+    <aura:attribute type="boolean" name="isILPLISelectedManualy" default="false"/>
+    <aura:attribute type="boolean" name="isILPLISelectedAutomatiaclly" default="false"/>
+    <aura:attribute type="PackagedProducts__c" name="packageLinItems" default="{'sobjectType': 'PackagedProducts__c' }"/>
+    <aura:attribute name="configValues" type="map"/>
+    <aura:attribute name="autoAllocToggle" type="boolean" />
+    <aura:attribute name="headerStatus" type="string"/>
+    <aura:attribute type="String" name="StockSelectedAs" />
+    <aura:attribute type="List" name="autoPickILPLIData" />
+    <aura:attribute name="isSerialCodeMandatory" type="boolean" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!--AutoPick-->
+    <aura:attribute name="productIdAvailableQuantMap" type="Map" default="{}" />
+    <aura:attribute name="productIdRemainILPLIMap" type="Map" default="{}" />
+    <aura:attribute name="ilpliIdAllocatedQuantMap" type="Map"/>
+    <aura:attribute name="compId" type="String"/>
+    <aura:attribute type="Inventory_Location_Product_Line_Item__c[]" name="ilpliData" />
+  
+    <aura:attribute type="Inventory_Location_Product_Line_Item__c[]" name="tempILPLIData" />
+    
+     <aura:attribute name="isSigmaOrder" type="boolean"/>
+    <aura:registerEvent name="StappComponentEvent" type="c:StappComponentEvent"/>
+     <aura:registerEvent name="SigmaComponentEvent" type="c:SigmaComponentEvent"/>
+    
+    
+    <tr>
+        <td data-label="Product" width="10%" id="tempDisplayPackageProductName">
+            <div><ui:outputText value="{!v.productName}"/></div>
+            <!--<ui:inputText aura:id="productName" value="{!v.productName}" disabled="true"/>-->
+        </td>
+        <td>
+            <div>
+                <lightning:button accesskey="{!v.packageLinItems.sigmaerpdev2__Product__c}" class="slds-button_balck" title="View Product" onclick="{!c.fetchProductImageData}"><lightning:icon iconName="action:add_photo_video" size="x-small" alternativeText="View Product" /></lightning:button>
+      
+                <!--lightning:icon  accesskey="{!v.packageLinItems.sigmaerpdev2__Product__c}" iconName="action:preview" alternativeText="View Product" title="View Product"  onmouseover="{!c.fetchProductImageData}" style="
+    background-color: black;
+    margin: 0.5%;
+    width: 25%;
+    padding-left: 2%;
+   padding: 0.5%;
+    padding-left: 5%;
+"/-->
+                
+          </div>
+        </td>
+      <!--  <aura:if isTrue="{!and(v.configValues.StappObjectConfiguration.stapp__PP_Serial_Code__c==true,v.isSerialCodeMandatory==true )}">
+         <td data-label="Serial Code">
+            <lightning:input type="text"  value="{!v.packageLinItems.stapp__Serial_Code__c}" disabled="{!and(v.isDisable, v.packRecordId)}"/>
+-->              
+            <!--<ui:inputText aura:id="productName" value="{!v.productName}" disabled="true"/>-->
+        <!--</td>
+            <aura:set attribute = "else">
+                <td data-label="Serial Code">
+                </td>
+            </aura:set>
+        </aura:if> -->
+        <td data-label="Ordered Quantity" width="8%" id="tempDisplayPackageOrderQuantity">
+            <div><ui:outputText value="{!v.orderedQuantity}"/></div>
+            <!--<ui:inputNumber aura:id="orderedQuantity" value="{!v.orderedQuantity}" disabled="true"/>-->
+        </td>
+        <td data-label="Packaged Quantity" width="8%" id="tempDisplayPackageQuantity">
+          <!-- <div>  <lightning:input type="number" label="" aura:id="Quantity" value="{!v.packageLinItems.sigmaerpdev2__Quantity__c}" min="{!v.orderedQuantity}" max="{!v.orderedQuantity}" disabled="{!v.isDisable || v.isILPLISelectedManualy || v.isILPLISelectedAutomatiaclly || v.configValues.stappConfigCustomSetting.stapp__Allocation_Inside_Stapp_Order__c}"  /> </div>    -->
+        <div>  <lightning:input type="number" variant="label-hidden" aura:id="Quantity" value="{!v.packageLinItems.sigmaerpdev2__Quantity__c}"  disabled="{!v.isDisable || v.isILPLISelectedManualy || v.isILPLISelectedAutomatiaclly || v.configValues.stappConfigCustomSetting.stapp__Allocation_Inside_Stapp_Order__c}"  /> </div> 
+        </td>
+        <!--<aura:if isTrue="{!!v.configValues.stappConfigCustomSetting.stapp__Allocation_Inside_Stapp_Order__c}">-->
+       <!-- <aura:if isTrue="{!and(v.configValues.stappConfigCustomSetting.stapp__Allocation_Inside_Stapp_Order__c == false, v.autoAllocToggle == false)}">
+             <td data-label="Action">
+               <lightning:button variant="neutral" label="Select" onclick="{!c.selectMalually}" disabled="{!v.isDisable || v.packageLinItems.sigmaerpdev2__Status__c!='Ready' || v.isILPLISelectedAutomatiaclly || v.isILPLISelectedManualy }"/>
+            </td>
+            <td data-label="Action">
+                <lightning:button variant="neutral" label="AutoPick" onclick="{!c.AutoPick}" disabled="{!v.isDisable || v.packageLinItems.sigmaerpdev2__Status__c!='Ready' || v.isILPLISelectedManualy || v.isILPLISelectedAutomatiaclly}"/>
+            </td>
+          </aura:if>         -->  
+        
+        <!--<aura:if isTrue="{!v.autoAllocToggle == true}"> 
+            <td data-label="Status">
+                <ui:outputText value="Ready" />               
+            </td>
+            <aura:set attribute = "else">
+                <td data-label="Status">                     
+                    <div class="{!v.isDisable==true || v.isILPLISelectedManualy || v.isILPLISelectedAutomatiaclly ?'':'slds-hide'}">
+                        <force:outputField value="{!v.packageLinItems.stapp__Status__c}" />
+                    </div>                    
+                    <div class="{!v.isDisable==true || v.isILPLISelectedManualy || v.isILPLISelectedAutomatiaclly?'slds-hide':''}">
+                        <force:inputField value="{!v.packageLinItems.stapp__Status__c}" />
+                    </div>
+                </td>
+            </aura:set>
+         </aura:if>  -->  
+        <td data-label="Status" width="8%" id="tempDisplayPackageProductStatus">
+            <div class="{!v.autoAllocToggle==true?'':'slds-hide'}">
+                <ui:outputText value="Ready" /> 
+            </div>
+            <div class="{!and((v.isDisable==true || v.isILPLISelectedManualy || v.isILPLISelectedAutomatiaclly),v.autoAllocToggle==false) ?'':'slds-hide'}">
+                <ui:outputText value="{!v.packageLinItems.sigmaerpdev2__Status__c}" />
+            </div>                    
+            <div class="{!v.isDisable==true || v.isILPLISelectedManualy || v.isILPLISelectedAutomatiaclly || v.autoAllocToggle==true?'slds-hide':''}">
+                <ui:outputText value="{!v.packageLinItems.sigmaerpdev2__Status__c}" />
+            </div>
+        </td>
+        
+    </tr>
+    <aura:if isTrue="{!v.openSelectMalual}">
+        <div>
+            <section role="dialog" class="slds-modal slds-fade-in-open" style="top:50px;">
+                <div class="slds-modal__container" style="height: 520px;width: 90%;max-width: 100%;">
+                    <header class="slds-modal__header">
+                        <button onclick="{!c.closeSelectManualModal}" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <lightning:icon iconName="utility:close" size="small" alternativeText="Close" />
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">Available Stock</h2>
+                    </header>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr>
+                               <th scope="col" style="">
+                                    <div class="slds-truncate" title="PRODUCT" style="color:#16325c;">Product</div>
+                                </th>      
+                                 <!-- <th scope="col" style="">
+                                    <div class="slds-truncate" title="SERIAL CODE" style="color:#16325c;">Serial Code</div>
+                                </th>-->
+                                <th scope="col">
+                                    <div class="slds-truncate" title="ORDERED QUANTITY" style="color:#16325c;">Ordered Quantity</div>
+                                </th> 
+                                <th scope="col">
+                                    <div class="slds-truncate" title="ORDERED QUANTITY" style="color:#16325c;">Packaged Quantity</div>
+                                </th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr> 
+                                <!--<td>
+                                     <aura:if isTrue="{!and(v.Quantity > 0,v.wrapList.length > 0)}" >
+                                        <img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.selTransLineItemId}" src="/resource/stapplink__NPlus"
+                                            width="15" height="15" title="Show Stock" />                 
+                                    </aura:if>  
+                                </td>-->
+                                <td>
+                                        <ui:inputText aura:id="transLineItem" label="" class="slds-input" labelClass="slds-form-element__label" value="{!v.productName}" disabled="true"/>                                 
+                                </td>
+                                <td>                         
+                                        <ui:inputText aura:id="QReceived" label="" class="slds-input" labelClass="slds-form-element__label" value="{!v.orderedQuantity}" disabled="true"/>
+                                </td>
+                                <td>            
+                                    <div class="slds-truncate" title="Package Quantity">              
+                                        <ui:inputText aura:id="QReceived" label="" class="slds-input" labelClass="slds-form-element__label" value="{!v.packageLinItems.sigmaerpdev2__Quantity__c}" disabled="true"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="slds-modal__content slds-p-around_medium slds-size--1-of-1" style="max-height:20rem;min-height:10rem;overflow:auto;">
+                        <ui:inputCheckbox aura:id="checkbox" labelClass="slds-p-horizontal--small slds-float--left" label="Auto Select" change="{!c.handleAutoSelectCheckBox}"/>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Location" style="color:#16325c;">Location</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Bin" style="color:#16325c;">Bin</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="BatchNo" style="color:#16325c;">Batch No.</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="SerialNo" style="color:#16325c;">Serial No.</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Bin" style="color:#16325c;">Expire Date</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Bin" style="color:#16325c;">Received Date</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Available Quantity" style="color:#16325c;">Available Quantity</div>
+                                    </th>
+                                    <th scope="col" >
+                                        <div class="slds-truncate" title="Enter Quantity" style="color:#16325c;">Enter Quantity</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.tempILPLIData}" var="item" indexVar="i">
+                                    <c:PackageILPLIManualSelect ilpliIndividualData="{!item}"  indexNum="{!i}" />
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closeSelectManualModal}">Cancel</button>
+                        <button class="slds-button slds-button_neutral" onclick="{!c.selectedIPPLI}">Ok</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    
+</aura:component>

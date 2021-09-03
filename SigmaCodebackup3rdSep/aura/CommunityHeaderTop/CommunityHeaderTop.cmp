@@ -1,0 +1,14 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <div class="slds-grid">
+        <div>
+            <span>Welcome to Retailer Community</span>
+        </div>
+        <div class="slds-col_bump-left">
+            <div>                
+                <a href="mailto:sales@mindlinkssolution.com?Subject=Welcome%20 to Sigmaerp365" target="_top"><i class="fa fa-envelope fa-bg-blue" aria-hidden="true"></i> sales@sigmaerp365.com</a>
+                <a href="#"><i class="fa fa-phone fa-bg-blue" aria-hidden="true"></i> +1-917-300-0680 | +91-80-48662173 </a>
+                
+            </div>
+        </div>
+    </div>
+</aura:component>

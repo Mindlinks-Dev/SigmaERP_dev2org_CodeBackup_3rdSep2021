@@ -1,0 +1,36 @@
+<aura:component >
+    <aura:attribute name="eachWorkOrder" type="Object"/>
+    <aura:attribute name="alphabets" type="String"/>
+    <aura:attribute name="workOrderId" type="Id"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.initalise}"></aura:handler>
+    
+    <tr class="slds-hint-parent">
+        <td data-label="Waypoint">
+            <div class="slds-truncate slds-text-align_center " title="">{!v.eachWorkOrder.alpha}</div>
+        </td>
+        <th data-label="WorkOrder Id" scope="row">
+            <div class="slds-truncate slds-text-align_left" onclick="{!c.navigate}" title="{!v.eachWorkOrder.Id}"><a href="javascript:void(0);" tabindex="-1">{!v.eachWorkOrder.workOrderName}</a></div>
+        </th>
+        <td data-label="Location">
+            <div class="slds-truncate slds-text-align_right slds-p-horizontal_medium" title="{!v.eachWorkOrder.location}">{!v.eachWorkOrder.pincode}</div>
+        </td>
+        
+        
+        <td data-label="Work Type">
+            <div class="slds-truncate slds-text-align_left slds-p-horizontal_medium mobileView" title="">{!v.eachWorkOrder.workType}</div>
+        </td>
+        <td data-label="Customer Name">
+            <div class="slds-truncate slds-text-align_left slds-p-horizontal_medium mobileView" title="">{!v.eachWorkOrder.contactName}</div>
+        </td>
+        <td data-label="Contact">
+            <div class="slds-truncate slds-text-align_right slds-p-horizontal_medium" title="">{!v.eachWorkOrder.contactNumber}</div>
+        </td>
+        <td data-label="Distance">
+            <div class="slds-truncate slds-text-align_right slds-p-horizontal_medium" title="">{!v.eachWorkOrder.distance}</div>
+        </td>
+        <td data-label="Time">
+            <div class="slds-truncate slds-text-align_right slds-p-horizontal_medium" title="">{!v.eachWorkOrder.timeReq}</div>
+        </td>
+    </tr>
+</aura:component>

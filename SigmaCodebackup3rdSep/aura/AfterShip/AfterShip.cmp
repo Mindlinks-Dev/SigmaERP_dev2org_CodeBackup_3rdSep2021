@@ -1,0 +1,64 @@
+<aura:component controller="AddShipmentProductsLtng" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute type="Shipment__c" name="shipment"/>
+    <aura:attribute type="String" name="selectedCourier"/>
+    <aura:attribute type="String" name="courierSlug"/>
+    <aura:attribute type="String" name="trackNumber"/>
+    <aura:attribute type="Boolean" name="hasStatus" default="false"/>
+    <aura:attribute name="myMap" type="Map"/>
+    <aura:attribute name="courierlist" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:card title="Carrier details" iconName="custom:custom98">
+        <aura:if isTrue="{!!v.shipment.sigmaerpdev__Pushed_to_aftership__c}">
+            <lightning:layout>
+                <!--lightning:layoutItem padding="around-small">
+                    <div class="slds-form-element__control">
+                        <lightning:select name="levels" messageWhenValueMissing="Choose one!" label="Couriers list" aura:id="levels" onchange="{!c.onPicklistChange}">
+                            <option text="-None-" value="-None-"/>
+                            <aura:iteration items="{!v.courierlist}" var="st">
+                                <option text="{!st}" value="{!st}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                </lightning:layoutItem-->
+                <lightning:layoutItem padding="around-small">
+                    <div class="slds-form-element__control">
+                        <lightning:input name="Tracking Number" label="Tracking Number" value="{!v.shipment.sigmaerpdev__Tracking_ID__c}" placeholder="Enter a tracking number..."/>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">
+                    <br/>
+                    <lightning:button disabled="{!v.shipment.sigmaerpdev__Pushed_to_aftership__c}" onclick="{!c.pushShipment}">Push to AfterShip</lightning:button>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <!--lightning:layout>
+                <lightning:layoutItem padding="around-small">
+                    <lightning:button disabled="{!v.shipment.sigmaerpdev__Pushed_to_aftership__c}" onclick="{!c.pushShipment}">Push to AfterShip</lightning:button>
+                </lightning:layoutItem>
+            </lightning:layout-->
+        </aura:if>
+        <br/>
+        <aura:if isTrue="{!v.shipment.sigmaerpdev__Pushed_to_aftership__c==True}">
+            <div class="c-container">
+                <lightning:layout>
+                    <lightning:layoutItem padding="around-small">
+                        
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small">
+                        <div align="Center">
+                            <lightning:button label="Track Me" disabled="{!!v.shipment.sigmaerpdev__Pushed_to_aftership__c}" onclick="{!c.getStatus}" iconName="utility:pinned" iconPosition="left"  variant="brand" />
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+                <aura:if isTrue="{!v.hasStatus}">
+                    <!--lightning:layout>
+                        <lightning:layoutItem padding="around-small">
+                            <label class="slds-form-element__label"><b>Current Status:</b></label>
+                            <ui:outputTextArea value="{!v.shipment.sigmaerpdev__Courier_Status__c}"/>
+                        </lightning:layoutItem>
+                    </lightning:layout-->
+                </aura:if>
+            </div>
+        </aura:if>
+    </lightning:card>
+</aura:component>

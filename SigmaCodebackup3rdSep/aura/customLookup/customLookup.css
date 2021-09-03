@@ -1,0 +1,19 @@
+.THIS .leftPaddingClass {
+    padding-left:2rem !important;
+}
+ 
+.THIS .pillSize{
+ width:100%;
+}
+
+.THIS .disable{
+ 	background:#dddddd;
+    width:100%;
+}
+
+.THIS .slds-pill,.THIS.slds-pill{
+    line-height: 26px;
+}
+.THIS .slds-pill__label,.THIS.slds-pill__label{
+    width:100%;
+}

@@ -1,0 +1,219 @@
+<apex:page standardcontroller="Survey__c" extensions="ViewSurveyController" cache="false" sidebar="false" showheader="false" lightningStylesheets="true">
+    <html>
+        
+        <head>
+            
+        </head>
+        <apex:includeScript value="{! $Resource.SurveyForce_jquery}"/>
+        <!-- convertCheckBoxToLDS() is in surveyforce.js -->
+        <apex:includeScript value="{! $Resource.SurveyForce + '/surveyforce.js'}"/>
+        <apex:stylesheet value="{! $Resource.SurveyForce + '/surveyforce.css'}"/>
+        <apex:stylesheet value="{! $Resource.SurveyForce + '/surveyforce_pagemessage_override.css'}"/>
+        <apex:stylesheet value="{! $Resource.SurveyForce_SLDS + '/assets/styles/salesforce-lightning-design-system-vf.min.css'}"/>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        
+        <style>
+            .banner{
+            background: url("{!URLFOR($Resource.survey,'survey1.jpg')}") no-repeat !important;
+            background-size:cover !important;
+            width:100%;
+            height:100vh;
+            margin:0 !important;  
+            }
+            .content{
+            width:50%;
+            margin:auto;
+            position:relative;
+            top:160px;
+            padding:40px !important;
+            background:white;
+            }
+            .inner-content{
+            width:50%;
+            margin:auto;
+            position:relative;
+            top:100px;
+            padding:40px !important;
+            background:white;
+            }
+            .surveyforce *{
+            line-height:30px;
+            }
+            .surveyforce input[type=radio]{
+            position: relative;
+            top: 2px;
+            margin-right: 5px;}
+            .surveyforce .notify_content_img{background: white;border-radius: 18px;}
+            .surveyforce .slds-text-heading--medium{font-weight:bold;}
+            
+            @media screen and (max-width: 600px) {
+            .content{width:90%;}
+            .banner{height: 120vh;overflow: scroll;}
+            .inner-content{width:90%;top: 36px;padding: 20px !important;}
+            .surveyforce .slds-text-heading--medium{width: 100%;}
+            .surveyforce .slds-notify--toast{width:90%;min-width:90%;}
+            }
+        </style>
+        
+        <apex:includeScript value="/support/console/50.0/integration.js"/> 
+        <script type="text/javascript">
+        var callCloseTab= function callCloseTab(result) {
+            console.log('result>'+result.id);
+            sforce.console.closeTab(result.id);
+            console.log('after result>'+result.id);
+        }
+        function closeTab() {
+            console.log('before close tab');
+            sforce.console.getEnclosingTabId(callCloseTab);
+            console.log('after close tab');
+        }
+        function closeWindow() {
+            console.log('close window);
+                        window.open('','_parent','');
+            window.close();
+        }
+        </script>
+        
+        <script  language="JavaScript" type="text/javascript" >
+        $(document).ready(function(){
+            //Convert any elements with "convertToLDS" style to SLDS styles
+            //Used in certain places where it's not easy to use SLDS for those elements like "apex:selectCheckboxes"
+            //convertCheckBoxToLDS();
+            
+            //Commented above function in lieu of lightningStylesheets="true"
+        });
+        
+        
+        </script>
+        
+        
+        <!-- Custom CSS added by survey admin -->
+        <style>
+            <apex:outputText value="{!HTMLENCODE(surveyContainerCss)}" escape="false"/>
+        </style>
+        <body>
+            
+            <div id="survey_container" class="banner surveyforce"> 
+                <apex:form id="theForm"   >
+                    <apex:outputPanel rendered="{!enabsubm == false}">
+                        <apex:outputPanel id="seeSurvey" rendered="{!thankYouRendered == false}" >
+                            
+                            <div class="slds-box slds-theme--shade content slds-text-align--center">
+                                <div class="slds-text-heading--medium">
+                                    <apex:outputText value="{!Survey__c.Survey_Header__c}" escape="false" /> 
+                                    
+                                </div>
+                                <br/>
+                                <apex:commandButton styleClass="slds-button slds-button--brand" action="{!submitContinue}" value="CONTINUE"/>
+                                <apex:outputPanel rendered="{!Survey__c.Hide_Survey_Name__c == false}">
+                                    <div class="slds-text-heading--medium">{!Survey__c.Name}</div>
+                                    
+                                    
+                                </apex:outputPanel>
+                            </div> 
+                            
+                        </apex:outputPanel>
+                        
+                        
+                        <script>
+                        $(document).ready(function(){
+                            overridePageMessages();
+                        });
+                        </script>
+                        
+                        <script>
+                        function check()
+                        {
+                            // alert('option selected');
+                            console.log('check');
+                            return;
+                            
+                        }
+                        
+                        </script>
+                        
+                        <apex:pageMessages />            
+                        
+                        <apex:outputPanel rendered="{!thankYouRendered == true && thankYouMessage == false}">
+                            <!--<apex:actionFunction name="CallmyApexMethods" action="{!selectOption}"/>-->
+                            <div class="slds-box inner-content">                    
+                                <div class="slds-form--stacked">
+                                    <apex:repeat value="{!allQuestions}" var="qPreview" id="aQPreview">
+                                        <div class="slds-theme--default">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label slds-text-heading--medium slds-m-bottom--small">
+                                                    
+                                                    <apex:outputText escape="true" value="{!qPreview.question}"/>
+                                                    <span class="slds-required" title="required"><apex:outputText rendered="{! qPreview.required}" value=" *"  /> </span>
+                                                    <!--<apex:outputText rendered="{! qPreview.required}" value="({!$Label.LABS_SF_Required})"  />-->
+                                                </label>
+                                            </div>
+                                            
+                                            <apex:outputPanel rendered="{!qPreview.renderSelectRadio}">
+                                                <apex:selectRadio styleClass="convertToLDS" layout="pageDirection" rendered="{!qPreview.renderSelectRadio}"  value="{!qPreview.selectedOption}" >
+                                                    <apex:selectOptions value="{!qPreview.singleOptions}"/>
+                                                    <apex:actionSupport event="onclick" oncomplete="check();" reRender="dropdown2" action="{!selectOption}" />
+                                                </apex:selectRadio>
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel rendered="{!qPreview.renderSelectCheckboxes}">
+                                                <apex:selectCheckboxes styleClass="convertToLDS" layout="pageDirection" rendered="{!qPreview.renderSelectCheckboxes}" value="{!qPreview.selectedOptions}" >
+                                                    <apex:selectOptions value="{!qPreview.multiOptions}"/>
+                                                    <apex:actionSupport event="onchange" reRender="dropdown2" action="{!selectOption}" />
+                                                </apex:selectCheckboxes>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!qPreview.renderFreeText}">
+                                                <div class="slds-form-element">
+                                                    <div class="slds-form-element__control" >
+                                                        <apex:inputTextArea styleClass="slds-textarea" cols="" rows="{!qPreview.noOfRowsForTextArea}" rendered="{!qPreview.renderFreeText}" value="{!qPreview.choices}"/>
+                                                    </div>
+                                                </div>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!qPreview.renderSelectRow}">
+                                                <apex:selectRadio styleClass="convertToLDS" rendered="{!qPreview.renderSelectRow}" value="{!qPreview.selectedOption}">
+                                                    <apex:selectOptions value="{!qPreview.rowOptions}"/>
+                                                    <apex:actionSupport event="onchange" reRender="dropdown2" action="{!selectOption}" />
+                                                </apex:selectRadio>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </apex:repeat>
+                                    
+                                </div>
+                                <apex:outputPanel rendered="{!isInternal}" >
+                                    <span class="slds-text-body--regular">{!$Label.sigmaerpdev2__labs_sf_answer_as}:</span>
+                                    <apex:selectRadio value="{!anonymousAnswer}">
+                                        <apex:selectOptions value="{!anonymousOrUser}" />
+                                    </apex:selectRadio>
+                                    <br />
+                                </apex:outputPanel>
+                                <div class="slds-text-align--center slds-m-top--x-large">
+                                    <apex:commandButton styleClass="slds-button slds-button--brand" action="{!previous}" value="Previous" disabled="{!prev}"/>
+                                    <apex:commandButton styleClass="slds-button slds-button--brand" action="{!next}" value="Next" disabled="{!disabl}"/>
+                                    <apex:commandButton styleClass="slds-button slds-button--brand" action="{!submitResults}" value="{!$Label.sigmaerpdev2__labs_sf_submitsurvey}" rerender="theForm,seeSurvey,test,timerPanel"  disabled="{!enab && !enabsubm}"  />
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!enabsubm == true}" >
+                        <div class="slds-box slds-theme--shade" style="width:60%;margin: auto;position: relative;top: 200px;">
+                            <div class="slds-text-heading--large">
+                                <p style="text-align: center;"><b>You have already taken this survey</b></p>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!thankYouMessage == true}"  >
+                        <div class="slds-box slds-theme--shade content slds-text-align--center">
+                            <div class="slds-text-heading--medium slds-m-bottom--medium">
+                                Thank you for your feedback<br/> 
+                            </div>
+                        </div>
+                    </apex:outputPanel>      
+                </apex:form>
+                
+            </div>
+            
+        </body>
+        
+    </html>
+</apex:page>

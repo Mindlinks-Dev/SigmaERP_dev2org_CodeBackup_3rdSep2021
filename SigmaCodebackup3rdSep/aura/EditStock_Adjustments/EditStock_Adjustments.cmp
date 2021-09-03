@@ -1,0 +1,120 @@
+<aura:component controller="StockAdjustmentCntrlLightning" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,force:hasRecordId"  access="global" >
+    <aura:attribute name="StockAdjustmentObj" type="StockAdjustment__c" description="The current record Id to display" 
+              			 default="{ 'sobjectType' : 'StockAdjustment__c' ,
+                             'sigmaerpdev__Adjusted_Qty__c' : '',
+                             'sigmaerpdev__Authorized_By__c' :'',
+                             'sigmaerpdev__Comments__c' : '',
+                             'sigmaerpdev__Date__c' :'',
+                             'sigmaerpdev__Inventory_Location_Product__c':'',
+                             'sigmaerpdev__Original_Qty__c':'',
+                             'sigmaerpdev__Product_Name__c':'',
+                             'sigmaerpdev__Quantity__c':'',
+                             'sigmaerpdev__Reason_Code__c':'',
+                             'sigmaerpdev__Available_Inventory__c':''
+                             }"
+     
+               /> 
+    <aura:attribute name="inventoryObj" type="Inventory_Location_Product__c"/> 
+    <aura:attribute name="diffQnty" type="Integer" description="" />
+    <aura:attribute name="ilpName" type="String" description="IlpName for UI" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="userName" type="String" description="User for UI" />
+     <aura:attribute name="PreviousQty" type="Integer" description="IlpName for UI" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/> 
+    
+    <body>
+        
+    	<div class="slds-modal__content">
+            <header class="site-masthead slds-grid slds-wrap slds-theme--alt-inverse" style="padding:1rem 2rem;"><div class="slds-align-middle">
+            <button class="slds-button slds-button--inverse" onclick="{!c.BackButton}" aura:id="back">Back</button></div><div class="site-masthead-title slds-col slds-has-flexi-truncate slds-align-middle"><div class="slds-media slds-media--center slds-media--responsive"><span class="slds-media__figure"></span><div class="slds-media__body"><div class="slds-grid slds-grid--align-center"><span class="slds-hide docsearch-category"></span><h1 title="Button Groups" class="slds-page-header__title slds-truncate">Stock Adjustments</h1></div></div></div></div></header>
+        </div>
+        
+        <aura:renderIf isTrue="{!v.isError}">
+        <ui:message title="Error" severity="error" closable="false">
+      		{!v.errorMsg}
+        </ui:message>
+        <aura:set attribute="else">
+          
+        </aura:set>
+    </aura:renderIf> 
+        
+        <div id="content1"> 
+            <fieldset class="slds-form--compound">            	
+            	<div class="slds-form-element__group">
+                	<div class="slds-form-element__row">
+                    	<div class="slds-form-element slds-size--1-of-2">
+                        	<label class="slds-form-element__label" for="input-01">Inventory Location Product</label>
+                        	  
+                            <ui:inputText aura:id="ilpName" class="slds-input" value="{!v.ilpName}" disabled="true"/> 
+                      	</div>
+                        <div class="slds-form-element slds-size--1-of-2">
+                        	<label class="slds-form-element__label" for="input-01">Authorized By</label>
+                        	 
+                             <c:LookupSObject label="User" pluralLabel="Users" searchString="{!v.userName}" sObjectAPIName="User" instanceId="MyUser" SRString="User"
+                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#Product__c'}"
+                        listIconClass="slds-icon-standard-Product__c"/>
+                      	</div>    
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="slds-form--compound">            	
+            	<div class="slds-form-element__group">
+                	<div class="slds-form-element__row">                        
+                        <div class="slds-form-element slds-size--1-of-2">
+                        	<label class="slds-form-element__label" for="input-02">Original Qty</label>
+                        	<ui:inputText class="slds-input" aura:id="originalQty" value="{!v.StockAdjustmentObj.sigmaerpdev__Available_Inventory__c}" placeholder="" disabled="true" />
+                      	</div>                  	
+                        <div class="slds-form-element slds-size--1-of-2">
+                        	<label class="slds-form-element__label" for="input-02">Adjusted Qty</label>
+                        	<ui:inputText aura:id="adjustedQty" class="slds-input" value="{!v.StockAdjustmentObj.sigmaerpdev__Adjusted_Qty__c}"  />
+                            <ui:inputText aura:id="adjustedQty" class="slds-input" value="{!v.PreviousQty}"  /> 
+                        </div>
+                       
+                    </div>
+                </div>
+            </fieldset> 
+            <fieldset class="slds-form--compound">
+                <div class="slds-form-element__group">
+                    <div class="slds-form-element__row">
+                         <div class="slds-form-element slds-size--1-of-6">
+                             <label class="slds-form-element__label" for="input-01">Comments</label>
+                             <ui:inputTextArea aura:id="adjustmentComments" cols="2" class="slds-input" value="{!v.StockAdjustmentObj.sigmaerpdev__Comments__c}" placeholder=""/>  
+                         </div>
+                     </div>
+                 </div>
+            </fieldset>
+			<fieldset class="slds-form--compound">            	
+            	<div class="slds-form-element__group">
+                	<div class="slds-form-element__row"> 
+                        <div class="slds-form-element slds-size--1-of-6">
+                            <label class="slds-form-element__label" for="input-02">Reason code</label><br />
+                        	<ui:inputSelect aura:id="reasons" value="{!v.StockAdjustmentObj.sigmaerpdev__Reason_Code__c}" multiple="false" class="uiInputSelect">
+                                <ui:inputSelectOption text="--None--" label="--None--" value="true"/>
+                                <ui:inputSelectOption text="Expired Stocks" label="Expired Stocks" />
+                                <ui:inputSelectOption text="Damaged Stocks" label="Damaged Stocks" />
+                                <ui:inputSelectOption text="Missing Stocks" label="Missing Stocks" />
+                                <ui:inputSelectOption text="Unknown" label="Unknown"/>                            
+                        	</ui:inputSelect>
+                      	</div>
+                        <div class="slds-form-element slds-size--1-of-6">
+                        	<label class="slds-form-element__label" for="input-02">Date</label>
+                        	<ui:inputDate aura:id="dateField" label="" value="{!v.StockAdjustmentObj.sigmaerpdev__Date__c}" displayDatePicker="true"/>  
+                      	</div>
+                    	
+                    </div>
+                </div>
+            </fieldset>
+			<br />           
+            <div class="slds-form-element__row" id="">
+                <button class="slds-button slds-button--brand"  aura:id="Save_Adjustments" onclick="{!c.updateStockAdjust}">Save</button>             
+                <button class="slds-button slds-button--brand"  aura:id="Cancel_Adjustments" onclick="{!c.BackButton}">Cancel</button>             
+            </div>             
+        </div>
+      
+            
+    </body>
+</aura:component>

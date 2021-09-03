@@ -1,0 +1,103 @@
+<aura:component controller="CheckIncurrentWorkorderLocation" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithOutHeader" access="global" >
+    <br/>
+    <aura:attribute name='workorderstatus' type='String' default='success'></aura:attribute>
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>-->
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="isComplete" type="boolean" default="false" />
+    <aura:attribute name="latitude" type="Decimal"/>
+    <aura:attribute name="longitude" type="Decimal"/>
+    <aura:attribute name="myRecordId" type="String" description="Record to which the files should be attached" />
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="firstCheckIn" type ="Boolean" default="false"/>
+    <aura:attribute name="secondCheckIn" type ="Boolean" default="false"/>
+    <aura:attribute name="checkList" type="List"/>
+    <aura:attribute name="radioValue" type="Boolean" default="false"/>
+    <aura:attribute name="radioButtonDetails" type="Map"/>
+    <aura:attribute name="keys" type="List" default="[]" />
+    <aura:attribute name="disableProceed" type="Boolean" default="false" />
+    <aura:attribute name="finalValues" type="Object" />
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'Yes', 'value': 'option1'},
+                                                        {'label': 'No', 'value': 'option2'}
+                                                        ]"/>
+    <aura:attribute name="value" type="String" default=""/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.firstCheckIn}">
+        <header class="headerClass">
+            <h2 style="font-size:initial;"><b>Complete Check List</b></h2> 
+        </header>
+        <hr class="hrclass"></hr>
+        <aura:iteration items="{!v.keys}" var="eachItem">
+            <div style="display: flex;">
+                <p class="pgraph">{!eachItem}</p>
+                <c:WorkOrderCheckListChild finalValues="{!v.finalValues}" radioButtonDetails="{!v.radioButtonDetails}" key="{!eachItem}"></c:WorkOrderCheckListChild>
+                <br/>
+            </div>
+        </aura:iteration>
+        
+        <footer class="slds-align_absolute-center slds-p-top_medium">
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Submit" onclick="{!c.init}" disabled="{!v.disableProceed}"/>
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+        </footer>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.secondCheckIn}">
+        
+        <h3 class="slds-section__title slds-align_absolute-center">
+            <span class="slds-truncate" title="Section Title">Please ensure you are at the Site. Click on capture to Check-In.</span>
+        </h3>
+        <br/>
+        <footer class="slds-align_absolute-center">
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Capture" onclick="{!c.init}" />
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+        </footer> 
+    </aura:if>
+    
+    <div class="slds-m-around_xx-large">
+        <!--<lightning:button variant="brand"
+                          label="What is Modal/PopUp Box?"
+                          title="What is Modal/PopUp Box?"
+                          onclick="{!c.openModel }" />-->
+        <!--Use aura:if tag to display/hide popup based on isModalOpen value-->  
+        <aura:if isTrue="{!v.isModalOpen}">
+            
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Start of the Day Images</h2>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="overflow: inherit;"> 
+                        <lightning:fileUpload label="Upload Image"
+                                              name="fileUploader"
+                                              multiple="true"
+                                              accept=".pdf, .png, .jpg, .jpeg"
+                                              recordId="{!v.myRecordId}"
+                                              onuploadfinished="{!c.handleUploadFinished}" />
+                    </div>
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{!c.closeModel}"/>
+                        <lightning:button variant="brand"
+                                          label="Submit"
+                                          title="OK"
+                                          onclick="{!c.submitDetails}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </div>
+</aura:component>

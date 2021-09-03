@@ -1,0 +1,63 @@
+<aura:component implements="force:appHostable,forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes" access="global">
+     <aura:attribute name="IlpliItem" type="Inventory_Location_Product_Line_Item__c" />
+    <aura:attribute name="ilpProId" type="String"/>
+     <aura:attribute name="ilpLocId" type="String"/>
+     <aura:attribute name="binId" type="String"/>
+     <aura:attribute name="ProType" type="String"/>
+    <aura:attribute name="PSerialNumber" type="Product_Serial_Number__c[]" />
+    <aura:attribute name="lotName" type="String" default="" description="The current record Id to display" />
+     <aura:attribute name="binName" type="String" default="" description="The current record Id to display" />
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/> 
+        <aura:handler name="change" value="{!v.binId}" action="{!c.binClearEvent}" />
+    <tr>
+        <td>              
+            <ui:outputText value="{!v.IlpliItem.sigmaerpdev2__Adjusted_Quantity__c}" />                             
+        </td>
+        <td>	
+             <div data-label="tolot" id="TempToDisplayadjlot"> 
+            <c:LookupSObject aura:id="Lot" 
+                             searchString="{!v.lotName}"
+                             SRString="{!v.ilpProId}"
+                             label="Lot" pluralLabel="Lots" 
+                             sObjectAPIName="sigmaerpdev2__Lot__c" 
+                             instanceId="Lot"
+                             listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                             listIconClass="slds-icon-standard-account"/>
+            </div>
+        </td>
+        <td>	
+             <div data-label="tobin" id="TempToDisplayadjbin"> 
+            <c:customLookup recordID="{!v.binId}" recordName="{!v.binName}" objectAPIName="sigmaerpdev2__Sublevel_location__c" IconName="standard:account" isSigmaOrder="true"  whereCondition="{!v.ilpLocId ? 'AND recordtype.name=\'Bin\' AND sigmaerpdev2__Inventory_Location__c=\''+v.ilpLocId+'\'':''}" /> 
+         
+          
+            <!--   <c:customLookup recordID="{!v.binId}" recordName="{!v.binName}" objectAPIName="sigmaerpdev2__Sublevel_location__c" IconName="standard:account" isSigmaorder="true"  whereCondition="{!'and sigmaerpdev2__Inventory_Location__c= \'' +  v.ilpLocId +'\' '}" /> 
+             <c:LookupSObject aura:id="binid1" 
+                             searchString="{!v.binName}"
+                             SRString="{!v.ilpLocId}"
+                             label="Sublevel-location" pluralLabel="Sublevel-locations
+" 
+                             sObjectAPIName="sigmaerpdev2__Sublevel_location__c" 
+                             instanceId="Sublevel-location"
+                             listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                             listIconClass="slds-icon-standard-account"/>	-->
+            </div>
+        </td>
+        <td>
+            <div data-label="expiry" id="TempToDisplayexpdate">                
+                <ui:inputDate aura:id="DateTime"
+                              class="slds-input "
+                              labelClass="slds-form-element__label"
+                              value="{!v.IlpliItem.sigmaerpdev2__Product_Expiry_Date__c}"
+                              displayDatePicker="true"/>	
+            </div>
+        </td>
+        <aura:renderIf isTrue="{!v.ProType != 'BULK'}">
+        <td>
+            <div data-label="PSN" id="TempToDisplaypsn">   
+            <ui:inputText aura:id="PSN" value="{!v.IlpliItem.sigmaerpdev2__ILid__c}" required="true"/>
+            </div>   
+            </td>
+        </aura:renderIf>
+    </tr>
+	
+</aura:component>

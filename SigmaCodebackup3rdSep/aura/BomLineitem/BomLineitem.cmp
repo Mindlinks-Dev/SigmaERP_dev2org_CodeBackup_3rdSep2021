@@ -1,0 +1,199 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"  access="global" >
+    <aura:attribute name="lineItem" type="object"/>
+    <aura:attribute name="protype" type="object"/>
+    <!-- added on 12-11-2014-->
+    <aura:attribute name="wrapper" type="object"/>
+    <aura:attribute name="Ilplidata" type="Inventory_Location_Product_Line_Item__c[]"/>
+    <aura:attribute name="binId" type="String"/>
+    <aura:attribute name="binName" type="String"/>
+    <aura:registerEvent name="productTypeData" type="c:ProtoTypeEvent"/> 
+    <aura:attribute name="autostock" type="Boolean"/>
+    
+    <!-- code added  on 22-11-2019 by rashmi-->
+    <aura:attribute name="convqty" type="decimal"/>
+    <aura:attribute name="serial" type="Object[]" default="{'code' : ''}" />
+    <aura:handler name="change" value="{!v.convqty}" action="{!c.itemsChange}"/>
+    
+    <aura:attribute name="showModal" type="Boolean" default="false"/>
+    <aura:attribute name="SMData" type="object"/>
+    <aura:attribute name="showAutoSerNumEntryFlg" type="Boolean" default="false" /> 
+    <aura:attribute name="showManSerNumEntryFlg" type="Boolean" default="false" />
+    <aura:attribute name="enableSaveForUplAndMan" type="Boolean" default="false" />
+    <aura:attribute name="autoSerialName" type="String" />
+    <aura:attribute name="serials" type="Map[]" />
+    <aura:attribute name="serialNumberLst" type="List" />
+    <aura:attribute name="pro" type="Map"/>
+    
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    
+    <tr class="slds-hint-parent">
+        <!-- code added on 11-11-2019 -->
+        <th scope="row">
+            <div class="slds-truncate" title="Line Item" >
+                <a href="javascript:void(0);"><ui:outputText value="{!v.lineItem.indpro.sigmaerpdev2__Product__r.Name}" /></a>
+            </div>
+        </th>
+        
+        <td scope="col" class="slds-form-element slds-size_1-of-21">
+            <div class=""><ui:outputText value="{!v.lineItem.indpro.sigmaerpdev2__Quantity__c}" /></div>
+        </td>
+        <td scope="col" class="slds-form-element slds-size_1-of-21">
+            <div class=""><ui:outputText value="{!v.lineItem.updqtydisplay}" /></div>
+        </td>
+        
+        <td scope="col" data-label="To Lot" id="temptodisplayLot">
+            <div id="Lot">
+                <c:LookupSObject aura:id="Lot" 
+                                 searchString=""
+                                 SRString="{!v.lineItem.indpro.sigmaerpdev2__Product__c}" 
+                                 label="Lot" pluralLabel="Lots" 
+                                 sObjectAPIName="sigmaerpdev2__Lot__c" instanceId="Lot"
+                                 listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                 listIconClass="slds-icon-standard-account" /> 
+                
+            </div>
+            
+        </td>
+        <td scope="col" data-label="To Bin" id="TempToDisplayFrombin1">
+            <div id="Bin">
+                
+                <c:customLookup  recordID="{!v.lineItem.bin}" recordName="{!v.lineItem.binName}" objectAPIName="sigmaerpdev2__Sublevel_location__c" IconName="standard:account" isSigmaOrder="true"  whereCondition="{!'AND sigmaerpdev2__Inventory_Location__c=\''+v.wrapper.Targetloc+'\' AND recordtype.name=\'Bin\' '}" />                        
+                
+            </div>
+        </td>
+        <td scope="col" data-label="Unit Price" id="unitprice" >
+            <div id="unitprice" >
+                <ui:inputNumber aura:id="unitprice" class="slds-input" value="{!v.lineItem.unitPrice}"  />
+            </div>
+        </td>
+        <aura:if isTrue="{!v.lineItem.indpro.sigmaerpdev2__Product__r.sigmaerpdev2__Attribute_Type__c == 'SERIALIZED'}">  
+                            <fieldset>
+                                <div class="slds-form-element__group">
+                                    <div class="slds-form-element__row">
+                                        <div align="left" class="slds-form-element slds-size_1-of-3">                                	
+                                            <td data-label="Serial Number">                                         
+                                                <lightning:button variant="success" label="Add Serial Number" title="Serial Number" onclick="{!c.showSerialNumber}"/>                                            
+                                            </td>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset> 
+        </aura:if> 
+            <br/>
+        
+        
+        <aura:if isTrue="{!v.showModal}">
+            <div>            
+                
+                <section role="dialog" class="slds-modal slds-fade-in-open" style="top:25px;">               
+                    <div class="slds-modal__container" style="width:75%;height:75%;">
+                        <header class="slds-modal__header">
+                            <button onclick="{!c.closeModal}" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <lightning:icon iconName="utility:close" size="small" alternativeText="Close"/>
+                            </button>
+                            <h4 id="modal-heading-01" class="slds-text-heading_small slds-hyphenate">SERIAL&nbsp;&nbsp;NUMBER</h4><br />
+                            <table border="0" width="100%">
+                                <tr>
+                                    
+                                    <td style="width:33%;padding-top:19px;"><!--<img align="top" src="/resource/sigmaerpdev__Mr_Choose_Ser" width="45"
+                                                 height="20" title="Choose" />-->
+                                        <button type="button" class="slds-button slds-button_neutral" onclick="{!c.showAutoSerialize}" data-index="{!i}">Generate Automatically</button>
+                                    </td>                       
+                                    <td style="width:25%;padding-top:19px;">
+                                        <button type="button" class="slds-button slds-button_neutral" onclick="{!c.showManualEntry}" data-index="{!i}">Enter Manually</button>
+                                    </td>
+                                   
+                                </tr>                                             
+                            </table>
+                        </header>
+                        <aura:if isTrue="{!v.showManSerNumEntryFlg == true}">
+                            <div class="slds-modal__content slds-p-around_medium">                       
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="padding-top: 2px;border:1px solid rgb(221, 219, 218)">                            
+                                    <tbody>                               
+                                        <aura:iteration items="{!v.lineItem.eachserialNo}" var="srl">                                     
+                                          <!--  <tr>
+                                                <td>
+                                                    {!i+1}
+                                                </td>
+                                                <td>
+                                                    <ui:inputText value="{!num.SerialNo}" />                                               
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="slds-button slds-button_neutral" onclick="{!c.clearNumbers}" data-index="{!i}">Clear</button>
+                                                </td>
+                                            </tr>-->
+                                              <ui:inputText class="slds-input" aura:id="PSN" value="{!srl.sigmaerpdev2__Serial_Number__c}" required="true"/>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.showAutoSerNumEntryFlg == true}">
+                            <div class="slds-modal__content slds-p-around_medium">                       
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="width:100%;padding-top: 2px;border:1px solid rgb(221, 219, 218)">                                                            
+                                    <tr>
+                                        <td>
+                                            <div class="slds-size_2-of-3">
+                                                <label class="slds-form-element__label">
+                                                    <span style="color:red">*</span>Enter Format:
+                                                </label>
+                                                <ui:inputText value="{!v.autoSerialName}" />
+                                            </div>                                        
+                                        </td>
+                                        <td>
+                                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.autoSerialize}">Generate_And_Save</button>
+                                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+                                        </td>
+                                    </tr>                                                                                                 
+                                </table>
+                            </div>
+                        </aura:if>
+                        <footer class="slds-modal__footer"> 
+                            <aura:if isTrue="{!v.enableSaveForUplAndMan == true}">                        
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.addSerialNumber}">Save</button>
+                            </aura:if>
+                        </footer>                    
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+		
+        <td scope="col" data-label="PSN Code">
+            
+            <div class="slds-col slds-m-horizontal_small slds-show" style="" aura:id="serialinput">
+                <table class="slds-table slds-table_cell-buffer slds-table_striped slds-box">
+                    <thead style="background:#fafaf9; border-bottom:1px solid #d8dde6;">
+                        <tr class="slds-text-title_caps1">
+                            <aura:renderIf isTrue="{!v.lineItem.indpro.sigmaerpdev2__Product__r.sigmaerpdev2__Attribute_Type__c == 'SERIALIZED'}">
+                                <th scope="col"><div class="slds-truncate" style="color:#16325c;">Serial Number</div></th>
+                            </aura:renderIf>
+                        </tr>
+                        
+                    </thead>
+                    
+                    
+                    
+                    <tbody class="serial-tbody">
+                        <aura:iteration items="{!v.lineItem.eachserialNo}" var="srl">
+                            
+                            <!--  <sigmaerpdev:Bomserial IlpliItem="{!srl}"  />  -->
+                            <tr>
+                                
+                                <td>
+                                    <ui:inputText class="slds-input" aura:id="PSN" value="{!srl.sigmaerpdev2__Serial_Number__c}" required="true"/>
+                                </td> 
+                                
+                            </tr>
+                            
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>	
+            
+        </td>
+    </tr>
+</aura:component>

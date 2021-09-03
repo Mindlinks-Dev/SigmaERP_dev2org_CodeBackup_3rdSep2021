@@ -1,0 +1,99 @@
+<aura:component controller="RegistrationService" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="MainWrapperObject" type="Map" default="{'FirstName':'','LastName':'','EmailId':'','ContactNumber':'','ContactPerson':'','Address':'','PostCode':'','City':'','BreweryName':'','CardNumber':'','ExpiryDate':'','CVV':'','ShowAddressOnSite':false,'ResistrationStatus':'','ResponseMessage':'','CreateOrder':false,'AccountId':'','OrderId':'','orderAmount':'','RegistryId':'','TermsConditions':''}" access="global"/>
+    <aura:attribute name="isSelected" type="Boolean" default="false"/>
+    <aura:attribute name="LogoutURL" type="String"/>
+    <aura:attribute name="PaymentStatus" type="String"/>
+    <aura:attribute name="showAggrementSection" type="boolean" default="false"/>
+    <aura:attribute name="showPaymentSection" type="boolean" default="false"/>
+    <aura:attribute name="showFailureSection" type="boolean" default="false"/>
+    
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>-->
+    
+    <ltng:require styles="{!$Resource.increasepopupsize}" />
+    
+    <div class="slds-hide" aura:id="mySpinner">
+        <lightning:spinner style="position: fixed" variant="brand" alternativeText="Loading" size="large" />
+    </div>   
+    
+    <div class="bg slds-p-around_small">
+        <div class="slds-box slds-p-around_none">
+            
+            <div class="{!v.showAggrementSection == true ? 'slds-show' : 'slds-hide'}">
+                <div class="slds-box slds-p-around_none">
+                    <header class="slds-modal__header slds-text-align_left">
+                        <h2><span class="slds-icon_container slds-icon-standard-task" title="Bill To">
+                            <lightning:icon size="x-small" iconName="standard:contact_list" alternativeText="Event" />
+                            </span><b> Terms and Conditions</b></h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium slds-scrollable" style="height:52vh;"> 
+                        <!--<c:BrewerTermsAndConditions />-->
+                        <pre>{!v.MainWrapperObject.TermsConditions}</pre>
+                        
+                    </div>
+                    <footer class="slds-modal__footer slds-modal__footer_directional">
+                        <div class="slds-form-element slds-float_left">
+                            <div class="slds-form-element__control">
+                                <b><lightning:input type="checkbox" label="I agree" checked="{!v.isSelected}" name="input1" onchange="{!c.onCheck}"/></b>
+                            </div>
+                        </div>
+                        
+                        <lightning:buttonIcon iconName="utility:forward" size="large" variant="bare" onclick="{!c.goToBasicInfo}" alternativeText="forward" />
+                        
+                    </footer>
+                </div>
+            </div>
+            
+            
+            
+            <aura:if isTrue="{!v.showPaymentSection}" >
+                <div class="slds-box slds-p-around_none">
+                    <header class="slds-modal__header slds-text-align_left">
+                        <h2><span class="slds-icon_container slds-icon-standard-task" title="Bill To">
+                            <lightning:icon size="x-small" iconName="standard:contact_list" alternativeText="Event" />
+                            </span><b> Payment Section</b></h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_medium slds-scrollable" style="height:52vh;"> 
+                        <!--<c:Payment_options currencySymbol="{!v.currencySymbol}" customerName="{!v.contactName}" postcode="{!v.postcode}" recordId="{!v.AccountId}" amountTobeCharged="{!v.totalBillAmountValue}" orderSFId="{!v.recordId}" taxAmount="{!v.TaxOnBillAmount}" FederalTax="{!v.FederalTax}" StateTax="{!v.StateTax}" billingPerson="{!v.billingPerson}" />-->
+                        <c:BreweryPayment_Options showAggrementSection="{!v.showAggrementSection}" showPaymentSection="{!v.showPaymentSection}" Registration="true" LogoutURL="{!v.LogoutURL}" MainWrapperObject="{!v.MainWrapperObject}" customerName="{!v.MainWrapperObject.BreweryName}" postcode="{!v.MainWrapperObject.PostCode}" recordId="{!v.MainWrapperObject.AccountId}" amountTobeCharged="{!v.MainWrapperObject.orderAmount}" orderSFId="{!v.MainWrapperObject.OrderId}" billingPerson="{!v.MainWrapperObject.ContactPerson}" regid="{!v.MainWrapperObject.RegistryId}" />
+                    </div>
+                    <footer class="slds-align_absolute-center  slds-modal__footer slds-modal__footer_directional">
+                        <a class="slds-align_absolute-center slds-button slds-button_neutral submit" href="{!v.LogoutURL}">Cancel</a>
+                        
+                    </footer>
+                </div>
+            </aura:if>
+            
+            
+            
+         <!-- Order Status section-->
+         <aura:if isTrue="{!v.showFailureSection}">
+            <section class="slds-modal slds-fade-in-open slds-modal_prompt" aria-modal="true">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header slds-theme_success slds-theme_alert-texture">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium" id="prompt-heading-id"><lightning:icon iconName="utility:success" size="small" alternativeText="Approved" /> Payment Status</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="prompt-message-wrapper">
+                       
+                        <p class="slds-text-heading_small">{!v.PaymentStatus}</p>
+                        <br/>
+                        <p  class="slds-text-heading_medium slds-text-color_error">NOTE : Please use browser CLOSE button to close the current page.</p>  
+                    </div>
+                    <footer class="slds-modal__footer slds-theme_default">             
+                        <a class="slds-button slds-button_neutral submit" href="{!v.LogoutURL}">Ok</a>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        <!-- Order Status section-->
+            
+            
+        </div>
+    </div>
+    
+    
+</aura:component>

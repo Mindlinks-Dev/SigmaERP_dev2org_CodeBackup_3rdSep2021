@@ -1,0 +1,40 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <div class="banner-bg slds-align_absolute-center">
+        <div class="content-bg">
+            <div class="content">
+                <p class="para2">Tavistock Relationships</p>
+                <h3 class="para1">Tavistock Relationships is an internationally renowned charity for advanced practice, training and research to support couples, individuals and families.</h3>
+                <br/>
+                <div>
+                    <a class="brand-btn" href="/tavistockbooking/s/book-appointment-clone" >
+                        <lightning:icon iconName="utility:event" variant="inverse" alternativeText="Connected" size="x-small"
+                                        title="x-small size" /> Book an appointment</a>
+                    <a class="brand-btn" href="/tavistockbooking/s/tavistock-counselling" >
+                        <lightning:icon iconName="utility:event" variant="inverse" alternativeText="Connected" size="x-small"
+                                        title="x-small size" /> Book Counselling</a>
+                </div>            
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-grid grid-custom">
+        <div class="slds-col">
+            <lightning:icon iconName="action:leave_group" alternativeText="Click to Call" size="medium" title="large size" />
+            <h2>Psychotherapy And Counselling Services</h2>
+            <p>For couples and individuals, support with your relationship or sexual problems.</p>
+        </div>
+        <div class="slds-col">
+            <lightning:icon iconName="action:update_status" alternativeText="Click to Call" size="medium" title="large size" />
+            <h2>Training And CPD</h2>
+            <p>Training to become a couple therapist and CPD to add couple work to your skill set.</p>
+        </div>
+        <div class="slds-col">
+            <lightning:icon iconName="action:new_event" alternativeText="Click to Call" size="medium" title="large size" />
+            <h2>FREE Parenting Programmes</h2>
+            <p>In London.</p>
+        </div>
+    </div>
+    <div class="footer">
+        <p>©Tavistock Relationships 2019. All Rights Reserved. | Registered Charity Number: 211058.&nbsp;Tavistock Institute of Medical Psychology | Company number: 241618</p>
+    </div>
+</aura:component>

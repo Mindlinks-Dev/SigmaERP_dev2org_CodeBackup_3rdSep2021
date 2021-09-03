@@ -1,0 +1,58 @@
+<aura:component >
+    <aura:registerEvent name="ManufactureApplicationEvent" type="c:ManufactureApplicationEvent" />
+    <aura:attribute name="Manufac" type="object" />
+    <tr>
+        <th scope="row" style="width:14%;" data-label="{!v.Manufac.sigmaerpdev2__Manufacturing_Name__c}">
+            <div class="slds-truncate" title="{!v.Manufac.sigmaerpdev2__Manufacturing_Name__c}"><a onclick="{!c.viewDetails}">{!v.Manufac.sigmaerpdev2__Manufacturing_Name__c}</a></div>
+        </th>
+        <th scope="row" style="width:9%;" data-label="{!v.Manufac.sigmaerpdev2__Product__r.Name}">
+            <div class="slds-truncate" title="{!v.Manufac.sigmaerpdev2__Product__r.Name}">{!v.Manufac.sigmaerpdev2__Product__r.Name}</div>
+        </th>        
+        <td style="width:3%;" data-label="{!v.Manufac.sigmaerpdev2__Required_Quantity__c}">
+            <div class="slds-truncate" title="{!v.Manufac.sigmaerpdev2__Required_Quantity__c}">{!v.Manufac.sigmaerpdev2__Required_Quantity__c}</div>
+        </td> 
+        
+        
+        <aura:if isTrue="{!v.Manufac.sigmaerpdev2__Status__c == 'Produced'}">
+        	<td style="width:3%;" data-label="{!v.Manufac.sigmaerpdev2__Produced_Quantity__c}">
+                <div class="slds-truncate" title="{!v.Manufac.sigmaerpdev2__Produced_Quantity__c}">{!v.Manufac.sigmaerpdev2__Produced_Quantity__c}</div>
+            </td>
+            <aura:set attribute="else">
+            	<td style="width:3%;">
+                    <div class="slds-truncate">N/A</div>
+                </td>
+            </aura:set>
+        </aura:if>
+        
+        <th style="width:10%;" scope="row" data-label="{!v.Manufac.sigmaerpdev2__Recipe__r.Name}">
+            <div class="slds-truncate" title="{!v.Manufac.sigmaerpdev2__Recipe__r.Name}">{!v.Manufac.sigmaerpdev2__Recipe__r.Name}</div>
+        </th>
+        <td style="width:8%;" data-label="{!v.Manufac.sigmaerpdev2__Status__c}">
+            <div class="slds-truncate" title="{!v.Manufac.sigmaerpdev2__Status__c}">{!v.Manufac.sigmaerpdev2__Status__c}</div>
+        </td>
+        <td style="width:8%;" data-label="{!v.Manufac.sigmaerpdev2__Run_Date__c}">
+            <div class="slds-truncate" title="{!v.Manufac.sigmaerpdev2__Run_Date__c}">{!v.Manufac.sigmaerpdev2__Run_Date__c}</div>
+        </td> 
+        <td style="width:8%;" data-label="{!v.Manufac.sigmaerpdev2__End_Date__c}">   
+            <div class="slds-truncate" title="{!v.Manufac.sigmaerpdev2__End_Date__c}">{!v.Manufac.sigmaerpdev2__End_Date__c}</div>
+        </td>
+       
+        <td data-label="Action" style="width:5%;">                
+            <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right" onselect="{!c.handleMenuSelect}">                
+                <aura:if isTrue="{!v.Manufac.sigmaerpdev2__Status__c != 'Cancelled'}">
+                    <lightning:menuItem label="Edit" value="Edit" iconName="action:edit" />
+                </aura:if>
+                <aura:if isTrue="{!and(v.Manufac.sigmaerpdev2__Status__c != 'Produced',v.Manufac.sigmaerpdev2__Status__c != 'Stock Reserved')}">
+                    <lightning:menuItem label="Delete" value="Delete" iconName="action:delete" />
+                </aura:if> 
+                <!--<lightning:menuItem label="Resource Allocation" value="Resource Allocation" iconName="action:resourceallocate" />-->
+            </lightning:buttonMenu>         
+            <!--<lightning:button label="Resource Management" title="RM" onclick="{!c.RedirectGantt}"/>
+            <aura:if isTrue="{!v.Manufac.sigmaerpdev2__Status__c == 'Produced'}">
+            	<div onclick="{!c.RedirectGantt}" style="display:inline;">   
+                	<img src="/resource/sigmaerpdev2__MRResourceMgmt1" width="50" height="10" title="Resource Planning"/>
+            	</div>
+            </aura:if>-->
+        </td>
+    </tr>
+</aura:component>

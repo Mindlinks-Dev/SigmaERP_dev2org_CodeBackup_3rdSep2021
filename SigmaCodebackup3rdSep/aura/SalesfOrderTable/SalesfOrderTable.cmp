@@ -1,0 +1,137 @@
+<aura:component controller="viewCartctrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="rowIndex" type="integer" /> 
+    <aura:attribute name="SOrder" type="Object"/> 
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+    <aura:attribute name="expanded" type="String" default="false"/>
+    <aura:attribute name="canRevise" type = "Boolean" default ="true" />
+    <aura:attribute name="checkThis" type = "Boolean" default ="true" />
+    <aura:attribute name="showOrderChangeRequest" type="Boolean" default="false"/>
+    <aura:attribute name="isOpen" type="Boolean" default="false"/>
+    <aura:attribute name="isOpenSOLI" type="Boolean" default="false"/>
+    <aura:attribute name="toViewReviseReq" type="Boolean" default="false"/>
+    <aura:attribute name="isViewReviseReqAllowed" type="Boolean" default="false"/>
+    <aura:attribute name="viewSOLIID" type="String"/>
+    <aura:attribute name="viewSOLIName" type="String"/>
+    
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="type" type="String" default="News" description="The type of feed" access="GLOBAL"/>
+    <aura:attribute name="types" type="String[]"
+                    default="Bookmarks,Company,DirectMessages,Feeds,Files,Filter,Groups,Home,Moderation,Mute,News,PendingReview,Record,Streams,To,Topics,UserProfile"
+                    description="A list of feed types"/>
+    <aura:attribute name="isOpenChat" type="boolean" default="false"/>
+    
+    <tr data-index="{!v.rowIndex}">
+        <td>  
+            <button class="slds-button slds-button_neutral" aura:id="toggle" onclick="{!c.toggle}" value="{!v.checkThis}"  style="padding: 4px;line-height: 10px;"> 
+                <lightning:Icon aura:id="chevronright" iconName="utility:chevronright" size="x-small"/>
+                <lightning:Icon class="slds-hide" aura:id="chevrondown" iconName="utility:chevrondown" size="x-small"/>
+            </button> 
+        </td>
+        <td scope="row" data-label="Row" title="{!v.canRevise}">
+            <span class="title" >{!v.SOrder.SO.Name}</span>
+        </td>
+        <td scope="row" class="slds-truncate slds-text-align_center" data-label="Row" title="{!v.SOrder.SO.sigmaerpdev2__AccountId__r.Name}">
+            <span>{!v.SOrder.SO.sigmaerpdev2__AccountId__r.Name}</span>
+        </td>
+        <td data-label="Row" class="slds-truncate slds-text-align_center" title="{!v.SOrder.SO.sigmaerpdev2__Orders_Status__c}">            
+            <!--<lightning:buttonIcon onclick="{!c.viewchangerequest}" disabled="{! !v.isViewReviseReqAllowed}" class ="slds-m-right_x-small" iconName="utility:preview" variant="bare" alternativeText="View Revise Order" /> -->
+            <span class="{!v.SOrder.SO.sigmaerpdev2__Orders_Status__c == 'Submitted'?'slds-badge slds-theme_warning':v.SOrder.SO.sigmaerpdev2__Orders_Status__c == 'Delivered'?'slds-badge slds-theme_success':v.SOrder.SO.sigmaerpdev2__Orders_Status__c == 'Order Confirmed'?'slds-badge slds-theme_inverse':v.SOrder.SO.sigmaerpdev2__Orders_Status__c == 'Pending'?'slds-badge slds-badge_warning':v.SOrder.SO.sigmaerpdev2__Orders_Status__c == 'Cancelled'?'slds-badge slds-badge_danger':'slds-badge slds-theme_info'}">{!v.SOrder.SO.sigmaerpdev2__Orders_Status__c}</span> 
+        </td>
+        <td scope="row" class="slds-truncate slds-text-align_center" data-label="Row" title="{!v.SOrder.SO.sigmaerpdev2__Order_Created_Via__c}">
+            <span>{!v.SOrder.SO.sigmaerpdev2__Order_Created_Via__c}</span>
+        </td>
+        <td data-label="" class="slds-truncate slds-text-align_center" title="{!v.SOrder.SO.sigmaerpdev2__Delivary_Date__c}" style="border-right:0px solid #d4d4d4">
+            <!--<lightning:input name="" variant="label-hidden" readonly="true" label="" value="{!v.SOrder.SO.CreatedDate}"/>-->
+            <lightning:formattedDateTime value="{!v.SOrder.SO.sigmaerpdev2__Delivary_Date__c}"/>
+        </td>
+        <td class="comment">
+            <div>
+                <a><lightning:icon iconName="utility:chat" alternative-text="Comment" class="add-cart" onclick="{!c.OpenChat}"/></a>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="12" style="padding-left:34px;border-bottom:1.5px solid gray;">
+            <aura:if isTrue="{!v.SOrder.SOLI}">
+                <aura:if isTrue="{!v.expanded}">
+                    <table class="slds-table_bordered slds-box" style="padding:0;border-radius:0;">
+                        <tr class="slds-text-title_caps">  
+                            <th scope="col" style=""><div class="slds-truncate"></div></th>
+                            <th scope="col" style=""><div class="slds-truncate"></div></th>
+                            <th scope="col" style=""><div class="slds-truncate">Order Details</div></th>
+                            <th scope="col" style=""><div class="slds-truncate">Product Order Price Book</div></th>
+                            <th scope="col" style=""><div class="slds-truncate">Product Name</div></th>
+                            <th scope="col" style=""><div class="slds-truncate">Order Quantity</div></th>
+                            <th scope="col" style=""><div class="slds-truncate">Total Amount</div></th>
+                            <th scope="col" style=""><div class="slds-truncate"></div>Order line status</th>
+                            <th scope="col" style=""><div class="slds-truncate">Due Date</div></th>
+                            <th scope="col" style=""><div class="slds-truncate"></div></th>
+                        </tr>
+                        <aura:iteration items="{!v.SOrder.SOLI}" var="soli" indexVar="row">
+                            <tr class="slds-box">
+                                <td></td>
+                                <td></td>
+                                <td scope="row" data-label="Row" title="" class="slds-text-align_center">
+                                    {!row+1}
+                                </td>
+                                <td data-label="SO Line Item" title="{!soli.Name}">
+                                    <lightning:input name="" variant="label-hidden" readonly="true" label="" value="{!soli.OrderLineName}"/>
+                                </td>
+                                <td data-label="Product Name" title="{!soli.Name}">
+                                    <lightning:input name="" variant="label-hidden" readonly="true" label="" value="{!soli.Name}"/>
+                                </td>            
+                                <td data-label="Order Quantity" title="{!soli.OrderedQuantity}" class="slds-text-align_right">
+                                    <lightning:input type="number" name="" variant="label-hidden" readonly="true" label="" value="{!soli.OrderedQuantity}"/>
+                                </td>
+                                <td data-label="Amount" title="{!soli.ProductPrice}">
+                                    <lightning:input name="" variant="label-hidden" readonly="true" label="" value="{!soli.ProductPrice}"/>
+                                </td>
+                                <td data-label="Amount" title="{!soli.OrderlineStatus}">
+                                    <lightning:input name="" variant="label-hidden" readonly="true" label="" value="{!soli.OrderlineStatus}"/>
+                                </td>
+                                <td data-label="DueDate" title="{!soli.OrderLineDate}">
+                                    <lightning:input name="" variant="label-hidden" readonly="true" label="" value="{!soli.OrderLineDate}"/>
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </table>
+                </aura:if>
+            </aura:if>
+        </td>
+    </tr>
+    <!-- Code For Comment-->
+    <aura:if isTrue="{!v.isOpenChat}">
+        <!--###### MODAL BOX Start######--> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- ###### MODAL BOX HEADER Start ######-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Ask a Question</h2>
+                </header>
+                <!--###### MODAL BOX BODY Part Start######-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>
+                        <forceChatter:publisher context="RECORD" recordId="{!v.SOrder.SO.Id}"/>
+                        <forceChatter:feed type="Record" subjectId="{!v.SOrder.SO.Id}"/>
+                        <!-- <forceCommunity:notifications/>-->
+                    </p>
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start ######-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" 
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{! c.closeModel}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+        
+    </aura:if>
+</aura:component>

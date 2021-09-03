@@ -1,0 +1,179 @@
+<aura:component controller="SavePaymentCntrl" access="global">    
+    
+    <aura:attribute name="selectedCardType" type="String" description="The current record Id to display" />	    
+    
+    <aura:attribute name="paymentObj" type="Payment__c" description="The current record Id to display" 
+                    default="{ 'sobjectType' : 'Payment__c' , 
+                             'sigmaerpdev2__Amount__c' : '',
+                             'sigmaerpdev2__OrderId__c' : '', 
+                             'sigmaerpdev2__Customer_SFID__c':'',
+                             'sigmaerpdev2__Payment_Mode__c' : '',
+                             'sigmaerpdev2__Credit_CardNumber__c' : '', 
+                             'sigmaerpdev2__Customer_Name__c' : '',                             
+                             'sigmaerpdev2__Order_Type__c' : '',
+                             'sigmaerpdev2__Order_Created_Via__c' : '',
+                             'sigmaerpdev2__Federal_Tax__c' : '',
+                             'sigmaerpdev2__State_Tax__c' : '',
+                             'sigmaerpdev2__Tax_Amount__c' : '',
+                             'sigmaerpdev2__Account_Subscription_Interval__c':'',
+                             'sigmaerpdev2__Card_Type__c': '',
+                             'sigmaerpdev2__Sigma_Order__c': '',
+                             'sigmaerpdev2__Amount_Recevied__c':'',
+                             'sigmaerpdev2__Due_Amount__c':'',
+                             'sigmaerpdev2__Paid_Amount__c':''
+                             
+                             }"
+                    
+                    /> 
+    
+    <aura:registerEvent name="taxEventValues" type="c:TaxEvent"/>
+    <aura:registerEvent name="transSuccessEvent" type="c:TransactionSuccessEvent" />
+     <aura:attribute name="MainWrapperObject" type="Map" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInitForCard}" />
+    <aura:attribute name="amountTobeCharged" type="Double" description="The current record Id to display" />	
+    <aura:attribute name="creditCardNumber" type="String" description="The current record Id to display" />     
+    <aura:attribute name="ExpiryDate" type="Date" description="The current record Id to display" />  
+    <aura:attribute name="zipCode" type="Integer" description="The current record Id to display" />     
+    <aura:attribute name="cVV" default="123" type="Integer" description="The current record Id to display" />
+    <aura:attribute name="cardHolder" default="abc" type="String" description="The current record Id to display" />
+    <aura:attribute name="receivedFrom" default="soupBoyz" type="String" description="The current record Id to display" />  
+    <aura:attribute name="currencySymbol" type="String" description="The current record Id to display"/>     		 
+    <aura:attribute name="orderSFId" type="String" description="The current record Id to display" />
+    <aura:attribute name="regid"  type="String" description="" />
+    <aura:attribute name="paidAmount" type="Double" description="The current record Id to display" />
+    <aura:attribute access='global' name="recordId" type="String" description="The current record Id to display" /> 
+    <aura:attribute access="global" name="totalTaxAmount" type="String" />
+    <aura:attribute name="ReceivedAmt" type="Double" description="The current record Id to display" />
+    <aura:attribute name="billAmount" type="Double" description="The current record Id to display" />
+    <aura:attribute name="FederalTax" type="String" description="The current record Id to display" />
+    <aura:attribute name="StateTax" type="String" description="The current record Id to display" />
+    <aura:attribute name="subpayment" type="boolean"  />
+    <aura:attribute name="paymentdone" type="Boolean" default="false"/>
+    
+    <!--<aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>	  -->
+      <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/> 
+    
+    
+    <body aura:id="optionsList">
+        <div id="Accspinner" class="slds-spinner_container" style="display:none">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div class="slds-page-header" id="head" style="">
+            <fieldset class="slds-form-element">
+                <div class="slds-form-element__control ">
+                    <ui:button class="slds-button slds-button--neutral" label="Back" aura:id="back" press="{!c.gotoPaymentOptions}" />
+                    <legend class="slds-form-element__label " id="Card_Payment" >Card Payment</legend>
+                </div>
+            </fieldset>
+        </div>			
+         <aura:renderIf isTrue="{!v.isError}">
+            <ui:message title="Error" severity="error" closable="false">
+                {!v.errorMsg}
+            </ui:message>
+            <aura:set attribute="else">
+        <div class=" slds-box" style="background:white;">
+            <div style="width:70%;margin:auto;" id="card_body">
+                
+                <div class="slds-grid">
+                    <div class="slds-col">
+                        <div class="slds-form slds-form_stacked">
+                            <div class="slds-form-element slds-m-around_small">
+                                <label class="slds-form-element__label" for="input-id-01">Amount To be Charged($)</label>
+                                <div class="slds-form-element__control">
+                               <!--<lightning:input label="" aura:id="chargeAmount" value="{!v.amountTobeCharged}" disabled="true"/> -->
+                                  <ui:inputNumber aura:id="chargeAmount" class="slds-input slds-size--3-of-4" format=".00#" value="{!v.amountTobeCharged}" disabled="true"/>
+                               </div>
+                            </div>
+                            
+                            <div class="slds-form-element slds-m-around_small">
+                                <label class="slds-form-element__label" for="input-id-01">Cash Received ($)
+                                    <span style="color:red">* </span>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <!--<lightning:input label="" aura:id="cashReceived"  value="{!v.amountTobeCharged}" disabled="true"/> -->
+                                     <ui:inputNumber aura:id="cashReceived" class="slds-input slds-size--3-of-4"  required="true" disabled="false" updateOn="keyup"/>
+                               </div>
+                            </div>
+                            
+                            <div class="slds-form-element slds-m-around_small">
+                                <label class="slds-form-element__label" for="input-id-01">Credit Card Number
+                                    <span style="color:red">* </span>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputText class="slds-input slds-size--3-of-4" blur="{!c.checkForCardType}" 
+                                                  maxlength="16" value="{!v.paymentObj.sigmaerpdev2__Credit_CardNumber__c}" 
+                                                  required="true" aura:id="Credit_card_number" placeholder="Enter Credit Card Number"/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element slds-m-around_small">
+                                <label class="slds-form-element__label" for="input-id-01">Expiry Date
+                                    <span style="color:red">* </span>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputDate aura:id="Expiry_Date" required="true" value="{!v.paymentObj.sigmaerpdev2__Expiry_Date__c}" class="slds-input slds-size--3-of-4" displayDatePicker="true" format="MM/yy" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element slds-m-around_small">
+                                <label class="slds-form-element__label" for="input-id-01">Card Type</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputSelect class="slds-input input uiInput uiInputText uiInput--default uiInput--input slds-size--3-of-4" aura:id="InputSelectDynamic" value="{!v.selectedCardType}" required="true" disabled="true">
+                                        
+                                        <ui:inputSelectOption text="Enter card number" label="Card Type" value="true"/>
+                                        <ui:inputSelectOption text="Visa" label="Visa"/>
+                                        <ui:inputSelectOption text="MasterCard" label="MasterCard"/>
+                                        <ui:inputSelectOption text="AmEx" label="AmEx"/>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col">
+                        <div class="slds-form slds-form_stacked">
+                            <!--<div class="slds-form-element slds-m-around_small">
+                                <label class="slds-form-element__label" for="input-id-01">Zip Code</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputText aura:id="Zip_code" class="slds-input slds-size-3-of-4" value="{!v.paymentObj.sigmaerpdev2__Zip_Code__c}" placeholder="Enter Zip code"/>
+                                </div>
+                            </div> -->
+                            <div class="slds-form-element slds-m-around_small">
+                                <label class="slds-form-element__label" for="input-id-01">Card Holder Name
+                                    <span style="color:red">* </span></label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputText class="slds-input slds-size--3-of-4" aura:id="Card_holderName" value="{!v.paymentObj.sigmaerpdev2__CardHolder_Name__c}" placeholder="Name"/>
+                                </div>
+                            </div>
+                            <div class="slds-form-element slds-m-around_small">
+                                <label class="slds-form-element__label" for="input-id-01">CVV<span style="color:red">* </span></label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputSecret aura:id="cardVerificationValue" class="slds-input slds-size--3-of-4"  maxlength="4" value="{!v.paymentObj.sigmaerpdev2__CVV__c}" required="true" placeholder="Enter CVV Number" /> 
+                                </div>
+                            </div>
+                            
+                            
+                        </div>	
+                    </div>
+                </div>
+                
+                <div class="slds-form-element slds-m-around_small slds-m-top_medium">
+                    <div class="slds-form-element__row">
+                        <button class="slds-button slds-button--neutral" aura:id="Save_Payment" onclick="{!c.save}">Submit</button>
+                       <button class="slds-button slds-button--neutral" aura:id="Proceed_to_Payments" onclick="{!c.gotoPaymentOptions}" >Cancel</button>
+                                
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+       </aura:set>
+        </aura:renderIf>  
+        
+    </body>
+    
+</aura:component>

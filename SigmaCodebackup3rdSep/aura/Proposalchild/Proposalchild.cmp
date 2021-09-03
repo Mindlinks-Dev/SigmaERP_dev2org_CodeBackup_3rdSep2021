@@ -1,0 +1,83 @@
+<aura:component controller="Proposalsearch" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+    <aura:attribute name="PropList" type="Object"/>
+    <aura:attribute name="rowIndex" type="String" />
+    <aura:attribute name="RecordId" type="String" />
+    <aura:attribute name="ProdEditFlag" type="Boolean"/>
+    <aura:attribute name="ServEditFlag" type="Boolean"/>
+    <aura:attribute name="MainFlag" type="Boolean" />
+    <aura:attribute name="LightView" type="Boolean" default="false"/>    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <tr>
+       <aura:if isTrue="{!v.LightView}">
+       		<th scope="row">
+                <span> 
+                    <div class="slds-truncate" title="Proposal"><a href="{!'/one/one.app?#/sObject/'+ v.PropList.Id + '/view'}" onclick="{!c.openRecords}">View</a></div>
+                </span>
+        	</th>
+            <aura:set attribute="else">
+                <td scope="row">
+                    <span> 
+                        <div class="slds-truncate" title="Proposal"><a href="{!'/'+v.PropList.Id}" onclick="{!c.openRecords}">View</a></div>
+                    </span>
+                </td>                   
+            </aura:set>
+        </aura:if> 
+        <td style="padding-left:30px;">
+           <div class="slds-truncate"><a href="javascript:void(0);" role="menuitem" tabindex="0"   onclick="{!c.PropEdit}"> Edit </a></div>
+        </td>
+        <td style="padding-right:20px;">
+          <div class="slds-truncate"><a href="javascript:void(0);" role="menuitem" tabindex="0"   onclick="{!c.changestatus}"> Cancel </a></div>  
+        </td>
+        
+        <td>
+             <ui:outputText value="{!v.PropList.Name}"/>
+        </td>
+        <td>
+             <ui:outputText value="{!v.PropList.sigmaerpdev2__Proposal_Name__c}"/>
+        </td>
+        <td>
+             <ui:outputText value="{!v.PropList.sigmaerpdev2__Client__r.Name}"/>
+        </td>
+        <td>
+            <aura:if isTrue="{!v.PropList.sigmaerpdev2__Agency__r.Name != null}">
+            	<ui:outputText value="{!v.PropList.sigmaerpdev2__Agency__r.Name}"/>
+                <aura:set attribute="else">
+                	<ui:outputText value = "Not Available" />
+                </aura:set>
+            </aura:if> 
+        </td>
+        <td>
+            <aura:if isTrue="{!v.PropList.sigmaerpdev2__Start_Date__c != null}">
+            	<ui:outputText value="{!v.PropList.sigmaerpdev2__Start_Date__c}"/>
+                <aura:set attribute="else">
+                	<ui:outputText value = "Not Available" />
+                </aura:set>
+            </aura:if>
+        </td>
+        <td>
+            <aura:if isTrue="{!v.PropList.sigmaerpdev2__End_Date__c != null}">
+            	<ui:outputText value="{!v.PropList.sigmaerpdev2__End_Date__c}"/>
+                <aura:set attribute="else">
+                	<ui:outputText value = "Not Available" />
+                </aura:set>
+            </aura:if> 
+        </td>
+        <td>
+             <ui:outputText value="{!v.PropList.sigmaerpdev2__Total_Amount__c}"/>
+        </td>
+        <td>
+             <ui:outputText value="{!v.PropList.sigmaerpdev2__Status__c}"/>
+        </td>
+        <td>
+           <div class="slds-truncate" style="padding-left:20px;"><a href="javascript:void(0);" role="menuitem" tabindex="0"   onclick="{!c.XLSdownload}"> XLS file($) </a></div>  
+		</td>
+		<td>
+           <div class="slds-truncate" style="padding-right:20px;"><a href="javascript:void(0);" role="menuitem" tabindex="0"   onclick="{!c.PDFDownload}"> PDF file($) </a></div>
+    	</td> 
+        
+    </tr>
+    
+    
+</aura:component>

@@ -1,0 +1,3 @@
+@media screen and (max-width:800px) {
+    .THIS .slds-scrollable--mob-xy,.THIS.slds-scrollable--mob-xy{overflow:scroll;}
+}

@@ -1,0 +1,98 @@
+<aura:component controller="ManufacturingRun" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	        
+    <aura:attribute name="dataobj" type="object"/>
+    <aura:attribute name="manfObject" type="Map"/>    
+    <aura:attribute name="selLocationName" type="String" default=""/>        
+    <!--<aura:handler name="change" value="{!v.dataobj.locId}" action="{!c.clearSelValues}" />
+	<aura:handler name="init" value="{!this}" action="{!c.getdefaultlocation}"/> -->   
+    
+    <div class="slds-form slds-form_compound slds-p-around_medium">  
+        <fieldset class="slds-form-element">
+            <div class="slds-form-element__group">
+                <div class="slds-form-element__row"> 
+                    <div align="left" class="slds-form-element slds-size_1-of-1">
+                        <label class="slds-form-element__label">
+                            <aura:if isTrue="{!v.manfObject.sigmaerpdev2__PI_updated__c==false}">
+                                <span style="color:red">*</span>
+                            </aura:if>Quantity Moved
+                        </label>
+                        <ui:inputNumber class="slds-input" value="{!v.dataobj.MovedQty}" labelClass="slds-form-element__label" disabled="{!v.manfObject.sigmaerpdev2__PI_updated__c==true}"/>
+                    </div>                     
+                 </div>
+            </div>            
+            
+            <div class="slds-form-element__group">
+            	<div class="slds-form-element__row">
+                    <div align="left" class="slds-form-element">
+                        <label class="slds-form-element__label">
+                            <aura:if isTrue="{!v.manfObject.sigmaerpdev2__PI_updated__c == false}">
+                                <span style="color:red">*</span></aura:if>
+                            Actual Storage Location</label>
+                        <aura:if isTrue="{!v.manfObject.sigmaerpdev2__PI_updated__c == true}">
+                            <ui:inputText aura:id="locn" label=""
+                                          class="slds-input"
+                                          labelClass="slds-form-element__label"
+                                          value="{!v.dataobj.locName+' [ '+v.dataobj.Name + ' ]'}"
+                                          disabled="true" />                            
+                            <aura:set attribute="else">
+                                <div style="display: table;">
+                                    <c:customLookup recordID="{!v.dataobj.invLocRecID}" recordName="{!v.dataobj.Name}"
+                                        whereCondition="{!'AND sigmaerpdev2__Location__c != \'\''}" objectAPIName="sigmaerpdev2__Inventory_Location__c" IconName="standard:address" isSigmaOrder= 'true' />
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div> 
+                </div>
+                <div class="slds-form-element__row">
+                    <div align="left" class="slds-form-element" style="width:250px;">
+                        <label class="slds-form-element__label">Zone</label>
+                        <aura:if isTrue="{!v.manfObject.sigmaerpdev2__PI_updated__c == true}">
+                            <ui:inputText aura:id="locn" label=""
+                                          class="slds-input"
+                                          labelClass="slds-form-element__label"
+                                          value="{!v.dataobj.ZoneName}"
+                                          disabled="true" />
+                            <aura:set attribute="else"> 
+                                 <div style="display: table;">
+                                	<c:customLookup recordID="{!v.dataobj.ZoneId}" recordName="{!v.dataobj.ZoneName}" objectAPIName="sigmaerpdev2__Sublevel_location__c" whereCondition="{!'AND sigmaerpdev2__Inventory_Location__c=\''+v.dataobj.invLocRecID+'\' AND sigmaerpdev2__Inventory_Location__c != \'\' AND recordtype.name =\'ZONE\''}"  IconName="standard:address" isSigmaOrder= 'true' />                                                                   
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+                <div class="slds-form-element__row">
+                    <div align="left" class="slds-form-element" style="width:250px;">
+                        <label class="slds-form-element__label">
+                            <aura:if isTrue="{!v.manfObject.sigmaerpdev2__PI_updated__c == false}">
+                                <span style="color:red">*</span>
+                            </aura:if>                         
+                            Bin</label>
+                        <aura:if isTrue="{!v.manfObject.sigmaerpdev2__PI_updated__c == true}">
+                            <ui:inputText aura:id="locn" label=""
+                                          class="slds-input"
+                                          labelClass="slds-form-element__label"
+                                          value="{!v.dataobj.BinName}"
+                                          disabled="true" />
+                            <aura:set attribute="else"> 
+                            	<div style="display: table;">
+                                	<c:customLookup recordID="{!v.dataobj.BinId}" recordName="{!v.dataobj.BinName}" objectAPIName="sigmaerpdev2__Sublevel_location__c" whereCondition="{!'AND sigmaerpdev2__Inventory_Location__c=\''+v.dataobj.invLocRecID+'\' AND sigmaerpdev2__Inventory_Location__c != \'\' AND recordtype.name =\'BIN\''}"  IconName="standard:address" isSigmaOrder= 'true' />                                                                   
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="slds-form-element__group">
+                <div class="slds-form-element__row">
+                    <aura:if isTrue="{!v.manfObject.sigmaerpdev2__PI_updated__c == false}">
+                    	<div align="left" class="slds-form-element slds-size_1-of-3">
+                        	<label class="slds-form-element__label">Location Name</label>
+                            <ui:inputText class="slds-input" value="{!v.selLocationName}" labelClass="slds-form-element__label" disabled="true" />            
+                        </div>
+                    </aura:if>                    
+                </div>
+            </div>-->
+        </fieldset>
+    </div> 
+
+</aura:component>

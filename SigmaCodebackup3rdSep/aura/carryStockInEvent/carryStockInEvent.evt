@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION">
+    <aura:attribute name="stockIn" type="Stock_In_Product__c"/>
+    <aura:attribute name="rowIndex" type="Integer"/> 
+     <aura:attribute name="index" type="Integer"/> 
+    <aura:attribute name="srlno" type="Product_Serial_Number__c"/>
+</aura:event>

@@ -1,0 +1,21 @@
+<aura:component access="global" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" >
+
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="pagesize" type="integer"/>
+    <aura:attribute name="total" type="integer"/>
+    <aura:attribute name="txt" type="String" default=''/>
+    <div class="slds-p-around_x-small">
+        <aura:renderIf isTrue="{!and(v.page > 1, v.txt=='')}">
+            <lightning:buttonIcon iconName="utility:chevronleft" variant="border-filled" alternativeText="Previous" iconClass="dark" onclick="{!c.previousPage}"/>
+        </aura:renderIf>
+        <span class="slds-m-left--small" style="color:#a41f34;font-weight:bold;">{!v.total} Record(s) </span>
+        <!--Adding for Gloabl Search, to hide the pages when searching -->
+        <aura:renderIf isTrue="{!v.txt==''}">
+            <span class="slds-m-right--small" style="color:#a41f34;font-weight:bold;"> • Page {!v.page} / {!v.pages} </span>
+        </aura:renderIf>
+        <aura:renderIf isTrue="{!and(v.page &lt; v.pages,v.txt=='')}">
+            <lightning:buttonIcon iconName="utility:chevronright" variant="border-filled" alternativeText="Next" iconClass="dark" onclick="{!c.nextPage}"/>
+        </aura:renderIf>
+    </div>
+</aura:component>

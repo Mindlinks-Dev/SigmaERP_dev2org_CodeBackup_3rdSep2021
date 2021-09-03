@@ -1,0 +1,130 @@
+<aura:component controller="AddNewLocationClassClone" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">   
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!--<aura:handler name="DeleteRowEvt" event="c:DeleteRowEvt" action="{!c.removeDeletedRow}"/>
+    <aura:attribute name="productList" type="sigmaerpdev2__Vendor_Product__c[]"/>-->
+    
+    <aura:attribute name="ProductWrapper" type="object"/>   
+    <aura:attribute name="userInfo" type="user"/>  
+    
+    <aura:attribute name="numberOfRecordsToDisplay" type="Integer" />
+    <aura:attribute name="numberOfRecordsOnLoadMoreClick" type="Integer" />
+    <aura:attribute name="totalRowCount" type="Integer" default="0"/>
+    
+    <aura:attribute name="spinner" type="boolean" default="false"/> 
+    
+    <aura:if isTrue="{!v.spinner}">
+        <lightning:spinner variant="brand"/>
+    </aura:if>
+    
+    <p class="vendor-title"> {!v.userInfo.Name}</p>
+    <div class="content">
+        <div class="slds-card__header slds-grid slds-m-bottom_x-small">
+            <div class="slds-col slds-size--1-of-3">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container1 slds-icon-standard-account1" title="account">
+                        <img src="{!$Resource.SigmaIcons + '/Report.png'}" width="50"/>
+                        <span class="slds-assistive-text">Add New Location</span>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title header slds-text-title_caps">
+                        <strong>Add New Location</strong>
+                    </h2>
+                </div>
+                <div class="slds-no-flex slds-m-horizontal_small">
+                    <div class="slds-text-align_right">
+                        
+                    </div>                    
+                </div>
+            </header>
+                </div>
+            <div class="slds-col slds-m-top_xx-small">
+                <div class="slds-grid slds-gutters slds-wrap slds-m-horizontal_xx-small paddingAround">                
+                    <div class="slds-col slds-size_2-of-10 slds-p-top_xx-small">
+                        <label><abbr lightning-input_input="" title="required" class="slds-required">*</abbr> Enter New Location</label> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:input aura:id="productsLocationInput" type="text" 
+                                         variant="label-hidden" required="true"  
+                                         onblur="{!c.checkAlreadyLocationExists}"
+                                         value="{!v.ProductWrapper.LocationName}"/>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-card__body slds-m-around_none"> 
+            <div class="slds-m-horizontal_x-small1 slds-box1">
+                
+                <div class="slds-box slds-p-around_none slds-m-horizontal_x-small slds-m-vertical_x-small">
+                    <lightning:accordion  allowMultipleSectionsOpen="true" aura:id="accordion">
+                        <lightning:accordionSection name="A" label="Contact Details">
+                            <div class="slds-grid slds-gutters slds-wrap slds-m-vertical_xx-small slds-m-horizontal_xx-small paddingAround">                
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning:input type="text" aura:id="contact-input" label="First Name" value="{!v.ProductWrapper.Cont_FirstName}" required="true"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning:input type="text" aura:id="contact-input" label="Last Name" value="{!v.ProductWrapper.Cont_LastName}" required="true"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning:input type="email" aura:id="contact-input" label="Email Id" value="{!v.ProductWrapper.Cont_Email}" required="true"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning:input type="tel" aura:id="contact-input" label="Contact Number" value="{!v.ProductWrapper.Cont_Phone}" required="true" maxlength="10" pattern="[0-9]{10}"/>
+                                </div>                                
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning:input type="text" aura:id="contact-input"  label="Mailing Street" value="{!v.ProductWrapper.Cont_MailingStreet}" required="true"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning:input type="text" aura:id="contact-input"  label="Mailing City" value="{!v.ProductWrapper.Cont_MailingCity}" required="true"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning:input type="text" aura:id="contact-input"  label="Mailing State/Province" value="{!v.ProductWrapper.Cont_MailingStateProvince}" required="true"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning:input type="text" aura:id="contact-input"  label="Mailing Postal code/Zipcode" value="{!v.ProductWrapper.Cont_MailingPostalCode}" required="true"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning:input type="text" aura:id="contact-input"  label="Mailing Country" value="{!v.ProductWrapper.Cont_MailingCountry}" required="true"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4 slds-p-top_large">
+                                    <lightning:input type="checkbox" label="Is Preferred" checked="{!v.ProductWrapper.Cont_Isprefered_for_PO}" required="true" disabled="true"/>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                    </lightning:accordion>
+                </div>
+            </div>
+            <div class="table-scroll  ">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_fixed-layout"> 
+                    <thead> 
+                        <tr class="slds-text-title_caps  slds-gray">
+                            <th scope="col" style="width:6%"><div class="slds-truncate" title="Id">S.No</div></th> 
+                            <th scope="col" style="width:35%;"><div class="slds-truncate" title="Product Name">Product Name</div></th>
+                            <th scope="col" style="width:21%;"><div class="slds-truncate" title="Vendor Product code">Vendor Product code</div></th>
+                            <th scope="col" style="width:14%;"><div class="slds-truncate" title="Current Stock">Current Stock</div></th>                  
+                            <th scope="col" style="width:8%;"><div class="slds-truncate" title="Price">Price</div></th> 
+                            <th scope="col" style="width:12%;"><div class="slds-truncate" title="As on Date">As on Date</div></th>            
+                            <!--<th></th>-->
+                        </tr>
+                    </thead>   
+                    <tbody>                        
+                        <aura:iteration items="{!v.ProductWrapper.VPList}" var="item" indexVar="index">
+                            <c:AddNewLocationLineItemClone ProductInstance="{!item}" rowIndex="{!index}"/>
+                        </aura:iteration>   
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="slds-no-flex slds-m-horizontal_small">
+        <div class="slds-text-align_center">
+            <lightning:button label="Save" variant="brand" onclick="{!c.Save}"/>
+            <lightning:button label="Cancel" variant="brand" onclick="{!c.cancel}"/>
+            <lightning:button label="Load More..." title="Load More Action" disabled="{!lessthanorequal(v.totalRowCount,v.numberOfRecordsToDisplay)}" onclick="{! c.loadMoreContent }"/>
+            
+        </div>                    
+    </div>    
+</aura:component>

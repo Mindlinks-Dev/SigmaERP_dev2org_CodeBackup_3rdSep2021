@@ -1,0 +1,41 @@
+<aura:component>
+ 
+    <aura:attribute name="myMap" type="Map"/>
+    <aura:attribute name="key" type="String" />
+    <aura:attribute name="mapValue" type="Object[]" />
+    <aura:attribute name="productNeeded" type="Integer[]" />
+    <aura:attribute name="totalProductNeeded" type="Integer" />
+    <aura:attribute name="productAvailable" type="Integer" />
+    <aura:attribute name="arrayOfInnerMapKeys" type="List" />  
+    <aura:attribute name="arrayOfInnerMapValues" type="Object[]" />
+    <aura:attribute name="red" type="boolean" default="false"/>
+    <aura:attribute name="arrDateUI" type="Date[]" default=""/>
+    
+    <aura:handler name="init" action="{!c.getCurrentKeyValue}" value="{!this}"/>
+    
+    <tr class="slds-hint-parent">
+        <aura:if isTrue="{!v.red}">
+            <th data-label="Product Needed" class="text-align" scope="row">
+                <div class="slds-truncate" title=""><a href="javascript:void(0);" tabindex="-1" style="color: red">{!v.key}</a></div>
+            </th>
+            <aura:set attribute="else">
+                <th data-label="Product Needed" class="text-align" scope="row">
+                    <div class="slds-truncate" title=""><a href="javascript:void(0);" tabindex="-1">{!v.key}</a></div>
+                </th>
+            </aura:set>
+        </aura:if>
+        
+        <aura:iteration items="{!v.arrayOfInnerMapValues}" var="item1">
+            <td class="disp-align" data-label="{!item1.date}" style="padding-left: 5%;">
+                <div class="slds-truncate slds-p-horizontal_medium slds-text-align_left no-disp" title="" data-aura-rendered-by="22:99;a" style=""></div>
+                <div class="slds-truncate slds-truncate slds-text-align_right slds-p-horizontal_small needed_padding" title="">{!item1.productNeeded}</div>
+            </td>
+        </aura:iteration>
+        <td data-label="Total Needed" style="font-weight:bold">
+            <div class="slds-truncate slds-truncate slds-text-align_right slds-p-horizontal_medium" title=""><strong>{!v.totalProductNeeded}</strong></div>
+        </td>
+        <td class="border-bottom" data-label="In Stock" style="font-weight:bold">
+            <div class="slds-truncate slds-truncate slds-text-align_right slds-p-horizontal_medium" title="">{!v.productAvailable}</div>
+        </td>
+    </tr>
+</aura:component>

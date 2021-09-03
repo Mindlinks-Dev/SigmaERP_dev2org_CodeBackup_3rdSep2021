@@ -1,0 +1,443 @@
+<aura:component controller="ProposalController"  implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickAction"  access="global" >   
+    <aura:attribute name="proposalObject" type="Proposal__c" description="The current record Id to display" 
+                    default="{'sobjectType':'Proposal__c',
+                             
+                             'Name':'',
+                             'sigmaerpdev2__Client__c':'',
+                             'sigmaerpdev2__Billing_Contact__c':'',
+                             'sigmaerpdev2__Agency__c':'',
+                             'sigmaerpdev2__Account_Executive__c':'',
+                             'sigmaerpdev2__Account_Executive1__c':'',
+                             'sigmaerpdev2__Account_Executive2__c':'',
+                              'sigmaerpdev2__Account_Executive_1_acc__c':'',
+                             'sigmaerpdev2__Account_Executive_2_Acc__c':'',
+                             'sigmaerpdev2__Account_Executive_3_Acc__c':'',
+                             'sigmaerpdev2__Field_Discount_Amount__c':0,
+                             'sigmaerpdev2__Other_Discount__c':0,
+                             }" />
+    
+    <aura:attribute name="oldstatus" type="String" />	
+    <aura:attribute name="curRecordID" type="String" />
+    <aura:attribute name="istrue" type="Boolean" default="false" />
+    
+    <aura:attribute name="DateIlp" type="Inventory_Location_Product__c" description="The current record Id to display" 
+                    default="{ 'sObjectType' : 'sigmaerpdev2__Inventory_Location_Product__c' ,
+                             'sigmaerpdev2__Start_Date__c' : '',                             
+                             'sigmaerpdev2__End_Date__c':''
+                             }"/> 
+    <aura:attribute name="cancel" type="boolean" default="false"/>		   
+    <aura:attribute name="recordId" type="Id" />			
+    <aura:attribute name="status" type="String[]" default=""/>
+    <aura:attribute name="isOpenprodTable" type="boolean" default="false"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="wrapperListInsertLineItems" type="Object[]" />
+    <aura:attribute name="Promap" type="Object[]" />
+    <!--<aura:attribute name="DateIlp" type="sigmaerpdev2__Inventory_Location_Product__c" />-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="wrapper" type="Object" />
+    <aura:attribute name="disval" type="String" />
+    <aura:attribute name="recordName"  type="String" description="The current record Id to display" />
+    <aura:attribute name="Promaplist" type="Map" />
+    <aura:attribute name="mainerrorMsg" type="String" default=""/>
+    <aura:attribute name="mainisError" type="Boolean" default="false"/>
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="errorMsgmain" type="String" default=""/>
+    <aura:attribute name="isErrormain" type="Boolean" default="false"/>
+    <aura:attribute name="Agency" type="String"/>
+    <aura:attribute name="Salesexec1" type="String"/>
+    <aura:attribute name="Salesexec2" type="String"/>
+    <aura:attribute name="Salesexec3" type="String"/>
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.handleAccountIdUpdate}"/>
+    <aura:attribute name="recordName1" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="CreatedBy" type="String" default="" description="The current record Id to display" /> 
+    <aura:handler name="carryorderList" event="c:CarryOrderTBIRecord" action="{!c.handleorderList}"/>
+    <aura:attribute name="Proposalline" type="object"/>
+    <aura:attribute name="proposalproduct" type="Boolean" default="false"/>    
+    <aura:attribute name="prodis" type="Boolean" default="false"/>
+    <aura:attribute name="spinner" type="Boolean" default="false"/>
+    
+   
+    <aura:attribute name="productName" type="String" />
+    <aura:attribute name="productId" type="Id" />
+    
+    
+    <aura:if isTrue="{!v.spinner}">
+        <lightning:spinner class="slds-is-fixed" alternativeText="Loading" size="medium" />
+    </aura:if>
+    
+    <!--code for Success and Failure Alerts-->
+    <div class="slds-notify_container slds-is-relative slds-hide successAlert" aura:id="successAlert">
+        <div class="slds-notify slds-notify_toast slds-theme--success" aura:id="successAlertTheme" role="alert" style="z-index:10000;margin-top:0;">
+            <span class="slds-assistive-text">success</span>
+            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" aura:id="iconsuccess" title="Description of icon when needed">
+                <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#success'}" />
+            </span>
+            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top slds-hide" aura:id="iconwarning" title="Description of icon when needed">     
+                <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#warning'}" />
+            </span>	
+            <div class="slds-notify__content">
+                <h2 class="slds-text-heading_small record-header" style="position:relative;left:34%;">
+                    <span aura:id="recordCreatedHeader" >Record Created Successfully.</span>
+                    <span aura:id="recordNotCreatedHeader" class="slds-hide">Failed to create record.</span>
+                    <span aura:id="recordUpdtatedHeader" class="slds-hide">Record Updated Successfully.</span>
+                    <span aura:id="recordNotUpdtatedHeader" class="slds-hide">Record update failed.</span>
+                </h2>		
+                
+            </div>
+            <div aura:id="recordCreatedOK" class="closeButton" style="position:relative;left:40%;">
+                <button class="slds-button" title="Close" onclick="{!c.recordCreatedOK}" style="color:white !important;">
+                    <c:svg class="slds-button__icon slds-button__icon_large"  xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+            <div aura:id="recordCreatedCancel" class="slds-hide closeButton" style="position:relative;left:40%;">
+                <button class="slds-button slds-hide" title="Close" onclick="{!c.recordCreatedCancel}" style="color:white !important;">
+                    <c:svg class="slds-button__icon slds-button__icon_large" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+        </div>	
+        <div class="slds-backdrop slds-backdrop--open" style="opacity:0.6;"></div>
+    </div>
+    <!--End of Success and Failure Alerts-->
+    <aura:renderIf isTrue="{!v.istrue}">
+        <ui:message title="Error" severity="error" closable="false">
+            {!v.mainerrorMsg}
+        </ui:message>
+        <aura:set attribute="else">
+            
+            <!--<div aura:id="mainContent" style="width:100%;background:white;margin:auto;border:0px solid white;background:bfbfbf;color:black;">-->
+             <div aura:id="mainContent" style="width:100%;background:white;margin:auto;border:0px solid white;background:#bfbfbf;color:black;">
+                <div class="slds-page-header">
+                    <div class="slds-media" style="background:#FBFBFB;">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-poll" title="Description of icon when needed">
+                                <lightning:icon iconName="standard:metrics" alternativeText="Approved" size="Medium"/> 
+                            </span> 
+                        </div>
+                        <div class="slds-media__body">
+                            <h1 class="slds-page-header__title slds-truncate slds-align-middle slds-m-top_xx-small" title="PO View Page">Proposal for Product Info</h1>
+                        </div>
+                        <img src="/resource/sigmaerpdev2__Proposal4" width="110" height="30" title="Proposal for Product" />                
+                    </div>
+                </div>
+                <p class="slds-p-around_medium" style="background:#cce5ff;"> 
+                    
+                    <lightning:card > 
+                        <div class="slds-p-horizontal_small">
+                            <aura:renderIf isTrue="{!v.isErrormain}">
+                                <ui:message title="Error" severity="error" closable="false">
+                                    {!v.errorMsgmain}
+                                </ui:message>
+                                <aura:set attribute="else">
+                                    
+                                </aura:set>
+                            </aura:renderIf>
+                            <div class="slds-form slds-form_compound">                
+                                <div class="slds-form-element__group">
+			
+				 <div class="slds-form-element__row">
+                      <div class="slds-form-element slds-size_1-of-4">
+					
+					<div class="slds-3-of-4">                            
+						<lightning:input type="Text" name="Proposal" label="Proposal Name" value="{!v.proposalObject.sigmaerpdev2__Proposal_Name__c}" required="true" />
+						
+					</div> 
+				</div>
+				<div class="slds-form-element slds-size_1-of-4">
+					<label class="slds-form-element__label" for="Customer">Customer</label>
+					<div class="slds-3-of-4">
+						<aura:if isTrue="{!v.oldstatus !='Signed'}"> 
+                        <c:LookupSObject aura:id="AccName" searchString="{!v.recordName}" 
+                                                           label="Account" pluralLabel="Accounts"
+                                                           sObjectAPIName="Account" 
+                                                           instanceId="Supplier,Vendor"
+                                                           SRString="Customer"
+                                                           listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                           listIconClass="slds-icon-standard-account"
+                                                           />
+                         <aura:set attribute="else">
+								<ui:inputText value="{!v.recordName}" disabled="{!v.oldstatus =='Signed'}" class="field" />
+						</aura:set>
+						 </aura:if>
+					</div>  
+					
+				</div>
+				<div class="slds-form-element slds-size_1-of-4">
+					<label class="slds-form-element__label" for="Delivery_Person">Billing Contact</label>
+					<div class="slds-3-of-4">
+                        <aura:if isTrue="{!v.oldstatus !='Signed'}">
+						<c:LookupSObject aura:id="ContactName" 
+												   searchString="{!v.CreatedBy}" 
+												   label="Contact" pluralLabel="Contacts" 
+												   sObjectAPIName="Contact"
+												   instanceId="MyContact"
+												   SRString="{!v.recordName}"
+												   listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#new_contact'}"
+												   listIconClass="slds-icon-standard-contact"
+												   /> 
+                         <aura:set attribute="else">
+							    <ui:inputText value="{!v.CreatedBy}" disabled="{!v.oldstatus =='Signed'}" class="field" />
+						  </aura:set>
+						</aura:if>
+					</div>     
+				</div>
+				
+					<div class="slds-form-element slds-size_1-of-4">
+					
+					<div class="slds-3-of-4">                            
+					   <!-- <lightning:input type="date" name="input1" label="Status" value="{!v.proposalObject.sigmaerpdev2__Start_Date__c}"/>
+						 --> <ui:inputSelect aura:id="status" label="Status"
+										class="slds-select"
+										labelClass="slds-form-element__label"
+										change="{!c.saveStatus}" value="{!v.proposalObject.sigmaerpdev2__Status__c}" >
+							<aura:iteration items="{!v.status}" var="st">
+								<ui:inputSelectOption text="{!st}" label="{!st}"/>      
+							</aura:iteration>
+						</ui:inputSelect>  
+					</div> 
+				</div>						
+				</div>
+				 <div class="slds-form-element__row">
+                    
+					 <div class="slds-form-element slds-size_1-of-4">
+					<label class="slds-form-element__label" for="Customer"><span style="color:red">*</span>Account Exec. 1 </label>
+					<div class="slds-3-of-4">
+				    <!--		<sigmaerpdev:LookupSObject aura:id="SalesExec1" searchString="{!v.Salesexec1}"  
+												   label="Contact" pluralLabel="Contacts"
+												   sObjectAPIName="Contact" 
+												   instanceId="SalesExec1"
+												   SRString="All"
+												   listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+												   listIconClass="slds-icon-standard-account"
+												   />   -->
+                        <c:LookupSObject aura:id="SalesExec1" searchString="{!v.Salesexec1}"  
+                                                                        label="Account" pluralLabel="Accounts"
+                                                                        sObjectAPIName="AccComp" 
+                                                                        instanceId="SalesExec1"
+                                                                        SRString="Employee"
+                                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                                        listIconClass="slds-icon-standard-account"
+                                                                        />
+                        
+					</div>  
+					</div> 
+                     <div class="slds-form-element slds-size_1-of-4">
+					<div class="slds-3-of-4">
+					  <lightning:input type="Number" label="Ownership1 : " value="{!v.proposalObject.sigmaerpdev2__Ownership__c}"  required="true"/>
+					   </div>
+					   </div>  
+                     <div class="slds-form-element slds-size_1-of-4">
+					<label class="slds-form-element__label" for="Customer">Account Exec. 2</label>
+					<div class="slds-3-of-4">
+						<!-- <sigmaerpdev:LookupSObject aura:id="SalesExec2" searchString="{!v.Salesexec2}"
+												   label="Contact" pluralLabel="Contacts"
+												   sObjectAPIName="Contact" 
+												   instanceId="SalesExec2"
+												   SRString="All"
+												   listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+												   listIconClass="slds-icon-standard-account"
+												   />   -->
+                        <c:LookupSObject aura:id="SalesExec2" searchString="{!v.Salesexec2}"  
+                                                                        label="Account" pluralLabel="Accounts"
+                                                                        sObjectAPIName="AccComp" 
+                                                                        instanceId="SalesExec2"
+                                                                        SRString="Employee"
+                                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                                        listIconClass="slds-icon-standard-account"
+                                                                        />
+					</div>  
+					</div> 
+                      <div class="slds-form-element slds-size_1-of-4">
+					<div class="slds-3-of-4">
+					  <lightning:input type="Number" label="Ownership2 : " value="{!v.proposalObject.sigmaerpdev2__Ownership1__c}"  />
+					   </div>
+					   </div>
+                     
+                     
+					
+					
+				
+			</div>
+			 <div class="slds-form-element__row">
+                 <div class="slds-form-element slds-size_1-of-4">
+					<label class="slds-form-element__label" for="Customer">Account Exec. 3</label>
+					<div class="slds-3-of-4">
+				  <!--		<sigmaerpdev:LookupSObject aura:id="SalesExec3" searchString="{!v.Salesexec3}"
+												   label="Contacts" pluralLabel="Contacts"
+												   sObjectAPIName="Contact" 
+												   instanceId="SalesExec3"
+												   SRString="All"
+												   listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+												   listIconClass="slds-icon-standard-account"
+												   />  -->
+                        <c:LookupSObject aura:id="SalesExec3" searchString="{!v.Salesexec3}"  
+                                                                        label="Account" pluralLabel="Accounts"
+                                                                        sObjectAPIName="AccComp" 
+                                                                        instanceId="SalesExec3"
+                                                                        SRString="Employee"
+                                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                                        listIconClass="slds-icon-standard-account"
+                                                                        />
+					</div>  
+					</div> 
+			
+					  
+					  <div class="slds-form-element slds-size_1-of-4">
+					  <lightning:input type="Number" label="Ownership3 : " value="{!v.proposalObject.sigmaerpdev2__Ownership2__c}"  />
+					<div class="slds-3-of-4">
+					   </div>
+					   </div>
+                 
+                  <div class="slds-form-element slds-size_1-of-4">
+					<div class="slds-3-of-4">                            
+						<lightning:input type="date" name="input1" label="Start date" value="{!v.proposalObject.sigmaerpdev2__Start_Date__c}"/>
+						
+					</div> 
+				</div>
+                     <div class="slds-form-element slds-size_1-of-4">
+					<div class="slds-3-of-4">
+					<div class="slds-3-of-4">
+						<lightning:input type="date" name="input2" label="End date" value="{!v.proposalObject.sigmaerpdev2__End_Date__c}"/>
+						
+					</div>    
+				</div> 
+			</div>
+				 
+				
+		</div>
+	</div>
+                            </div>
+                        </div>
+                    </lightning:card>
+                    
+                    <lightning:card title="Discounts" iconName="standard:client">        
+                        <div class="slds-p-horizontal_small">
+                            
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <h3 class="slds-text-heading_x-small">Discount Method <lightning:button label="Change" onclick="{!c.changeDiscount}"/></h3>
+                                    <div class="slds-hide" aura:id="discountMethodContent"> 
+                                        <div class="slds-form-element slds-m-vertical_small" aura:id="abc">
+                                            <div class="slds-form-element__control">
+                                                <span class="slds-radio">
+                                                    <input type="radio" id="radio-1" name="options" value="radio-1" />
+                                                    <label class="slds-radio__label" for="radio-1">
+                                                        <span class="slds-radio_faux"></span>
+                                                        <span class="slds-form-element__label">None</span>
+                                                    </label>
+                                                </span>
+                                                <span class="slds-radio">
+                                                    <input type="radio" id="radio-2" name="options" value="radio-2" />
+                                                    <label class="slds-radio__label" for="radio-2">
+                                                        <span class="slds-radio_faux"></span>
+                                                        <span class="slds-form-element__label">Product</span>
+                                                    </label>
+                                                </span>
+                                                
+                                                <span class="slds-radio">
+                                                    <input type="radio" id="radio-4" name="options" value="radio-4" />
+                                                    <label class="slds-radio__label" for="radio-4">
+                                                        <span class="slds-radio_faux"></span>
+                                                        <span class="slds-form-element__label">Proposal</span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <lightning:button label="Apply" variant="brand" onclick="{! c.handleClick }"/>
+                                        <!--<lightning:button label="Cancel" variant="destructive" onclick="{!c.canceldiscount}"/>-->
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-col" style="border-left:2px solid #dddbda;border-right:2px solid #dddbda;">
+                                    
+                                    <h3 class="slds-text-heading_x-small">Other Discounts</h3>
+                                    <lightning:input type="text" name="Amount($)" label="Amount($)" 
+                                                     value="{!v.proposalObject.sigmaerpdev2__Other_Discount__c}"  disabled="{!and(v.oldstatus =='Signed',v.recordId)}"  onchange="{!c.checkdiscount}" />
+                                    
+                                    <!--<ui:inputNumber Value="{!v.salesorderObject.sigmaerpdev2__Other_Discount__c}"/>-->
+                                    <lightning:textarea name="Other Discounts Description" label="Other Discounts Description" 
+                                                        value="{!v.proposalObject.sigmaerpdev2__Other_Discount_Comments__c}"/>
+                                    <aura:if isTrue="{!v.prodis}"> 
+                                    <div > 
+                                        <lightning:input type="text" name="Proposal Discount Amount($)" label="Proposal Discount Amount($)" 
+                                                         value="{!v.proposalObject.sigmaerpdev2__Field_Discount_Amount__c}"  disabled="{!and(v.oldstatus =='Signed',v.recordId)}" onchange="{!c.checkdiscount}" />
+                                    </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-col">
+                                    <h3 class="slds-text-heading_x-small">Other Charges</h3>
+                                    <lightning:input type="number" name="Amount($)" label="Amount($)" 
+                                                     value="{!v.proposalObject.sigmaerpdev2__Other_Charges__c}" disabled="{!and(v.oldstatus =='Signed',v.recordId)}"   />
+                                    <lightning:textarea name="Other Discounts Description" label="Other Discounts Description" 
+                                                        value="{!v.proposalObject.sigmaerpdev2__Other_Charges_Comments__c}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning:card>
+                    
+                    <lightning:card title="Add Products" iconName="standard:product">
+                        
+                        <div class="slds-p-horizontal_small">
+                            <aura:renderIf isTrue="{!v.isError}">
+                                <ui:message title="Error" severity="error" closable="false">
+                                    {!v.errorMsg}
+                                </ui:message>
+                                <aura:set attribute="else">
+                                    
+                                </aura:set>
+                            </aura:renderIf>
+                            <div class="slds-grid slds-gutters">                                
+                                <div class="slds-col slds-form-element slds-size_1-of-3">
+                                    <!--<lightning:select aura:id="select" name="select1" label="Choose Products" required="true" >
+                                        <option value="">...Select...</option>
+                                        <aura:iteration var="option" items="{! v.options }">
+                                            <option value="{! option.Id }">{! option.Name }</option>
+                                        </aura:iteration>                                        
+                                    </lightning:select>-->
+                                    <label class="slds-form-element__label">Choose Product</label>
+                                    <c:LookupSObject label="Product"
+                                           pluralLabel="Products"
+                                           recID="{!v.productId}"
+                                           searchString="{!v.productName}" 
+                                           sObjectAPIName="Product2" instanceId="MyProduct"
+                                           listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#Product'}"
+                                           listIconClass="slds-icon-standard-Product"                                                                
+                                           SRString="true"
+                                           />
+                                    
+                                </div>
+                                <div class="slds-col slds-form-element slds-size_1-of-7" style="padding-top:24px;">
+                                	<lightning:button label="Add" onclick="{!c.handleShowModal}"/>
+                                </div>                                
+                                <div class="slds-col"></div>
+                            </div>
+                        </div><br/>
+                        <aura:if isTrue="{!v.isOpenprodTable}"> 
+                            <div class="slds-scrollable_x">
+                                
+                                <c:SalesOrderTBIList isOpenprodTablechild="{!v.isOpenprodTable}" isOpen="{!v.isOpen}" wrapperListInsertLineItems="{!v.wrapperListInsertLineItems}" disval="{!v.disval}"  proposalproduct="{!v.proposalproduct}" />
+                            </div>
+                        </aura:if>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_brand" onclick="{!c.Save}">Save</button>
+                            <button class="slds-button slds-button_neutral" onclick="{!c.cancelButton}">Cancel</button>                            
+                        </footer>
+                    </lightning:card> 
+                    
+                    
+                    <aura:if isTrue="{!v.isOpen}"> 
+                        <c:ProposalLineItem wrapper="{!v.wrapper}"  isOpenchild="{!v.isOpen}" isOpenTablechild="{!v.isOpenprodTable}" wrapperListInsertLineItem="{!v.wrapperListInsertLineItems}" disval="{!v.disval}" Promap="{!v.Promap}" proposalproduct="{!v.proposalproduct}" oldstatus="{!v.oldstatus}" />
+                    </aura:if>
+                    
+                </p>
+            </div>   
+        </aura:set>
+    </aura:renderIf> 
+    
+    <aura:if isTrue="{!v.cancel}"> 
+        <c:ProposalCmp />
+    </aura:if>
+</aura:component>

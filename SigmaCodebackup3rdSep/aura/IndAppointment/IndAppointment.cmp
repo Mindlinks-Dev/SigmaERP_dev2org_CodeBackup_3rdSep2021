@@ -1,0 +1,32 @@
+<aura:component >
+    <aura:attribute name="Innerwrapper" type="object"/>
+    <aura:attribute name="itemIndex" type="integer" />
+    <aura:registerEvent name="AppointmentEvent" type="c:AppointmentEvent"/>
+    
+    <tr>
+   
+         <td>
+          
+             <ui:inputCheckbox aura:id="cboxRow" text="{!v.Innerwrapper.Appointment.Id}" value="{!v.Innerwrapper.IsSelected}" change ="{!c.selectIndAppoinment}"/>
+        </td>
+        
+        <td >
+            <p>{!v.Innerwrapper.Appointment.sigmaerpdev2__AppointmentDate__c}</p>
+        </td>
+         <td >
+            <p> {!v.Innerwrapper.Appointment.sigmaerpdev2__period_of_time__c}</p>
+        </td>
+         <td>
+            <p>{!v.Innerwrapper.Appointment.sigmaerpdev2__Time__c}</p>
+        </td>
+         <td >
+            <p> {!v.Innerwrapper.Appointment.sigmaerpdev2__Duration__c}</p>
+        </td>
+         <td >
+            <p> {!v.Innerwrapper.Appointment.sigmaerpdev2__Duration_Interval__c}</p>
+        </td>
+       
+    </tr>
+        
+  
+</aura:component>

@@ -1,0 +1,15 @@
+@media (max-width: 48em)
+{
+    .THIS .table-mob,.THIS.table-mob{width:100% !important;}
+    .THIS .mob-p-bottom,.THIS.mob-p-bottom{padding-bottom:60px !important;}
+    .THIS .mob-scrollable-y,.THIS.mob-scrollable-y,.mob-scrollable-y.THIS{overflow-y:scroll !important;}
+}
+
+/*.THIS .sWrapTest {
+    height:50px;
+    width:100px;
+}*/
+
+.THIS.scrollerSize {
+    height: 780px;
+}

@@ -1,0 +1,20 @@
+.THIS.transBorder{
+
+    border-collapse: separate;
+    border-top: 1px solid rgb(221, 219, 218);
+    border-right: 1px solid rgb(221, 219, 218);
+    padding: 6px;
+    margin-top: 1%;
+}
+.THIS .slds-text-title_caps,.THIS .slds-text-title--caps {
+    font-size: .6rem;
+    letter-spacing: 0.025rem;
+}
+.THIS .ButtonTextPadding{
+    padding-left: .3rem;
+    padding-right: .3rem;
+}
+.THIS .slds-pill__icon_container~.slds-pill__action
+{
+           min-width: calc(7.875rem + 45px);
+}

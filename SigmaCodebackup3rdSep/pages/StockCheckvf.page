@@ -1,0 +1,144 @@
+<apex:page readOnly="true"
+           extensions="Stockcheckpage"
+           StandardController="Inventory_Location_Product__c"
+           applyHtmlTag="false"    
+           sidebar="false"    
+           showHeader="false"    
+           cache="true"    
+           renderAs="advanced_pdf"
+           docType="html-5.0">
+    <head> 
+        
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />    
+        <style type="text/css">
+                body {
+                    font-family: Arial, Helvetica, sans-serif;font-size:80%;                   
+                }           
+                @page {
+                    size:A4 portrait;    
+                }
+                @page {
+                     @top-center {
+                           content: element(header);
+                   }
+                   @bottom-left {
+                         content: element(footer);
+                   }
+                }
+                div.header {
+                    padding: 10px;
+                    position: running(header);
+                }
+                div.footer {
+                    display: block;
+                    padding: 5px;
+                    position: running(footer);
+                }
+                .pagenumber:before {
+                    content: counter(page);
+                }
+                .pagecount:before {
+                    content: counter(pages);
+                }
+                #PI {
+                    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+                #PI td, #PI th {
+                    border: 1px solid #ddd;
+                    padding: 12px;
+                }
+                #PI tbody>tr>td {
+                  font-size: 12px;
+                  font-weight: normal;
+                }
+                #PI th {
+                  font-size: 12px;
+                  font-weight: normal;
+                }
+                #PI td>table>tr>th {
+                  font-size: 12px;
+                  font-weight: bold;
+                }
+                #PI td>table>tr>td {
+                  font-size: 12px;
+                  font-weight: bold;
+                }
+                #PI tr:nth-child(even){background-color: #f2f2f2;}
+                #PI tr:hover {background-color: #ddd;}
+                #PI th {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #7f8edd;
+                    color: white;
+                }
+                #PI td>table>tr>th {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #ffffff;
+                    color: #7a7a7a;
+                }
+                #PI td>table>tr>td {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    text-align: middle;
+                    background-color: #ffffff;
+                    color: #7a7a7a;
+                }
+            </style>    
+    </head> 
+    <center>  
+    <table width="90%" border="0">  
+        <tr>
+            <td width="47%" style="font-size:16px;"><b>S T O C K &nbsp;&nbsp;C H E C K </b></td>        
+        </tr>
+    </table>
+    <h3>{!sigmaerpdev2__Inventory_Location_Product__c.sigmaerpdev2__Inventory_Location_Name__c}</h3>    
+    </center>
+    <table id="ManfRun">    
+        <tr>
+            <td width="10%" align="left">
+                <b>User</b> : {!HTMLENCODE(pkgid)}
+            </td>   
+            <td width="2%">
+                <b>Date: </b> 
+                <apex:outputText value="{0, date, dd-MM-yyyy}"><apex:param value="{!date1}" /></apex:outputText>
+            </td> 
+        </tr>
+    </table>          
+       
+    <table id="PI" width="80%" style="font-size:12px;">    
+        <tr>
+            <th scope="col">
+             <div class="slds-truncate" title="Location" style="color:#16325c;">Inventory Location</div>    
+            </th>    
+            <th scope="col">
+            <div class="slds-truncate" title="Product" style="color:#16325c;">Product</div>
+            </th>
+            <th scope="col">
+                 <div class="slds-truncate" title="Available Qty" style="color:#16325c;">Available Qty</div>
+            </th> 
+             <th scope="col">
+                 <div class="slds-truncate" title="Stock Check Qty" style="color:#16325c; width: 40px;">Stock Check Qty</div>
+            </th>
+             <th scope="col">
+                 <div class="slds-truncate" title="Reason" style="color:#16325c; width: 70px;">Reason</div>
+            </th>
+        </tr> 
+        
+       <apex:repeat value="{!StockList}" var="stck">    
+            <tr>  
+                       
+                <td><apex:outputField value="{!stck.Inventory_Location_Name__c}"/></td>    
+                <td><apex:outputField value="{!stck.sigmaerpdev2__Products__r.name}"/></td>
+                <td><apex:outputField value="{!stck.Net_Quantity__c}"/></td>
+                 <td><apex:outputField value="{!stck.Message__c}"/></td>
+                 <td><apex:outputField value="{!stck.Availability__c}"/></td>
+                
+            </tr>    
+        </apex:repeat>  
+    </table>    
+</apex:page>

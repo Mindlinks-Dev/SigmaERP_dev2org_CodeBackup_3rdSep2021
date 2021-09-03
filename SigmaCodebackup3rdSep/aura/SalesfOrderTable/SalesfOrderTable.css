@@ -1,0 +1,36 @@
+.THIS input
+{
+    min-height: 22px !important;
+    line-height: 14px !important;
+    font-size:11px !important;
+}
+.THIS .uiInput--datetime .datePicker-openIcon
+{
+    top:4px !important;
+}
+.THIS .slds-button_icon-bare:disabled
+{
+    color: rgb(217, 219, 221);
+}
+.THIS .slds-button_balck
+{
+    color: #fff;
+    background: #f3eef0;
+    text-transform:uppercase;
+    border-radius:0;
+    font-size: 8px;
+    padding-left:3px;
+    padding-right:3px;
+}
+.THIS .add-cart .slds-icon-text-default
+{
+    fill:rgb(38, 179, 7) !important;
+}
+.THIS .comment
+{
+    text-align:center;
+}
+.THIS .slds-truncate .slds-text-align_center
+{
+    
+}

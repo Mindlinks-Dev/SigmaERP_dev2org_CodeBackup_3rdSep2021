@@ -1,0 +1,126 @@
+<!--<aura:component controller="sigmaerpdev.PackageCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >-->
+<aura:component controller="PackageCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	 <aura:attribute name="packageList" type="Package__c"/>
+   <aura:attribute name="serialCount" type="Integer"/>
+     <aura:attribute name="package" type="Package__c[]"/>
+     <aura:attribute name="sigmaOrderFlag" type="Boolean" />
+    <aura:attribute name="iseditPackage" type="Boolean" default="false" />
+     <aura:registerEvent name="packageIdEvent" type="c:handlepackageId"/>
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+     <tr>
+        <td >
+            <div class="slds-truncate" title="">{!v.serialCount}</div>
+        </td>
+       <!-- <th scope="row">
+            <span> 
+                <div class="slds-truncate" title="SigmaOrder"><a href="{!'/one/one.app?#/sObject/'+ v.sigmaList.Id + '/view'}" onclick="{!c.openRecords}">{!v.sigmaList.Name}</a></div>
+            </span>
+        </th> -->
+          
+        <aura:if isTrue="{!v.LightView}">
+        <th scope="row">
+            <span> 
+                <div class="slds-truncate" title="SigmaOrder"><a href="{!'/one/one.app?#/sObject/'+ v.packageList.Id + '/view'}" onclick="{!c.openRecords}">{!v.packageList.Name}</a></div>
+            </span>
+        </th>
+            <aura:set attribute="else">
+                <th scope="row">
+                    <!--span> 
+                        <div class="slds-truncate" title="SigmaOrder"><a href="{!'/'+v.packageList.Id}" onclick="{!c.openRecords}">{!v.packageList.Name}</a></div>
+                    </span-->
+                     <span> 
+                        <div class="slds-truncate" title="Package"><a target="_blank" href="{!'/'+v.packageList.Id}">{!v.packageList.Name}</a></div>
+                    </span>
+                </th>                   
+            </aura:set>
+                </aura:if> 
+        <td>
+                 <aura:if isTrue="{!v.sigmaOrderFlag}">
+            <div class="slds-truncate" title="">
+                 {!v.packageList.sigmaerpdev2__Sigma_Order__r.Name}
+               
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-truncate" title="">
+                    {!v.packageList.sigmaerpdev2__Order__r.Name}
+                    {!v.packageList.sigmaerpdev2__Order__r.OrderNumber}
+                  
+                </div>                
+            </aura:set>
+                </aura:if> 
+            <!--div class="slds-truncate" title="">
+                
+             {!v.packageList.sigmaerpdev2__Sigma_Order__r.Name}
+            </div-->
+            
+        </td>
+        <td>
+            <div class="slds-truncate" title="">
+                 {!v.packageList.sigmaerpdev2__Customer__r.Name}
+            
+            </div>
+        </td>
+        <td>
+             <div class="slds-truncate" title="">
+                 {!v.packageList.sigmaerpdev2__Status__c}
+            
+            </div>
+            <!--aura:if isTrue = "{!v.sigmaList.sigmaerpdev2__Is_Payment_Made__c == true}">                                
+                <div style="padding-left:13px;">
+                    <img src="/resource/sigmaerpdev2__Payment_Done" width="23" height="10" title="Done" />                
+                </div>
+            	<aura:set attribute="else">
+                    <aura:if isTrue = "{!v.sigmaList.sigmaerpdev2__Paid_Amount__c > 0}"> 
+                        <div style="padding-left:13px;">                				
+                            <span title="Partially Paid" style="color:orange;">Partial</span>                            
+                    	</div>
+                        <aura:set attribute="else">
+                            <div style="padding-left:13px;">
+                                <img align="top" src="/resource/sigmaerpdev2__Payment_Not_Done" width="23" height="10" title="Not Done" />	
+                            </div>
+                        </aura:set>  
+            		</aura:if>                                  	
+                </aura:set>
+            </aura:if--> 
+            
+            <!--<div class="slds-truncate" title="">{!v.sigmaList.sigmaerpdev2__Is_Payment_Made__c}</div>-->
+        </td>
+		<td>
+            <div class="slds-truncate" title="" >
+                {!v.packageList.sigmaerpdev2__PackagedDate__c}
+            </div>
+        </td>
+        <!--td>
+            <div class="slds-truncate" title=""></div>
+        </td-->
+       
+		
+        <td>
+            <div class="slds-dropdown-trigger slds-dropdown-trigger_click" aura:id="dropdownContent">
+                <button class="slds-button slds-button_icon slds-button_icon-border-filled slds-button_icon-x-small" title="Show More" aura:id="dropdown" onclick="{!c.dropdown}">
+                    <lightning:icon iconName="utility:down" size="x-small" alternativeText="section" />
+                    <span class="slds-assistive-text">Show More</span>
+                </button>
+                
+                <div class="slds-dropdown slds-dropdown_right">
+                    <ul class="slds-dropdown__list" role="menu">
+                         <aura:if  isTrue="{!or(v.packageList.sigmaerpdev2__Status__c=='Ready', v.packageList.sigmaerpdev2__Status__c=='In Progress')}" >
+     
+                       <li class="slds-dropdown__item" role="presentation">
+                            <a  role="menuitem" tabindex="0"   onclick="{!c.editPackageDetails}">
+                                <span class="slds-truncate" title="Edit Record">Edit</span>
+                            </a>
+                        </li>
+                        </aura:if>
+                        <li class="slds-dropdown__item" role="presentation">
+                            <a  role="menuitem" tabindex="0"   onclick="{!c.deletePackageRecord}">
+                                <span class="slds-truncate" title="Delete Record">Delete</span>
+                            </a>
+                        </li>
+                      </ul>
+                </div>
+                
+            </div>
+        </td> 
+    </tr>
+</aura:component>

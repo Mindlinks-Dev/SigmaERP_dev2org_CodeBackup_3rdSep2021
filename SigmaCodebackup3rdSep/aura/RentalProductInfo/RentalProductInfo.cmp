@@ -1,0 +1,104 @@
+<aura:component controller="AccountLookupRentalController" implements="force:appHostable,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="prductObj" type="Product2" description="The current record Id to display" 
+                    default="{ 'sObjectType' : 'Product2' ,
+                             'name' : '',
+                             'sigmaerpdev__Product_Description__c' :'',
+                             'sigmaerpdev__Product_Price__c':'', 
+                             'sigmaerpdev__Max_Discount__c':'',
+                             'sigmaerpdev__Billing_Charge__c':'',
+                             'sigmaerpdev__Billing_Interval__c':'',
+                             'sigmaerpdev__Product_Weight__c':'',
+                             'sigmaerpdev__SKU__c':''
+                             }"
+                    />    
+    <aura:attribute name="AvailableInventory" type="Integer" description="The current record Id to display"/>
+    <!--added by sandhya,fecthing MaxDiscount, from Product,7/10/2018 -->
+    <aura:attribute name="MaxDicount" type="String" description="The current record Id to display"/>
+    <aura:attribute name="discountamount" type="String" description="The current Discount Id to display"/>
+    <aura:attribute name="productQuantity" type="String" description="The current record Id to display"/>
+    <aura:attribute name="startdate" type="Date"/>
+    <aura:attribute name="duedate" type="Date"/>
+    <aura:attribute name="returndate" type="Date"/>
+    <aura:attribute name="deliverydate" type="Date"/>
+    <aura:attribute name="amountperinterval" type="String"/>
+    <aura:attribute name="currencySymbol" type="String" description="The current record Id to display"/>
+    <aura:attribute name="rentalnetamount" type="String"/>
+    <aura:attribute name="delivarydate" type="Date" description="The current record Id to display"/>
+    
+    <aura:registerEvent name="productObjEvent" type="c:RentalProductEvent"/>      
+    <aura:registerEvent name="backToProductList" type="c:ShowProductList" />
+    
+    <div class="slds-box main-content">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <span class="slds-text-heading_small">Product Information</span>
+                    </h2>
+                </div>
+                <div class="slds-no-flex">
+                    <button class="slds-button slds-button_neutral" aura:id="back" onclick="{!c.cancelProduct}" >Back</button>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <lightning:layout multipleRows="true" horizontalAlign="center">
+                <lightning:layoutItem flexibility="auto" size="6">
+					<div class="slds-p-right_small">
+                    <div class="custom-box">
+                        <lightning:input aura:id="prodName" label="Product" type="String" value="{!v.prductObj.Name}" disabled="true" />
+                    </div>
+                    <div class="custom-box">
+                        <lightning:input aura:id="mdlNum" type="String" label="Model Number" name="ModelNumber" value="{!v.prductObj.sigmaerpdev__SKU__c}" disabled="true" />
+                    </div>
+                    <div class="custom-box">
+                        <lightning:input aura:id="" label="{!'Price per ' +v.prductObj.sigmaerpdev__Billing_Interval__c}" type="number" value="{!v.prductObj.sigmaerpdev__Billing_Charge__c}" disabled="true"/>
+                    </div>
+                    <div class="custom-box">
+                        <label class="slds-form-element__label" for="textarea-id-01">Description</label>
+                        <textarea class="slds-textarea" Name="Description" value="{!v.prductObj.sigmaerpdev__Product_Description__c}" disabled="true" ></textarea>
+                    </div>
+                    <div class="custom-box">
+                        <lightning:input aura:id="productQuantityId" type="number" label="Quantity" value="{!v.productQuantity }" min='1' onchange="{!c.calTotal}"/>
+                    </div>
+                    <div class="custom-box">
+                        <lightning:combobox  label="Rental Status" aura:id="InputRentalStatus" placeholder="Select Rental Status"/>     
+                    </div>
+					<div class="custom-box">
+                        <lightning:input aura:id="deliveryDate" label="Delivery Date" type="date" value="{!v.deliverydate}" name="Delivery Date" />
+                    </div>
+					</div>
+                </lightning:layoutItem>
+                <lightning:layoutItem flexibility="auto" size="6">
+                    <div class="custom-box">
+                        <lightning:combobox  label="Billing Interval" aura:id="InputBillingInterval" placeholder="Select Rental Status" onchange="{!c.calTotal}"/>     
+                    </div>
+                    <div class="custom-box">
+                        <lightning:input aura:id="startingDate" label="Start Date" type="date" value="{!v.startdate}" name="Rental Start Date"  required="true" onchange="{!c.calTotal}"/>
+                    </div>
+                    <div class="custom-box">
+                        <lightning:input aura:id="endingDate" label="Due Date" type="date" value="{!v.duedate}" name="Rental Due Date" required="true" onchange="{!c.calTotal}"/>
+                    </div>
+                    <div class="custom-box">
+                       <lightning:input aura:id="returDate" label="Return Date" type="date" value="{!v.returndate}" name="Rental Return Date" required="true" onchange="{!c.calTotal}"/>
+                    </div>
+                    <div class="custom-box">
+                        <lightning:input aura:id="" label="Discount" type="number" name="discount" min='0' default="0" value="{!v.discountamount}" onchange="{!c.calTotal}"/> 	
+                    </div>
+                    <div class="custom-box">
+                        <lightning:input aura:id="" label="Total Amount" type="number" value="{!v.rentalnetamount}" disabled="true" formatter="currency"/>
+                    </div>
+                    
+                </lightning:layoutItem>
+            </lightning:layout>
+			<br/>
+			<div>
+            <button class="slds-button slds-button_neutral" onclick="{!c.addToCart}" aura:id="Add_to_orders">Add to Orders</button>
+            <button class="slds-button slds-button_neutral" aura:id="Cancel" onclick="{!c.cancelProduct}">Cancel</button>
+        </div>
+		<br/>
+        </div>
+        
+    </div>
+</aura:component>

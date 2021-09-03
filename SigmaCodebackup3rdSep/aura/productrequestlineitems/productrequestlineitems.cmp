@@ -1,0 +1,60 @@
+<aura:component >
+    <aura:attribute name="productsdetailsline" type="Object" />  
+     <aura:attribute name="prdtransf" type="String" />
+     <aura:attribute name="tolocations" type="String" />
+     <aura:attribute name="statuss" type="String" />
+    <aura:attribute name="validates" type="Boolean" default="false"/>
+   	<tr>
+        <td width="13%">
+            {!v.prdtransf}
+        </td>
+        <td width="13%" style="max-width:100px;word-wrap:break-word;white-space:normal;">
+            {!v.tolocations}
+        </td>
+        
+        <td width="10%" style="max-width:100px;word-wrap:break-word;white-space:normal;">
+             {!v.statuss}
+        </td>
+        
+    </tr>
+   	<tr>
+		<td colspan="5" style="padding-left:50px;">
+     		<table  class="slds-table slds-table_striped">                
+                <thead>
+                    <tr class="slds-text-title_caps">                                       
+                        <th scope="col" width="6%" style="background-color:#d3f9ea;">
+                            Product Name
+                        </th>
+                        <th scope="col" width="7%" style="background-color:#d3f9ea;">
+                            Transferred Quantity
+                        </th>
+                       <th scope="col" width="6%" style="background-color:#d3f9ea;">
+                           ILP
+                        </th>
+                        <th scope="col" width="6%" style="background-color:#d3f9ea;">
+                           Lot
+                        </th>
+                        <th scope="col" width="6%" style="background-color:#d3f9ea;">
+                           PSN
+                        </th>
+                         <th scope="col" width="6%" style="background-color:#d3f9ea;">
+                           Received Quantity
+                        </th>
+                           <th scope="col" width="6%" style="background-color:#d3f9ea;">
+                           Difference Quantity
+                        </th>
+                        
+                        <th scope="col" width="6%" style="background-color:#d3f9ea;">
+                            Reasons<span style="visibility:hidden"> Hidden</span>
+                        </th>
+                    </tr>                            
+                </thead>
+                <tbody> 
+                    <aura:iteration items="{!v.productsdetailsline}" var="SAP">                        
+                            <c:productrequestchilds productinner="{!SAP}" validatess="{!v.validates}"/>
+                    </aura:iteration>                                       
+                </tbody>                
+            </table>
+		</td>
+	 </tr>
+</aura:component>

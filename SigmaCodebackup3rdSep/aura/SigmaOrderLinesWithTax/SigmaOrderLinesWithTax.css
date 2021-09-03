@@ -1,0 +1,13 @@
+.THIS .checkboxmarginleft {
+    margin-left: 7px;
+}
+
+.THIS .btnpadding
+{
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+}
+@media only screen and (max-width: 768px) 
+{    
+    .THIS .slds-lookup__menu{position:fixed !important;text-align:left !important;}
+}

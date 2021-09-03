@@ -1,0 +1,31 @@
+<aura:component >
+    
+	<aura:attribute name="employee" type="Contact"/>
+	<aura:attribute name="reports" type="Contact[]"/>
+    
+	<aura:registerEvent name="itemSelected" type="c:OrgChartItemSelected"/>
+
+    <div>
+        <aura:if isTrue="{!v.employee.ReportsTo}">
+            <ul class="slds-lookup__list" role="listbox">
+                <c:OrgChartListItem employee="{!v.employee.ReportsTo}"/>
+            </ul>    
+        </aura:if>    
+        <aura:if isTrue="{!v.employee}">
+            <span class="slds-media master slds-p-around--small" role="option">
+                <aura:if isTrue="{!v.employee.Picture__c}">
+                    <img src="{!v.employee.Picture__c}" class="profile"/>
+                </aura:if>
+                <div class="slds-media__body">
+                    <div class="slds-lookup__result-text">{!v.employee.Name}</div>
+                    <span class="slds-lookup__result-meta slds-text-body--small">{!v.employee.Title}</span>
+                    <span class="slds-lookup__result-meta slds-text-body--small">{!v.employee.MailingCity}</span>
+                    <span class="slds-lookup__result-meta slds-text-body--small">O:&nbsp;<a href="">{!v.employee.Phone}</a>&nbsp;M:&nbsp;<a href="">{!v.employee.MobilePhone}</a></span>
+                    <span class="slds-lookup__result-meta slds-text-body--small">Direct Reports:&nbsp;{!v.reports.length}</span>
+                </div>
+            </span>
+        </aura:if>    
+        <c:OrgChartList employees="{!v.reports}" />
+	</div>
+    
+</aura:component>

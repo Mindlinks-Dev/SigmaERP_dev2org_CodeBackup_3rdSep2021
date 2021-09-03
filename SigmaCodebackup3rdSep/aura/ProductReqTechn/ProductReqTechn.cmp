@@ -1,0 +1,77 @@
+<aura:component controller="ProductReqCntrl" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:lightningQuickAction,force:hasRecordId" access="global">
+	<lightning:overlayLibrary aura:id="popupmodal12"/>
+    <aura:attribute name="needByDate" type="Date" />
+    <aura:attribute name="recID1" type="String" />
+    <aura:attribute name="selectedStatus" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  
+    <aura:attribute name="SMData" type="object" />
+     <ui:scrollerWrapper class="slds-scrollable_y">    
+    <lightning:card title="Product Request" iconName="standard:account">
+        <table style="width:35%;" class="slds-table slds-table_cell-buffer table-mob">
+        	<tr>
+            	<td style="width:8%;">
+                	 <lightning:input type="date" required="true" aura:id="ESPdate" label="Need by Date"
+                              name="Need by Date" 
+                              value="{!v.SMData.prObject.sigmaerpdev2__Need_by_Date__c}" format=" YYYY-MM-DD" /> 
+                </td>
+            </tr>
+            <tr>
+            	<td style="width:27%;">
+                	 <lightning:select aura:id="statVal" name="select1" label="Status" onchange="{!c.selValue}">
+                        <aura:iteration items="{!v.SMData.pickVals}" var="fld" >
+                            <option value="{!fld}" text="{!fld}" selected="{!fld == v.selectedStatus}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </td>
+            </tr>
+        </table>
+        <hr />
+        <lightning:card title="Products Needed" iconName="standard:work_order_item">      
+            <aura:iteration items="{!v.SMData.ListOfProdReqLIs}" var="mainwrapper" indexVar="index" >              
+                <aura:if isTrue="{!v.SMData.ListOfProdReqLIs.length > 1}">
+                    <aura:if isTrue="{!index != 0}">
+                        <div style="padding-left:20px;">
+                            <a style="text-align: left" aura:id="{!index+'ip'}" data-index="{!index}" onclick="{!c.handleRemove}"><span style="text-align: left">Remove</span></a>&nbsp;&nbsp;
+                        </div>
+                    </aura:if>
+                </aura:if>
+                <div class="slds-form-element">
+                    <div align="left" class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <c:ProductReqLineItemsTechn dataobj="{!mainwrapper}" />   
+                        </div><br/>
+                    </div>
+                </div>
+            </aura:iteration>
+              
+            <div class="slds-form-element">
+                <div style="padding-left:7px;padding-top:6px;">
+                    <button aura:id="addProducts" class="slds-button slds-button--neutral slds-m-around--small" onclick="{!c.addNewProds}" >
+                        Add Products 
+                    </button>   
+                </div>
+                <div style="padding-left:16px;padding-top:6px;" class="mob-p-bottom">
+                    <aura:if isTrue="{!v.recID1 != null}">
+                        <lightning:button variant="brand" aura:id="updatePR" label="Update" onclick="{!c.updateProdRequest}" /> 
+                        <aura:set attribute="else">
+                        	<lightning:button variant="brand" aura:id="savePR" label="Save" onclick="{!c.saveProdRequest}" /> 	
+                        </aura:set>
+                    </aura:if>
+                    
+                    <lightning:button variant="neutral" aura:id="cancelPR" label="Cancel" onclick="{!c.cancelProdRequest}" />  
+                </div>
+            </div>
+        </lightning:card>
+	</lightning:card>
+    </ui:scrollerWrapper>
+    <div class="demo-only slds-hide" aura:id="mySpinner">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

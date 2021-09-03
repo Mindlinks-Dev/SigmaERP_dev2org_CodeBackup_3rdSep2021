@@ -1,0 +1,144 @@
+<!-- StockReceivingLineItemChild -->
+
+<aura:component >
+    <aura:registerEvent name="POevent" type="c:POevent"/><!--carry PO details-->
+    <aura:attribute type="integer" name="parentIndx"/>
+    <aura:attribute type="integer" name="indx"/>
+    <aura:attribute type="String" name="prodName"/>
+    <aura:attribute type="String" name="remainqty"/>
+    <aura:attribute type="String" name="orderqty"/>
+    <aura:attribute type="String" name="dispatchedQty"/>
+    <aura:attribute name="locationId" type="String" />
+    <aura:attribute name="attributeType" type="String" />
+    <aura:attribute name="productid" type="String" />
+    <aura:attribute name="recordName3" type="String" description="The current record Id to display" />
+    <aura:attribute name="lotRecord" type="String"  description="The current record Id to display" />
+    <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+    <aura:attribute name="Product_Bar_Code" type="String" />
+    <aura:attribute name="isSerialCodeMandatory" type="boolean" />
+    <aura:attribute name="hasExpiryDate" type="Boolean" />
+    <aura:attribute name="indexNum" type="Integer" />
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/> <!-- to handle lookups-->  
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:handler name="change" value="{!v.lotRecord}" action="{!c.handleTransIdValueChange}" />
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>
+    <aura:registerEvent name="SigmaComponentEvent" type="c:SigmaComponentEvent" />
+    <aura:attribute type="Stock_In_Product__c" name="StockRcvProduct"/>
+    <aura:attribute type="String" name="BinId"/>
+    <aura:attribute type="String" name="BinName"/>
+    <aura:attribute type="String" name="BatchNo"/>
+    <aura:attribute type="Boolean" name="isShowDispatchedQuantity" default ='false' />
+    
+    <tr>
+        <td data-label="Product">
+            <div class="slds-text-heading_small1"><ui:outputText value="{!v.prodName}"/></div>
+        </td>
+        <td data-label="View Product" class="slds-text-align_center">
+            <!--<lightning:button class='slds-m-top_medium' variant="neutral" label="View Product" onclick="{!c.getproductimagedata}" />-->
+            <lightning:button class="slds-button_balck" onclick="{!c.getproductimagedata}"><lightning:icon iconName="action:add_photo_video" size="x-small" alternativeText="View Product" /></lightning:button>
+        </td>
+        <td data-label="Bar Code">
+            <div class="slds-text-heading_small1"><ui:outputText value="{!v.Product_Bar_Code}"/></div>
+        </td>
+        
+        <td data-label="Ordered QTY">
+            <ui:inputNumber disabled="true" value="{!v.orderqty}"/>
+        </td>
+        <aura:if isTrue="{!v.isShowDispatchedQuantity}">
+            <td data-label="Dispatched QTY">
+                <ui:inputNumber disabled="true" value="{!v.dispatchedQty}"/>
+            </td>
+        </aura:if>
+        <td data-label="Remaining QTY">
+            <ui:inputNumber value="{!v.remainqty}" disabled="true"/>
+        </td>
+        
+        <td data-label="Receiving QTY">
+            <div style="margin-top:-18px;">
+                <lightning:input type="text" name="number" min="1" value="{!v.StockRcvProduct.sigmaerpdev2__Quantity_Received__c}" max="{!v.remainqty}" messageWhenRangeOverflow="Qty exceeds Remaining Qty" disabled="{!v.StockRcvProduct.isVerified}"/>
+            </div>
+        </td>
+        
+        <!-- <td data-label="Status">
+            <div class="{!v.StockRcvProduct.isVerified ? 'slds-hide':''}">
+                <force:inputField value="{!v.StockRcvProduct.sigmaerpdev2__Status__c}" />
+            </div>
+            <div class="{!v.StockRcvProduct.isVerified ? '':'slds-hide'}">
+                <force:outputField value="{!v.StockRcvProduct.sigmaerpdev2__Status__c}" />
+            </div>
+        </td>-->
+        <td data-label="Status" >
+            <aura:if isTrue="{!v.StockRcvProduct.isVerified}">
+                <ui:outputText value="{!v.StockRcvProduct.sigmaerpdev2__Status__c}"/>
+                <aura:set attribute="else">
+                    <lightning:select aura:id="status" variant="lable-hidden" class="label-hidden" value="{!v.StockRcvProduct.sigmaerpdev2__Status__c}">
+                        <option value="Open">Open</option>
+                        <option value="Verified">Verified</option>
+                    </lightning:select>
+                </aura:set>
+            </aura:if>
+        </td>
+        <td data-label="Bin" class="expand" > 
+            
+            <div class="{!v.StockRcvProduct.sigmaerpdev2__Status__c=='Verified'?'':'slds-hide'}">
+                
+                <div class="{!v.StockRcvProduct.isVerified ? 'slds-hide':''}">
+                    
+                    <c:customLookup recordID="{!v.BinId}"
+                                    recordName="{!v.BinName}"
+                                    objectAPIName="sigmaerpdev2__Sublevel_location__c"
+                                    whereCondition="{!'AND sigmaerpdev2__Inventory_Location__r.sigmaerpdev2__Location__c=\''+v.locationId+'\' AND recordtype.name=\'Bin\' ' }" 
+                                    IconName="standard:account" isSigmaOrder= 'true' label=""/>
+                    
+                </div>
+                <div class="{!v.StockRcvProduct.isVerified ? '':'slds-hide'}">
+                    <ui:outputText value="{!v.BinName}"/>
+                </div>
+            </div>
+            
+            <!--  <div class="{!v.StockRcvProduct.sigmaerpdev2__Status__c=='Verified'?'':'slds-hide'}">
+                <div class="{!v.StockRcvProduct.isVerified ? 'slds-hide':''}">
+                    
+                    <sigmaerpdev:LookupSObject aura:id="Actual Location" 
+                                                        searchString="{!v.recordName3}"
+                                                        SRString="Location"
+                                                        label="Account" pluralLabel="Accounts" 
+                                                        sObjectAPIName="Account" instanceId="ReceivingLocation"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                        listIconClass="slds-icon-standard-account" /> 
+               </div>
+                <div class="{!v.StockRcvProduct.isVerified ? '':'slds-hide'}">
+                    <ui:outputText value="{!v.BinName}"/>
+                </div>
+            </div>-->
+            
+        </td>
+        <td data-label="Lot" class="expand" >
+            <div class="{!v.StockRcvProduct.sigmaerpdev2__Status__c=='Verified'?'':'slds-hide'}">
+                <div class="{!v.StockRcvProduct.isVerified ? 'slds-hide':''}">
+                    
+                    <!--<c:customLookup recordID="{!v.lotRecord}" recordName="{!v.productid}" whereCondition ="{!'AND  Product__r.Id=\''+v.productid+'\' '}" objectAPIName="sigmaerpdev2__Lot__c"  IconName="custom:custom96" isSigmaOrder= "true"/>-->
+                    
+                    <c:LookupSObject aura:id="Lot" 
+                                     searchString="{!v.lotRecord}"
+                                     SRString="{!v.productid}"
+                                     label="Lot" pluralLabel="Lots" 
+                                     sObjectAPIName="sigmaerpdev2__Lot__c" instanceId="lotpro"
+                                     listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                     listIconClass="slds-icon-standard-account" /> 
+                    
+                </div>
+                <div class="{!v.StockRcvProduct.isVerified ? '':'slds-hide'}">
+                    <ui:outputText value="{!v.productid}"/>
+                </div>
+            </div>
+        </td>
+        <td data-label="Expiry Date">
+            <ui:inputDate displayDatePicker="true" value="{!v.StockRcvProduct.sigmaerpdev2__Expiry_Date__c}" disabled="{!v.StockRcvProduct.isVerified}"/>
+        </td>
+        <td>
+            <lightning:button class="{!v.attributeType == 'SERIALIZED'?'slds-show serialBtnSize':'slds-hide'}" label="Sl No." iconName="utility:add" iconPosition="left" onclick="{! c.showSerialNumModal }" disabled="{!v.StockRcvProduct.isVerified || v.StockRcvProduct.sigmaerpdev2__Status__c != 'Verified'}"/>
+        </td>
+        
+    </tr>
+</aura:component>

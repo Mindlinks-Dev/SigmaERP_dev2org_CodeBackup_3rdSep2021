@@ -1,0 +1,58 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="cart" type="boolean" default="false"/>
+    <aura:attribute name="CartValue" type="Integer"/>
+    
+    <div class="header-top">
+        <div class="container">
+            <div class="slds-grid slds-grid_align-spread ">
+                <div class="slds-col">
+                    <div class="welcome-msg "><a href="http://www.sigmaerp365.com/" ><lightning:icon iconName="standard:home" alternativeText="Connected" size="x-small" title="Back to home"/></a> Welcome to Sigma Store! </div>
+                </div>
+                
+                <div class="slds-col">
+                    Website: <a href="http://www.sigmaerp365.com/" style="color:deepskyblue">www.sigmaerp365.com</a> &nbsp;&nbsp;&nbsp;Call Us: +1-917-300-0680 | +1 917 546 6749
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-bottom">
+        <div class="container">
+            <div class="slds-grid slds-grid_align-spread ">
+                <div class="slds-col">
+                    <a href="../s/">
+                        <img src="{!$Resource.SigmaStore+'/SigmaStore/SigmaStore.png'}" width="110"/>
+                    </a>
+                </div>
+                
+                <div class="slds-col">
+                    <div class="slds-page-header1 slds-m-top_x-small">
+                        <div class="slds-page-header__row">
+                            <div class="slds-page-header__col-title">
+                                <div class="slds-media">
+                                    <div class="slds-media__figure">
+                                        <span class="slds-icon_container slds-icon-action-apex slds-icon_container--circle">
+                                            <lightning:icon iconName="utility:cart" variant="inverse" size="small" alternativeText="Cart list" title="Cart list" />
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <div class="slds-page-header__name">
+                                            <div class="slds-page-header__name-title">
+                                                <h2>
+                                                    <span class=" slds-truncate">Shopping Cart</span>
+                                                </h2>
+                                            </div>
+                                        </div>
+                                        <p class="slds-page-header__name-meta"><b>{!v.CartValue} Item(s) Added</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="display:none">
+        <c:ViewCart CartValue="{!v.CartValue}"/>
+    </div>
+</aura:component>

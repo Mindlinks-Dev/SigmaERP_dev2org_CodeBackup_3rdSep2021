@@ -1,0 +1,155 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+		<aura:attribute name="prductObj" type="Product2" description="The current record Id to display" 
+                    default="{ 'sObjectType' : 'Product2' ,
+                             'name' : '',
+                             'Description' :'',
+                             'sigmaerpdev__Product_Price__c':'',
+                             'sigmaerpdev__Product_Weight__c':'',
+                             'sigmaerpdev__SKU__c':''
+                             }"
+                    		 
+                    />
+
+    
+    <aura:attribute name="AvailableInventory" type="Integer" description="The current record Id to display"/>     		 
+    
+    <aura:attribute name="productQuantity" type="String" description="The current record Id to display"/>     		 
+    <aura:attribute name="productAmount" type="String" description="The current record Id to display"/>     		 
+         
+    <aura:attribute name="currencySymbol" type="String" description="The current record Id to display"/>     		 
+  
+    <aura:registerEvent name="productObjEvent" type="c:ProductObject"/>   
+    
+    <aura:registerEvent name="backToProductList" type="c:ShowProductList" />
+    
+  <div aura:Id="productInfoToggle">
+    <div class="slds-page-header" id="head">
+        <fieldset class="slds-form-element">
+   			 <div class="slds-form-element__control ">
+        	 	<ui:button class="slds-button slds-button--neutral" label="Back" aura:id="back" press="{!c.cancelProduct}" />
+     		  	<legend class="slds-form-element__label " id="Product_Info">Time Based Inventory PRODUCT INFO</legend>
+              </div>
+        </fieldset>
+      </div>
+	   
+	    <div class="" id="body" style="">
+         <div id="content">
+	   <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-1" style="text-align:center;">
+                      <legend class="slds-form-element__label " id="Selected_products" >Selected Products</legend><br/>
+                      <img src="{!$Resource.Images}" width ="100" alt="Mobile Image " style="margin-bottom:4%;margin-top:2%;" />
+	 	   </label>
+        	</div>
+  			</div>
+           </fieldset>
+				  
+	   <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-4" >
+          		 <span class="slds-form-element__label">Name:</span>
+     			 </label>
+        
+                 
+                 <label class="slds-size--1-of-2">
+          		 <ui:inputText aura:id="" value="{!v.prductObj.Name}" class="slds-input" label="" placeholder="Hublet Watch" disabled="true" />
+     			 </label>
+        	</div>
+  			</div>
+              
+			</fieldset>
+			
+			 <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-4" >
+          		 <span class="slds-form-element__label">Model Number:</span>
+     			 </label>
+        
+                 <label class="slds-size--1-of-2">
+          		 <ui:inputText aura:id="" value="{!v.prductObj.unknown_custom_field}" class="slds-input" label="" placeholder="{!v.prductObj.sigmaerpdev__SKU__c}" disabled="true"/>
+     			 </label>
+        	</div>
+  			</div>
+          
+			</fieldset>
+			
+			<fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-4" >
+          		 <span class="slds-form-element__label">Description:</span>
+     			 </label>
+        
+                 <label class="slds-size--1-of-2">
+          		 <ui:inputText aura:id="" value="{!v.prductObj.Description}" class="slds-input" label="" placeholder="Hublot Watch" disabled="true" />
+     			 </label>
+        	</div>
+  			</div>
+              
+			</fieldset>
+			
+			<fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-4" >
+          		 <span class="slds-form-element__label">Price ({!v.currencySymbol}):</span>
+     			 </label>
+        
+                 <label class="slds-size--1-of-2">
+          		 <ui:inputText aura:id="" value="{!v.prductObj.sigmaerpdev__Product_Price__c}" class="slds-input" label="" placeholder="1000" disabled="true" />
+     			 </label>
+        	</div>
+  			</div>
+           
+			</fieldset>
+			
+			<fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-4" >
+          		 <span class="slds-form-element__label">Quantity:</span>
+     			 </label>
+        
+                 <label class="slds-size--1-of-2">
+          		 <ui:inputNumber aura:id="productQuantityId" value="{!v.productQuantity }" class="slds-input" label="" disabled="false" keyup="{!c.computeTotal}" updateOn="keyup"/>
+     			 </label>
+        	</div>
+  			</div>
+            
+			</fieldset>
+			
+			<fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-4" >
+          		 <span class="slds-form-element__label">Total Amount ({!v.currencySymbol}):</span>
+     			 </label>
+        
+                 <label class="slds-size--1-of-2">
+          		 <ui:inputNumber aura:id="" value="{!v.productAmount}" class="slds-input" label=""  disabled="true"/>
+     			 </label>
+        	</div>
+  			</div>
+              <hr/>
+			</fieldset>
+			
+			<fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="">
+     			
+                       <ui:button class="slds-button slds-button--neutral" label="Add to Orders" press="{!c.addToCart}" aura:id="Add_to_orders"/>
+                       <ui:button class="slds-button slds-button--neutral" label="Cancel" aura:id="Cancel" press="{!c.cancelProduct}"/>
+            
+                               
+                </div>
+             </div>
+         </fieldset>
+			  </div>
+      </div>  
+      <div id="footer">
+        </div>
+    </div>
+</aura:component>

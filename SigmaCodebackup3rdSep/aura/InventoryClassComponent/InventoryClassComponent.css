@@ -1,0 +1,11 @@
+.THIS .slds-button-mobile{
+    display:none;
+}
+
+@media only screen and (max-width: 768px) 
+{
+    .THIS .slds-button-desktop{display:none;}
+    .THIS .slds-button-mobile{display:block;margin-top: 12px;}
+    .THIS .slds-button-mob{width:100% !important;margin-left:0 !important;}
+    .THIS .slds-size_1-of-3{width:100% !important;}
+}

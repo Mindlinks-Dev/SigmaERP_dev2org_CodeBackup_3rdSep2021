@@ -1,0 +1,82 @@
+<aura:component controller="CatalogOrderController"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <!--Declare Attributes-->
+    <aura:attribute name="completeWrap" type="object" />  
+    <!--Retailer Attributes-->
+    <aura:attribute name="SelectedRetailerName" type="String" /> 
+    <aura:attribute name="SelectedRetailerId" type="String" />  
+    <aura:attribute name="displayPagination" type="Boolean"/>
+    <aura:attribute name="onselectProducType" type="String" />
+    <!--QuickViewProduct Attributes-->
+    <aura:attribute name="quickview" type="Boolean" default="false" />
+    
+    <aura:attribute name="catalogVertical" type="Boolean" default="true" />
+    <aura:attribute name="quickviewedProduct" type="Object" />
+    <!--bulkAdd-->
+    <aura:attribute name="bulkAddData" type="String"/>
+    <aura:method name="getBulkData" action="{!c.bulkAdd}" 
+                 access="public">
+    </aura:method>
+    <!--Content-Security-Policy-->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src	'self' 'unsafe-inline' *; img-src 'self' data: *"/>
+    
+    <!--Spinner Start -->
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+    <!--Sigma -->
+    <aura:attribute name="SigProductList" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:handler name="PageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:attribute name="page" type="integer" default="1" description="current page number"/>
+    <aura:attribute name="pages" type="integer" description="Number of Page"/>
+    <aura:attribute name="total" type="integer"/>
+    
+    <!--Spinner End--> 
+    <aura:iteration items="{!v.SigProductList}" var="tempValue" indexVar="key">
+        <div class="slds-col slds-col-block slds-size_1-of-6 slds-text-align_center slds-m-bottom_medium">
+            <div class="product-item">                                        
+                <div class="item-inner">
+                    <div class="product-thumbnail">
+                        <div class="btn-quickview">
+                            <a onclick="{!c.quickviewcmp}" name="{!key}">
+                                <span><lightning:icon size="x-small" name="sdgh" iconName="utility:search" alternativeText="Approved" />Quick View</span>
+                            </a>
+                        </div> 
+                    </div>
+                    <div class="pro-box-info">
+                        <aura:if isTrue="{!tempValue.ProductImageAvail}">
+                            <div class="product-item-photo">
+                            <img src="{! tempValue.retailerCommURL +'/sfc/servlet.shepherd/version/download/'+tempValue.Attachementsid}" style="block-size: inherit;"/>
+                        </div>
+                            <aura:set attribute="else">  
+                                <div class="product-item-photo">
+                                <!--<a class="product-item-photo no-item-img" style="{!'background:url('+$Resource.NoImageFound+')'}">
+                                </a>-->
+                                    <img src="{!$Resource.NoImageFound}" style="block-size: inherit;"/>
+                                    </div>
+                            </aura:set>
+                        </aura:if>
+                        
+                        <div class="slds-p-vertical_x-small" style="font-size:10.4px;">
+                            <p class="slds-truncate"><b>{!tempValue.Name}</b></p>
+                            <p class="price slds-truncate" ><b>Price : </b>{!tempValue.ProductPrice}</p>
+                            <!--<p class="slds-truncate"><b>Quantity: </b>{!tempValue.AvailableQuantity}</p>-->
+                            <div class="slds-grid slds-m-bottom_x-small" style="padding-left: 15%">
+                                <div class="slds-col slds-size_2-of-5 slds-m-right_xx-small">
+                                    <lightning:input class="hide-label input-qty"  type="number" value="{!tempValue.quantity}" placeholder="Qty" name="{!key}" id="Quant"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <button class="slds-button slds-button_destructive slds-button_balck" data-record="{!key}" onclick="{!c.saveproddata}"><lightning:icon iconName="utility:cart" alternativeText="Approved" class="add-cart"/></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aura:iteration>
+    <aura:If isTrue="{!v.quickview}">
+        <c:QuickviewProduct completeWrap="{!v.SigProductList}" quickviewprod="{!v.quickview}" quickviewedProduct="{!v.quickviewedProduct}" onselectcustomeid="{!v.onselectcustomeid}"/>    
+    </aura:If>   
+    <!--</div>-->
+</aura:component>

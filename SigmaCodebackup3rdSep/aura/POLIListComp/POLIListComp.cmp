@@ -1,0 +1,294 @@
+<aura:component controller = "POViewPageHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="POList" type="Object[]"/>
+    <aura:attribute name="LineItem" type="Object[]"/>
+    <aura:attribute name="itemIndex" type="String" />
+    <aura:attribute name="expanded" type="String" default="false"/>
+    <aura:attribute name="checkThis" type = "Boolean" default ="true" />
+    <aura:attribute name="isOpen" type="Boolean" default="false"/>
+    <aura:attribute name="isEnterReason" type="Boolean" default="false"/>
+    <aura:attribute name="IsEditPOLI" type="Boolean" default="false"/>
+    <aura:attribute name="POliRecordId" type="String"/>
+    <aura:attribute name="vendorOldStatus" type="String" />
+    <aura:attribute name="isModalOpen3" type="boolean" default="false"/>
+    <aura:attribute name="isAccept" type="Boolean" default="false"/>
+    <aura:attribute name="isTotallyDispatched" type="Boolean" default="false"/>
+    <aura:attribute name="isOpenChat" type="boolean" default="false"/>
+    <aura:attribute name="isSpinnerOpen" type="boolean" default="false"/>
+    
+    <aura:if isTrue="{!v.isSpinnerOpen}">
+    <div aura:id="spinnerId" class="slds-spinner_container">
+       <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+         <span class="slds-assistive-text">Loading</span>
+         <div class="slds-spinner__dot-a"></div>
+         <div class="slds-spinner__dot-b"></div>
+       </div>
+    </div>
+ </aura:if>
+    <tr>         
+        <td> 
+            <button class="slds-button slds-button_neutral " aura:id="toggle" onclick="{!c.toggle}" value="{!v.checkThis}" style="padding:0 2px;">
+                <lightning:Icon  aura:id="chevronright" iconName="utility:chevronright" size="x-small"/>
+                <lightning:Icon class="slds-hide" aura:id="chevrondown" iconName="utility:chevrondown" size="x-small"/>
+            </button>
+        </td>
+        <td >
+            <ui:inputCheckbox aura:id="checkbox" value="{!v.POList.isSelected}" class="slds-m-left_x-small" />
+        </td>
+        <td>
+            <lightning:icon iconName="standard:record" alternativeText="Approved" size="x-small" class="slds-m-right_xx-small"/>
+            <ui:outputText value="{!v.POList.POName}"/>
+        </td>
+        <td>
+            <ui:outputText value="{!v.POList.VendorName}"/>
+        </td>
+        <td>
+            <aura:if isTrue="{!v.POList.vendorStatus == 'Accept' || 'Dispatched'}">
+                <lightning:formattedDateTime value="{!v.POList.orderDate}" year="numeric" month="numeric" day="numeric" />
+            </aura:if>
+        </td>
+        <td>
+            <aura:if isTrue="{!v.POList.vendorStatus == 'Accept' || 'Dispatched'}">
+                <lightning:formattedDateTime value="{!v.POList.expectedDate}" year="numeric" month="numeric" day="numeric" />
+            </aura:if>
+        </td>
+        <td>
+            <ui:outputText value="{!v.POList.Status}"  class="{!v.POList.Status == 'Submitted'?'slds-badge slds-badge_success':v.POList.Status == 'Open'?'slds-badge slds-badge_warning':''}"/>
+        </td>
+        <td>
+            <a class="slds-m-left_medium"><lightning:icon iconName="utility:chat" size="x-small" alternative-text="Comment" class="add-cart" onclick="{!c.OpenChat}"/></a>
+        </td>
+    </tr> 
+    <tr>
+        <td colspan="12" style="padding:0 0 0 58px;border-bottom:1.5px solid gray;">
+            <aura:if isTrue="{!v.expanded}">
+                <table class="slds-table_bordered slds-box" style="padding:0;border-radius:0;">
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style=""><div class="slds-truncate">POP.No.   </div></th>
+                        <th scope="col" style=""><div class="slds-truncate">Product</div></th>
+                        <th scope="col" style=""><div class="slds-truncate">order Qty</div></th>
+                        <th scope="col" style=""><div class="slds-truncate">Remaining Qty</div></th>
+                        <th scope="col" style=""><div class="slds-truncate">Exp. Shipped Date</div></th>
+                        <th scope="col" style=""><div class="slds-truncate">Exp. Delivery Date</div></th>
+                        <th scope="col" style=""><div class="slds-truncate">Dispatched Qty</div></th>
+                        <th scope="col" style=""><div class="slds-truncate">Vendor Status</div></th> 
+                        <!--th scope="col" style=""><div class="slds-truncate">Edit</div></th--> 
+                    </tr>
+                    <aura:iteration items="{!v.POList.popWrapperList}" var="POLI"  indexVar="index">
+                        <tr class="slds-box"> 
+                            <td>
+                                <div>
+                                {!POLI.POPName}
+                                </div> 
+                            </td>
+                            <td><div> {!POLI.ProductName}</div></td>
+                            <td class="slds-text-align_center"><div> {!POLI.Quantity}</div></td>
+                            <td class="slds-text-align_center"><div> {!POLI.remainingDispatchedQuantity}</div></td>
+                            <td><div> 
+                                <lightning:formattedDateTime value="{!POLI.vendorExpectedShippedDate}"/>
+                                </div></td>
+                            <td><div> 
+                                <lightning:formattedDateTime value="{!POLI.vendorExpectedDeleveryDate}"/>
+                                </div></td>
+                            <td><div> 
+                                <lightning:formattedNumber value="{!POLI.DeleveredQuantity}"/>
+                                </div></td>
+                            <td><div>
+                                <!--ui:inputSelect class="single" aura:id="{!index}" labelClass="{!index}"  change="{!c.onSingleSelectChange2}" value="{!POLI.vendorStatus}">
+                                    <ui:inputSelectOption text="Pending" value="true"  disabled="{!v.isTotallyDispatched=='true'  || POLI.vendorStatus=='Partial Dispatched'  || POLI.vendorStatus=='Accept' || POLI.vendorStatus=='Request Cancel' || POLI.vendorStatus=='Dispatched'}"/>
+                                    <ui:inputSelectOption text="Accept" disabled="{!v.isTotallyDispatched=='true'  || POLI.vendorStatus=='Partial Dispatched' || POLI.vendorStatus=='Request Cancel' || POLI.vendorStatus=='Dispatched' }"/>
+                                    <ui:inputSelectOption text="Request Cancel" disabled="{!v.isAccept=='true' ||  POLI.vendorStatus=='Partial Dispatched'  || POLI.vendorStatus=='Accept'  || POLI.vendorStatus=='Dispatched'}"/>
+                                    <ui:inputSelectOption text="Partial Dispatched"  disabled="{!v.isTotallyDispatched=='true'  || POLI.vendorStatus=='Request Cancel' || POLI.remainingDispatchedQuantity==POLI.DeleveredQuantity || POLI.vendorStatus=='Accept' || POLI.vendorStatus=='Dispatched' || POLI.vendorStatus=='Pending' }"/> 
+                                    <ui:inputSelectOption text="Dispatched"  disabled="{!v.isTotallyDispatched=='true'  || POLI.vendorStatus=='Request Cancel' || POLI.vendorStatus=='Pending'}"/>
+                                </ui:inputSelect-->
+                                <lightning:select class="single label-hidden" accesskey="{!index}" aura:id="{!index}"  onchange="{!c.onSingleSelectChange2}" value="{!POLI.vendorStatus}"  variant="label-hidden">
+                                    <option value="Pending"  disabled="{!v.isTotallyDispatched=='true'  || POLI.vendorStatus=='Partial Dispatched'  || POLI.vendorStatus=='Accept' || POLI.vendorStatus=='Request Cancel' || POLI.vendorStatus=='Dispatched'}" >Pending</option>
+                                    <option value="Accept" disabled="{!v.isTotallyDispatched=='true'  || POLI.vendorStatus=='Partial Dispatched' || POLI.vendorStatus=='Request Cancel' || POLI.vendorStatus=='Dispatched' }">Accept</option>
+                                    <option value="Request Cancel" disabled="{!v.isAccept=='true' ||  POLI.vendorStatus=='Partial Dispatched'  || POLI.vendorStatus=='Accept'  || POLI.vendorStatus=='Dispatched'}">Request Cancel</option>
+                                    <option value="Partial Dispatched" disabled="{!v.isTotallyDispatched=='true'  || POLI.vendorStatus=='Request Cancel' || POLI.remainingDispatchedQuantity==POLI.DeleveredQuantity || POLI.vendorStatus=='Accept' || POLI.vendorStatus=='Dispatched' || POLI.vendorStatus=='Pending' }">Partial Dispatched</option>
+                                     <option value="Dispatched" disabled="{!v.isTotallyDispatched=='true'  || POLI.vendorStatus=='Request Cancel' || POLI.vendorStatus=='Pending'}">Dispatched</option>
+                                </lightning:select>
+                                </div>
+                            </td>
+                            <!--td><div>
+                                <lightning:buttonIcon class ="slds-button_neutral1" iconName="utility:edit" variant="bare"   title="{!index}" onclick="{!c.EditPOLI}" alternativeText="Edit" />
+                                </div>
+                            </td-->
+                        </tr>
+                    </aura:iteration>
+                </table>
+            </aura:if>
+        </td>
+    </tr>
+    <div class="slds-m-around_xx-large1" >
+        <aura:if isTrue="{!v.isModalOpen3}">
+            <section class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" style="width:92%;max-width:92%;">
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel3 }" alternativeText="close"  variant="bare-inverse" class="slds-modal__close"/>
+                        <h2 class="slds-text-heading_small slds-hyphenate"><lightning:icon iconName="standard:product_required" size="small"/> Purchase Order Line Items</h2>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    <div class="slds-modal__content slds-scrollable slds-p-around_medium1">
+                        <table class="slds-table_bordered">                                
+                            <aura:iteration items="{!v.LineItem}" var="POLI">
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col" style=""><div class="slds-truncate">POP.NO</div></th>
+                                    <th scope="col" style=""><div class="slds-truncate">Product</div></th>
+                                    <th scope="col" style=""><div class="slds-truncate">Total Qty</div></th>
+                                    <th scope="col" style=""><div class="slds-truncate">Remaining Qty</div></th>
+                                    <th scope="col" style=""><div class="slds-truncate">Dispatched Qty</div></th>  
+                                    <th scope="col"><div class="slds-truncate">Shipped Date</div></th>
+                                    <th scope="col"><div class="slds-truncate">Delivery Date</div></th>
+									   <th scope="col"><div class="slds-truncate">Shipment Notes</div></th>
+									      <th scope="col"><div class="slds-truncate">Shipment Tracking Url</div></th>
+                                    <aura:if isTrue="{!v.isEnterReason}">  
+                                        <th scope="col" style=""><div class="slds-truncate">Comments</div></th>
+                                    </aura:if>
+                                </tr>
+                                <tr class="slds-box">   
+                                    <td> 			
+                                        <lightning:input variant="label-hidden" value="{!POLI.POPName}" disabled="true" />  
+                                    </td>
+                                    <td> 
+                                        <lightning:input variant="label-hidden" value="{!POLI.ProductName}" disabled="true" />
+                                    </td>
+                                    <td >
+                                        <div > 
+                                            <lightning:input variant="label-hidden" value="{!POLI.Quantity}" disabled="true" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <lightning:input variant="label-hidden" value="{!POLI.remainingDispatchedQuantity}" disabled="true"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>     
+                                            <lightning:input aura:id="body"   variant="label-hidden" name="Body"  placeholder="Enter Delevered Quantity..." value="{!POLI.DeleveredQuantity}"  onchange="{!c.keyCheck2}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div > 
+                                            <lightning:input variant="label-hidden" type="date" name="input1" value="{!POLI.vendorExpectedShippedDate}"  style="overflow: hidden;" />
+                                        </div>
+                                    </td>
+                                    <td >
+                                        <lightning:input variant="label-hidden" type="date" name="input1" value="{!POLI.vendorExpectedDeleveryDate}" style="overflow: hidden;"		/>
+                                    </td>
+									<td>
+										<div>  
+											<lightning:textarea variant="label-hidden"  aura:id="reason"    name="Body" placeholder="Enter Shipment Note..." value="{!POLI.shipmentNotes}"  rows="1" />
+										</div>
+									 </td>
+									 <td>
+										<div>  
+											<lightning:textarea variant="label-hidden"  aura:id="reason"    name="Body" placeholder="Enter Shipment Tracking Url..." value="{!POLI.shipmentTrackingUrl}"  rows="1" />
+										</div>
+									 </td>
+                                    <aura:if isTrue="{!v.isEnterReason}">     
+                                        <td>     
+                                            <div>  
+                                                <lightning:textarea variant="label-hidden"  aura:id="reason"    name="Body" placeholder="Enter Reason..." value="{!POLI.Reason}"  rows="1" />
+                                            </div>
+                                        </td>
+                                    </aura:if>
+                                </tr>
+                            </aura:iteration>
+                        </table>
+                    </div>
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"  label="Cancel" title="Cancel" onclick="{! c.closeModel3 }"/>
+                        <lightning:button variant="brand" label="Submit" title="OK" onclick="{!c.savePurchaseOrder}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </div>
+    <!-- Code For Comment-->
+    <aura:if isTrue="{!v.isOpenChat}">
+        <!--###### MODAL BOX Start######--> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- ###### MODAL BOX HEADER Start ######-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close" variant="bare-inverse" class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Ask a Question</h2>
+                </header>
+                <!--###### MODAL BOX BODY Part Start######-->
+                <div class="slds-modal__content slds-scrollable slds-p-around_medium" id="modal-content-id-1">
+                    <p>
+                        <forceChatter:publisher  context="RECORD"  recordId="{!v.POList.POId}"/>
+                        <forceChatter:feed type="Record" subjectId="{!v.POList.POId}" />
+                    </p>
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start ######-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"   label="Cancel"  title="Cancel" onclick="{! c.closeModel}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+    </aura:if>
+    <aura:if isTrue="{!v.IsEditPOLI}">
+        <div role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.handleCancel1}">
+                        X<span class="slds-assistive-text">Cancel</span>
+                    </button>
+                    <h2 id="header43" class="slds-text-heading--medium">Edit PO Line Item</h2>
+                </div>
+                <!--Force:RecordEditForm -->
+                <lightning:recordEditForm  aura:id="editForm1" recordId="{!v.POliRecordId}"  objectApiName="sigmaerpdev2__Purchase_Order_Product__c" class="slds-show" onsuccess="{!c.handleSuccess1}" onsubmit="{!c.handleOnSubmit}">
+                    <div class="c-container slds-media" style="background-color:white">
+                        <div class="slds-media__body slds-box" style="border:0;height:304px;overflow-y:scroll;">
+                            <lightning:layout>
+                            </lightning:layout>
+                            <lightning:layout multipleRows="true" >
+                                <lightning:layoutItem size="6" class="slds-p-horizontal_small">
+                                    <lightning:inputField disabled="true" fieldName="Name"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" class="slds-p-horizontal_small">
+                                    <lightning:inputField disabled="true" fieldName="sigmaerpdev2__Product__c"/>
+                                </lightning:layoutItem>
+                                <aura:if isTrue="{!v.IsEditPOLI}">
+                                    <lightning:layoutItem size="6" class="slds-p-horizontal_small">
+                                        <lightning:inputField disabled="true" fieldName="sigmaerpdev2__Quantity__c" onchange="{!c.validateQty}"/>
+                                    </lightning:layoutItem>
+                                </aura:if>
+                                <lightning:layoutItem size="6" class="slds-p-horizontal_small">
+                                    <lightning:inputField disabled="true" fieldName="sigmaerpdev2__Remaining_Dispatched_Quantity__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" class="slds-p-horizontal_small">
+                                    <lightning:inputField disabled="" fieldName="sigmaerpdev2__Vendor_Expected_Shipped_Date__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" class="slds-p-horizontal_small">
+                                    <lightning:inputField disabled="" fieldName="sigmaerpdev2__Vendor_Expected_Delivery_Date__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" class="slds-p-horizontal_small">
+                                    <lightning:inputField disabled="" fieldName="sigmaerpdev2__Vendor_Status__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" class="slds-p-horizontal_small">
+                                    <lightning:inputField disabled="" fieldName="sigmaerpdev2__Delevered_Quantity__c"/>
+                                </lightning:layoutItem> 
+                                <lightning:layoutItem size="6" class="slds-p-horizontal_small">
+                                    <lightning:inputField disabled="" fieldName="sigmaerpdev2__Reason__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel" type="text" onclick="{!c.handleCancel1}"/>
+                        <lightning:button variant="brand" label="Submit" title="Submit" type="submit" />
+                    </div>
+                </lightning:recordEditForm>       
+                <!-- Ends here -->
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>
+    </aura:if>
+</aura:component>

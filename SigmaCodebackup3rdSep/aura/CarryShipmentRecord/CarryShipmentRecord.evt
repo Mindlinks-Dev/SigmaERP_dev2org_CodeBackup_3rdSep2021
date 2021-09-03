@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT" >
+<aura:attribute name="shList" type="Shipment_Products__c[]"/>
+  <aura:attribute name="isEdit" type="boolean" default="false"/> 
+    <aura:attribute name="rowIndex" type="Integer"/>   
+</aura:event>

@@ -1,0 +1,103 @@
+<aura:component access="global">
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+   <aura:handler name="taxEventValues" event="c:TaxEvent" action="{!c.handleTaxValues}"/>
+    
+    <!-- Attributes -->
+    <aura:attribute access='global' name='recordId' type='List' />
+    <aura:attribute access='global' name='finalBillAmount' type='Long' />
+    <aura:attribute access='global' name='customerName' type='List' />
+    <aura:attribute access="global" name="paymentOptions" type="Boolean" description="The current record Id to display" />
+    <aura:attribute access="global" name="cashPayment" type="Id" description="The current record Id to display" />
+    <aura:attribute access="global" name="chequePayment" type="String" description="The current record Id to display" />
+    <aura:attribute access="global" name="cardInfo" type="String" description="The current record Id to display" />
+    <aura:attribute access="global" name="orderSFId" type="List" description="The current record Id to display" />
+    <aura:attribute name="postcode" type="String"  default="" description="" />
+    <aura:attribute name="contactName" type="String"  default="" description="contact name " />
+    <aura:attribute name="accName" type="String" default=""/>
+    <aura:attribute name="amountTobeCharged" type="Double" description="The current record Id to display"/>
+    
+    <aura:attribute name="FederalTax" type="String" description="The current record Id to display" />
+    <aura:attribute name="StateTax" type="String" description="The current record Id to display" />
+    
+    <aura:attribute name="billingPerson" type="List" description="The current record Id to display" />
+    
+    <aura:attribute name="currencySymbol" type="String" description="The current record Id to display"/>     		 
+    <aura:attribute access="global" name="taxAmount" type="String" />
+    <aura:attribute access="global" name="transSuccess" type="Boolean" description="The current record Id to display" /> 
+     <aura:attribute name="subpayment" type="boolean"  />
+    
+    <!-- Event Handlers -->    
+    <aura:handler name="transSuccessEvent" event="c:TransactionSuccessEvent" action="{!c.showTransSuccessPage}"/>
+    <!-- ends here -->
+    
+    <aura:registerEvent name="reloadTaxValues" type="c:ReloadTaxValues" />    
+    
+        
+    
+    <body aura:id="optionsList">
+  
+    <aura:if isTrue="{!v.paymentOptions == true}">        
+	<div class="slds-page-header" id="head">
+        <fieldset class="slds-form-element">
+   			 <div class="slds-form-element__control ">
+        	 <ui:button class="slds-button slds-button--neutral" label="Back" aura:id="back" press="{!c.gotoTaxPage}"/>
+     		  <legend class="slds-form-element__label " id="Payment_options">Payment Options</legend>
+              </div>
+        </fieldset>
+      </div>
+        
+    <div class="" id="payment_options_body" style="">
+         <div id="payment_options_content">
+         <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-2" style="text-align:center;background:white;">
+                       <img src="{!$Resource.Cash}" height="100" width="100" onclick = "{!c.cashpaymentpage}"/><br/>
+                      
+          		 <span class="slds-form-element__label">Cash</span>
+     			 </label>
+                 
+                 <label class="slds-size--1-of-2" style="text-align:center;background:white;">
+                    <img src="{!$Resource.Cheque}"  height="100" width="100"  onclick = "{!c.chequepaymentpage}" /><br/><br/><br/>
+          		   <span class="slds-form-element__label">Cheque</span>
+     			 </label>
+                </div>
+             </div>
+         </fieldset>
+         
+          <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-1" style="text-align:center;background:white;">
+                   <img src="{!$Resource.Card}"  height="100" width="100" onclick = "{!c.keyentrypage}"  /><br/><br/>
+          		 <span class="slds-form-element__label">Key Entry Card</span>
+     			 </label>
+                </div>
+              </div>
+         </fieldset>
+    </div>
+        </div>
+    </aura:if>
+        
+    <aura:if isTrue="{!v.cashPayment == true}">
+        <c:CreditCashPayment currencySymbol="{!v.currencySymbol}" recordId="{!v.recordId}" orderSFId="{!v.orderSFId}" cashPaymentFlag="{!v.cashPayment}" billAmount="{!v.amountTobeCharged}" receivedFrom="{!v.customerName}" totalTaxAmount="{!v.taxAmount}" FederalTax="{!v.FederalTax}" StateTax="{!v.StateTax}" billingPerson="{!v.billingPerson}" subpayment="{!v.subpayment}" />
+    </aura:if>   
+     
+     <aura:if isTrue="{!v.chequePayment == true}">
+        <c:CreditChequePayment currencySymbol="{!v.currencySymbol}" recordId="{!v.recordId}" orderSFId="{!v.orderSFId}" billAmount="{!v.amountTobeCharged}" receivedFrom="{!v.customerName}" totalTaxAmount="{!v.taxAmount}" FederalTax="{!v.FederalTax}" StateTax="{!v.StateTax}" billingPerson="{!v.billingPerson}" cashPaymentFlag="{!v.cashPayment}" subpayment="{!v.subpayment}" />
+    </aura:if>         
+         
+  	<aura:if isTrue="{!v.cardInfo == true}">
+    	<c:CreditCardPayment currencySymbol="{!v.currencySymbol}" recordId="{!v.recordId}" orderSFId="{!v.orderSFId}" amountTobeCharged="{!v.amountTobeCharged}" receivedFrom="{!v.customerName}" totalTaxAmount="{!v.taxAmount}" FederalTax="{!v.FederalTax}" StateTax="{!v.StateTax}" subpayment="{!v.subpayment}" />    
+    </aura:if>
+
+	<aura:if isTrue="{!v.transSuccess == true}">
+        <c:Transaction_complete orderSFId="{!v.orderSFId}"/>
+    </aura:if>
+        
+   
+    </body>  
+   
+
+</aura:component>

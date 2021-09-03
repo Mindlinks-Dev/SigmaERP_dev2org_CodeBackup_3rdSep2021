@@ -1,0 +1,66 @@
+<aura:component >
+	<aura:attribute name="innerList2" type="List" />
+    <aura:attribute name="rowId1" type="Id" />  
+    <aura:attribute name="fullList" type="List" />
+	<aura:attribute name="fromMobile1" type="boolean" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <td>
+        <table border="0" class="slds-table slds-table_bordered">        
+            <tr>
+                <td width="3%">
+                    <img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.rowId1}" src="/resource/sigmaerpdev__NPlus" width="15"
+                    	height="15" title="Show Details" />
+                </td>
+                <td width="5%">
+                    <a onclick="{!c.navigateToRecord}" data-recid="{!v.innerList2.stoId}">{!v.innerList2.stoName}</a>                   
+                </td>
+                <td width="13%" style="max-width:100px;word-wrap:break-word;white-space:normal;">
+                   {!v.innerList2.custName}
+                </td>
+                <td width="6%">            
+                    <!--<lightning:formattedDateTime value="{!v.innerList2.createDate}" />-->                    
+                    <ui:outputDate value="{!v.innerList2.createDate}" />
+                </td>
+                <td width="10%" style="max-width:100px;word-wrap:break-word;white-space:normal;">
+                   {!v.innerList2.custType}
+                </td>
+                <td width="12%" style="max-width:100px;word-wrap:break-word;white-space:normal;">
+                    {!v.innerList2.orderType}
+                </td>
+               
+             </tr>
+             <tr>
+                 <td colspan="7">
+                    <div id="{!'showHide_'+v.rowId1}" style="display:none;padding-left:101px;"> 
+                	<table border="0" class="slds-table slds-table_bordered">
+                        <thead>
+                            <tr class="slds-text-title_caps">                                     
+                                <th scope="col" style="background-color:#EEC7FF;font-weight: bold;">
+                                     Order Lines
+                                </th>                                 
+                                <th scope="col" style="background-color:#EEC7FF;font-weight: bold;">
+                                    Product Name
+                                </th>                                 
+                                <th scope="col" style="background-color:#EEC7FF;font-weight: bold;">
+                                    Back Order Qty
+                                </th> 
+                                <th scope="col" style="background-color:#EEC7FF;font-weight: bold;">
+                                    Status
+                                </th> 
+                            </tr> 
+                        </thead>
+                    	<aura:iteration items="{!v.innerList2.orderLinesList1}" var="locListLines">                       
+                            <tr>
+                        		<c:DisplayOrderlineitem innerLinesList="{!locListLines}" />
+                        	</tr>
+                    	</aura:iteration> 
+                        
+						                      
+                     
+                    </table>
+                  </div>   
+                </td>
+            </tr>         
+    </table> 
+    </td>
+</aura:component>

@@ -1,0 +1,74 @@
+<aura:component controller="InventoryReleaseCntrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+   <aura:attribute name="recordId" type="Id" />
+    <aura:attribute access="PUBLIC" name="manageView" type="Object[]"/>    
+    <aura:handler name="init" value="{!this}" action="{!c.RecordDetails}" />
+    <div class="demo-only">
+        <div class="slds-col slds-has-flexi-truncate">
+            <div class="slds-media slds-no-space slds-grow">
+                <div class="slds-media__figure" style="padding-left:5px;padding-bottom:5px;">
+                    <span class="slds-icon_container slds-icon-standard-lead">
+                        <lightning:icon iconName="standard:record" size="small" />
+                    </span>
+                </div>
+                <div class="slds-media__body" >
+                    <button class="slds-button slds-button_reset slds-type-focus slds-truncate" aria-haspopup="true" title="">
+                        <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">                             
+                            <span class="slds-truncate" title="Release Inventory" style="font-size:15px;"><b>Release Inventory</b></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!--<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                    <span style="padding-left:5px;padding-bottom:5px;">
+                     <lightning:icon iconName="standard:record" size="small" />
+                 </span>&nbsp;&nbsp;Inventory Release
+                </h2>-->
+        
+      
+        <div class="slds-scrollable--x">
+            <table class="slds-table slds-table_bordered">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col">
+                            <div class="slds-truncate" title="Product">Product</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Order">Order</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Quantity">Quantity</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Reserve">Reserved Qty</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Status">Inventory Status</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Release Status">Release Status<br />(Yes/No)</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Comments" >Comments</div>
+                        </th>		  
+                        <th scope="col" style="width:4%;">
+                            <div class="slds-truncate" title="Action"></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    
+                    <aura:iteration items="{!v.manageView}" var="row">
+                        <c:Demo_CRUD_CompCtrl view="{!row}"/>
+                    </aura:iteration>
+                    
+                    
+                    
+                </tbody>
+                
+            </table> 
+        </div>
+    </div>    
+</aura:component>

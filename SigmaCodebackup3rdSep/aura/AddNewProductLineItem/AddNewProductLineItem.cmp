@@ -1,0 +1,82 @@
+<aura:component >    
+    <!-- Aura Attribute for store single Contact[standard Object] Instance
+         And Store Index of Particular Instance --> 
+    <!--<aura:attribute name="LocationInstance" type="List"/>-->
+     <aura:attribute name="VPrecordsList" type="Object[]"/> 
+    <aura:attribute name="prodtolocListchild" type="List" />
+    <aura:attribute name="VPlistparamfromparent" type="List" />
+   
+    <aura:attribute name="productcodefromparent"  type="String" />
+    <aura:attribute name="indexVar" type="String"/>
+      <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+   <!-- <aura:handler name="change" value="{!v.LocationInstance.sigmaerpdev2__Current_Stock__c}" action="{!c.changestock}"/>-->
+    <!--<aura:handler name="change" value="{!v.LocationInstance.sigmaerpdev2__Buying_Price__c}" action="{!c.changeprice}"/>-->
+    <aura:attribute name="rowIndex" type="String"/>
+   
+    <aura:attribute name="CurrentStock" type="Integer"/>
+    <aura:attribute name="LocationInstance"  type="object"/> 
+    <aura:attribute name="LocationInstanceInner"  type="object"/>
+   
+    
+   <!-- <aura:handler name="DeleteRowEvt" event="c:DeleteRowEvt" action="{!c.removeDeletedRow}"/>-->
+    <aura:attribute name="LocationInstance1"  type="Vendor_Product__c[]" 
+                    default="{'sobjectType' : 'Vendor_Product__c',
+                             'sigmaerpdev2__Product_Name__c' : '',
+                             'sigmaerpdev2__Product_Name__r.Name' : '',
+                             'sigmaerpdev2__VendorProductCode__c' : '',
+                             'sigmaerpdev2__Vendor_Location__c' :'',
+                               'sigmaerpdev2__Vendor_Location__r.Name' :'',
+                             'sigmaerpdev2__Current_Stock__c': '',
+                              'sigmaerpdev2__Buying_Price__c':'',
+                             'sigmaerpdev2__Last_Updated_Date__c':''
+                             }"/> 
+    
+    <!-- Register 2 Lightning Event for handle add or Delete rows on Parent Component  --> 
+    <aura:registerEvent name="DeleteRowEvt" type="c:DeleteRowEvt"/>
+       
+    <aura:registerEvent name="AddRowEvt" type="c:AddNewRowEvt"/> 
+    
+    <!-- Lookup Attribute -->
+    <aura:attribute name="LocationId"  type="Id" default="{}"/>  
+    
+    <aura:attribute name="isSigmaOrder"  type="Boolean" default="false"/>  
+    
+   <tr>
+        <td> 
+            {!v.rowIndex + 1}
+        </td>
+        <td>
+           <!--<p class="break-word">{!v.LocationInstance.sigmaerpdev2__Vendor_Location__r.Name}</p>-->
+           <p class="break-word">{!v.LocationInstanceInner}</p>
+        </td>
+        <td>
+            <!--<lightning:input type="number" variant="label-hidden" value="{!v.LocationInstance.sigmaerpdev2__Current_Stock__c}" min="1" pattern="[0-9]*" />-->
+         <ui:inputNumber  class="slds-input" value="{!v.LocationInstance.sigmaerpdev2__Current_Stock__c}"  change="{!c.changestock}"/>
+        </td>
+       <td>
+           <div class="slds-size_5-of-6">
+               
+                
+                <ui:inputNumber aura:id="price" class="slds-input" value="{!v.LocationInstance.sigmaerpdev2__Buying_Price__c}" change="{!c.changeprice}"/>
+            </div>
+        </td>
+        <td>
+            <ui:inputDate displayDatePicker="true"  change="{!c.changedate}" class="slds-input" value="{!v.LocationInstance.sigmaerpdev2__Last_Updated_Date__c}"/>
+        </td>
+       <!--<td class="slds-text-align_center">
+            
+            
+            <a onclick="{!c.removeRow}">
+                <lightning:icon variant="error" iconName="utility:delete"  size="small" alternativeText="icon"/>
+                <span class="slds-assistive-text">Delete Icon</span>
+            </a>
+        </td> -->
+    </tr>
+    
+     <!-- Table Row -->  
+   <!--<aura:iteration items="{!v.LocationInstance.lStrings}" var="item" indexVar="index">
+           
+       <c:AddNewProductLineItemChild indexValue="{!index}" LocationInstanceInner="{!item}"/>
+       
+       </aura:iteration>-->
+</aura:component>

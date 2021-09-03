@@ -1,0 +1,436 @@
+<aura:component  controller="ConvertBOMToIndividualCntrl" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,force:hasRecordId,forceCommunity:availableForAllPageTypes"  access="global">
+    <aura:attribute name="recordId" type="string" />
+    <!-- code added to handle Multiple Bins for Lot -->
+    <aura:attribute name="binId" type="String"/>
+    <aura:attribute name="binName" type="String"/>
+    <aura:attribute name="lotId" type="String"/>
+    <aura:attribute name="lotName" type="String" default="" description="The current record Id to display" />
+    <aura:attribute name="serial" type="Object[]" default="{'code' : ''}" /><!-- code added by rashmi on 18-11-2019 to handle serialized product serial no -->
+    <aura:handler name="productTypeData" event="c:ProtoTypeEvent" action="{!c.handleProtoTypeEvent}"/> 
+    <aura:attribute name="protype" type="string"/>
+    <aura:attribute name="locID" type="string" default=""/>
+    <aura:attribute name="teargetlocname" type="string" default=""/>
+    <aura:handler name="change" value="{!v.teargetlocname}" action="{!c.binAddAndClearEvent}" />
+    <!-- code added  on 22-11-2019 by rashmi-->
+    
+    
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" />-->
+    <aura:attribute name="inventoryObj" type="Inventory_Location_Product__c"/> 
+    <aura:attribute name="Ilplidata" type="Inventory_Location_Product_Line_Item__c[]"/>
+    <aura:attribute name="PSerialNumber" type="Product_Serial_Number__c[]" />
+    <aura:attribute name="wrapper" type="object"/> 
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="curRecordID" type="String" />
+    <!-- customlookup code added by rashmi on 07-01-2020 -->
+    <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+    <aura:attribute name="proid" type="string" default="" />
+    <aura:attribute name="prodname" type="string" default=""/>
+    <aura:attribute name="ilpid" type="string" default=""/>
+    <aura:attribute name="ilpname" type="string" default=""/>
+	
+    <!--  <aura:handler name="oSelectedRecordEvent" event="sigmaerpdev:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>-->
+    <aura:handler name="change" value="{!v.ilpid}" action="{!c.doInit}" />
+    <aura:attribute name="spinner" type="Boolean" default="false"/>
+    
+    
+    <aura:handler event="c:selfRefreshEvt" action="{!c.doInit}"/>
+    
+    <!-- code added for autostock reservation on 12-04-2020 -->
+    <aura:attribute name="showAutoResvButton" type="Boolean" default="true" />
+    <aura:attribute name="autostock" type="Boolean" default="false"/>
+    <aura:if isTrue="{!v.spinner}">
+        <lightning:spinner class="slds-is-fixed" alternativeText="Loading" size="medium" />
+    </aura:if>
+    
+    <!--<lightning:spinner  aura:id="mySpinner" variant="brand" size="large" class="slds-is-fixed slds-hide"/>-->
+    <div class="slds-notify_container slds-is-relative slds-hide" aura:id="successAlert">
+        <div class="slds-notify slds-notify_toast slds-theme--success" aura:id="successAlertTheme" role="alert" style="z-index:10000;margin-top:0;">
+            <span class="slds-assistive-text">success</span>
+            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" aura:id="iconsuccess" title="Description of icon when needed">
+                <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#success'}" />
+            </span>
+            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top slds-hide" aura:id="iconwarning" title="Description of icon when needed">     
+                <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#warning'}" />
+            </span>	
+            <div class="slds-notify__content">
+                <h2 class="slds-text-heading_small record-header" style="position:relative;left:34%;">
+                    <span aura:id="recordCreatedHeader" >Record Created Successfully.</span>
+                    <span aura:id="recordNotCreatedHeader" class="slds-hide">Failed to create record.</span>
+                    <span aura:id="recordUpdtatedHeader" class="slds-hide">Record Updated Successfully.</span>
+                    <span aura:id="recordNotUpdtatedHeader" class="slds-hide">Record update failed.</span>
+                </h2>		
+                
+            </div>
+            <div aura:id="recordCreatedOK" class="closeButton" style="position:relative;left:40%;">
+                <button class="slds-button" title="Close" onclick="{!c.recordCreatedOK}" style="color:white !important;">
+                    <c:svg class="slds-button__icon slds-button__icon_large"  xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+            <div aura:id="recordCreatedCancel" class="closeButton slds-hide" style="position:relative;left:40%;">
+                <button class="slds-button slds-hide" title="Close" onclick="{!c.recordCreatedCancel}" style="color:white !important;">
+                    <c:svg class="slds-button__icon slds-button__icon_large" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+        </div>	
+        <div class="slds-backdrop slds-backdrop--open" style="opacity:0.6;"></div>
+    </div> 
+    
+    <div class="slds-card" style="padding:0 0 1rem 0;">
+        <div class="slds-page-header">
+            <div class="slds-grid">
+                <div class="slds-col slds-col slds-size_5-of-6">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-product-required" title="Description of icon when needed">
+                                <c:svg class="slds-icon slds-page-header__icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#orders'}" />
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <!--<h1 class="slds-page-header__title slds-truncate slds-align-middle slds-m-top_xx-small" title="BOM To Individual">BOM To Individual</h1>-->
+                            <div class="slds-card__header-title slds-m-top_x-small"  title="BOM To Individual">
+                                BOM To Individual
+                            </div>                    
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-col slds-col slds-size_1-of-6 slds-m-top_x-small" id="bomautostock" data-label="Bom Auto Stock Reservation" >
+                    <aura:if isTrue="{!and(v.wrapper.convertedQty,v.wrapper.convertedQty!=0,v.proid != undefined,v.ilpid != undefined)}">
+                        <lightning:input label="Auto Stock Reservation" aura:id="inputToggle" type="toggle" class="toggle"
+                                         onchange="{!c.autoPickInventory}" />
+                        <aura:set attribute="else">
+                            <span class="slds-checkbox_faux_container" aria-live="assertive" style="padding-top:4px;">
+                                <span class="slds-checkbox_faux"></span>
+                            </span>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+            
+            
+        </div>
+        
+        <div class="main-content">
+            <div class="slds-form slds-form_compound"> 
+                <div class="slds-form-element__group">
+                    <aura:renderIf isTrue="{!v.isError}">
+                        <ui:message title="Error" severity="error" closable="false">
+                            {!v.errorMsg}
+                        </ui:message>
+                        <aura:set attribute="else">
+                            
+                        </aura:set>
+                    </aura:renderIf>
+                    
+                    <div class="slds-grid">
+                        <div class="slds-col slds-m-horizontal_small" style="width:40%;">
+                            <div class="slds-form-element" id="ProductName">
+                                <label class="slds-form-element__label">
+                                    <span style="color:red">* </span>Product Name</label>
+                                
+                                <c:customLookup recordID="{!v.proid}" recordName="{!v.prodname}" objectAPIName="product2" whereCondition="AND recordType.Name='BOM' AND sigmaerpdev2__Stock_Item__c=true" IconName="standard:product" isSigmaOrder= 'true'/>
+                                
+                            </div>
+                            <div class="slds-form-element  slds-m-top_x-small" id="templatetodisplayilp">
+                                <label class="slds-form-element__label">
+                                    <span style="color:red">* </span> Inventory Location Products</label>
+                                <!--  <input type="text" id="input-01" class="slds-input" value="{!v.wrapper.record.Name}" disabled="true"/>-->
+                                <!--<c:customLookup recordID="{!v.ilpid}" recordName="{!v.ilpname}" objectAPIName="sigmaerpdev2__Inventory_Location_Product__c" whereCondition="{!v.proid ? 'AND recordType.Name=\'BOM\'':''}" IconName="standard:product" label="Product" isSigmaOrder= 'true'/>-->
+                                
+                                <c:customLookup recordID="{!v.ilpid}" recordName="{!v.ilpname}" objectAPIName="sigmaerpdev2__Inventory_Location_Product__c"  IconName="custom:custom24"  isSigmaOrder ="true" 
+                                                whereCondition="{!v.proid ? 'AND sigmaerpdev2__Net_Quantity__c>0 AND sigmaerpdev2__Products__c=\''+v.proid+'\'':''}" />
+                                <!--    <stapp:customLookup recordID="{!v.stockReceive.stapp__Receiving_Sites__c}" recordName="{!v.stockReceive.stapp__Receiving_Sites__r.Name}" whereCondition="{!'AND recordType.Name=\'Warehouse\' AND ID in (select stapp__Locations__c from stapp__Inventory_Location__c where stapp__Company__c=\''+v.stockReceive.stapp__Company__c+'\')'}" objectAPIName="stapp__Location__c" IconName="standard:account" label=""/>-->
+                                
+                            </div>
+                            <div class="slds-form-element  slds-m-top_x-small" id="TargetLocation">
+                                <label class="slds-form-element__label" for="Vendor">
+                                    <span style="color:red">* </span>Target Location
+                                </label>
+                                
+                                <!--<c:LookupSObject aura:id="FromLocation" searchString="{!v.teargetlocname}"  
+                                                 label="Inventory Location" pluralLabel="Inventory Locations"
+                                                 sObjectAPIName="sigmaerpdev2__Inventory_Location__c" 
+                                                 instanceId="TargetLocation"
+                                                 SRString="Inventory"
+                                                 listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                 listIconClass="slds-icon-standard-account"/>--> 
+                                
+                             <c:customLookup recordID="{!v.locID}" recordName="{!v.teargetlocname}" isSigmaOrder ="true" objectAPIName="sigmaerpdev2__Inventory_Location__c" IconName="custom:custom106" label=""/>
+							
+							</div>
+                            
+                            <div class="slds-form-element  slds-m-top_x-small" id="convQty">
+                                
+                                <label class="slds-form-element__label"><span style="color:red">* </span>Convert Quantity</label>
+                                <!-- <input  type="number" id="input-02"  value="{!v.wrapper.convertedQty}" class="slds-input"/>-->
+                                <ui:inputText  class="slds-input" aura:id="quantity" size="1"  value="{!v.wrapper.convertedQty}" updateOn="keyup" keyup="{!c.validateQuantity}" disabled="{!v.autostock}"/> 
+                                
+                                <!-- <lightning:input type="Number" aura:id="quantity" value="{!v.wrapper.convertedQty}" onchange="{!c.validateQuantity}" />   -->
+                                
+                            </div>
+                            <div class="slds-col slds-col slds-size_1-of-6 slds-m-top_x-small">
+                                <aura:if isTrue="{!v.wrapper.convertedQty > 0}">
+                                    <div class="{!and(v.ilpid,(v.wrapper.record.sigmaerpdev2__Net_Quantity__c >= v.wrapper.convertedQty )) ? 'slds-show inStock1':'slds-hide'}" >
+                                        <span class="slds-badge slds-theme_success">Stock Available</span>
+                                    </div>
+                                    
+                                    <div class="{!and(v.ilpid,(v.wrapper.convertedQty > v.wrapper.record.sigmaerpdev2__Net_Quantity__c)) ? 'slds-show outOfStock1':'slds-hide'}" >
+                                        
+                                        <span class="slds-badge slds-theme_error">Insufficient Stock</span>
+                                    </div>
+                                    <aura:set attribute="else">
+                                        
+                                        <div class="slds-truncate"></div>
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="slds-col slds-m-horizontal_small" style="width:40%;">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    Product Type</label>
+                                
+                                <!--  <lightning:input disabled="true" value="{!v.wrapper.record.sigmaerpdev2__Products__r.sigmaerpdev2__Attribute_Type__c}" />-->
+                                <input type="text" id="input-02" class="slds-input" value="{!v.wrapper.record.sigmaerpdev2__Products__r.sigmaerpdev2__Attribute_Type__c}" disabled="true"/>                   
+                            </div>
+                            <div class="slds-form-element  slds-m-top_x-small">
+                                
+                                <label class="slds-form-element__label">BOM Location</label>
+                                <input type="text" id="input-02" class="slds-input" value="{!v.wrapper.record.sigmaerpdev2__Inventory_Location_Name__c}" disabled="true"/>
+                            </div>
+                            
+                            <div class="slds-form-element  slds-m-top_x-small">
+                                <label class="slds-form-element__label">Inventory Location Name</label>
+                                <input type="text" id="input-02" class="slds-input" value="{!v.wrapper.record.sigmaerpdev2__Inventory_Location__r.Name}" disabled="true"/>                   
+                                <!--      <lightning:input disabled="true" value="{!v.wrapper.record.sigmaerpdev2__Inventory_Location__r.Name}" />-->
+                            </div>
+                            <div class="slds-form-element  slds-m-top_x-small">
+                                <label class="slds-form-element__label">Available Quantity</label>
+                                <input type="number" id="input-01" value="{!v.wrapper.record.sigmaerpdev2__Net_Quantity__c}" class="slds-input" disabled="true"/>
+                            </div>
+                            
+                            
+                        </div>
+                        <!--	<div class="slds-col slds-m-horizontal_small slds-hide" style="width:20%;" aura:id="serialinput">
+     <table class="slds-table slds-table_cell-buffer slds-table_striped slds-box">
+                            <thead style="background:#fafaf9; border-bottom:1px solid #d8dde6;">
+                                <tr class="slds-text-title_caps1">
+                                    <aura:renderIf isTrue="{!v.wrapper.sigmaerpdev2__Products__r.sigmaerpdev2__Attribute_Type__c == 'SERIALIZED'}">
+                                        <th scope="col"><div class="slds-truncate" style="color:#16325c;">Serial Number</div></th>
+                                    </aura:renderIf>
+                                </tr>
+                            </thead>
+                            <tbody class="serial-tbody">
+                                <aura:iteration items="{!v.serial}" var="srl">-->
+                        
+                        <!--  <sigmaerpdev:Bomserial IlpliItem="{!srl}"  />  -->
+                        <!--    <tr>
+                                        
+                                        <td>
+                                            <ui:inputText class="slds-input" aura:id="PSN" value="{!srl.code}" required="true"/>
+                                        </td> 
+                                        
+                                    </tr>
+                                    
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+     </div>-->
+                    </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    <!--        <sigmaerpdev:LookupSObject aura:id="Lot" 
+                                                       searchString="{!v.lotName}"
+                                                       SRString="{!v.lotName}"
+                                                   
+                                                       label="Lot" pluralLabel="Lots" 
+                                                       sObjectAPIName="sigmaerpdev2__Lot__c" 
+                                                       instanceId="Lot"
+                                                       listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                       listIconClass="slds-icon-standard-account" /> 
+
+                 
+<c:customLookup label="From Lot" recordID="{!v.lotId}" recordName="{!v.lotName}" objectAPIName="sigmaerpdev2__Lot__c" IconName="standard:account" isSigmaOrder="true"  whereCondition="{!v.wrapper.record.sigmaerpdev2__Products__c ? ' AND sigmaerpdev2__Product__c=\''+v.wrapper.record.sigmaerpdev2__Products__c+'\'':''}" />                        
+-->
+                    
+                </div>
+                <div>
+                    
+                </div>      
+            </div>
+        </div> 
+        
+        <div class="slds-section" aura:id="LineItemSection">
+            <h3 class="slds-section__title" onclick="{!c.LineItemSection}">
+                <button aria-expanded="true" class="slds-button slds-section__title-action">
+                    <c:svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#switch'}" />
+                    <span class="slds-truncate" title="Section Title">Line Item</span>
+                </button>
+            </h3>
+            <aura:if isTrue="{!and(v.proid,v.ilpid)}">
+                <div aria-hidden="false" class="slds-section__content">
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid" style="background:gainsboro;">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-standard-related-list" title="Line Item List">
+                                        <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#related_list'}" />
+                                        <span class="slds-assistive-text">Line Item List</span>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="Line Item List">
+                                            <span>Line Item List</span>
+                                        </a>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-scrollable">
+                            <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered slds-table_fixed-layout1" role="grid">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="slds-text-title_caps slds-size_1-of-41" scope="col">
+                                            <div class="slds-truncate" title="Line Item">Ind Product Name</div>
+                                        </th>
+                                        <th class="slds-text-title_caps slds-size_1-of-41" scope="col">
+                                            <div class="slds-truncate" title="Line Item Quantity">Line Item Qty</div>
+                                        </th>
+                                        <th class="slds-text-title_caps" scope="col">
+                                            <div class="slds-truncate" title="Line Item Quantity">Update Ind Qty</div>
+                                        </th>
+                                        <th class="slds-text-title_caps slds-size_1-of-41" scope="col">
+                                            <div class="slds-truncate" title="Lot">Lot <span style="visibility:hidden;">LotLotLot</span></div>
+                                        </th>
+                                        <th class="slds-text-title_caps slds-size_1-of-41" scope="col">
+                                            <div class="slds-truncate" title="Bin">
+                                                <label class="slds-form-element__label" for="Vendor">Bin
+                                                    <span style="color:red">* <span style="visibility:hidden;">BinBinBin</span></span>
+                                                </label>
+                                                
+                                            </div>
+                                            
+                                        </th>
+                                        <th class="slds-text-title_caps slds-size_1-of-41" scope="col" style="width:10%;">
+                                            <div class="slds-truncate" title="Bin">
+                                                <label class="slds-form-element__label" for="Vendor">Unit Price
+                                                    <span style="color:red">* </span>
+                                                </label>
+                                                
+                                            </div>
+                                            
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.wrapper.IndPros}" var="lineitem" indexVar="index" >    
+                                        <c:BomLineitem lineItem="{!lineitem}" wrapper="{!v.wrapper}" Ilplidata="{!v.Ilplidata}" convqty="{!v.wrapper.convertedQty}"  serial="{!v.serial}" autostock="{!v.autostock}" /><!--convqty="{!v.lineitem.updqtydisplay}" -->
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                    
+                </div>
+            </aura:if>
+        </div>
+        <aura:if isTrue="{!v.showAutoResvButton}">
+            <div class="slds-section" aura:id="ILPLISection">
+                <h3 class="slds-section__title" onclick="{!c.ILPLISection}">
+                    <button aria-expanded="true" class="slds-button slds-section__title-action">
+                        <c:svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#switch'}" />
+                        <span class="slds-truncate" title="Section Title">Inventory Location Product Line Item</span>
+                    </button>
+                </h3>
+                <aura:if isTrue="{!and(v.proid,v.ilpid)}">
+                    <div aria-hidden="false" class="slds-section__content">
+                        <article class="slds-card">
+                            <div class="slds-card__header slds-grid" style="background:gainsboro;">
+                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                    <div class="slds-media__figure">
+                                        <span class="slds-icon_container slds-icon-standard-related-list" title="ILPLI List">
+                                            <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#related_list'}" />
+                                            <span class="slds-assistive-text">ILPLI List</span>
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <h2 class="slds-card__header-title">
+                                            <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="ILPLI List">
+                                                <span>ILPLI List</span>
+                                            </a>
+                                        </h2>
+                                    </div>
+                                   <!-- <div id="bomautoselect" data-label="Bom Auto Select">
+                                        <ui:inputCheckbox aura:id="isAutoSelChecked"
+                                                          labelClass="slds-p-horizontalsmall slds-floatleft" label="Autopick Stock" 
+                                                          change="{!c.handleAutoSelectCheckBox}"/>
+                                    </div>-->
+                                </header>
+                            </div>
+                            <div class="slds-card__body slds-scrollable">
+                                <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered1 slds-table_fixed-layout1" role="grid">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="slds-text-title_caps" scope="col">
+                                                <div class="slds-truncate1" title="Product Name">Product Name</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col">
+                                                <div class="slds-truncate1" title="ILPLI Name">ILPLI Name</div>
+                                            </th>
+                                            
+                                            <th class="slds-text-title_caps" scope="col">
+                                                <div class="slds-truncate1" title="Serial Code">PSN Number</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col">
+                                                <div class="slds-truncate1" title="Serial Code">Lot</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col">
+                                                <div class="slds-truncate1" title="Serial Code">Bin</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col">
+                                                <div class="slds-truncate1" title="Available">Available Qty</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col">
+                                                <div class="slds-truncate1" title="Unit Price">UNIT PRICE</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col">
+                                                <div class="slds-truncate1" title="Pick Quantity">Pick Quantity</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.wrapper.eachLineItemILPLIWrapper}" var="obj" indexVar="index" >    
+                                            <c:BOMtoindilpli IlpliItem="{!obj}" ilpProId="{!v.wrapper.record.sigmaerpdev2__Products__c}" ProType="{!v.wrapper.record.sigmaerpdev2__Products__r.sigmaerpdev2__Attribute_Type__c}" PSerialNumber="{!v.PSerialNumber}"/>
+                                        </aura:iteration>
+                                        
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+                        </article>
+                    </div>
+                </aura:if>
+                
+            </div>
+        </aura:if>
+        <div class="slds-form-element__row" id="" style="margin-top:1%;text-align:center;">
+            <button class="slds-button slds-button--brand"  aura:id="Save" onclick="{!c.Save}">Submit</button>
+            <lightning:button class="slds-button slds-button_neutral" onclick="{!c.clear}">Clear</lightning:button>
+            <button class="slds-button slds-button--neutral"  aura:id="Save" onclick="{!c.goBack}">Cancel</button> 
+            <!-- commented below line for new Module wise UI on 5/2/2020 -->
+            <!--<button class="slds-button slds-button-brand" onclick="{!c.BackButton}" style="margin-right:0.6%;">Cancel</button>-->
+        </div>
+    </div>	
+</aura:component>

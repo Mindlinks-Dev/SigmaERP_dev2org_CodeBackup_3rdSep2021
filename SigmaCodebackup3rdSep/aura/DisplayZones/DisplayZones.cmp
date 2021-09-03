@@ -1,0 +1,19 @@
+<aura:component>
+    <aura:attribute name="innerListZone" type="List" />
+    <aura:attribute name="zoneRowId" type="String" />    
+    <td style="padding-left:45px;">
+        <aura:if isTrue="{!v.innerListZone.binList.length > 0}">        
+        	<img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.zoneRowId}" src="/resource/sigmaerpdev__NPlus" width="15"
+        		height="15" title="Show Bins" />
+            	&nbsp;<span style="color:#3CB371;" title="Zone">{!v.innerListZone.zoneName}</span>  
+            <aura:set attribute="else">
+                <span style="color:#3CB371;padding-left:22px;" title="Zone">{!v.innerListZone.zoneName}</span> 
+            </aura:set>
+        </aura:if>
+    </td>     
+    <div id="{!'showdropdown_'+v.zoneRowId}" style="display:none;padding-right:35px;"> 
+        <aura:iteration items="{!v.innerListZone.binList}" var="binList">
+            <c:DisplayBins innerListBin="{!binList}" /> 
+        </aura:iteration>
+    </div><br />
+</aura:component>

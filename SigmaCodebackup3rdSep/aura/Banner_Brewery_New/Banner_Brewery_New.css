@@ -1,0 +1,57 @@
+.banner-bg.THIS
+{
+    background:url("/SigmaBrewery/file-asset/sigmaerpdev2__brewery_banner_new1?v=1");
+    background-position:0;
+    background-size:cover;
+    width:100%;
+    height: 100vh;
+    overflow: hidden;
+}
+.THIS .para1
+{
+    font-size:67px;
+    color:#e6bf55;
+    line-height:90px;
+}
+.THIS .para1 span
+{
+    color:#fff;
+    font-size: 90px;
+    font-weight: bolder;
+}
+.THIS .para2
+{
+    color: #fff;
+    font-size: 16px;
+    width: 76%;
+    margin: 4% 0;
+    text-align: justify;
+}
+.THIS .brand-btn
+{
+    background:#e6bf55;
+    color:#262022;
+    padding:15px 30px;
+    font-size:16px;
+    border-radius: 50px;
+    margin-right: 16px;
+    font-weight: bold;
+}
+.THIS .brand-btn:hover{
+    text-decoration:none;
+}
+.THIS .user-bg
+{
+    background:url("/SigmaBrewery/file-asset/sigmaerpdev2__brewery_banner_new1?v=1");
+    background-position:0;
+    background-size:cover;
+}
+.THIS .brown{
+    color:#262022;
+}
+.THIS .btn-brown{
+        background: #e6bf55;
+    border-color: #e6bf55;
+    color: #262022;
+    font-weight:bold;
+}

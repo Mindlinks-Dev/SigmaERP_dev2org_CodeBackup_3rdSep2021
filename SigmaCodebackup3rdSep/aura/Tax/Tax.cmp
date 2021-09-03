@@ -1,0 +1,161 @@
+<aura:component controller="TaxCntr" access="global" implements="flexipage:availableForAllPageTypes,force:appHostable,forceCommunity:availableForAllPageTypes">
+   
+    <div class="slds-spinner_container slds-hide" aura:id="spinner">
+        <div class="slds-spinner--brand slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>  
+    <aura:handler name="init" value="{!this}" action="{!c.doInitTax}" />
+    <aura:attribute name="mainblock" type="Boolean" description="The current record Id to display" />     
+    <aura:attribute name="payment_Options_Page" type="Boolean" description="The current record Id to display" />
+    <aura:attribute name="orderSFId" type="String" description="value for total bill amount" />
+    
+    <aura:attribute name="totalBillAmountValue" type="String" description="value for total bill amount" />
+    <aura:attribute name="TotalProductAmount" type="String" description="The current record Id to display" />
+    <aura:attribute name="CustomerName" type="String" description="The current record Id to display" />
+    <aura:attribute name="Symbol" type="String" description="The current record Id to display" />
+    <aura:attribute name="recordId" type="String" description="The current record Id to display" />
+    <aura:attribute name="FederalTax" type="String" description="The current record Id to display" />
+    <aura:attribute name="StateTax" type="String" description="The current record Id to display" />
+    
+    <aura:attribute name="TaxType" type="String" description="The current record Id to display" />
+    <aura:attribute name="TaxOnBillAmount" type="String" description="The current record Id to display" />
+    
+    <aura:attribute name="flatTaxType" type="String" description="The current record Id to display" />
+    <aura:attribute name="stateTaxType" type="String" description="The current record Id to display" />
+    
+        
+    <aura:attribute name="billingPerson" type="String" description="The current record Id to display" />
+	<aura:attribute name="paymenttype" type="String"/>     
+    <!-- Event Handlers -->    
+    <aura:handler name="reloadTaxValues" event="c:ReloadTaxValues" action="{!c.reloadTaxValues}"/>              
+    <!-- ends here -->
+    
+    <!-- Register Event --> 
+    <aura:registerEvent name="productObjEvent" type="c:ProductObject"/> 
+    <aura:registerEvent name="showCreateOrders" type="c:ShowCreateOrdersPage" />   
+    <!-- ends here -->
+    
+    <!-- Event Handlers for Send tax values -->
+    <aura:handler name="sendTaxValues" event="c:SendTaxRelatedValues" action="{!c.sendTaxValues}"/>
+    <!-- ends here -->
+    
+    <body aura:id="optionsList">
+     <aura:if isTrue="{!v.mainblock == true}">   
+    
+ 	 <div class="slds-page-header" id="head">
+        <fieldset class="slds-form-element">
+   			 <div class="slds-form-element__control ">
+        	 
+     		  <legend class="slds-form-element__label " id="Billamount" >Bill Amount + Tax</legend>
+              </div>
+        </fieldset>
+      </div>
+         
+ 	
+  
+     <div class="slds-box" id="tax_body" style="padding:0;">
+         <div id="tax_content">
+         <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-2" >
+          		 <span class="slds-form-element__label">Customer Name:</span>
+     			 </label>
+        
+                 <label class="slds-size--1-of-2">
+          		 <ui:inputText aura:id="" value="{!v.CustomerName}" class="slds-input" label="" placeholder="" disabled="true"/>
+     			 </label>
+        	</div>
+  			</div>
+			</fieldset>
+         
+         <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-2">
+          		 <span class="slds-form-element__label">Bill Amount ({!v.Symbol}):</span>
+     			 </label>
+        
+                  <label class="slds-size--1-of-2">
+          		 <ui:inputText aura:id="" value="{!v.TotalProductAmount}" disabled="true" class="slds-input" label="" placeholder=""/>
+     			 </label>
+        	</div>
+  			</div>
+			</fieldset>
+         
+          <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-2">
+          		 <span class="slds-form-element__label">Federal Tax ({!v.flatTaxType}):</span>
+     			 </label>
+        
+                  <label class="slds-size--1-of-2" >
+          		 	<ui:inputText aura:id="federalTaxId" value="" disabled="true" class="slds-input" label="" placeholder=""/>
+     			 </label>
+        	</div>
+  			</div>
+			</fieldset>
+         
+           <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-2">
+          		 <span class="slds-form-element__label">State Tax ({!v.stateTaxType}):</span>
+     			 </label>
+        
+                  <label class="slds-size--1-of-2">
+          		 <ui:inputText aura:id="stateTaxId" value="" disabled="true" class="slds-input" label="" placeholder=""/>
+     			 </label>
+        	</div>
+  			</div>
+			</fieldset>
+         
+              
+        
+          <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-2">
+          		 <span class="slds-form-element__label">Tax on Bill Amount ({!v.Symbol}):</span>
+     			 </label>
+        
+                  <label class="slds-size--1-of-2">
+          		  <ui:inputText aura:id="taxOnBillAmountId" value="{!v.TaxOnBillAmount}" disabled="true" class="slds-input" label="" placeholder=""/>
+     			 </label>
+        	</div>
+  			</div>
+			</fieldset>
+             
+            
+         
+            <fieldset class="slds-form--compound">
+    		<div class="form-element__group">
+   			 <div class="slds-form-element__row">
+     			  <label class="slds-size--1-of-2">
+          		 <span class="slds-form-element__label">Total Bill Amount ({!v.Symbol}):</span>
+     			 </label>
+        
+                  <label class="slds-size--1-of-2">
+          		 	<ui:inputText aura:id="totalBillAmountId" value="{!v.totalBillAmountValue}" disabled="true" class="slds-input" label="" placeholder=""/>
+     			 </label>
+        	</div>
+  			</div>
+			</fieldset>
+			<br/>
+             <div style="">
+            
+          <ui:button class="slds-button slds-button--neutral" label="Proceed to Payments" aura:id="Proceed_to_Payments" press="{!c.showPaymentOptions}" />
+          <ui:button class="slds-button slds-button--neutral" label="Skip Payment" aura:id="Proceed_to_Payments" press="{!c.gotoOrderDetailsPage}" />
+         </div>
+             </div>
+         </div>
+        </aura:if>
+     <aura:if isTrue="{!v.payment_Options_Page == true}"> 
+            <c:Payment_options currencySymbol="{!v.Symbol}" recordId="{!v.recordId}" amountTobeCharged='{!v.totalBillAmountValue}' customerName='{!v.CustomerName}' orderSFId='{!v.orderSFId}' taxAmount='{!v.TaxOnBillAmount}' FederalTax='{!v.FederalTax}' StateTax='{!v.StateTax}' billingPerson='{!v.billingPerson}' />                  
+     </aura:if> 
+         
+ </body>
+</aura:component>

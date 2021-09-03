@@ -1,0 +1,13 @@
+.THIS .paddingAround .slds-col
+{
+   padding: .3rem;
+}
+.THIS .buttonOverlay{
+    position: initial;
+}
+
+@media only screen and (max-width: 768px) {
+    .THIS .slds-grid-block{display:block;}
+    .THIS .slds-grid-block .slds-col{width:100%;}
+    .THIS .slds-lookup__menu{text-align:left !important;}
+}

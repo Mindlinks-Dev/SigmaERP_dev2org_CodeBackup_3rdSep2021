@@ -1,0 +1,23 @@
+<apex:page StandardController="Order" id="mainPage">
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+     var recId = "{!JSENCODE($CurrentPage.parameters.id)}";
+     
+        $Lightning.use("sigmaerpdev:sigmaorderPayment", function() 
+        {
+         $Lightning.createComponent("sigmaerpdev:Refund",
+                                           {recordId: recId}, 
+                                           "lightning",
+                                           function(cmp) 
+                                           {
+                                           //alert('inside'+recId);
+                                           //alert('running inside component studd');
+                                               //  Do some stuff
+                                           }
+                );
+        });
+    </script>
+</apex:page>

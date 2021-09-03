@@ -1,0 +1,125 @@
+<!--Parent Lightning Compomemt-->
+<aura:component controller="GenerateMultiplePO" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!--Init handler which is call doInit js function on component Load-->  
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!--Event handler for Add and Delete Row Event which is fire from Child Component-->    
+    <aura:handler name="DeleteRowEvt" event="c:DeleteRowEvt" action="{!c.removeDeletedRow}"/>
+    
+    <!--Aura Attribute for store PO Object List as Array-->    
+    <aura:attribute name="MultiplePOWrapList" type="List"/>
+    <aura:attribute name="OrderedDate" type="Date"/> 
+    <aura:attribute name="ExpectedDate" type="Date"/> 
+    <aura:attribute name="IsPotocontactchecked" type="Boolean" /> 
+    
+    <div class="slds-card">
+        <!--Header Part-->        
+        <div class="slds-page-header">
+            <div class="slds-grid">                
+                <div class="slds-col">                    
+                    <div class="slds-page-header__row">
+                        <div class="slds-page-header__col-title">
+                            <div class="slds-media" style="float:left">
+                                <div class="slds-media__figure slds-p-top_xx-small">
+                                    <span class="slds-icon_container slds-icon-standard-opportunity" title="opportunity">
+                                        <lightning:icon iconName="standard:product_required" size="medium"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1>
+                                            <span class="slds-page-header__title slds-truncate" title="Generate Multiple PO">Generate Multiple PO</span>
+                                        </h1>
+                                    </div>
+                                </div>
+                                <p class="slds-page-header__name-meta">
+                                    Ordered Date : <ui:outputDate format="DD-MM-YYYY" value="{!v.OrderedDate}" /></p>
+                            </div>
+                        </div>
+                        <div class="slds-media__body slds-size--1-of-3" >
+                            <div class="slds-grid">
+                                <div class="slds-col slds-p-top_x-small">
+                                    <p class="slds-page-header__name-meta">
+                                        <span style="color:red">*</span> PO Expected Date :</p>
+                                </div>
+                                <div class="slds-col slds-size--2-of-3">
+                                    <ui:inputDate aura:id="ExpectedDate" 
+                                                  class="slds-input"
+                                                  labelClass="slds-form-element__label"
+                                                  value="{!v.ExpectedDate}"
+                                                  displayDatePicker="true"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>                
+            </div>            
+        </div>
+        
+        <!--Table Part-->           
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+            
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col" style="width:4%;padding-left:8px;">
+                        <div class="slds-truncate">S.No</div>
+                    </th>
+                    <th scope="col" style="width:21%;">
+                        <div class="slds-truncate" title="productName"><span style="color:red">*</span> Product</div>
+                    </th>
+                    <th scope="col" style="width:5%">
+                        <div class="slds-truncate" title="selectVendor">Select Vendor</div>
+                    </th>
+                    <th scope="col" style="width:10%">
+                        <div class="slds-truncate" title="vendorName"><span style="color:red">*</span> Vendor </div>
+                    </th>
+                    <th scope="col" style="width:5%">
+                        <div class="slds-truncate" title="vendorloc"><span style="color:red">*</span> Vendor Location</div>
+                    </th>
+                    <th scope="col" style="width:5%">
+                        <div class="slds-truncate" title="Qty"><span style="color:red">*</span>  Order<br/> Qty.</div>
+                    </th>
+                    <th scope="col" style="width:5%">
+                        <div class="slds-truncate" title="Disc">Disc.(%)</div>
+                    </th>
+                    <th scope="col" style="width:5%">
+                        <div class="slds-truncate" title="buyingPrice">Buying <br/>Price</div>
+                    </th>
+                    <th scope="col" style="width:3%">
+                        <div class="slds-truncate" title="totbuyingPrice">Total <br/>Buying Price</div>
+                    </th>
+                    <th scope="col" style="width:5%">
+                        <div class="slds-truncate" title="deliveryDate"><span style="color:red">*</span>  Expt. Delivery</div>
+                    </th>
+                    <th scope="col" style="width:7%;">
+                        <div class="slds-truncate" title="Status">Status</div>
+                    </th>
+                    <th style="width:3%;" class="slds-p-right_none"></th>
+                </tr>
+            </thead>   
+            <tbody>
+                <!--Iterate the child Component for display Table rows 
+               with pass the List Item Index for track the Every child Component 
+               and pass each List PO Instance -->         
+                <aura:iteration items="{!v.MultiplePOWrapList}" var="item" indexVar="index">
+                    <!-- <aura:if isTrue="{!and(index!=0,item.POP.sigmaerpdev2__Product__c != null)}">-->
+                    <c:GenerateMultiplePOchild   POInstance="{!item.POP}" SelectedVendorName = "{!item.vendorName}" SelectedVendorId="{!item.vendorId}"  SelectedVendorLocation="{!item.vendorLocation}" rowIndex="{!index}" />
+                    <!--  </aura:if>-->
+                </aura:iteration>
+            </tbody>
+        </table>
+        <footer class="slds-card__footer slds-m-top_none slds-text-align_left">
+            <div class="slds-grid">                
+                <div class="slds-col">
+                    <lightning:button variant="brand" iconName="utility:add" onclick="{!c.addNewRow}" label="Add Product"/>
+                </div>
+                <div class="slds-col slds-text-align_right">
+                    
+                    <button class="slds-button slds-button_brand" onclick="{!c.Save}">Generate PO</button>
+                </div>
+            </div>            
+        </footer>
+    </div>
+</aura:component>

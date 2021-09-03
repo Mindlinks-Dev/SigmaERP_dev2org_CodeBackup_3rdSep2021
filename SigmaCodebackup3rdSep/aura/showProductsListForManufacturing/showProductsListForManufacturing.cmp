@@ -1,0 +1,17 @@
+<aura:component>
+    <aura:attribute name="mainList" type="array" />
+    <aura:attribute name="wrapProdList" type="array" /> 
+    <aura:attribute name="prodId" type="Id" /> 
+    <aura:attribute name="recID" type="Id" />              
+    <aura:attribute name="manfstatusChild" type="String" /> 
+    <aura:attribute name="enableSelStock" type="Boolean" /> 
+    <aura:attribute name="editStock" type="Boolean" default="false" /> 
+    <aura:attribute name="showAutoReserve" type="Boolean" /> 
+    
+    <aura:attribute Name="disableChkStkAfterAutopick" type="Boolean" /> 
+    
+    <aura:iteration items="{!v.mainList.mainWrapProdList}" var="rowData"> 
+    	<c:showProductsListOuter rowDetails="{!rowData}" prodId="{!rowData.prodId}" manfstatusChild="{!v.manfstatusChild}" recID="{!v.recID}" 
+                                 enableSelStock="{!v.enableSelStock}" showAutoReserve="{!v.showAutoReserve}" disableChkStkAfterAutopick="{!v.disableChkStkAfterAutopick}" />           
+    </aura:iteration>   
+</aura:component>

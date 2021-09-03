@@ -1,0 +1,7 @@
+.THIS .slds-page-header__detail-row{
+    position:inherit;
+}
+.THIS .slds-page-header__detail-block{
+    width:100%;
+    max-width:100%;
+}

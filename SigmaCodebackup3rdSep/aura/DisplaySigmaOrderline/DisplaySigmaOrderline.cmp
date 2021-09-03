@@ -1,0 +1,149 @@
+<aura:component >
+	<aura:attribute name="innerList2" type="List" />
+    <aura:attribute name="rowId1" type="Id" />  
+    <aura:attribute name="fullList" type="List" />
+	<aura:attribute name="fromMobile1" type="boolean" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <td>
+        <table border="0" class="slds-table slds-table_bordered">        
+            <tr>
+              <!--  <aura:if isTrue="{!v.fromMobile1}">
+                <td width="3%">
+                    <img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.rowId1}" src="/resource/sigmaerpdev2__NPlus" width="30"
+                    	height="30" title="Show Details" />
+                </td>
+                <aura:set attribute="else">
+                <td width="3%">
+                    <img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.rowId1}" src="/resource/sigmaerpdev2__NPlus" width="15"
+                    	height="15" title="Show Details" />
+                </td>
+                </aura:set>
+                 </aura:if> -->
+                <td width="1%">
+                    <img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.rowId1}" src="/resource/sigmaerpdev2__NPlus" class="expandOrHideIcon"
+                    	 title="Show Details" />
+                </td>
+                <td width="5%">
+                    <a onclick="{!c.navigateToRecord}" data-recid="{!v.innerList2.soId}">{!v.innerList2.soName}</a>                   
+                </td>
+                <td width="13%" style="max-width:100px;word-wrap:break-word;white-space:normal;">
+                   {!v.innerList2.custName}
+                </td>
+                <td width="6%">            
+                    <!--<lightning:formattedDateTime value="{!v.innerList2.createDate}" />-->                    
+                    <ui:outputDate value="{!v.innerList2.createDate}" />
+                </td>
+                <td width="10%" style="max-width:100px;word-wrap:break-word;white-space:normal;">
+                   {!v.innerList2.custType}
+                </td>
+                <td width="12%" style="max-width:100px;word-wrap:break-word;white-space:normal;">
+                    {!v.innerList2.orderType}
+                </td>
+               <!-- <td width="10%">
+                   {!v.innerList2.packageStatus}
+                </td>
+                <td width="10%">                
+                    <aura:if isTrue="{!(v.innerList2.salesInvGen == 'Yes')}">                        
+                        <div align="center">
+                           <img align="top" src="/resource/stapp__CorrectLoc" width="21"
+                                height="21" title="Sales Invoice generated" />
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!(v.innerList2.salesInvGen == 'NO')}">
+                        <div align="center">
+                           <img align="top" src="/resource/stapp__WrongLoc" width="11"
+                                height="11" title="Sales Invoice not yet generated" />
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!(v.innerList2.salesInvGen == 'Partial')}">
+                        <div align="center">
+                           <img align="top" src="/resource/stapp__PartialGen" width="27"
+                                height="27" title="Sales Invoice partially generated" />
+                        </div>
+                    </aura:if>
+                    
+                  
+                </td>  -->
+             </tr>
+             <tr>
+                 <td colspan="7">
+                    <div id="{!'showHide_'+v.rowId1}" style="display:none;padding-left:101px;"> 
+                	<table border="0" class="slds-table slds-table_bordered">
+                        <thead>
+                            <tr class="slds-text-title_caps">                                     
+                                <th scope="col" style="background-color:#EEC7FF;font-weight: bold;">
+                                    Sigma Order Lines
+                                </th>                                 
+                                <th scope="col" style="background-color:#EEC7FF;font-weight: bold;">
+                                    Product Name
+                                </th>                                 
+                                <th scope="col" style="background-color:#EEC7FF;font-weight: bold;">
+                                    Back Order Qty
+                                </th> 
+                                <th scope="col" style="background-color:#EEC7FF;font-weight: bold;">
+                                    Status
+                                </th> 
+                            </tr> 
+                        </thead>
+                    	<aura:iteration items="{!v.innerList2.orderLinesList}" var="locListLines">                       
+                            <tr>
+                        		<c:DisplaySigmaOrderlineitem innerLinesList="{!locListLines}" />
+                        	</tr>
+                    	</aura:iteration> 
+                        <aura:if isTrue="{!v.innerList2.pickingList.length > 0}">
+                            <tr>
+                                <td style="padding-left:0px;" width="10%" colspan="4">
+                                     <table border="0" width="10%" class="slds-table slds-table_striped">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">                                     
+                                                <th scope="col" width="6%" style="background-color:#d3f9ea;">
+                                                    Picking Name
+                                                </th>   
+                                                <th scope="col" width="6%" style="background-color:#d3f9ea;">
+                                                    Stapp Order
+                                                </th>
+                                                <th scope="col" width="7%" style="background-color:#d3f9ea;">
+                                                    Basket
+                                                </th>
+                                                <th scope="col" width="7%" style="background-color:#d3f9ea;">
+                                                    Status
+                                                </th>
+                                            </tr>                            
+                                        </thead>
+                                        <tbody> 
+                                            <aura:iteration items="{!v.innerList2.pickingList}" var="locListInnerpick">
+                                                <tr>
+                                                    <td>{!locListInnerpick.pickName}</td>
+                                                    <td>{!locListInnerpick.soName}</td>
+                                                    <td>{!locListInnerpick.basketName}</td>
+                                                    <td>{!locListInnerpick.status}</td>     
+                                                </tr>
+                                            </aura:iteration>                                       
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </aura:if>
+						                      
+                     <!--   <aura:iteration items="{!v.innerList2.packageList}" var="locListInnerpkg">
+                            <tr>
+                                <c:DisplayCustPkg innerList3="{!locListInnerpkg}" fromMobile2="{!v.fromMobile1}" />   
+                            </tr>           
+                        </aura:iteration>
+                        <aura:iteration items="{!v.innerList2.shipmentList}" var="locListInnership">
+                            <tr>
+                                <c:DisplayCustShip innerList4="{!locListInnership}" fromMobile3="{!v.fromMobile1}" />   
+                            </tr>           
+                        </aura:iteration>
+                        <aura:iteration items="{!v.innerList2.tdList}" var="locListInnerTrans">
+                            <tr>
+                                <c:DisplayCustTrans innerList7="{!locListInnerTrans}" fromMobile7="{!v.fromMobile1}" />   
+                            </tr>           
+                        </aura:iteration>  -->
+                    </table>
+                  </div>   
+                </td>
+            </tr>         
+    </table> 
+    </td>
+</aura:component>

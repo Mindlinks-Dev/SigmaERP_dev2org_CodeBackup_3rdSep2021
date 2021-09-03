@@ -1,0 +1,82 @@
+<aura:component controller="ConvertOpptoSO" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+<aura:attribute name="recordId" type="String" default=""/> 
+ <aura:attribute name="contactName" type="String"  default="" description="contact name " />
+ <aura:attribute name="Billingperson" type="String"  default="" description="contact name " /> 
+    <aura:attribute name="Proposalname" type="String"  default="" description="contact name " /> 
+    <aura:handler name="init" value="{!this}" action="{!c.myAction}" />  
+     <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/> 
+   <aura:attribute name="Amount" type="String"  default="" description="contact name " /> 
+   
+   <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner alternativeText="Loading" size="large" />
+    </div>
+    
+    <div class="slds-box" style="padding:0;border-top:0;">
+        <div class="slds-page-header" style="">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <!-- <span class="slds-icon_container slds-icon-standard-work-order" title="Description of icon when needed">
+                        <sigmadev:svg class="slds-icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/custom-sprite/svg/symbols.svg#custom98'}" />
+                    </span>  -->
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="order">Create Order</h1>
+                </div>
+            </div>
+        </div>
+         <aura:renderIf isTrue="{!v.isError}">
+            <ui:message title="Error" severity="error" closable="false">
+                {!v.errorMsg}
+            </ui:message>
+            <aura:set attribute="else">
+          
+		 <div class="slds-form slds-form_compound" style="padding: 2% 3% 2% 1.5%;">
+		 <div class="slds-form-element__group">
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label" for="input-01">Customer Name :</label>
+                            <ui:inputText aura:id="QReceived" 
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          disabled="true"
+                          value="{!v.contactName}" />
+                        </div>
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label">Amount($)</label>
+                            <ui:inputText aura:id="QReceived" 
+                      class="slds-input"
+                      labelClass="slds-form-element__label"
+                      disabled="true"
+                      value="{!v.Amount}" />
+                        </div>
+                    </div>
+		</div>
+
+		<div class="slds-form-element__group">
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                             <label class="slds-form-element__label">Opportunity Name :</label>
+                        <ui:inputText aura:id="QReceived" 
+                              class="slds-input"
+                              labelClass="slds-form-element__label"
+                              disabled="true"
+                              value="{!v.Proposalname}" />
+                        </div>
+                        <div class="slds-form-element slds-size_1-of-2">
+                           
+                        </div>
+                    </div>
+		</div>	
+		
+            
+		</div>	
+                
+		 <footer class="slds-modal__footer">
+			 <button class="slds-button slds-button_brand" aura:id="Next" onclick="{!c.submit}">Save</button>
+        <button class="slds-button slds-button_neutral" aura:id="Cancel" onclick="{!c.cancel}">Cancel</button>        
+      </footer>		
+        </aura:set>
+        </aura:renderIf>  
+    </div>
+</aura:component>

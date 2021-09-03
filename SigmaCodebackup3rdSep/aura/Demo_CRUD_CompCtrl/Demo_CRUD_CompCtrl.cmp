@@ -1,0 +1,130 @@
+<aura:component controller="InventoryReleaseCntrl" implements="force:lightningQuickAction,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="record" type="Id" />
+    <aura:attribute access="PUBLIC" name="view" type="Object"/> 
+     <aura:attribute access="PUBLIC" name="ShowDetails" type="Object"/> 
+    <aura:attribute access="PUBLIC" name="showPopUp" type="Boolean" default="false"/> 
+    <aura:attribute  name="recordId" type="Product_Order_Price_Book__c"/>
+    <aura:attribute  access="PUBLIC" name="comment" type="String"/>
+	<aura:attribute  access="PUBLIC" name="pickvalue" type="Boolean" />
+	<div class="slds-spinner_container slds-is-fixed slds-hide" aura:id="spinner">
+    <lightning:spinner alternativeText="Loading" size="large" />
+    </div>
+   <aura:if isTrue="{!v.view.sigmaorder}">
+    <tr>
+        <td scope="row" data-label="Account Name">
+            <div class="slds-truncate" ><a href="javascript:void(0);">{!v.view.orderLne.sigmaerpdev2__Product__r.Name}</a></div>
+        </td>
+        <td data-label="Industry">
+            <div class="slds-truncate" >{!v.view.orderLne.sigmaerpdev2__Sigma_Order__r.Name}</div>
+        </td>
+        <td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderLne.sigmaerpdev2__Net_Quantity__c}</div>
+        </td>
+        <td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderLne.sigmaerpdev2__Net_Quantity__c}</div>
+        </td>
+        <td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderLne.sigmaerpdev2__Order_Status__c}</div>
+        </td>
+        <!--<td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderLne.sigmaerpdev2__Is_Inventory_Release__c}</div>
+        </td>
+        <td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderLne.sigmaerpdev2__Inventory_Release_Comment__c}</div>
+        </td>-->
+		
+
+             <td style="padding-bottom:21px;" id="TempDisplayStatus">
+            <ui:inputCheckbox aura:id="checkbox" label="" value=""/> 
+           <!--<lightning:input type="checkbox" name="ProofDisclaimer" 
+           label="" Checked="{!v.view.pickvalue}" />-->
+           <!-- <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <span class="slds-checkbox slds-checkbox_stacked">
+                        <input type="checkbox" name="options" id="checkbox-10" value="{!v.pickvalue}"/>
+                        <label class="slds-checkbox__label" for="checkbox-10">
+                            <span class="slds-checkbox_faux"></span>
+                            <span class="slds-form-element__label"></span>
+                        </label>
+                    </span>
+                </div>
+            </div>-->
+            
+            <!--<ui:inputCheckbox aura:id="checkBox" text="{!v.view.Id}" />!-->
+        </td>
+        <td style="padding-bottom:21px;" id="TempDisplayComment">
+            <lightning:input label="" placeholder=""  value="{!v.comment}"/>
+        </td>
+        <td data-label="">
+            <div class="slds-truncate" >
+               
+                
+                <button class="slds-button slds-button_neutral" onclick="{!c.callUpdateRecord}">Release</button>
+                
+                
+            </div>
+        </td> 
+        
+    </tr>
+	<aura:set attribute="else">
+	<tr>
+        <td scope="row" data-label="Account Name">
+            <div class="slds-truncate" ><a href="javascript:void(0);">{!v.view.orderlineproduct.Product2.Name}</a></div>
+        </td>
+        <td data-label="Industry">
+            <div class="slds-truncate" >{!v.view.orderlineproduct.Order.OrderNumber}</div>
+        </td>
+        <td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderlineproduct.Quantity}</div>
+        </td>
+        <td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderlineproduct.Quantity}</div>
+        </td>
+        <td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderlineproduct.sigmaerpdev2__Order_Status__c}</div>
+        </td>
+        <!--<td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderLne.sigmaerpdev2__Is_Inventory_Release__c}</div>
+        </td>
+        <td data-label="Close Date">
+            <div class="slds-truncate" >{!v.view.orderLne.sigmaerpdev2__Inventory_Release_Comment__c}</div>
+        </td>-->
+		
+
+             <td style="padding-bottom:21px;" id="TempDisplayStatus">
+            <ui:inputCheckbox aura:id="checkbox" label="" value=""/> 
+           <!--<lightning:input type="checkbox" name="ProofDisclaimer" 
+           label="" Checked="{!v.view.pickvalue}" />-->
+           <!-- <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <span class="slds-checkbox slds-checkbox_stacked">
+                        <input type="checkbox" name="options" id="checkbox-10" value="{!v.pickvalue}"/>
+                        <label class="slds-checkbox__label" for="checkbox-10">
+                            <span class="slds-checkbox_faux"></span>
+                            <span class="slds-form-element__label"></span>
+                        </label>
+                    </span>
+                </div>
+            </div>-->
+            
+            <!--<ui:inputCheckbox aura:id="checkBox" text="{!v.view.Id}" />!-->
+        </td>
+        <td style="padding-bottom:21px;" id="TempDisplayComment">
+            <lightning:input label="" placeholder=""  value="{!v.comment}"/>
+        </td>
+        <td data-label="">
+            <div class="slds-truncate" >
+               
+                
+                <button class="slds-button slds-button_neutral" onclick="{!c.callUpdateRecord}">Release</button>
+                
+                
+            </div>
+        </td> 
+        
+    </tr>
+	 </aura:set>
+    </aura:if>
+    
+   
+</aura:component>

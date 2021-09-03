@@ -1,0 +1,88 @@
+<aura:component controller="WorkOrderMapTable" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="isEmpty" type="Boolean" default="False"/>
+    <aura:attribute name="message" type="String" default="No Work Orders accepted today"/>
+    <aura:attribute name="workOrderDetails" type="List"/>
+    <aura:attribute name="latitude" type="String"/>
+    <aura:attribute name="longitude" type="String"/>
+    
+    <aura:handler name="init" action="{!c.getWorkOrders}" value="{!this}"/>
+    
+    <div class="slds-grid slds-wrap"> 
+        <aura:if isTrue="{!!v.isEmpty}">
+            <div class="slds-text-heading_medium slds-p-top_medium slds-size_1-of-1">
+                <div class="slds-text-align_center">
+                    <h1><strong>{!v.message}</strong></h1>
+                </div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-size_1-of-1 slds-grid slds-grid_align-left data-table-container">
+                    <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_col-bordered slds-table_cell-buffer data-table">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate slds-p-horizontal_medium slds-text-align_center" title="">WayPoint</div>
+                                </th>
+                                <th class="slds-text-title_caps " scope="col">
+                                    <div class="slds-truncate slds-text-align_left" title="">Work Order</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate slds-p-horizontal_medium slds-text-align_left" title="">Location</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate slds-p-horizontal_medium slds-text-align_left mobileView" title="">Work Type</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate slds-p-horizontal_medium slds-text-align_left mobileView" title="">Customer Name</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate slds-p-horizontal_medium slds-text-align_right" title="">Contact Number</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate slds-p-horizontal_medium slds-text-align_right" title="">Distance</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate slds-p-horizontal_medium slds-text-align_right" title="">Time</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="slds-hint-parent">
+                                <td data-label="WayPoint">
+                                    <div class="slds-truncate slds-text-align_center" title="{}">A</div>
+                                </td>
+                                <th data-label="WorkOrder Id" scope="row">
+                                    <div class="slds-truncate slds-text-align_left slds-p-horizontal_medium" title="{}"><a href="javascript:void(0);" tabindex="-1">---</a></div>
+                                </th>
+                                <td data-label="Location">
+                                    <div class="slds-truncate slds-text-align_left slds-p-horizontal_medium" title="{}">Your Current Location</div>
+                                </td>
+                                
+                                <td data-label="Work Type">
+                                    <div class="slds-truncate slds-text-align_right slds-p-horizontal_medium" title="{}">---</div>
+                                </td>
+                                <td data-label="Customer Name">
+                                    <div class="slds-truncate slds-text-align_right slds-p-horizontal_medium" title="{}">---</div>
+                                </td>
+                                <td data-label="Contact">
+                                    <div class="slds-truncate slds-text-align_right slds-p-horizontal_medium" title="{}">---</div>
+                                </td>
+                                <td data-label="Distance">
+                                    <div class="slds-truncate slds-text-align_right slds-p-horizontal_medium" title="{}">---</div>
+                                </td>
+                                <td data-label="Time">
+                                    <div class="slds-truncate slds-text-align_right slds-p-horizontal_medium" title="{}">---</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <aura:iteration items="{!v.workOrderDetails}" var="item">
+                                <c:WorkOrderRouteTableChild eachWorkOrder="{!item}"></c:WorkOrderRouteTableChild>
+                            </aura:iteration> 
+                        </tbody>
+                        
+                    </table>
+                </div>
+            </aura:set>  
+        </aura:if>        
+    </div>  
+</aura:component>

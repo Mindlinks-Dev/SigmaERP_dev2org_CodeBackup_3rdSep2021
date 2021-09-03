@@ -1,0 +1,9 @@
+<aura:event type="COMPONENT">
+    <!-- Add aura:attribute tags to define event shape.
+         One sample attribute here. -->
+    <aura:attribute name="siList" type="Stock_In_Product__c[]"/>
+    <aura:attribute name="isEdit" type="boolean" default="false"/> 
+    <aura:attribute name="rowIndex" type="Integer"/> 
+     <aura:attribute name="index" type="Integer"/> 
+    <aura:attribute name="srlList" type="Product_Serial_Number__c[]"/>
+</aura:event>

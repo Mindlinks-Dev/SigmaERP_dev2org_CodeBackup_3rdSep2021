@@ -1,0 +1,113 @@
+<aura:component controller="ViewCart" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="SelectedRetailerName" type="String" /> 
+    <aura:attribute name="SelectedRetailer" type="String" />  
+    <aura:attribute name="parentcmp" type="Boolean" default="false"/>
+    <aura:attribute name="HideButtons" type="Boolean" default="true"/>
+    <aura:attribute name="Shipcmp" type="Boolean" default="true"/>
+    <aura:attribute name="DisplayCustDetail" type="String"/>
+    <aura:attribute name="DisplayCartDetail" type="list"/>
+    <aura:attribute name="CartValue" type="Integer" default="0"/>
+    
+    <aura:attribute name="AddandCone" type="Integer" default="0"/>
+    <aura:attribute name="PlaceorderBtn" type="boolean" default="false"/>
+    <aura:attribute name="UserDetails_ShoppingCart" type="boolean" default="false"/>
+    
+    
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner style="position: fixed" alternativeText="Loading" size="large" />
+    </div>
+    
+    <aura:If isTrue="{!v.Shipcmp}">
+        <div class="slds-p-around_medium">
+            <div class="slds-box">
+                <h2 class="slds-card__header-title slds-p-vertical_small title">SHOPPING <span>CART</span></h2>
+                <div class="slds-scrollable">
+                    <table class="slds-table slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col" style="width:25%">
+                                    <div class="slds-truncate" title="Product">Product</div>
+                                </th>
+                                <th class="" scope="col"  style="width:35%">
+                                    <div class="slds-truncate" title="Description">Description</div>
+                                </th>
+                                <th class="" scope="col"  style="width:15%">
+                                    <div class="slds-truncate" title="Availablity">Availability</div>
+                                </th>
+                                <th class="" scope="col" style="width:20%">
+                                    <div class="slds-truncate" title="Quantity">No.of Users</div>
+                                </th>
+                                
+                                <th class="" scope="col" style="width:5%">
+                                    <div class="slds-truncate" title="Action">Action</div>
+                                </th>
+                            </tr>
+                        </thead> 
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.DisplayCartDetail}" var="cartDetail" indexVar="ind">
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Opportunity Name" scope="row">                                       
+                                        <div class="product-item-photo1">
+                                            <img src="{! cartDetail.RetailerCommURL +'/sfc/servlet.shepherd/version/download/'+cartDetail.Attachementsid}" style="block-size: inherit;"/>
+                                        </div>
+                                    </td>
+                                    <td data-label="Account Name">
+                                        <p><span style="width:140px;display:inline-block;">Product name </span>: <span style="color:#fe0100;"> {!cartDetail.Name}</span></p>
+                                         <p><span style="width:140px;display:inline-block;">No.of users </span>: {!cartDetail.OrderedQuantity}</p>
+                                        <p><span style="width:140px;display:inline-block;">Price per user </span>: <lightning:formattedNumber value="{!cartDetail.UnitPrice}" style="currency" currencyCode="USD" currencyDisplayAs="code"/></p>
+                                        <p><span style="width:140px;display:inline-block;">Total amount </span>: <lightning:formattedNumber value="{!cartDetail.ProductPrice}" style="currency" currencyCode="USD" currencyDisplayAs="code"/></p>
+                                        
+                                    </td>
+                                    <td>
+                                        <lightning:badge label="Available" class="slds-badge slds-theme_success" iconName="utility:success" iconPosition="end"/>
+                                    </td>
+                                    <td data-label="Close Date" >
+                                        <lightning:input type="number" class="slds-size_1-of-2" name="{!ind}" value="{!cartDetail.OrderedQuantity}" onchange="{!c.CalculateBoxQty}"	/>
+                                        <aura:set attribute="else">
+                                            <lightning:input type="number" class="slds-size_1-of-2" aura:id="myInput" name="{!ind}" value="{!cartDetail.OrderedQuantity}"  onchange="{!c.CalculateBoxQty}"/>
+                                        </aura:set>
+                                    </td>
+                                    
+                                    <td data-label="Amount" style="text-align:center;">
+                                        <lightning:buttonIcon name="{!ind}" iconName="utility:delete" size="large" variant="bare" onclick="{!c.deleteProduct}" alternativeText="Remove" />
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="slds-grid slds-grid-block">
+                    <div class="slds-col">
+                        <lightning:button class="slds-button slds-button_brand slds-m-top_medium" iconName="utility:shopping_bag" variant="CONTINUE SHOPPING" label="CONTINUE SHOPPING" title="CONTINUE SHOPPING" onclick="{! c.BacktoCatalog}"/>
+                    </div>
+                    <div class="slds-col">                        
+                        <aura:if isTrue="{!v.PlaceorderBtn}">
+                            <h3 class="slds-p-top_large"><b style="color:rgb(164, 31, 52);">Please click "Update Cart"  to proceed...</b></h3>
+                        </aura:if>                        
+                    </div>
+                    <div class="slds-col slds-text-align_right">
+                        <lightning:button class="slds-button slds-button_brand slds-m-top_medium" iconName="utility:clear" variant="base" label="CLEAR CART" title="CLEAR CART" disabled="{! !v.HideButtons}" onclick="{! c.ClearItems }"/>
+                        <aura:If isTrue="{!v.HideButtons}">
+                            <lightning:button class="slds-button slds-button_brand slds-m-top_medium" iconName="utility:record_update" variant="UPDATE CART" label="UPDATE CART" title="UPDATE CART" onclick="{! c.UpdateCart}"/>
+                            <lightning:button class="{!v.PlaceorderBtn==true?'slds-button slds-button_brand slds-m-top_medium slds-button_disabled':'slds-button slds-button_brand slds-m-top_medium '}" aura:id="placeorder" disabled="{!v.PlaceorderBtn}" iconName="utility:cart" variant="PLACE ORDER" label="SUBMIT REQUEST" title="PLACE ORDER" onclick="{! c.placeOrders }" />
+                        </aura:If>
+                    </div>
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>        
+        <div class="slds-p-around_small"> 
+            <section class="main-container col1-layout">   
+                <div class="actions"> 
+                </div>
+            </section> 
+        </div>
+    </aura:If>
+    <aura:If isTrue="{!v.UserDetails_ShoppingCart}">
+        <c:UserDetails_ShoppingCart UserDetails_ShoppingCart="{!v.UserDetails_ShoppingCart}"/>
+    </aura:If>    
+</aura:component>

@@ -1,0 +1,7 @@
+<aura:event type="APPLICATION" description="Update Lookup Id" access="global">
+    <aura:attribute name="sObjectId" type="Id" required="true" description="The Id of the selected SObject." />
+     <aura:attribute name="VendersObjectId" type="Id" required="true" description="The Id of the selected SObject." />
+    <aura:attribute name="instanceId" type="String" required="true" description="The id to identify the instance the component" />    
+    <aura:attribute name="objectLabel" type="String" description="Object Label" />   
+    <aura:attribute name="sObjectIdNew" type="Id" required="true" description="The Id of the selected SObject." />
+</aura:event>

@@ -1,0 +1,25 @@
+<aura:component >    
+	<aura:attribute name="innerList" type="List" />
+    <aura:attribute name="locationId" type="String" />
+    <td width="50%">
+        <table width="40%" style="background-color:#A9CCE3;">
+            <tr>                
+                <td width="1%">
+                    <img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.locationId}" src="/resource/sigmaerpdev__NPlus" width="15"
+                         height="15" title="Show Zones" /> 
+                    &nbsp;<span style="color:#0093D1;" title="Location">
+                    <!--<a onclick="{!c.goToLoc}">{!v.innerList.locName}</a>-->
+                    {!v.innerList.locName}
+                    </span>
+                </td>
+                <td width="25%" style="padding-right:30px;">
+                    <div id="{!'showdropdown_'+v.locationId}" style="display:none;">    
+                        <aura:iteration items="{!v.innerList.zoneList}" var="zone">
+                            <c:DisplayZones zoneRowId="{!zone.zoneId}" innerListZone="{!zone}" />       
+                        </aura:iteration>
+                    </div>
+                </td>  
+            </tr>
+        </table>
+    </td>
+</aura:component>

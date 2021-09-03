@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>List</customSettingsType>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>Approval_Process_Not_Needed__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>created flag to check Approval Process Not needed default</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Please make Sure Approval Process configured Properly.</inlineHelpText>
+        <label>Approval Process Not Needed</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Auto_Reserve_Stock__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Auto Reserve Stock</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Company_Email__c</fullName>
+        <externalId>false</externalId>
+        <label>Company Email</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Company_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Company Name</label>
+        <length>120</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Company_Phone__c</fullName>
+        <externalId>false</externalId>
+        <label>Company Phone</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>Company_VAT__c</fullName>
+        <externalId>false</externalId>
+        <label>Company VAT</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Currency__c</fullName>
+        <externalId>false</externalId>
+        <label>Currency</label>
+        <length>5</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Default_Bin__c</fullName>
+        <externalId>false</externalId>
+        <label>Default Bin</label>
+        <length>120</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Default_Damaged_Location__c</fullName>
+        <externalId>false</externalId>
+        <label>Default Damaged Location</label>
+        <length>120</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Default_Location__c</fullName>
+        <externalId>false</externalId>
+        <label>Default Location</label>
+        <length>120</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Default_Vendor__c</fullName>
+        <defaultValue>true</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>Create Auto Po from the Default vendor of the product when Product Inventory quantity goes below threshold quantity</inlineHelpText>
+        <label>AutoPO Based On Default Vendor</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Default_Zone__c</fullName>
+        <externalId>false</externalId>
+        <label>Default Zone</label>
+        <length>120</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>EmailImage__c</fullName>
+        <externalId>false</externalId>
+        <label>EmailImage</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>GanttURL__c</fullName>
+        <externalId>false</externalId>
+        <label>GanttURL</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Gantt_Library_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Gantt Library Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Inventory_Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Inventory Status</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Invoice_Doc_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Invoice Doc Id</label>
+        <length>120</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Logo__c</fullName>
+        <externalId>false</externalId>
+        <label>Logo</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>POId__c</fullName>
+        <externalId>false</externalId>
+        <label>POId</label>
+        <length>120</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>PO_to_Contact__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Send an email notification to contact and generate po based on vendor and location</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Email notification to contact regarding PO submission</inlineHelpText>
+        <label>PO to Contact</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Package_ID__c</fullName>
+        <externalId>false</externalId>
+        <label>Package ID</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Parent_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Parent Id</label>
+        <length>100</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Shipment_ID__c</fullName>
+        <externalId>false</externalId>
+        <label>Shipment ID</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ShowDispatchedQuantityInStockReceivingUI__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Show Dispatched Quantity In Stock Receiving UI (Display  Dispatched Quantity In Stock Receiving UI  which is commining 
+ from vendor comminity)</description>
+        <externalId>false</externalId>
+        <label>ShowDispatchedQuantityInStockReceivingUI</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>StockReceiving_ID__c</fullName>
+        <externalId>false</externalId>
+        <label>StockReceiving ID</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Stock_Moment__c</fullName>
+        <externalId>false</externalId>
+        <label>Stock Moment</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Vendor_Rating__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>Create Auto Po from the vendor name based on the Vendor Rating System when Product Inventory quantity goes below threshold quantity</inlineHelpText>
+        <label>AutoPO Based On Vendor Rating</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Wastage_Amount_MR__c</fullName>
+        <externalId>false</externalId>
+        <label>Wastage Amount (MR)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>priceBook_for_orders__c</fullName>
+        <description>Default standard pricebook for orders</description>
+        <externalId>false</externalId>
+        <label>priceBook for orders</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Default Parameters</label>
+    <visibility>Protected</visibility>
+</CustomObject>

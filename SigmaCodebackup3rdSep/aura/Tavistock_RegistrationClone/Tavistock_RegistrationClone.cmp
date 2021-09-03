@@ -1,0 +1,180 @@
+<aura:component Controller="AppointmentHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" access="global" >
+    
+    <aura:attribute name="BookingWrapper" type="Map" default="" access="global"/>
+    <aura:attribute name="SelectedAppointment" type="object"/>
+    <aura:attribute name="Amount" type="Decimal"/>
+    <aura:attribute name="showReg" type="boolean" default="true"/>
+    <aura:attribute name="showPayment" type="boolean" default="false"/>
+    <aura:attribute name="LogoutURL" type="String"/>
+    <aura:attribute name="hideback" type="boolean" />
+    
+    <aura:attribute name="AddInfo1" type="List" default="[
+                                                         {'label': 'Yes', 'value': true},
+                                                         {'label': 'No', 'value': false}
+                                                         ]"/>
+    
+    <aura:attribute name="AddInfo2" type="List" default="[
+                                                         {'label': 'Yes', 'value': true},
+                                                         {'label': 'No', 'value': false}
+                                                         ]"/>
+    
+    
+     <lightning:spinner aura:id="mySpinner"  size="medium" class="slds-hide"/>
+    
+    <aura:if isTrue="{!v.showReg}">
+        <div>
+            <!--<div class="slds-m-around_large">
+        <lightning:progressIndicator currentStep="3" type="base" hasError="true" variant="base">
+            <lightning:progressStep label="Step 1" value="1"/>
+            <lightning:progressStep label="Step 2" value="2"/>
+            <lightning:progressStep label="Step 3" value="3"/>
+            <lightning:progressStep label="Step 4" value="4"/>
+        </lightning:progressIndicator>
+    </div>-->
+            <lightning:card title="Registration">
+                <aura:set attribute="title">
+                    <lightning:icon iconName="standard:customer_portal_users" size="small" class="slds-m-right_x-small"/> Registration
+                </aura:set>
+                <div class="slds-p-horizontal_small">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-4">
+                            
+                            <lightning:input required="true" type="text" label="First Name" value="{!v.BookingWrapper.custWrap.FirstName}"  />
+                        </div>  
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input required="true" type="text" label="Last Name"  value="{!v.BookingWrapper.custWrap.LastName}"/>
+                        </div>  
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input type="text" label="Known As" value="{!v.BookingWrapper.custWrap.KnowAs}"/>
+                        </div>  
+                        
+                        
+                        
+                    </div>
+                    
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input type="date" label="Date of Birth" value="{!v.BookingWrapper.custWrap.DateofBirth}"/>
+                        </div>  
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input required="true" type="email" label="Email" value="{!v.BookingWrapper.custWrap.EmailId}"/>
+                        </div>  
+                    </div>
+                    
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input required="true" type="number" label="Mobile Phone Number" value="{!v.BookingWrapper.custWrap.MobilePhoneNumber}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input type="number" label="Home Phone Number" value="{!v.BookingWrapper.custWrap.HomePhoneNumber}" />
+                        </div>
+                    </div>
+                    
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input type="text" required="true" label="Address" value="{!v.BookingWrapper.custWrap.Address}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input required="true" type="text" label="Town/City" value="{!v.BookingWrapper.custWrap.TownCity}"/>
+                        </div>                       
+                    </div>
+                    
+                     <div class="slds-grid slds-wrap slds-gutters">                        
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input required="true" type="text" label="Postal Code" value="{!v.BookingWrapper.custWrap.PostalCode}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning:input required="true" type="text" label="Country" value="{!v.BookingWrapper.custWrap.Country}"/>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <hr/>
+                    <h1 class="slds-card__header-title"><lightning:icon iconName="standard:service_appointment_capacity_usage" size="small" class="slds-m-right_x-small"/> Data Protection Policy</h1>
+                    <br/>
+                    <lightning:input type="checkbox" checked="{!v.BookingWrapper.custWrap.DataProtectionPolicy}" value="{!v.BookingWrapper.custWrap.DataProtectionPolicy}" label="The privacy of our clients is paramount. Please read our privacy notice on how we use and store your information and confirm that you consent to us using your personal information as described." name="input1"/>
+                    <hr/>
+                    <h1 class="slds-card__header-title"><lightning:icon iconName="standard:shift_pattern_entry" size="small" class="slds-m-right_x-small"/> Additional Information</h1>
+                    <lightning:radioGroup name="radioGroup1"
+                                          label="I confirm that I do not have children under the age of 18 years old who reside outside of the EU/EEA"
+                                          options="{!v.AddInfo1}"
+                                          value="{!v.BookingWrapper.custWrap.ageof18years}"
+                                          type="radio"
+                                          onchange="{!c.onGroup1}"/>
+                    <br/>
+                    <lightning:radioGroup name="radioGroup2"
+                                          label="I am registered with a medical professional local to me (e.g. General Practitioner) and I am able to provide details if required"
+                                          options="{!v.AddInfo2}"
+                                          value="{!v.BookingWrapper.custWrap.registeredwithmedical}"
+                                          type="radio"
+                                          onchange="{!c.onGroup2}"/>
+                    
+                    
+                    
+                    
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:select name="select1" label="Do you have any access requirements?" required="true" value="{!v.BookingWrapper.custWrap.accessRequirements}">
+                                <option value="-- None --">-- None --</option>
+                                <option value="Yes">Yes</option>
+                                <option value="Yes">No</option>
+                                
+                            </lightning:select>
+                        </div>  
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:select name="select1" label="Will you be attending alone or with a partner?" required="true" value="{!v.BookingWrapper.custWrap.attendingAlone}">
+                                <option value="-- None --">-- None --</option>
+                                <option value="I will attend on my own">I will attend on my own</option>
+                                <option value="My Partner will also attend">My Partner will also attend</option>
+                                <option value="I am not sure">I am not sure</option>
+                            </lightning:select>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:select name="select1" label="How did you hear about us?" required="true" value="{!v.BookingWrapper.custWrap.hearaboutUs}">
+                                <option value="-- None --">-- None --</option>
+                                <option value="Search Engine">Search Engine</option>
+                                <option value="Tavistock Relationship Websit">Tavistock Relationship Website</option>
+                                <option value="GP/ Hospital">GP/ Hospital</option>
+                                <option value="Counsellor/ therapist">Counsellor/ therapist</option>
+                                <option value="Legal professional">Legal professional</option>
+                                <option value="Walking past TR Building">Walking past TR Building</option>
+                                <option value="Poster or advert">Poster or advert</option>
+                                <option value="Social Media">Social Media</option>
+                                <option value="Friend/ Family/ Word of Mouth">Friend/ Family/ Word of Mouth</option>
+                                <option value="City Wellbeing Centre Website">City Wellbeing Centre Website</option>
+                                <option value="City Wellbeing Centre Promotion">City Wellbeing Centre Promotion</option>
+                            </lightning:select> 
+                        </div>
+                        
+                    </div>
+                    
+                    
+                    
+                    
+                    
+                    <br/>
+                    <p>Please note that we will need to gather details of your GP or medical practitioner at a later date after your online booking.</p>
+                    <br/>
+                    <lightning:input type="checkbox" checked="{!v.BookingWrapper.custWrap.PleaseconfirmAggrement}"  value="{!v.BookingWrapper.custWrap.PleaseconfirmAggrement}" label="Please confirm you have read our Service Agreement and FAQ" name="input1"/>
+                    
+                </div>
+            </lightning:card>
+            <div class="slds-no-flex slds-m-top_medium slds-m-bottom_medium slds-m-left_medium slds-float_right slds-m-right_medium slds-text-align_right">
+             
+                <lightning:button variant="brand" iconPosition="right" iconName="utility:forward" label="Continue" onclick="{!c.save}"/>
+            </div>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showPayment}">
+        <c:BookingPayment_Options LogoutURL="{!v.LogoutURL}" Registration="true" BookingWrap="{!v.BookingWrapper}" recordId="{!BookingWrapper.CustomerId}" customerName="{!v.BookingWrapper.custWrap.FirstName}" postcode="{!v.BookingWrapper.custWrap.PostalCode}" amountTobeCharged="{!v.BookingWrapper.Amount}" orderSFId="{!v.BookingWrapper.OrderId}" billingPerson="Rajgopal" regid="{!v.BookingWrapper.CustomerId}" />
+       <!-- <c:BookingPayment_Options Registration="true" LogoutURL="{!v.LogoutURL}" MainWrapperObject="{!v.MainWrapperObject}" customerName="{!v.MainWrapperObject.BreweryName}" postcode="{!v.MainWrapperObject.PostCode}" recordId="{!v.MainWrapperObject.AccountId}" amountTobeCharged="{!v.MainWrapperObject.orderAmount}" orderSFId="{!v.MainWrapperObject.OrderId}" billingPerson="{!v.MainWrapperObject.ContactPerson}" regid="{!v.MainWrapperObject.RegistryId}" />-->
+    </aura:if>
+    
+    
+</aura:component>

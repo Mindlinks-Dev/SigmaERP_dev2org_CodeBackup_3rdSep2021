@@ -1,0 +1,7 @@
+<aura:component >
+	<aura:attribute name="innerLinesList" type="List" />
+    <td>{!v.innerLinesList.soliName}</td>
+    <td>{!v.innerLinesList.prodName}</td>      
+    <td>{!v.innerLinesList.ordQuantity}</td>
+    <td>{!v.innerLinesList.status}</td> 
+</aura:component>

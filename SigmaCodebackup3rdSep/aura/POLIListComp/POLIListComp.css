@@ -1,0 +1,19 @@
+.THIS .slds-form-element-slds
+{
+    margin-top:4px 'green';
+    
+}
+.THIS td
+{
+    vertical-align:top;
+}
+.THIS .label-hidden label{
+    display:none;
+}
+.THIS.slds-select,.THIS .slds-select{
+    height:27 !important;
+}
+@media only screen and (max-width: 768px) 
+    {
+    .THIS .slds-modal__container{margin:auto;}
+}

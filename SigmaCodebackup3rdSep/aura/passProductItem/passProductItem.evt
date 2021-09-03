@@ -1,0 +1,11 @@
+<aura:event type="APPLICATION" description="Event template" >
+    <aura:attribute name="ProductItem" type="Vendor_Product__c"
+                    default="{'sobjectType' : 'Vendor_Product__c',
+                             'sigmaerpdev2__Product_Name__r.Name' : '',
+                             'sigmaerpdev2__VendorProductCode__c' : '',
+                             'sigmaerpdev2__Vendor_Location__r.Name' :'',
+                             'sigmaerpdev2__Current_Stock__c': '',
+                             'sigmaerpdev2__Last_Updated_Date__c':''
+                             }"/> 
+    <aura:attribute name="LocationInstanceInner"  type="object"/>
+</aura:event>

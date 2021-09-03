@@ -1,0 +1,179 @@
+<aura:component controller="ConnServiceQuoteCntl" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickAction"  access="global" >   
+    <!--Declare Attributes-->
+    <aura:attribute name="wrapperListInsertLineItem" type="Object[]"/>                  
+    <aura:attribute name="locationquantity" type="Object"
+                    />
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="ServiceConName"  type="String" description="The current record Id to display" />
+	<aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.handleAccountIdUpdate}"/>
+
+    <aura:attribute name="locationquantitylist" type="Object[]"/>
+    <aura:attribute name="wrapperListInsertLineItems" type="Object[]"/>
+    <aura:attribute name="wrapper" type="Object" />
+    <aura:attribute name="Promap" type="Object[]" />
+    <aura:attribute name="Prowrap" type="Object" />
+    <aura:attribute name="indexes" type="Integer"/>
+    <aura:attribute name="rowIndexVar" type="Integer"/>
+     <aura:attribute name="customerid" type="String" default=""/>
+    <aura:attribute name="Assetid" type="String" default=""/>
+    <aura:attribute name="UnitPrice" type="String" default=""/>
+    
+    <aura:registerEvent name="carryorderList" type="c:CarryOrderTBIRecord"/>  
+    <aura:attribute name="orderline" type="Service_Quote_Line_Item__c" description="The current record Id to display" 
+                    default="{
+                             'Name' : '',                             
+                             'sigmaerpdev2__Price__c':'',
+                             'sigmaerpdev2__Product__c':'',
+                             'sigmaerpdev2__Quantity__c':'',
+                             'sigmaerpdev2__Service_Quote__c':'',
+                             'sigmaerpdev2__Service_Contract__c':'',
+                              'contractname': ''
+                             }"
+                    />
+    <aura:attribute name="productprice" type="Product_Price__c" description="The current record Id to display" 
+                    default="{ 'sObjectType' : 'sigmaerpdev2__Product_Price__c' ,
+                             'Name' : '',                             
+                             'sigmaerpdev2__Cost__c':''
+                             }"
+                    />
+    <aura:attribute name="disval" type="String" />
+    <aura:attribute name="Qnt" type="String" />
+    <aura:attribute name="productrate" type="String" />
+    <aura:attribute name="productrate1" type="String" />
+    <aura:attribute name="ContractName" type="String" />
+    <aura:attribute name="ContractId" type="String" />
+    <aura:handler event="c:carryorderpopup" action="{!c.Proposaleditflow}"/> 
+    <aura:attribute name="isOpenTablechild" type="boolean" default="false"/>
+    <aura:attribute name="isOpenchild" type="boolean" default="false"/>
+    <aura:attribute name="proposalproduct" type="Boolean" /> 
+    
+    <div style="height: 640px;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                        <lightning:icon iconName="utility:Close" alternativeText="Close" variant="slds-button__icon slds-button__icon_large"/>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Service Quote Line Item</h2>
+                </header>
+                <div class="slds-modal__content" id="modal-content-id-1" style="height:200px;min-height:200px;">
+                    <aura:renderIf isTrue="{!v.isError}">
+                        <ui:message title="Error" severity="error" closable="false">
+                            {!v.errorMsg}
+                        </ui:message>
+                        <aura:set attribute="else">
+                            
+                        </aura:set>
+                    </aura:renderIf>
+                   
+                    <div class="slds-scrollable1">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Product Name">Product Name</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Covered under contract">Covered under contract</div>
+                                    </th>
+                                    <aura:renderIf isTrue="{!v.orderline.sigmaerpdev2__Covered_under_Contract_Y_N__c}">
+                                     <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Service Contract">Service Contract <span style="color:red">* </span></div>
+                                         
+                                    </th>
+                                    </aura:renderIf>
+                                    
+                                    <th class="slds-text-title_caps slds-text-align_center" scope="col">
+                                        <div class="slds-truncate" title="Unit Price">Unit Price</div>
+                                    </th>
+                                    
+                                    <th class="slds-text-title_caps slds-text-align_center" scope="col">
+                                        <div class="slds-truncate" title="Quantity">Quantity</div>
+                                    </th>
+                                   
+                                    <th class="slds-text-title_caps slds-text-align_center" scope="col">
+                                        <div class="slds-truncate" title="Price">Total Price</div>
+                                    </th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                               
+                                    <tr class="slds-hint-parent">
+                                        <td>
+                                            <div class="slds-truncate">{!v.orderline.proname}</div>
+                                        </td>
+                                         <td>
+                                            <div class="slds-truncate">
+                                                <ui:inputCheckbox aura:id="checkbox" class="checkboxStyle"  value="{!v.orderline.sigmaerpdev2__Covered_under_Contract_Y_N__c}" change="{!c.onCheck}"/>
+                                            </div>
+                                        </td>
+                                         <aura:renderIf isTrue="{!v.orderline.sigmaerpdev2__Covered_under_Contract_Y_N__c}">
+                                  
+                                          <!--    <td>
+                                                <sigma:LookupSObject aura:id="ServiceConName" 
+													    searchString="{!v.ServiceConName}" 
+                                                        SRString="{!v.customerid}"
+													    label="Service Contract" pluralLabel="Service Contracts" 
+													   sObjectAPIName="sigmaerpdev2__Service_Contract__c"
+													   instanceId="SerCon"
+													   listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#new_contact'}"
+													   listIconClass="slds-icon-standard-contact"
+                                                                        /> 
+                                        </td>   -->
+                                         <td>
+                                                <c:LookupSObject aura:id="ServiceConName" 
+													    searchString="{!v.ServiceConName}" 
+                                                        SRString="{!v.customerid}"
+                                                       SRString1="{!v.orderline.sigmaerpdev2__Product__c}"
+                                                       SRStringAsset="{!v.Assetid}"
+													    label="Service Contract" pluralLabel="Service Contracts" 
+													   sObjectAPIName="sigmaerpdev2__Service_Contract__c"
+													   instanceId="SerCon"
+													   listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#new_contact'}"
+													   listIconClass="slds-icon-standard-contact"
+                                                                        /> 
+                                       
+                                        </td>    
+                                             
+                                        </aura:renderIf>
+                                        
+                                        <td>
+                                            <div class="slds-truncate">
+                                                <ui:inputNumber class="slds-input slds-text-align_center" value="{!v.orderline.sigmaerpdev2__Unit_Price__c}" updateOn="keyup"   keyup="{!c.changeprice}" /> 
+                                              
+                                            </div>
+                                        </td>
+                                        
+                                        <td>
+                                            <div class="slds-truncate">
+                                                <ui:inputNumber class="slds-input slds-text-align_center" value="{!v.orderline.sigmaerpdev2__Quantity__c}"  updateOn="keyup"   keyup="{!c.updateprice}"/> 
+                                              
+                                            </div>
+                                        </td>
+                                    
+                                        <td>
+                                            <div class="slds-truncate">
+                                                <ui:inputNumber class="slds-input slds-text-align_center" value="{!v.orderline.sigmaerpdev2__Price__c}" /> 
+                                              
+                                            </div>
+                                        </td>
+                                    </tr>
+                              
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_destructive" onclick="{!c.cancel}">Cancel</button>
+                    <button class="slds-button slds-button_success" onclick="{!c.submit}">Save</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

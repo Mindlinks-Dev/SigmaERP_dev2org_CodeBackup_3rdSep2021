@@ -1,0 +1,6 @@
+.THIS .disabled p{
+    color:#ccc;
+}
+.THIS th,th.THIS {
+    background:#f4f4f4 !important;
+}

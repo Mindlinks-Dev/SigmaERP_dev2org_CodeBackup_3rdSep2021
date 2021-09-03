@@ -1,0 +1,277 @@
+<aura:component controller="AgentContactListClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader" access="global" >
+    <aura:attribute name="isSpinnertoLoad"  type="Boolean" /> 
+    <!-- <aura:attribute name="TechnicianList" type="Work_T__c[]" default="" /> -->
+    <aura:attribute name="timeSlotsForHeaders" type="String[]" />
+    <aura:attribute name="indexHeaders" type="String[]" />
+    <aura:attribute name="lstKey" type="List" default="" />
+    <aura:attribute name="hoverDuration" type="Integer"/>
+    <aura:attribute name="TechnicianList" type="Map" default="" />
+    <aura:attribute name="eachSlotDuration" type="Decimal" default="" />
+    <aura:attribute name="startHeader" type="String" default="" /> 
+    <aura:attribute name="endHeader" type="String" default="" />
+    <aura:attribute name="startHeaderUI" type="String" default="" /> 
+    <aura:attribute name="endHeaderUI" type="String" default="" />
+    <aura:attribute name="SearchTextVal" type="String" default=""/>
+    <aura:attribute name="WorkOrderDetailList" type="Work_Order__c" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="openModalPopUp" type="Boolean" default="" />
+    <aura:attribute name="preferredDay" type="String" default="false"/>
+    <aura:attribute name="slotWODetails" type="map"/>
+    <aura:attribute name="AssignAgentSuccessMsg" type="String" />
+    <aura:attribute name="showLoadingSpinner" type="Boolean"  />    
+    <aura:attribute name="showLoadingSpinnerFlag" type="Boolean"  />
+    <aura:attribute name="customSettingDetails" type="Map" />
+    <aura:attribute name="allocatedSlot" type="String" default="1,2,3"/>
+    <aura:attribute name="showMessage" type="Boolean" default="false" />
+    <aura:attribute name="message" type="String" default="" />
+    <aura:attribute name="workOrderMessage" type="String"/>
+    <aura:attribute name="showWorkOrderMessage" type="Boolean"/>
+    <aura:attribute name="isGoogleAPIAvailable" type="Boolean" default="false"/>
+    <aura:attribute name="isEmpty" type="Boolean" default="False"/>
+    <aura:attribute name="message1" type="String" default="No Working Days" />
+    <aura:attribute name="recordId" type="String" />
+    
+    <aura:attribute name="openSLAReasonModel" type="Boolean" default="" />
+    <aura:handler name="slotDetails" event="c:AgentSlotAssignmentEvent" action="{!c.handleComponentEvent}"/>
+    <!--  <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      targetFields="{!v.WorkOrderDetailList}"
+                      
+                      />-->
+    
+    <style>
+        .slds-modal__container{
+        max-width: 80rem !important;
+        width: 80% !important;        
+        }
+        .cuf-content .modal-body.slds-p-around--medium{
+        padding: 0 !important;
+        }
+    </style>
+    
+    <article>
+        
+        <aura:if isTrue="{!v.showLoadingSpinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container" style="height: 35rem; align:center;margin-top:7rem">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+        <!-- Loading spinner end-->   
+        
+        <header class="slds-modal__header">            
+            <h2 class="slds-text-heading_medium slds-hyphenate">Assign Agent</h2>
+        </header>
+        
+        <aura:if isTrue="{!v.showWorkOrderMessage}" >
+            
+            <div class="slds-align_absolute-center slds-text-color_error slds-text-heading_small" style="height: 20rem;">{!v.workOrderMessage}</div>
+            
+            <aura:set attribute="else">
+                
+                <div class="content-wrapper">
+                    <section class="slds-grid slds-wrap slds-m-bottom_large">
+                        <div class="slds-size_1-of-1">
+                            <h3 class="section-title">Work Order Details</h3>
+                        </div>
+                        <div class="slds-size_1-of-1 slds-grid slds-wrap">
+                            
+                            <div class="slds-size_1-of-2 slds-medium-size_2-of-12 slds-p-horizontal_medium">
+                                <dl class="slds-list_stacked">
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="">Work Order Type</dt>
+                                    <dd class="slds-item_detail slds-truncate" title="">{!v.WorkOrderDetailList.sigmaerpdev2__Work_Type__r.Name}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-size_1-of-2 slds-medium-size_2-of-12 slds-p-horizontal_medium">
+                                <dl class="slds-list_stacked">
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="">Contact Name</dt>
+                                    <dd class="slds-item_detail slds-truncate" title="">{!v.WorkOrderDetailList.sigmaerpdev2__FFP_MR_Contact__r.Name}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-size_1-of-2 slds-medium-size_2-of-12 slds-p-horizontal_medium">
+                                <dl class="slds-list_stacked">
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="">Service Location</dt>
+                                    <dd class="slds-item_detail slds-truncate" title="">{!v.WorkOrderDetailList.sigmaerpdev2__Territory__c}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-size_1-of-2 slds-medium-size_3-of-12 slds-p-horizontal_medium">
+                                <dl class="slds-list_stacked">
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="">Preferred Start Date Time/ Day</dt>
+                                    <ui:outputDate aura:id="oDate" class="slds-item_detail slds-truncate" format="YYYY-MM-DD hh:mm a" value="{!v.WorkOrderDetailList.sigmaerpdev2__Customer_Availability_Date__c }" /> / {!v.preferredDay}     
+                                </dl>
+                            </div>
+                            <div class="slds-size_1-of-2 slds-medium-size_2-of-12 slds-p-horizontal_medium">
+                                <dl class="slds-list_stacked">
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="">Work Order Id</dt>
+                                    <dd class="slds-item_detail slds-truncate" title="">{!v.WorkOrderDetailList.Name}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="slds-grid slds-wrap">
+                        <div class="slds-size_1-of-1">
+                            <h3 class="section-title">
+                                Technician List
+                                <span class="title-tip slds-float_right slds-form-element__help">(Note: Hover over a slot to see how far the Technician at that moment is from your work order)</span>
+                            </h3>
+                            <div class="slds-clearfix"></div>
+                        </div>
+                        <div class="slds-size_1-of-1 slds-grid slds-grid_vertical-align-center slds-grid_align-end slds-p-top_small slds-p-bottom_medium">
+                            <div class="color-block-container slds-p-horizontal_medium slds-grid slds-grid_vertical-align-center">
+                                <span class="color-block color-busy slds-m-right_x-small"></span>
+                                <span class="color-text">-<span class="slds-p-left_x-small">Busy</span></span>
+                            </div>
+                            <div class="color-block-container slds-p-horizontal_medium slds-grid slds-grid_vertical-align-center">
+                                <span class="color-block color-selected slds-m-right_x-small"></span>
+                                <span class="color-text">-<span class="slds-p-left_x-small">Assign</span></span>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-size_1-of-1">
+                            <table class="time-allocation-table slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal">
+                                <thead>
+                                    <tr class="slds-text-title_caps nostyle">
+                                        <th scope="col" class="slds-p-left_medium">
+                                            <div class="slds-form-element">
+                                                
+                                                <div class="slds-grid slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right slds-m-right_xx-small input-lightning-icon-left input-with-btn">
+                                                    
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="" title=""></div> 
+                                        </th>
+                                        <th scope="col">
+                                            <div class="" title=""></div>
+                                        </th>
+                                        <th scope="col" colspan="9" class="slds-p-right_medium">
+                                            <div class="slds-truncate slds-text-align_center" title="">{!v.startHeaderUI} - {!v.endHeaderUI}</div>
+                                        </th>
+                                    </tr>
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col" class="slds-p-left_medium">
+                                            <div class="slds-truncate" title="Technician Name">Technician</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Skill Level">Skill Level</div>
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Service Duration">Approx Service Duration(hrs)</div>
+                                        </th>
+                                        
+                                        <aura:iteration var="item" items="{!v.timeSlotsForHeaders}" indexVar="indx">
+                                            <c:LightningAgentTableHeaders timeSlotsForHeaders="{!v.timeSlotsForHeaders}" tableHeaderValue="{!item}"/>
+                                        </aura:iteration>
+                                        
+                                        
+                                        
+                                        <!--<th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">8</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">9</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">10</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">11</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">12</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">13</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">14</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">15</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">16</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                            <div class="slds-truncate" title="">17</div>
+                                        </th>
+                                        <th scope="col" width="70" class="time-slot">
+                                    <div class="slds-truncate" title="">18</div>
+                                </th>
+                                <th scope="col" width="70" class="time-slot">
+                                    <div class="slds-truncate" title="">19</div>
+                                </th>
+                                <th scope="col" width="70" class="time-slot">
+                                    <div class="slds-truncate" title="">20</div>
+                                </th>-->
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    
+                                        <aura:iteration items="{!v.lstKey}" var="key" >
+                                            <c:LightningAgentContactList ListOfContacts="{!v.TechnicianList}" key="{!key}" PreferredDate="{!v.WorkOrderDetailList.sigmaerpdev2__Customer_Availability_Date__c}" serviceZipCode="{!v.WorkOrderDetailList.sigmaerpdev2__Service_Zip_Postal_Code__c}" PresentWOContact="{!v.WorkOrderDetailList.sigmaerpdev2__FFP_MR_Contact__r.Name}" currenWorkOrderId="{!v.WorkOrderDetailList.Id}" allocatedSlot="{!v.allocatedSlot}" showLoadingSpinner="{!v.showLoadingSpinner}" showLoadingSpinnerFlag="{!v.showLoadingSpinnerFlag}" showMessage="{!v.showMessage}" message="{!v.message}" customSettingDetails="{!v.customSettingDetails}" startHeader="{!v.startHeader}" endHeader="{!v.endHeader}" eachSlotDuration="{!v.eachSlotDuration}" indexHeaders="{!v.indexHeaders}" hoverDuration="{!v.hoverDuration}"/>
+                                        </aura:iteration>
+                                     
+                                    
+                                </tbody> 
+                            </table>
+                        </div>
+                    </section>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <!--  <button class="slds-button slds-button_neutral" aura:id="btnCancel" onclick="{!c.CancelAssignAgent}">Cancel</button>-->
+                    
+                    <!--<button class="slds-button slds-button_brand" aura:id="btnAssign" onclick="{!c.SaveAssignAgent}">Assign</button>-->
+                    <button class="slds-button slds-button_brand" aura:id="btnAssign" onclick="{!c.confirmedSaveAgent}">Assign</button>
+                    <aura:if isTrue="{!v.AssignAgentSuccessMsg}">
+                        <div role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt">
+                            <div class="slds-modal__container">
+                                <div class="slds-modal__header slds-theme--success slds-theme--alert-texture">
+                                    <h2 class="slds-text-heading--medium" id="prompt-heading-id">Work Order Status</h2>
+                                </div>
+                                <div class="slds-modal__content slds-p-around--medium">
+                                    <div class="slds-align_absolute-center">
+                                        <p>Please confirm on the assigned time slots for the Work Order.</p>
+                                    </div>
+                                </div>
+                                <div class="slds-modal__footer slds-theme--default">
+                                    <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="OK" onclick="{!c.confirmedSaveAgent}" />
+                                    <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeMessage}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-backdrop slds-backdrop--open"></div>
+                    </aura:if>
+                    
+                    <aura:if isTrue="{!v.showMessage}">
+                        <div role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt">
+                            <div class="slds-modal__container">
+                                <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                                    <h2 class="slds-text-heading--medium" id="prompt-heading-id">Message</h2>
+                                </div>
+                                <div class="slds-modal__content slds-p-around--medium">
+                                    <div class="slds-align_absolute-center">
+                                        <p>{!v.message}</p>
+                                    </div>
+                                </div>
+                                <div class="slds-modal__footer slds-theme--default">                                   
+                                    <lightning:button variant="brand" iconPosition="left" iconName="utility:check"  type="submit" label="Ok"  onclick="{!c.closeUserMessage}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-backdrop slds-backdrop--open"></div>
+                    </aura:if>
+                </footer>
+            </aura:set>
+        </aura:if>
+        
+    </article>
+    
+</aura:component>

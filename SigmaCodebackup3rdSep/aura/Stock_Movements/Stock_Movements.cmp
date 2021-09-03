@@ -1,0 +1,89 @@
+<aura:component >
+    <aura:attribute name="diffQnty" type="Integer" description="" />
+    	<body>
+            <div class="slds-modal__content">
+                <header class="site-masthead slds-grid slds-wrap slds-theme--alt-inverse" style="padding:1rem 2rem;"><div class="slds-align-middle">
+                <button class="slds-button slds-button--inverse" onclick="{!c.backToCreateOrders}" aura:id="back">Back</button></div><div class="site-masthead-title slds-col slds-has-flexi-truncate slds-align-middle"><div class="slds-media slds-media--center slds-media--responsive"><span class="slds-media__figure"></span><div class="slds-media__body"><div class="slds-grid slds-grid--align-center"><span class="slds-hide docsearch-category"></span><h1 title="Button Groups" class="slds-page-header__title slds-truncate">Stock Movements</h1></div></div></div></div></header>
+            </div>
+            <div id="content1">
+            <fieldset class="slds-form--compound">
+                <div class="form-element__group">
+                     <div class="slds-form-element__row">
+                         <label class="slds-size--1-of-4" >
+                         <span class="slds-form-element__label">To Location:</span>
+                         </label>                
+                         <label class="slds-size--1-of-4">
+                          <c:LookupSObject aura:id="ILPName" searchString="" 
+                                           label="Inventory Location Product" pluralLabel="Inventory Location Products"
+                                           sObjectAPIName="sigmaerpdev__Inventory_Location_Product__c" 
+                                           
+                                           SRString="Inventory"
+                                listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                listIconClass="slds-icon-standard-account"
+                            />                        
+                         </label>                    
+                     </div>
+  				</div>
+            </fieldset>
+            <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+              <thead>
+                <tr class="slds-text-title--caps">
+                  <th scope="col">
+                    <div class="slds-truncate" title="Opportunity Name">Action</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="Account Name">From Location</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="Close Date">Product</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="Stage">Quantity</div>
+                  </th>     
+                </tr>
+              </thead>
+              <tbody>
+                <tr>                
+                  <td data-label="">
+                   	<button class="slds-button">Remove</button>
+                  </td>
+                  <td data-label="">
+                    <label class="slds-size--1-of-2">
+                      <c:LookupSObject aura:id="ILPName" searchString="" 
+                                       label="Inventory Location Product" pluralLabel="Inventory Location Products"
+                                       sObjectAPIName="sigmaerpdev__Inventory_Location_Product__c" 
+                                       
+                                       SRString="Inventory"
+                            listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                            listIconClass="slds-icon-standard-account"
+                        />   
+                     </label>
+                  </td>
+                  <td data-label="">
+                     <label class="slds-size--1-of-2">
+                      <c:LookupSObject aura:id="ILPName" searchString="" 
+                                       label="Inventory Location Product" pluralLabel="Inventory Location Products"
+                                       sObjectAPIName="sigmaerpdev__Inventory_Location_Product__c" 
+                                       
+                                       SRString="Inventory"
+                            listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                            listIconClass="slds-icon-standard-account"
+                        />   
+                     </label>
+                  </td>
+                  <td style="width:7.00rem;">
+					<label class="slds-form-element__control slds-size--1-of-3">
+                    <ui:inputText class="slds-input" aura:id="originalQty" value="" placeholder=""/></label>
+                  </td>                 
+                </tr>    
+              </tbody>
+             </table><br />
+             
+                 <button class="slds-button"  aura:id="Add_More" onclick="">Add More Products</button>             
+             
+             <div class="slds-form-element__row" id="">
+                 <button class="slds-button slds-button--brand"  aura:id="Save_Adjustments" onclick="">Submit</button>             
+             </div>
+        </div>
+        </body>
+</aura:component>

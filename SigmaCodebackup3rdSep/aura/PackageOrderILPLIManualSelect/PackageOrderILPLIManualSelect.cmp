@@ -1,0 +1,55 @@
+<aura:component >
+	<aura:attribute type="Inventory_Location_Product_Line_Item__c" name="ilpliIndividualData" />
+   
+    <aura:attribute type="Integer" name="indexNum" />
+    <aura:attribute type="Integer" name="ManualSelectAttributeType" />
+     <aura:attribute type="Object" name="standOrderIlpliWrapper" />
+     <aura:attribute type="Boolean" name="isMannualPicking" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!v.isMannualPicking == false}">
+        <tr>
+            <td title="{!v.ilpliIndividualData.sigmaerpdev__Inventory_Location_Product__r.sigmaerpdev__Inventory_Location__r.sigmaerpdev__Location__r.Name}">
+                <lightning:input value="{!v.ilpliIndividualData.sigmaerpdev__Inventory_Location_Product__r.sigmaerpdev__Inventory_Location__r.sigmaerpdev__Location__r.Name}" label="" disabled="true"/>
+            </td>
+            <td  title="{!v.ilpliIndividualData.sigmaerpdev__Product_Serial_Number__r.sigmaerpdev__Serial_Number__c}">
+                <lightning:input value="{!v.ilpliIndividualData.sigmaerpdev__Product_Serial_Number__r.sigmaerpdev__Serial_Number__c}" label="" disabled="true"/>
+            </td>
+             <td  title="{!v.ilpliIndividualData.sigmaerpdev__Lot__r.Name}">
+                <lightning:input value="{!v.ilpliIndividualData.sigmaerpdev__Lot__r.Name}" label="" disabled="true"/>
+            </td>
+            
+            <td title="{!v.ilpliIndividualData.sigmaerpdev__Received_Date__c}">
+                <lightning:input value="{!v.ilpliIndividualData.sigmaerpdev__Received_Date__c}" label="" disabled="true"/>
+            </td>
+            <td title="{!v.ilpliIndividualData.sigmaerpdev__Available_Quantity__c}">
+                <lightning:input value="{!v.ilpliIndividualData.sigmaerpdev__Available_Quantity__c}" label="" disabled="true"/>
+            </td>
+            <td>
+                <lightning:input type="number" value="{!v.ilpliIndividualData.enteredQuant}" label="" min="0" max="{!v.ilpliIndividualData.stapp__Actual_Available_Quantity__c}" placeholder="0"/>
+            </td>
+        </tr>
+        <aura:set attribute="else">
+            <tr>
+                <td width="15%">
+                    <lightning:input value="{!v.standOrderIlpliWrapper.Location}" label="" disabled="true"/>
+                </td>
+                <td width="15%">
+                    <lightning:input value="{!v.standOrderIlpliWrapper.SerialNo}" label="" disabled="true"/>
+                </td>
+                 <td width="15%">
+                    <lightning:input value="{!v.standOrderIlpliWrapper.Lot}" label="" disabled="true"/> 
+                </td>
+                
+                <td width="15%">
+                    <lightning:input value="{!v.standOrderIlpliWrapper.ReceivedDate}" label="" disabled="true"/> 
+                </td>
+                <td width="5%">
+                    <lightning:input value="{!v.standOrderIlpliWrapper.AvailableQuantity}" label="" disabled="true"/> 
+                </td>
+                <td width="5%">
+                    <lightning:input type="text" value="{!v.standOrderIlpliWrapper.EnterQuantity}" label="" min="0" max="{!v.standOrderIlpliWrapper.EnterQuantity}" placeholder="0"/>
+                </td>
+            </tr>
+        </aura:set>
+     </aura:if>
+</aura:component>

@@ -1,0 +1,46 @@
+/*toggleCss.css*/
+.THIS.toggle {
+    display: none;
+}
+.THIS #head_NC
+{
+	background-color:#293239;
+}
+.THIS #SectionInformation
+{
+    color:white;
+    font-size:26px; 
+    margin-left:38%;
+}
+.THIS #body_NC
+{
+    /*background-color:#f3f5f6;*/
+    padding-bottom:12%;
+}
+.THIS #content_NC
+{
+    width:60%;
+    background:white;
+    padding:2%;
+    position:relative;
+    margin:0 auto;
+    border-radius:4px;    
+}
+.THIS #body_NC
+{
+    padding-bottom:1rem;
+}
+.THIS #footer_NC
+{
+    background:#293239;
+    display:block;
+    width:100%;
+    height:50px;
+}
+@media only screen and (max-width: 768px) 
+    {
+    .THIS #content_NC{width:100% !important;}
+   .THIS .slds-form-element__label{width:100% !important;}
+    .THIS table{display:block !important;width:100% !important;overflow:scroll !important;}
+    .THIS .slds-form-element__row{margin-bottom:15px !important;}
+}

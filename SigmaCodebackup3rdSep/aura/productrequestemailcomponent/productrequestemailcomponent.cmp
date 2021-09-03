@@ -1,0 +1,51 @@
+<aura:component controller="SignatureCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable" access="global">
+    <aura:attribute name="productTransfer" type="Object"/>
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="pageReference" type="Object"/>
+     <aura:attribute name="validate" type="Boolean" default="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:card iconName="standard:search">
+        <aura:set attribute="title">
+            <span>Product Transfered Details</span>
+        </aura:set>
+        <div class="mobile-scrollable">
+            <table  class="slds-table slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" width="3%" style="background-color: #d1cdff;font-weight: bold;">
+                            Product Transfer 
+                        </th>
+                        <th scope="col" width="4%" style="background-color: #d1cdff;font-weight: bold;">
+                            To Location
+                        </th>                                    
+                        <th scope="col" width="11%" style="background-color: #d1cdff;font-weight: bold;">
+                            status
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.productTransfer[0].mainWrapProdList}" var="sList">
+                        <c:productrequestlineitems prdtransf="{!sList.producttransfer}" tolocations="{!sList.tolocation}" statuss="{!sList.status}"  productsdetailsline="{!sList.wrapProdList}" validates="{!v.validate}" />
+                    </aura:iteration>					  
+                </tbody>
+            </table>
+        </div> <br />
+        <div class="slds-grid slds-grid-mob">
+        <div class="slds-col slds-size_1-of-2 slds-text-align_center">
+            <br/><br/>
+            <p>Sign Here</p>
+                      <!--  <img src="/resource/Sign_Here" width="65" height="20" title="Sign" />-->
+                         <img src="{!$Resource.ESignature}" width="30" height="20" title="Sign" />
+                   
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <c:ESignature recordId="{!v.recordId}" productTransfers="{!v.productTransfer}" valid="{!v.validate}" productvalidation="{!v.productTransfer[0].mainWrapProdList}"/>
+                
+            </div>
+        </div>
+          
+    </lightning:card>
+    
+    
+</aura:component>

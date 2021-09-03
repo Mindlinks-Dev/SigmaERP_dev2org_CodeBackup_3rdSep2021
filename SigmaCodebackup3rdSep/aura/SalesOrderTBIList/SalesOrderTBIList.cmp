@@ -1,0 +1,109 @@
+<aura:component  controller="TBIOrderController" implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:appHostable,force:lightningQuickAction"  access="global" >
+    <aura:attribute name="wrapper" type="Object" />
+    <aura:attribute name="isOpen" type="boolean" />
+    <aura:attribute name="wrapperListInsertLineItems" type="object[]" />
+    <aura:registerEvent name="carryorderpopup" type="c:carryorderpopup"/>
+    <aura:attribute name="isOpenprodTablechild" type="boolean" default="false"/>
+    <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="disval" type="String" />
+    <aura:attribute name="proposalproduct" type="Boolean" /> 
+    
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="">
+        <thead>
+            <tr class="slds-text-title_caps" style="background:#fafaf9;">
+                <th scope="col">
+                    <div class="slds-truncate" title="Action">Action</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Product Name">Product Name</div>
+                </th>
+                <aura:renderIf isTrue="{!v.proposalproduct}">
+                    <th scope="col">
+                            <div class="slds-truncate" title="Start Date">Start Date</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="End Date">End Date</div>
+                        </th>
+                   
+               </aura:renderIf>
+                
+                <th scope="col">
+                    <div class="slds-truncate" title="Units">Units</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Total Cost($)">Total Cost($)</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Discount($)">Discount($)</div>
+                </th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.wrapperListInsertLineItems}" var="obj" indexVar="index">
+                <tr>
+                    
+                    <td data-label="Action">
+                        
+                        <div class="a_btn" title="Action">                     
+                            <a aura:id="{!index+'ip'}" data-record="{!index}" data-index="{!index}" onclick="{!c.handleRemoveProductItemClick}">
+                                {!(index+1 == 0) ? '' : 'Delete'}</a> | 
+                            <lightning:button name="{!index}" variant="slds-button" label="Edit" onclick="{!c.addProducts}"/>
+                            
+                        </div>
+                        
+                    </td>
+                    
+                    <td data-label="Product Name">
+                        <div title="Product Name">{!obj.proname}&nbsp;</div>
+                    </td>
+                     <aura:renderIf isTrue="{!v.proposalproduct}">
+                     <td data-label="Start Date">
+                            <div title="Start Date">{!obj.LineItem.sigmaerpdev2__Start_Date__c}&nbsp;</div>
+                        </td>
+                        <td data-label="End Date">
+                            <div title="End Date">{!obj.LineItem.sigmaerpdev2__End_Date__c}&nbsp;</div>
+                        </td>
+                    </aura:renderIf>
+                    <td data-label="Quantity">
+                        <div title="Quantity">{!obj.LineItem.sigmaerpdev2__Quantity__c}&nbsp;</div>
+                    </td> 
+                    <td data-label="Cost">
+                        <div title="Cost">{!obj.LineItem.sigmaerpdev2__Cost__c}&nbsp;</div>
+                    </td> 
+                    
+                    <td data-label="Discount">
+                        <aura:if isTrue="{!v.disval == 'radio-3'}"> 
+                            <div title="Discount">{!obj.LineItem.sigmaerpdev2__Sum_Location_Discount__c}&nbsp;</div>
+                            <aura:set attribute="else">
+                                <div title="Discount">{!obj.LineItem.sigmaerpdev2__Discount__c}&nbsp;</div>
+                                
+                            </aura:set>     
+                        </aura:if>
+                    </td> 
+                    
+                    
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+    
+    <div class="slds-hide" aura:id="ModalDelete">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="margin-top:-2.5%;">
+                <header class="slds-modal__header">                   
+                    <h2 class="slds-text-heading_medium" style="color:#c23934;">Delete Item</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p class="slds-align_absolute-center">Are you sure you want to delete item?</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    
+                    <button class="slds-button slds-button--neutral" aura:id="confirmModalDelete" onclick="{!c.confirmModalDelete}" style="background:#c23934 !important;border:1px solid #c23934 !important;color:white !important;">Confirm</button>
+                    <button class="slds-button slds-button--neutral" aura:id="cancelModalDelete" onclick="{!c.cancelModalDelete}">Cancel</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

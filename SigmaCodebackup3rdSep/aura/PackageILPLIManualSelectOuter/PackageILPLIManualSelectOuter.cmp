@@ -1,0 +1,52 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="sigmaOrderIlpliWrapper" type="array" />
+    <aura:attribute name="indexNum" type="Integer" />
+	<tr>
+    	<td width="3%">
+            <img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.sigmaOrderIlpliWrapper.orderLineWrap.Id}" src="/resource/sigmaerpdev__NPlus" width="15"
+                 height="15" title="Show Stock" />
+        </td>
+        <td width="20%">   <!--prod type=={!v.sigmaOrderIlpliWrapper.orderLineWrap.sigmaerpdev__Product__r.sigmaerpdev__Attribute_Type__c} -->
+            <ui:inputText aura:id="manualSelectProdName" label="" class="slds-input" labelClass="slds-form-element__label" value="{!v.sigmaOrderIlpliWrapper.orderLineWrap.sigmaerpdev__Product__r.Name}" disabled="true"/>                                 
+        </td>
+        <td width="10%">            
+            <ui:inputText aura:id="orderedQuant" label="" class="slds-input" labelClass="slds-form-element__label" value="{!v.sigmaOrderIlpliWrapper.orderLineWrap.sigmaerpdev__Net_Quantity__c}" disabled="true"/>
+        </td>
+    </tr>
+    <tr class="slds-text-title_caps">        
+        <td colspan="3" width="90%">
+        	<div id="{!'showHide_'+v.sigmaOrderIlpliWrapper.orderLineWrap.Id}" style="display:none;">
+            	<table width="100%" class="slds-table slds-table_striped slds-table_cell-buffer slds-table_bordered">
+                    <tr>
+                    	<td width="70%" >
+        					<button class="slds-button slds-button_neutral" onclick="{!c.autoSelectQnty}">Auto Fill</button>
+        				</td>
+                    </tr>
+                	<tr class="slds-text-title_caps" bgcolor="#abd8fb">
+                        <th scope="col">
+                            <div class="slds-truncate" title="Location" style="color:#16325c;">Location</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="SerialNo" style="color:#16325c;">Serial No.</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Lot" style="color:#16325c;">Lot</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Received Date" style="color:#16325c;">Received Date</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Available Quantity" style="color:#16325c;">Available Quantity</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Enter Quantity" style="color:#16325c;">Enter Quantity</div>
+                        </th>
+                    </tr>
+                    <aura:iteration items="{!v.sigmaOrderIlpliWrapper.wrapperIlpli}" var="item1" indexVar="i">
+                    	<c:PackageILPLIManualSelect sigmaOrderIlpliWrapper="{!item1}"  indexNum="{!i}" />
+                    </aura:iteration>  
+             	</table>
+           	</div>
+        </td>
+     </tr>
+</aura:component>

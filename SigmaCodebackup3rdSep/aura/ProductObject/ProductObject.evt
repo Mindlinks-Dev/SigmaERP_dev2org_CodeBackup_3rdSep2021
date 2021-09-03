@@ -1,0 +1,13 @@
+<aura:event type="APPLICATION" description="Product Object Info" access="global">
+    <aura:attribute name="productInfo" type="Product2" required="true" description="The Id of the selected SObject." />
+    <aura:attribute name="productVal" type="String" required="true" description="The id to identify the instance the component" />
+	<aura:attribute name="productQuantity" type="String" required="true" description="The Id of the selected SObject." />
+    <aura:attribute name="productAmount" type="String" required="true" description="The id to identify the instance the component" />
+    <aura:attribute name="delivarydate" type="Date" required="true" description="The id to identify the instance the component" />
+    <aura:attribute name="ProductDiscount" type="String" required="true" description="The id to identify the instance the component" />
+	<aura:attribute name="ShippingStreet" type="String"/>
+    <aura:attribute name="ShippingCity" type="String"/>
+    <aura:attribute name="ShippingState" type="String"/>
+    <aura:attribute name="ShippingPostalcode" type="String"/>
+    <aura:attribute name="ShippingCountry" type="String"/>
+</aura:event>

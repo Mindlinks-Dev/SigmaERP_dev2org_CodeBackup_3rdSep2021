@@ -1,0 +1,138 @@
+<aura:component controller="ManufacturingRun" implements="flexipage:availableForAllPageTypes,force:appHostable" access="global">
+    <aura:attribute name="rowDetails" type="array" />
+    <aura:attribute name="prodId" type="Id" />
+    <aura:attribute name="recID" type="Id" />
+    <aura:attribute name="manfstatusChild" type="String" />
+    <aura:attribute name="enableSelStock" type="Boolean" />
+    <aura:attribute name="showAutoReserve" type="Boolean" />    
+    <aura:attribute Name="disableChkStkAfterAutopick" type="Boolean" />         
+    
+    <td>
+        <div class="slds-truncate" title="Product Name">
+            <ui:inputText aura:id="prodName" label="" class="slds-size--1-of-1" labelClass="slds-form-element__label" value="{!v.rowDetails.prodName}"
+                disabled="true" />
+        </div>
+    </td>
+    <td>
+        <div class="slds-truncate" title="Unit of Measure">
+            <ui:inputText aura:id="prodUOM" label="" class="slds-input" labelClass="slds-form-element__label" value="{!v.rowDetails.prodUOM}"
+                disabled="true" />
+        </div>
+    </td>
+    <td>
+        <div class="slds-truncate" title="Available Quantity">
+            <ui:inputText aura:id="totalAvailQty" label="" class="slds-input" labelClass="slds-form-element__label" value="{!v.rowDetails.totalAvailQty}"
+                disabled="true" />
+        </div>
+    </td>   
+    <td>
+        <div class="slds-truncate" title="Quantity"> 
+            <ui:inputText aura:id="requiredQnt" label="" class="slds-input" labelClass="slds-form-element__label" value="{!v.rowDetails.requiredQnt}"
+                disabled="true" />
+        </div>
+    </td>    
+
+    <td class="{!and(v.manfstatusChild == 'Planning',(v.rowDetails.totalAvailQty >= v.rowDetails.requiredQnt)) ? 'slds-show':'slds-hide'}">
+        <!--<img align="middle" style="padding-top:7px;" src="/resource/sigmaerpdev__StockExists" width="20" height="20" title="Sufficient Stock" />-->
+        <div class="inStock">
+        	<h2>Stock Available</h2> 
+        </div> 		    
+    </td>
+    <td class="{!and(v.manfstatusChild == 'Planning',(v.rowDetails.requiredQnt > v.rowDetails.totalAvailQty)) ? 'slds-show':'slds-hide'}">
+        <!--<img align="middle" style="padding-top:7px;" src="/resource/sigmaerpdev__StockLow" width="20" height="20" title="Insufficient Stock" />-->
+        <div class="outOfStock">
+        	<h2>Insufficient Stock</h2> 
+        </div>
+    </td>
+    <td class="{!and (v.manfstatusChild == 'Date Confirmed', v.enableSelStock == false) ? 'slds-show':'slds-hide'}">
+        <div class="slds-button-group" role="group" style="width: 105%;">
+            <button style="font-size: 90%;" class="slds-button slds-button_neutral" id="{!'autopickDiv_'+v.prodId}" onclick="{!c.selectAutopick}">Autopick Stock</button>
+            <button style="font-size: 90%;" class="slds-button slds-button_neutral" id="{!'manualDiv_'+v.prodId}" onclick="{!c.selectManual}">Select Stock</button>
+        </div>
+    </td>
+    <td style="width:1%;">
+        <aura:if isTrue="{!v.manfstatusChild == 'Date Confirmed'}">
+            <div id="{!'showdropdown_'+v.prodId}" style="display:none;">
+                <img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+v.prodId}" src="/resource/sigmaerpdev2__NPlus" width="15"
+                    height="15" title="Show Stock" />
+            </div>
+        </aura:if>
+    </td>
+    <tr>       
+        <td colspan="5">
+            <div id="{!'showHide_'+v.prodId}" style="display:none;">
+                <table class="slds-table slds-table_striped slds-table_cell-buffer">
+                    <tr bgcolor="#f5fffa">
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Inventory Location" style="color:#16325c;">
+                                <b>IL</b>
+                            </div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Inventory Location Product" style="color:#16325c;">
+                                <b>ILP</b>
+                            </div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Zone" style="color:#16325c;">
+                                <b>Zone</b>
+                            </div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Bin" style="color:#16325c;">
+                                <b>Bin</b>
+                            </div>
+                        </th>                        
+                        
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Serial Number" style="color:#16325c;">
+                                <b>Serial Number</b>
+                            </div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Expiry Date" style="color:#16325c;">
+                                <b>Exp.Date</b>
+                            </div>
+                        </th>                        
+                        <th scope="col" style="width:1%;">
+                        	<div class="slds-truncate" title="UOM" style="color:#16325c;">
+                            	<b>UOM</b>
+                            </div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Unit Price" style="color:#16325c;">
+                                <b>Unit Price</b>
+                            </div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Available Quantity" style="color:#16325c;">
+                                <b>Available Qty.</b>
+                            </div>
+                        </th>
+                        <th scope="col" style="width:1%;">
+                            <div class="slds-truncate" title="Picked Quantity" style="color:#16325c;">
+                                <b>Picked Qty.</b>
+                            </div>
+                        </th>
+                    </tr>
+                    <tbody>
+                        <aura:iteration items="{!v.rowDetails.wrapProdList}" var="wrapList">
+                            <c:showProductsListForManufacturingInner innerList="{!wrapList}" recID="{!v.recID}" />
+                        </aura:iteration>
+                        <tr></tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+        <td style="width:1%;"></td>
+        <div class="demo-only slds-hide" aura:id="mySpinner">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </tr>    
+</aura:component>

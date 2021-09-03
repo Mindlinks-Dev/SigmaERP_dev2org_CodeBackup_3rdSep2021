@@ -1,0 +1,377 @@
+<aura:component controller="LotViewController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="recordId" type="Id" /> 
+    <aura:attribute name="ProductName" type="String"/>
+    <aura:attribute name="LotNumber" type="String"/>
+    <aura:attribute name="Data" type="Object"/>
+    <aura:attribute name="productId" type="String"  description="" />
+    <aura:attribute name="lotId" type="String"  description="" />
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="lotviewerrorMsg" type="String" default=""/>
+    <aura:attribute name="lotviewError" type="Boolean" default="false"/>
+	<aura:attribute name="isOpenchild" type="boolean" default="false"/>
+    
+    <!--<aura:attribute access="PUBLIC" name="showPopUp" type="Boolean" default="false"/>--> 
+    <aura:attribute access="PUBLIC" name="ShowDetails" type="Lot_Product__c[]"/> 
+    <aura:attribute access="PUBLIC" name="ShowIlp" type="Inventory_Location_Product__c[]"/>
+    
+    <aura:attribute access="PUBLIC" name="ShowDelivery" type="Shipment_Products__c[]"/>
+    <ltng:require styles="/resource/sigmaerpdev2__standardiselookups" />
+    <!--Start-->
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.SelectedID}"/>
+    <aura:handler name="clearLookupIdEvent" event="c:ClearLookupId" action="{!c.clearId}"/> 
+    <div class="slds-modal__content">
+        <header class="site-masthead slds-grid slds-wrap slds-theme--shade slds-theme--alert-texture" style="padding:1rem 2rem;">
+            <div class="slds-align-middle">
+            </div>
+            <div class="site-masthead-title slds-col slds-has-flexi-truncate slds-align-middle">
+                <div class="slds-media slds-media--center slds-media--responsive">
+                    <span class="slds-media__figure"></span>
+                    <div class="slds-media__body">
+                        <div class="slds-grid slds-grid--align-center">                                                      
+                            <!--<h1 title="Button Groups" class="slds-page-header__title slds-truncate">VIEW LOT</h1>-->
+                            <span class="slds-truncate" title="LOT VIEW" style="font-size:15px;"><b>LOT VIEW</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+    <br/>
+    
+    
+    <!--End-->
+    
+    <div class="slds-box main-content" style="padding:1rem;width: 55%;margin:1% auto;">
+        <!--<div class="slds-page-header" style="margin-bottom:1rem;">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-poll" title="Description of icon when needed">
+                        <lightning:icon iconName="standard:home" size="small" />                        
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle slds-m-top_xx-small" title="Lot">Lot</h1>
+                    
+                </div>
+            </div>
+        </div>-->
+        <div style="width: 97%;margin-left: -4px;">
+            <aura:renderIf isTrue="{!v.isError}">
+                <ui:message title="Error" severity="error" closable="false">
+                    {!v.errorMsg}
+                </ui:message>
+                <aura:set attribute="else">
+                    
+                </aura:set>
+            </aura:renderIf>  
+        </div>
+        
+        <div>
+             
+              <div class="slds-col slds-size_1-of-1" Id="TempDisplayforlot">
+                  <span style="color:red">* </span>
+            Lot <c:LookupSObject label="Lot"
+                                 pluralLabel="Lots" 
+                              
+                                 searchString="{!v.LotNumber}" 
+                                 sObjectAPIName="LotforLotView" instanceId="MyLot" SRString="All"
+                                 listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#Lot'}"
+                                 listIconClass="slds-icon-standard-Lot"/>
+            
+            <br/>
+                   </div> 
+				   <!--<div class="slds-col slds-size_1-of-1" Id="TempDisplayforlotproduct">
+                
+            Product Name<c:LookupSObject label="Product"
+                                    
+                                     SRString="{!v.lotId}"
+									 pluralLabel="Products" 
+                                     searchString="{!v.ProductName}" 
+                                     sObjectAPIName="Product2" instanceId="MyProduct123" 
+                                     listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#Product'}"
+                                     listIconClass="slds-icon-standard-Product" /> <br/> 
+            </div>-->
+            <lightning:button label="Search" onclick="{!c.Search}" iconName="utility:search"
+                              variant="brand" class="slds-m-top_medium"/>
+       
+            </div>
+        </div>
+    
+    
+
+    <div class="popup slds-hide" aura:id="popup" style="height: 640px;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="width:80%;max-width:80%;margin:0 auto;">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                        
+                        <!--<lightning:icon iconName="utility:close" size="small" />-->
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Lot view Details</h2>
+                </header>
+                
+                
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div style="width: 97%;margin-left: -4px;">
+                        <aura:renderIf isTrue="{!v.lotviewError}">
+                            <ui:message title="Error" severity="error" closable="false">
+                                {!v.lotviewerrorMsg}
+                            </ui:message>
+                            <aura:set attribute="else">
+                                
+                            </aura:set>
+                        </aura:renderIf>  
+                    </div>
+                    <div class="slds-scrollable--x">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Product">Product</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Inventory Location">Inventory Location</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Lot">Lot</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Received Quantity">Received Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Available Quantity">Available Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Delivered Quantity">Sold Quantity</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                <aura:iteration items="{!v.ShowDetails}" var="accs" >
+                                    <tr>
+                                        <td scope="row" data-label="Account Name">
+                                            <div class="slds-truncate" ><a href="javascript:void(0);">{!accs.productName}</a></div>
+                                        </td>
+                                        
+                                        <td data-label="Industry">
+                                            <div class="slds-truncate" >{!accs.InventoryLocation}</div>
+                                        </td>
+                                        <td data-label="Industry">
+                                            <div class="slds-truncate" >{!accs.Lot}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs.ReceivedQuantity}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs.AvailableQuantity}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs.DeliveredQuantity}</div>
+                                        </td>
+                                    </tr>
+                                    
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    
+                    <button class="slds-button slds-button_neutral" onclick="{!c.closeMethod}">Close</button>
+                    <button class="slds-button slds-button_brand"   onclick="{!c.StockView}">Stock view</button>
+                    <button class="slds-button slds-button_brand"   onclick="{!c.Delivery}">Delivery View</button>
+                    
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    
+    <!--Stock view-->
+    <div class="popup slds-hide" aura:id="popup1" style="height: 740px;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="width:95%;max-width:95%;margin:0 auto;">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                        
+                        <!--<lightning:icon iconName="utility:close" size="small" />-->
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Stock view Details</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    
+                    
+                    <div class="slds-scrollable">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Product">Product</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Inventory Location">Inventory Location Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Lot">Inventory Location</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Product">AttributeType</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Product">Inventory</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Available Quantity">Received Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Received Quantity">Available Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Delivered Quantity">Sold Quantity</div>
+                                    </th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                <aura:iteration items="{!v.ShowIlp}" var="accs1" >
+                                    <tr>
+                                        <td scope="row" data-label="Account Name">
+                                            <div class="slds-truncate" ><a href="javascript:void(0);">{!accs1.productName}</a></div>
+                                        </td>
+                                        
+                                        <td data-label="Industry">
+                                            <div class="slds-truncate" >{!accs1.InventoryLocationName}</div>
+                                        </td>
+                                        <td data-label="Industry">
+                                            <div class="slds-truncate" >{!accs1.InventoryLocation}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs1.AttributeType}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs1.Inventory}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs1.ReceivedQuantity}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs1.AvailableQuantity}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs1.DeliveredQuantity}</div>
+                                        </td>
+                                        
+                                    </tr>
+                                    
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    <br/><br/><br/>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.closeMethod2}">Close</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    
+    <!--End-->
+    
+    <!--Delivery-->
+    <div class="popup slds-hide" aura:id="popup2" style="height: 800px;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="width:95%;max-width:95%;margin:0 auto;">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                        
+                        <!--<lightning:icon iconName="utility:close" size="small" />-->
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Delivery View Details</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                   
+                    <div class="slds-scrollable">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <!-- <th scope="col">
+                                    <div class="slds-truncate" title="Lot">Lot</div>
+                                </th> -->
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Inventory Location">Product Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Product">Customer Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Product">Package ID</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Available Quantity">Shipment</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Product">Shipment Product Number</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Received Quantity">Shipment Date</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Delivered Quantity">Delivered Quantity</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                <aura:iteration items="{!v.ShowDelivery}" var="accs2" >
+                                    <tr>
+                                        <!--  <td scope="row" data-label="Account Name">
+                                        <div class="slds-truncate" ><a href="javascript:void(0);">{!accs2.Lot}</a></div>
+                                    </td> -->
+                                        
+                                        <td data-label="Industry">
+                                            <div class="slds-truncate" >{!accs2.ProductName}</div>
+                                        </td>
+                                        
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs2.CustomerName}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs2.PackageID}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs2.Shipment}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs2.ShipmentProductName}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs2.ShipmentDeliveryDate}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" >{!accs2.Quantity}</div>
+                                        </td>
+                                    </tr>
+                                    
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.closeMethod3}">Close</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    
+    <!--End-->
+</aura:component>

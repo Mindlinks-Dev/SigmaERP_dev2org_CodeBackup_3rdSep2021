@@ -1,0 +1,100 @@
+<aura:component controller="FFTBCtrl" implements="forceCommunity:availableForAllPageTypes">
+    <ltng:require scripts="{!join(',', 
+                           $Resource.jQueryConfirm1 + '/jquery.min.js', 
+                           $Resource.jQueryConfirm1 + '/jquery-confirm.min.js')}" styles="{!join(',', 
+                                                                                          $Resource.jQueryConfirm1 + '/jquery-confirm.style.css', 
+                                                                                          $Resource.jQueryConfirm1 + '/font-awesome.css')}" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <!--<aura:attribute name="currentCount" type="Integer" default="0"/>
+    <aura:attribute name="initialRows" type="Integer" default="5"/>
+    <aura:attribute name="rowsToLoad" type="Integer" default="5"/>
+    <aura:attribute name="totalNumberOfRows" type="Integer"/>
+    <aura:attribute name="loadMoreStatus" type="String" default="Load More"/>-->
+    
+    <aura:handler name="FFTBBPSalesEvnt" event="c:FFTBBPSalesEvnt" action="{!c.handleEditFlow}"/>
+    
+    <aura:attribute name="bpsList" type="List" />
+    <aura:attribute name="selFilter" type="String" default="All" />
+    <aura:attribute name="showTable" type="Boolean" default="false" />
+	<lightning:card title="My Sales Orders" iconName="standard:approval"> 
+         <hr />
+        <!--<aura:set attribute="footer">
+            <a onclick="{!c.loadMoreData}">{!v.loadMoreStatus}</a>
+        </aura:set>-->
+        
+        	<table style="width:25%;" class="slds-table slds-table_cell-buffer table-mob">
+                <tr>
+                	<td style="width:15%;">
+                    	<lightning:select aura:id="statVal" name="select1" label="Status" onchange="{!c.selValue}">
+                            <option value="All">All</option>
+                            <option value="Delivered">Delivered</option> 
+                            <option value="Order Confirmed">Order Confirmed</option>
+                            <option value="Pending">Pending</option>
+                        </lightning:select>
+                    </td>
+                	<td style="width:5%;padding-top:30px;">
+                    	<lightning:button variant="brand" label="Search" onclick="{!c.SearchSales}" /> 	
+                    </td>
+                </tr>
+        </table><br />
+        
+        <aura:if isTrue="{!v.showTable == true}">
+       
+        <table width="100%" class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped slds-table_col-bordered">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Sales Order">Sales Order</div>
+                        </th>                                                                   
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Customer Name">Customer Name</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" style="text-align:center;" title="Ordered Date">Ordered Date</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                        	<div class="slds-truncate" style="text-align:center;" title="Order Amount">Order Amount</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                        	<div class="slds-truncate" style="text-align:center;" title="Payment Done">Payment Done</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                        	<div class="slds-truncate" style="text-align:center;" title="Order Status">Order Status</div>
+                        </th>
+                        <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                            <div class="slds-truncate" title="Actions">Actions</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:if isTrue="{!v.bpsList.length > 0}">
+                        <aura:iteration items="{!v.bpsList}" var="pr1">
+                            <tr>
+                                <c:FFTBrwSalesDetails rowDetails="{!pr1}" searchVal="{!v.selFilter}" />
+                            </tr>
+                        </aura:iteration>
+                        <aura:set attribute="else">
+            				<tr>
+                            	<td colspan="7" style="text-align:center;">
+                                    No records found for your search criteria.
+                                </td>
+                            </tr>
+            			</aura:set>
+                    </aura:if>
+                    
+                    
+                </tbody>
+            </table>
+          </aura:if>
+
+    </lightning:card>
+    <div class="demo-only slds-hide" aura:id="mySpinner">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

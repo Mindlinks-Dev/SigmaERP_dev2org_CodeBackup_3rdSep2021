@@ -1,0 +1,154 @@
+<aura:component controller="InventoryClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>   
+    <aura:attribute name="soList" type="Inventory__c[]"/>
+    <aura:attribute name="pickSoList" type="Inventory__c[]"/>
+    <aura:attribute name="name" type="Inventory__c"/>
+    <aura:attribute name="invFlag" type="Boolean" default="false"/>
+    <aura:attribute name="ListFlag" type="Boolean" default="true"/>
+    <aura:attribute name="InvMain" type="Boolean" default="false"/>
+    <aura:attribute name="InvRelease" type="Boolean" default="false"/>
+    <aura:attribute name="bulk" type="boolean" default="false"/> 
+    <aura:attribute name="serial" type="boolean" default="false"/>
+    <aura:handler event="c:PageChange" action="{!c.pageChange}"/>
+    
+    <aura:attribute name="IsCommunityUser" type="boolean" default="false"/>
+    <lightning:card title="">
+        <!--<div class="slds-box slds-m-vertical_small " aura:id="mainDiv">-->
+        <!--<div>
+            <div aura:id="ListFlag">-->
+        <div class="slds-grid">
+            <div class="slds-col slds-has-flexi-truncate">
+                <div class="slds-media slds-no-space slds-grow">
+                    <div class="slds-media__figure">
+                        <span style="padding-left:5px;">
+                            <lightning:icon iconName="standard:record" size="small" />
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <button class="slds-button slds-button_reset slds-type-focus slds-truncate" aria-haspopup="true" title="">
+                            <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">
+                                <span class="slds-truncate" title="Inventory Module" style="font-size:15px;"><b>Inventory</b></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- commented on 5-2-2020 for new Module wise UI purpose-->
+            <!--<div class="slds-col slds-no-flex slds-grid slds-align-top slds-p-bottom_xx-small slds-button-desktop">
+                        <div class="slds-button-group" role="group"> 
+                            <lightning:button label="New" name="Product Inventory"  onclick="{!c.createNewRecord}" />
+                            <lightning:button label="Inventory Location" name="Inventory Location"  onclick="{!c.createLocation}" />
+                            <lightning:button label="Search Inventory"  name="product Inventory" onclick="{!c.callInventoryMaintain}" />
+                            <lightning:button label="Release Inventory"  name="product Inventory" onclick="{!c.callComponent}" />
+                            <lightning:button label="Import Bulk product"  name="Import Bulk product" onclick="{!c.BulkInventories}" />
+                            <lightning:button label="Import Serialized product"  name="Import Bulk product" onclick="{!c.serializedInventories}" />
+                        </div>
+                    </div>-->
+            <!--<div class="slds-col slds-no-flex slds-grid slds-align-top slds-p-bottom_xx-small slds-button-desktop">
+                        <div class="slds-button-group" role="group">                            
+                            <lightning:button label="Import Bulk product"  name="Import Bulk product" onclick="{!c.BulkInventories}" />
+                            <lightning:button label="Import Serialized product"  name="Import Bulk product" onclick="{!c.serializedInventories}" />
+                        </div>
+                    </div>-->
+            
+        </div>
+        
+       <!-- commented 21-05 -showing extra name in mobile
+			<div class="slds-grid slds-button-mobile">				
+            <lightning:button class="slds-button-mob" label="Inventory Location" name="Inventory Location"  onclick="{!c.createLocation}" />
+            <lightning:button class="slds-button-mob" label="Search Inventory"  name="product Inventory" onclick="{!c.callInventoryMaintain}" />
+            <lightning:button class="slds-button-mob" label="Release Inventory"  name="product Inventory" onclick="{!c.callComponent}" />
+            <lightning:button class="slds-button-mob" label="Import Bulk product"  name="Import Bulk product" onclick="{!c.BulkInventories}" />
+            <lightning:button class="slds-button-mob" label="Import Serialized product"  name="Import Bulk product" onclick="{!c.serializedInventories}" />
+        </div> -->
+        <div class="slds-grid">
+            <div class="slds-col slds-align-bottom">
+                <p class="slds-text-body_small"></p>
+            </div>
+            
+        </div>
+        
+        <div class="slds-grid slds-m-top_large slds-scrollable">
+            <table class="slds-table slds-table_bordered" role="grid" style="border-left: 1px solid rgb(216, 221, 230);border-right: 1px solid rgb(216, 221, 230);">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" >
+                            <div class="slds-truncate" title="SL">SL NO</div>
+                        </th>
+                        <th scope="col" >
+                            <div class="slds-truncate" title="InventoryID">Inventory Id</div>
+                        </th>
+                        <th scope="col" >
+                            <div class="slds-truncate" title="Product">Product</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="All Received Qty">All Received Qty</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Available Qty">Available Qty</div>
+                        </th>
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Reserved Qty">Reserved Qty</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Shipped Qty">Shipped Qty</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Delivered Qty">Delivered Qty</div>
+                        </th>
+                        
+                    </tr>
+                </thead>
+                
+                
+                <tbody>
+                    
+                    <aura:iteration items="{!v.soList}" var="item" indexVar="i">
+                        
+                        <c:InventoryRecords soList="{!item}" serialCount="{!i+1}" NolinkforcommunityUser="{!v.IsCommunityUser}"/> 
+                        
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+        <div class="align-center">
+            <c:PaginationComponentForInventory page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+            <!-- </div>
+       </div>-->
+            {!V.body}
+        </div>
+        <div aura:id="invFlag" class="slds-hide">
+            <!--  <c:InventoryLocationcmp/> -->
+            <c:ILListView/>
+        </div>
+        <div aura:id="InvMain" class="slds-hide">
+            <c:Inventroymaintain/>
+        </div>
+        <div aura:id="InvRelease" class="slds-hide">
+            <c:InventoryReleaseCntrl/>
+        </div>
+        <div aura:id="bulk" class="slds-hide">
+            <iframe src="{!'/apex/sigmaerpdev2__ImportBulkProductForInventory'}" width="100%" height="500px;" frameBorder="0"/>
+        </div>
+        <div aura:id="serial" class="slds-hide">
+            <iframe src="{!'/apex/sigmaerpdev2__ImportSerialProductForInventory'}" width="100%" height="500px;" frameBorder="0"/>
+        </div>
+        <!--</div>-->
+    </lightning:card>
+    
+    
+    <div class="demo-only slds-hide" aura:id="mySpinner">
+        <div class="slds-spinner_container slds-is-fixed">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,13 @@
+.THIS .slds-card__header{
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.16);
+    padding: .4rem .3rem;
+}
+.THIS .slds-th__action{
+    background:gray;
+    color:white;
+    text-transform:uppercase;
+    font-weight:normal;
+}
+.THIS .slds-button_icon-bare,.THIS .slds-button--icon-bare{
+    color:white;
+}

@@ -1,0 +1,243 @@
+<!-- sfdcMonkey.com -->
+<!-- Child Lightning Component for Create New Row Instance-->
+<aura:component controller="GenerateMultiplePO" >    
+    <!-- Aura Attribute for store single Contact[standard Object] Instance And Store Index of Particular Instance --> 
+    <aura:attribute name="POInstance" type="Purchase_Order_Product__c" 
+                    default="{'sobjectType': 'Purchase_Order_Product__c',
+                             'sigmaerpdev2__Product__c': '',
+                             'sigmaerpdev2__Buying_Price__c': '',
+                             'sigmaerpdev2__Expected_Delivery_Date__c': '',
+                             'sigmaerpdev2__Quantity__c': '',
+                             'sigmaerpdev2__Status__c': '',
+                             'sigmaerpdev2__Total_Buying_Price__c':'',
+                             'sigmaerpdev2__Vender_Products__c':'',
+                             'sigmaerpdev2__VendorPrice__c':'',
+                             'sigmaerpdev2__Product__r.Name':'',
+                             'Product_name': '',
+                             'sigmaerpdev2__Remaining_to_come__c':''
+                             }" />  
+    <aura:attribute name="rowIndex" type="String"/>
+    
+    <aura:attribute name="ProductId" type="Id"/>
+    <aura:attribute name="SelectedVendorName" type="String" />
+    <aura:attribute name="SelectedVendorId" type="String" />
+    <aura:attribute name="SelectedVendorLocation" type="String" />
+    <aura:attribute name="SelectedBuyingPrice" type="Decimal" />
+    <aura:attribute name="vendorEmail" type="String" />
+    <aura:attribute name="vendorPrice" type="Decimal" />
+    <aura:attribute name="SelectedVendorLocationId" type="String" />
+    
+    <!-- attribute for PO Status -->
+    <aura:attribute name="selectedStatus" type="String" description="The current record Id to display" />
+    <aura:attribute name="Id" type="ID" />  
+    <aura:attribute name="Status" type="String" />
+    <aura:attribute name="POSubmitted" type="String" /> 
+    <!--Boolean attribute to check Approval process from default setting-->
+    <aura:attribute name="CheckAppflag" type="Boolean" default="false"/>
+    <!-- attribute created to disable select vendor button if product id is null-->
+    <aura:attribute name="isvendorSelected" type="Boolean" default="false" />
+   
+    <!-- Attribute to display error messages on field-->
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    
+    <!--Boolean attribute to indicate if modal is open or not -->
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="ProductDisplay" type="boolean" default="false"/>
+    
+    <!-- Boolean attribute for Custom lookup to display names-->
+    <aura:attribute name="isSigmaOrder"  type="Boolean" default="false"/>
+    
+    <!-- Register 2 Lightning Event for handle add or Delete rows on Parent Component  --> 
+    <aura:registerEvent name="DeleteRowEvt" type="c:DeleteRowEvt"/> 
+    <aura:handler name="SendDataEvt" event="c:SendDataEvt"  action="{!c.handleComponentEvent}"/>
+    <!--Init handler which is call doInit js function on component Load-->  
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:html tag="style"> .slds-modal__container{ max-width: 80rem !important; width:80% !important; } </aura:html>
+    
+    <aura:renderIf isTrue="{!v.isError}">
+        <ui:message title="Error" severity="error" closable="false">
+            {!v.errorMsg}
+        </ui:message>
+        <aura:set attribute="else">
+            
+        </aura:set>
+    </aura:renderIf>  
+    <!-- Table Row -->   
+    <tr class="slds-text-title_caps">
+        <td> 
+            {!v.rowIndex + 1}
+        </td>
+         <td class="label-hidden">
+        <aura:if isTrue="{!(empty(v.SelectedVendorName))}">
+             <c:customLookup objectAPIName="Product2" selectedRecord="{!v.POInstance.sigmaerpdev2__Product__c}" recordID="{!v.POInstance.sigmaerpdev2__Product__c}" recordName="{!v.POInstance.sigmaerpdev2__Product__r.Name}" IconName="standard:product"  isSigmaOrder= "true"/>
+            <aura:set attribute="else">
+                <ui:inputText value="{!v.POInstance.sigmaerpdev2__Product__r.Name}" disabled="true"/>
+            </aura:set>
+        </aura:if>
+       </td>
+         <td>
+            <button class="slds-button slds-button_brand" onclick="{!c.selectVendorModel}">Select&nbsp;Vendor</button>
+            <!--<lightning:button label="SelectVendor" class="slds-float_left buttonOverlay"  variant="brand" onclick="{!c.selectVendorModel}"/>-->
+        </td>
+        
+        <td>
+            <lightning:input name="vendName" type="text" value="{!v.SelectedVendorName}" variant="label-hidden" disabled="true"/>
+        </td>
+        <td>
+            <lightning:input name="vendLoc" type="text" value="{!v.SelectedVendorLocation}" variant="label-hidden" disabled="true"/>
+        </td>
+       
+        <td>
+            <!--<lightning:input name="orderQty" type="Qty" value="{!v.POInstance.sigmaerpdev2__Quantity__c}" variant="label-hidden"/> -->
+            <ui:inputNumber aura:id="Quantity" label="" maxlength="5"
+                            class="slds-input"
+                            labelClass="slds-form-element__label"
+                            value="{!v.POInstance.sigmaerpdev2__Quantity__c}"
+                            keyup="{!c.validateQuantity}"
+                            updateOn="keyup"
+                            disabled="{!v.POInstance.sigmaerpdev2__Remaining_to_come__c>0}"
+                            />
+            <!--<aura:if isTrue="{!v.Id==undefined}">
+                <ui:inputNumber aura:id="Quantity" label="" maxlength="5"
+                                class="slds-input"
+                                labelClass="slds-form-element__label"
+                                value="{!v.POInstance.sigmaerpdev2__Quantity__c}"
+                                keyup="{!c.validateQuantity}"
+                                updateOn="keyup"
+                                disabled="{!v.POInstance.sigmaerpdev2__Remaining_to_come__c>0}"
+                                />
+                <aura:set attribute="else">
+                    <ui:inputNumber aura:id="Quantity" label="" maxlength="5"
+                                    class="slds-input"
+                                    labelClass="slds-form-element__label"
+                                    value="{!v.POInstance.sigmaerpdev2__Quantity__c}"
+                                    keyup="{!c.validateQuantity}"
+                                    updateOn="keyup"
+                                    />
+                 </aura:set>
+            </aura:if>-->
+        </td>
+        <td>
+            <!--<lightning:input name="disc" type="text"    value="{!v.POInstance.sigmaerpdev2__Discount__c}" variant="label-hidden" />-->
+            <!--<aura:if isTrue="{!v.pocloneid==undefined}">
+                                <ui:inputNumber aura:id="Discount" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.POInstance.sigmaerpdev2__Discount__c}"
+                                              keyup="{!c.discount}"
+                                              updateOn="keyup"
+                                                disabled="{!v.POInstance.sigmaerpdev2__Remaining_to_come__c>0}"
+                                                 />
+                                     <aura:set attribute="else">
+                                     <ui:inputNumber aura:id="Discount" 
+                                              class="slds-input"
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.POInstance.sigmaerpdev2__Discount__c}"
+                                              keyup="{!c.discount}"
+                                              updateOn="keyup"
+                                                 />
+                                     </aura:set>
+                                </aura:if>-->
+            <ui:inputNumber aura:id="Discount" 
+                            class="slds-input"
+                            labelClass="slds-form-element__label"
+                            value="{!v.POInstance.sigmaerpdev2__Discount__c}"
+                            keyup="{!c.discount}"
+                            updateOn="keyup"
+                            disabled="{!v.POInstance.sigmaerpdev2__Remaining_to_come__c>0}"
+                            />
+        </td>
+        <td>
+            <!-- <lightning:input  name="price" type="buyingPrice"  value="{!v.POInstance.sigmaerpdev2__Buying_Price__c}" disabled="true" variant="label-hidden" />-->
+            <ui:inputCurrency aura:id="BuyingPrice"   maxlength="10"
+                              class="slds-input"
+                              labelClass="slds-form-element__label"
+                              value="{!v.POInstance.sigmaerpdev2__Price__c}"
+                              disabled="true"
+                              />       
+        </td>
+        <td>
+            <!-- <lightning:input  name="price" type="buyingPrice"  value="{!v.POInstance.sigmaerpdev2__Buying_Price__c}" disabled="true" variant="label-hidden" />-->
+            <ui:inputCurrency aura:id="NetBuyingPrice"   maxlength="10"
+                              class="slds-input"
+                              labelClass="slds-form-element__label"
+                              value="{!v.POInstance.sigmaerpdev2__Buying_Price__c}"
+                              change="{!c.validateBuyingPrice}"
+                              disabled="true"
+                              />       
+        </td>
+        <td>
+            <!--<ui:inputDate displayDatePicker="true" class="slds-input" value="{!v.POInstance.sigmaerpdev2__Expected_Delivery_Date__c}" />-->
+            <ui:inputDate aura:id="ExpectedDeliveryDate" 
+                          class="slds-input"
+                          labelClass="slds-form-element__label"
+                          value="{!v.POInstance.sigmaerpdev2__Expected_Delivery_Date__c}"
+                          displayDatePicker="true"
+                          disabled="{!v.POInstance.sigmaerpdev2__Remaining_to_come__c>0}"
+                          />
+        </td>
+        <td>
+            <!-- <lightning:input  name="status" type="text" value="{!v.POInstance.selectStatus}" variant="label-hidden"/>-->
+            <div class="slds-size_5-of-5 label-hidden" aura:id="TempToDisplayStatus">
+               <!-- <lightning:select aura:id="status" value="{!v.Status}" variant="label-hidden">
+                    
+                    <option value="Submitted">Submitted</option>
+                </lightning:select>-->
+                <ui:inputSelect  class="slds-input input uiInput uiInputText uiInput--default uiInput--input" aura:id="InputSelectDynamic" value="{!v.selectedStatus}" required="true" change="{!c.saveRecord}"   disabled="{!v.recordID!=undefined}"/>
+              </div>
+        </td>
+        <td class="slds-p-right_none">
+            <!-- conditionally Display Add or Delete Icons
+                 if rowIndex is 0 then show Add New Row Icon else show delete Icon
+             --> 
+            <aura:if isTrue="{v.rowIndex == 0}">
+                <!--<a onclick="{!c.AddNewRow}">
+                  <lightning:icon iconName="utility:add" class="slds-icon slds-icon_small" size="small" alternativeText="add"/>
+                  <span class="slds-assistive-text">Add Icon</span>
+                </a>  -->  
+                <aura:set attribute="else">
+                    <a onclick="{!c.removeRow}">
+                        <lightning:icon variant="error" iconName="utility:delete" class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+                        <span class="slds-assistive-text">Delete Icon</span>
+                    </a>
+                </aura:set> 
+            </aura:if>
+        </td> 
+    </tr>
+    
+    <!--Use aura:if tag to display/hide popup based on isModalOpen value-->  
+    <aura:if isTrue="{!v.isModalOpen}">
+        <div class="slds-m-around_xx-large">
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header" style="background:#9bd7f1;color:black;border:1.2px solid black;border-bottom:0;">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeVendorModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Vendor </h2>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    <c:DisplayVendor  SelectedProductId="{!v.ProductId}"/> 
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer" style="border-left:1.2px solid black;border-right:1.2px solid black;border-bottom:1.2px solid black;">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                        <lightning:button variant="brand"
+                                          label="OK"
+                                          title="OK"
+                                          onclick="{!c.submitDetails}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    
+</aura:component>

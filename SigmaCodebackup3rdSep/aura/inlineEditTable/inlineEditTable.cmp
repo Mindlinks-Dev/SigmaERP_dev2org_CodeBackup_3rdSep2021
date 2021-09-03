@@ -1,0 +1,159 @@
+<aura:component controller="inlineEditCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">   
+    <!--Init handler which is call initRecords js function on component Load-->  
+    <!--<aura:handler name="init" value="{!this}" action="{!c.initRecords}"/>-->
+    <aura:handler name="init" value="{!this}" action="{!c.fetchStock}"/>
+    <lightning:navigation aura:id="navService"/>
+    <!--declare aura attributes-->
+    <aura:attribute name="wrapperList" type="object"/>
+    <aura:attribute name="ProductList" type="Object[]" description="store product records list"/>
+    <aura:attribute name="showSaveCancelBtn" type="boolean" default="true" description="flag for rendered save and cancel buttons in aura:if "/>
+    <aura:handler event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+   
+    <aura:attribute name="addNewProduct" type="boolean" default="false"/>
+    <aura:attribute name="currentComp" type="boolean" default="true"/>
+    <aura:attribute name="userInfo" type="user"/>  
+    <!-- <aura:handler event="force:refreshView" action="{!c.isRefreshed}" />-->
+    <aura:attribute name="PageNumber" type="integer" default="1"/>
+    <aura:attribute name="TotalPages" type="integer" default="0"/>
+    <aura:attribute name="TotalRecords" type="integer" default="0"/>
+    <aura:attribute name="RecordStart" type="integer" default="0"/>
+    <aura:attribute name="RecordEnd" type="integer" default="0"/>
+    <aura:attribute name="key" type="String" /> 
+    <aura:attribute name="numberOfRecordsToDisplay" type="Integer" />
+    <aura:attribute name="numberOfRecordsOnLoadMoreClick" type="Integer" />
+    <aura:attribute name="totalRowCount" type="Integer" default="0"/>
+    <aura:attribute name="ProductNameSort" type="String"/>
+    <aura:attribute name="LocationNameSort" type="String"/>
+    <aura:attribute name="isSpinner" type="boolean" default="false"/>
+    <aura:handler event="aura:waiting" action="{!c.handleShowSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.handleHideSpinner}"/>
+    
+    <aura:if isTrue="{!v.currentComp}">
+        <p class="vendor-title"><b> {!v.userInfo.Name}</b></p>
+        <div class="content">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container1 slds-icon-standard-account1" title="account">
+                            <img src="{!$Resource.SigmaIcons + '/Report.png'}" width="50"/>
+                            <span class="slds-assistive-text">Stock Update</span>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title header slds-text-title_caps">
+                            <strong>Stock Update</strong>
+                            
+                        </h2>
+                    </div>
+                    
+                    <div class="slds-col">
+                        <div class="slds-grid slds-gutters">
+                            
+                            <!--<lightning:helptext content="Search Product Details" class="customIcon"/>-->
+                            <lightning:input type="search" variant="label-hidden" label="" name="searchKey" aura:id="searchKey" onchange="{!c.searchKeyChangeForLoadmore}" placeholder="Search"/>
+                            
+                        </div>
+                    </div>
+                    <!--<b>Current User Information</b>-->
+                    <!--<p>Logged In User : <b> {!v.userInfo.Name}</b></p>-->
+                    
+                    
+                    <div class="slds-grid slds-gutters slds-wrap slds-m-horizontal_xx-small paddingAround">                
+                        
+                        <!--<lightning:input aura:id="productsLocationInput" type="text" 
+                                             label="Add Product to Location" required="true" 
+                                             value="{!v.ProductList.ProductName}"/>-->
+                        
+                        <div class="slds-col  slds-p-top_right_large">
+                            <lightning:button type="button" iconName="utility:add" variant="brand" label="Add Product To Location" onclick="{!c.AddProductToLocationfunction}"/>
+                        </div>
+                    </div>
+                    
+                    <!--<div class="slds-no-flex slds-m-horizontal_small">
+                    <div class="slds-text-align_center">
+                        <lightning:button label="Save" variant="brand" onclick="{!c.Save}"/>
+                        <lightning:button label="Cancel" variant="brand" onclick="{!c.cancel}"/>
+                    </div>                    
+                </div>-->
+                    
+                </header>
+            </div>
+            <div class="slds-card__body">
+                <div class="table-scroll  ">
+                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                        <thead>
+                            <tr class="slds-text-title_caps slds-gray">   
+                                <th scope="col" style="width:5%"><div class="slds-truncate" title="Id">S.No</div></th> 
+                                <th scope="col" style="width:25%;">
+                                    <div class="slds-truncate" title="Product Name">Product Name
+                                        <!-- <a aura:id="sortArrowup" onclick="{!c.sortArrowup}" ><lightning:icon variant="inverse" size="xx-small" iconName="utility:arrowup" alternativeText="sort" title="sort" /></a>
+                                    <a aura:id="sortArrowdown" onclick="{!c.sortArrowdown}" class="slds-hide"><lightning:icon variant="inverse" size="xx-small" iconName="utility:arrowdown" alternativeText="sort" title="sort" /></a>-->
+                                        <button class="slds-button" onclick="{!c.sortProductName}">
+                                            <lightning:icon variant="inverse" aura:id="ProductArrowup" iconName="utility:arrowup" size="xx-small" alternativeText="sort" />
+                                            <lightning:icon variant="inverse" class="slds-hide" aura:id="ProductArrowdown" iconName="utility:arrowdown" size="x-small" alternativeText="sort" />
+                                        </button>
+                                    </div>
+                                </th>
+                                <th scope="col" style="width:15%;">View Image</th>
+                                <th scope="col" style="width:15%;"><div class="slds-truncate" title="Name">Vendor Code</div></th>
+                                <th scope="col" style="width:15%;"><div class="slds-truncate " title="Location">Location
+                                    <!-- <a aura:id="sortArrowupforLocation" onclick="{!c.sortArrowupforLocation}" ><lightning:icon variant="inverse" size="xx-small" iconName="utility:arrowup" alternativeText="sort" title="sort" /></a>
+                                <a aura:id="sortArrowdownforLocation" onclick="{!c.sortArrowdownforLocation}" class="slds-hide"><lightning:icon variant="inverse" size="xx-small" iconName="utility:arrowdown" alternativeText="sort" title="sort" /></a>-->
+                                    <button class="slds-button" onclick="{!c.sortLocationName}">
+                                        <lightning:icon variant="inverse"  aura:id="LocationArrowup" iconName="utility:arrowup" size="xx-small" alternativeText="section" />
+                                        <lightning:icon variant="inverse" class="slds-hide" aura:id="LocationArrowdown" iconName="utility:arrowdown" size="xx-small" alternativeText="section" />
+                                    </button>
+                                    </div>
+                                </th>
+                                <th scope="col" style="width:10%;"><div class="slds-truncate" title="Name">Current Stock</div></th>                  
+                                <th scope="col" style="width:10%;"><div class="slds-truncate" title="Name">As on Date</div></th>                  
+                            </tr>
+                        </thead>                    
+                        <tbody>
+                            <!--### display all records of AccountList attribute one by one by aura:iteration ###-->
+                            <aura:iteration items="{!v.ProductList}" var="VP" indexVar="sNo">
+                                <!-- <aura:iteration items="{!v.wrapperList.ILPList}" var="VP" indexVar="sNo">-->
+                                <!-- Child Lightning Component --> 
+                                <c:inlineEditRow singleRec="{!VP}"
+                                                 showSaveCancelBtn="{!v.showSaveCancelBtn}"
+                                                 sNo="{!sNo + 1}" />
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="slds-grid">
+            <div class="slds-col slds-size--1-of-3">
+            </div>
+            <div class="slds-col slds-size--1-of-3">
+                <aura:if isTrue="{!v.showSaveCancelBtn}">
+                    <div class="slds-no-flex slds-m-horizontal_small">
+                        <div class="slds-text-align_center">
+                            <!--<lightning:button  label="{!v.isSpinner == true ? 'Saving...' : 'Save'}" variant="brand" onclick="{!c.Save}"  disabled="{!v.isSpinner}"/>-->
+                             <lightning:button  label="Save" variant="brand" onclick="{!c.Save}" />
+                            <lightning:button label="Cancel" variant="brand" onclick="{!c.cancel}"/>
+                        </div>                    
+                    </div>
+                </aura:if>
+            </div>
+            <div class="slds-col slds-text-align_right slds-size--1-of-3 slds-p-right_small">
+                <lightning:button label="Load More..." title="Load More Action" disabled="{!lessthanorequal(v.totalRowCount,v.numberOfRecordsToDisplay)}" onclick="{! c.loadMoreContent }"/>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.addNewProduct}">
+       <!-- <c:AddProductToLocation addNewProduct="{!v.addNewProduct}"/>-->
+        <c:addproduct addNewProduct="{!v.addNewProduct}"/>
+    </aura:if>
+      <aura:if isTrue="{!v.Spinner}">
+    <div aura:id="spinnerId" class="slds-spinner_container">
+       <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+         <span class="slds-assistive-text">Loading</span>
+         <div class="slds-spinner__dot-a"></div>
+         <div class="slds-spinner__dot-b"></div>
+       </div>
+    </div>
+ </aura:if>
+</aura:component>

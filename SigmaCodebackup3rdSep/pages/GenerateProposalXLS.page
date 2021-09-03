@@ -1,0 +1,704 @@
+<apex:page controller="Proposalsearch" action="{!generatereport}" contentType="txt/xml#CampaignProposal.xls" cache="true">
+    <apex:outputText value="{!xlsHeader}"/>
+    
+    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+              xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+              xmlns:html="http://www.w3.org/TR/REC-html40">
+        <Styles>
+            <Style ss:ID="s1">
+                <Alignment/>
+                <Borders/>
+                <Font ss:Size="9" ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s2">
+                <Alignment/>
+                <Borders/>
+                <Font ss:Color="#FFFFFF" ss:Size="9" ss:Bold="1"/>
+                <Interior ss:Color="#000000" ss:Pattern="Solid"/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>  
+            <Style ss:ID="s3">
+                <Alignment ss:Horizontal="CenterAcrossSelection"/>
+                <Borders/>
+                <Font ss:Color="#FFFFFF" ss:Size="10" ss:Bold="1"/>
+                <Interior ss:Color="#000000" ss:Pattern="Solid" />
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s4">
+                <Alignment/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+                <Font ss:Color="#000000" ss:Size="9" ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s5">
+                <Alignment/>
+                <Borders>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                
+                <Font ss:Color="#000000" ss:Size="9" ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s6">
+                <Alignment/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:Color="#FF0000" ss:Size="9" ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            
+            <Style ss:ID="s7">
+                <Alignment/>                
+                <Borders/>
+                <Font ss:Color="#FF0000" ss:Size="9" ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            
+        </Styles>
+        
+        <Worksheet ss:Name="Proposal Details">              
+            <Table x:FullColumns="1" x:FullRows="1">                    
+                <Column ss:Width="120"/>
+                <Column ss:Width="85"/>
+                <Column ss:Width="95"/>
+                <Column ss:Width="95"/>
+                <Column ss:Width="85"/>
+                <Column ss:Width="145"/>
+                <Column ss:Width="150"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="75"/>
+                <Column ss:Width="75"/>
+                <Column ss:Width="75"/>
+                <Column ss:Width="85"/> 
+                <Column ss:Width="85"/>
+                <Column ss:Width="75"/>                    
+              
+                <Row>
+                </Row>
+                <Row>
+                                            
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >PROPOSAL ID:</Data></Cell><Cell><Data ss:Type="String">{!HTMLENCODE(campaigndetails.Name)}</Data></Cell>         
+                </Row> 
+                <Row>
+                                              
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >PROPOSAL NAME:</Data></Cell><Cell><Data ss:Type="String">{!HTMLENCODE(campaigndetails.sigmaerpdev2__Proposal_Name__c)}</Data></Cell>         
+                </Row>
+                <Row>
+                                            
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >PROPOSAL FOR:</Data></Cell><Cell><Data ss:Type="String">{!HTMLENCODE(campaigndetails.sigmaerpdev2__Client__r.Name)}</Data></Cell>         
+                </Row>                        
+                                     
+                <Row>
+                    
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >DATES:</Data></Cell><Cell><Data ss:Type="String"><apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!campaigndetails.Start_Date__c}" /></apex:outputText>&nbsp;-&nbsp;<apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!campaigndetails.End_Date__c}" /></apex:outputText></Data></Cell>
+                </Row>                        
+                <Row>                            
+                   
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >Account Executive:</Data></Cell> <Cell><Data ss:Type="String">{!HTMLENCODE(campaigndetails.sigmaerpdev2__Account_Executive_1_acc__r.Name)}</Data></Cell>
+                </Row>
+                <Row>
+                </Row>
+                <Row>
+                </Row>
+                <apex:repeat value="{!completeCampaignDetails}" var="prop">
+                    <Row>
+                        
+                        <Cell ss:StyleID="s3"><Data ss:Type="String">{!HTMLENCODE(prop.sigmaerpdev2__Product__r.Name)}&nbsp;[<apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!prop.Start_Date__c}" /></apex:outputText>&nbsp;-&nbsp;<apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!prop.End_Date__c}" /></apex:outputText>]</Data></Cell> 
+                        <Cell ss:StyleID="s2"></Cell>
+                        <Cell ss:StyleID="s2"></Cell>
+                       
+                   
+                    </Row>
+                    <Row>
+                       
+                        <Cell ss:StyleID="s2"></Cell>
+                        <Cell ss:StyleID="s2"></Cell>
+                        <Cell ss:StyleID="s2"></Cell> 
+                        
+                    </Row>
+                    
+                    <Row>
+                       
+                     
+                        <Cell ss:StyleID="s2"><Data ss:Type="String" >Location</Data></Cell>
+                        <Cell ss:StyleID="s2"><Data ss:Type="String" >Total Units</Data></Cell>
+                       <Cell ss:StyleID="s2"><Data ss:Type="String" >Total Dollars</Data></Cell>                           
+                                         
+                    </Row>
+                    <apex:repeat value="{!prop.sigmaerpdev2__CampaignLineItemLocations__r}" var="pprice">                            
+                        <Row>
+                         
+                           
+                            <Cell><Data ss:Type="String">{!HTMLENCODE(pprice.sigmaerpdev2__Location__r.Code__c)}  {!HTMLENCODE(pprice.sigmaerpdev2__Location__r.Name)}</Data></Cell>                                 
+                           <Cell><Data ss:Type="String">{!HTMLENCODE(TEXT(pprice.Quantity__c))}</Data></Cell>
+                          <Cell><Data ss:Type="String">$
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                    <apex:param value="{!pprice.Cost__c}" />
+                                </apex:outputText>
+                                </Data>
+                            </Cell>  
+                                                    
+                        </Row>                            
+                    </apex:repeat>
+                    
+                    <Row>
+                       
+                       
+                        <Cell ss:StyleID="s1"><Data ss:Type="String">Net {!HTMLENCODE(prop.sigmaerpdev2__Product__r.Name)} Totals:</Data></Cell>
+                      
+                        <Cell ss:StyleID="s4"><Data ss:Type="String">{!HTMLENCODE(TEXT(prop.Quantity__c))}</Data></Cell>
+                    
+                        
+                        <Cell ss:StyleID="s4"><Data ss:Type="String">$
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                <apex:param value="{!prop.Cost__c}" />
+                            </apex:outputText>
+                            </Data></Cell>
+                      
+                        
+                    </Row>
+                    <apex:outputText rendered="{!IF(prop.OtherCharges__c == 0.00,false,true)}">
+                        <Row>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell> 
+                            <Cell ss:StyleID="s1">
+                                <Data ss:Type="String">Other Charges:</Data>
+                            </Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell> 
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s5"><Data ss:Type="String">$
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                    <apex:param value="{!prop.OtherCharges__c}" />
+                                </apex:outputText>
+                                </Data>
+                            </Cell>                                    
+                            <Cell ss:StyleID="s1"></Cell>                                
+                        </Row>    
+                    </apex:outputText>  
+                    <apex:outputText rendered="{!IF(prop.Discount__c == 0.00,false,true)}">                     
+                        <Row>
+                         
+                            
+                            <Cell ss:StyleID="s1"><Data ss:Type="String">Discount [Product Level]:</Data></Cell>
+                           
+                            <Cell></Cell>
+                                                        
+                            <apex:outputText rendered="{!IF(prop.Discount__c < 0,false,true)}">
+                                <Cell ss:StyleID="s7"><Data ss:Type="String">-$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!prop.Discount__c}" />
+                                    </apex:outputText>
+                                    </Data>
+                                </Cell> 
+                            </apex:outputText>
+                            <apex:outputText rendered="{!IF(prop.Discount__c > 0,false,true)}">
+                                <Cell ss:StyleID="s4"><Data ss:Type="String">$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!prop.Discount__c * -1}" />
+                                    </apex:outputText>
+                                    </Data>
+                                </Cell> 
+                            </apex:outputText>
+                            <Cell></Cell>                           
+                        </Row>
+                    </apex:outputText>
+                    <apex:outputText rendered="{!IF(prop.Location_Level_Discount__c == 0.00,false,true)}">                      
+                        <Row>
+                            
+                           
+                            <Cell ss:StyleID="s1"><Data ss:Type="String">Discount [Location Level]:</Data></Cell>
+                          
+                            <Cell></Cell>
+                            <apex:outputText rendered="{!IF(prop.Location_Level_Discount__c < 0,false,true)}">
+                                <Cell ss:StyleID="s7"><Data ss:Type="String">-$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!prop.Location_Level_Discount__c}" />
+                                    </apex:outputText>
+                                    </Data>
+                                </Cell> 
+                            </apex:outputText>
+                            <apex:outputText rendered="{!IF(prop.Location_Level_Discount__c > 0,false,true)}">
+                                <Cell ss:StyleID="s4"><Data ss:Type="String">$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!prop.Location_Level_Discount__c * -1}" />
+                                    </apex:outputText>
+                                    </Data>
+                                </Cell> 
+                            </apex:outputText>
+                            <Cell></Cell>                           
+                        </Row>
+                    </apex:outputText>
+                    
+                    <apex:outputText rendered="{!IF(AND(prop.Location_Level_Discount__c == 0.00, prop.Discount__c == 0.00, prop.OtherCharges__c == 0.00), FALSE, TRUE)}">
+                        <Row>
+                          
+                            
+                            <Cell ss:StyleID="s1"><Data ss:Type="String">Adjusted Net {!HTMLENCODE(prop.sigmaerpdev2__Product__r.Name)} Totals:</Data></Cell>
+                           
+                            <Cell></Cell>
+                            <Cell ss:StyleID="s4">
+                                <Data ss:Type="String">$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                                        <apex:param value="{!prop.AdjustedLineItemTotal__c}" />
+                                    </apex:outputText>                                      
+                                </Data>
+                            </Cell>
+                            <Cell></Cell> 
+                        </Row>
+                    </apex:outputText>
+                    
+                    
+                    <Row>
+                        
+                    </Row>
+                    <Row>
+                    </Row>
+                </apex:repeat> 
+                
+                <Row>
+                </Row>
+                
+                <Row>
+                </Row>
+                
+                <Row>
+                
+                    <Cell ss:StyleID="s3"><Data ss:Type="String">PROPOSAL SUMMARY</Data></Cell>
+                    <Cell ss:StyleID="s2"></Cell>
+                    <Cell ss:StyleID="s2"></Cell>                             
+                    <Cell ss:StyleID="s2"></Cell>
+                    <Cell ss:StyleID="s2"></Cell>
+                                       
+                </Row>
+                
+                <Row>
+                </Row>
+                
+                <Row>
+                </Row>
+                
+                <Row>
+                    <Cell ss:StyleID="s1"></Cell>
+                   
+                  
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >UNITS</Data></Cell>
+                    <!--<Cell ss:StyleID="s1"><Data ss:Type="String" >Media Cost</Data></Cell>-->
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >Production Cost</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >COST</Data></Cell>
+                    <!--<Cell ss:StyleID="s1"><Data ss:Type="String" >CPM</Data></Cell>-->
+                    
+                </Row>
+                
+                <apex:repeat value="{!completeCampaignDetails}" var="prop">
+                    <Row>
+                        
+                        
+                        <Cell ss:StyleID="s1"><Data ss:Type="String">Net {!HTMLENCODE(prop.sigmaerpdev2__Product__r.Name)} Totals:</Data></Cell>
+                      
+                        <Cell ss:StyleID="s4"><Data ss:Type="String">{!HTMLENCODE(TEXT(prop.Quantity__c))}</Data></Cell> 
+                       
+                        <Cell ss:StyleID="s4"><Data ss:Type="String">$
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                <apex:param value="{!prop.Production_Cost__c}" />
+                            </apex:outputText>
+                            </Data>
+                        </Cell>
+                        
+                        <Cell ss:StyleID="s4"><Data ss:Type="String">$
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                <apex:param value="{!prop.Cost__c}" />
+                            </apex:outputText>
+                            </Data>
+                        </Cell>
+                                                      
+                    </Row>
+                </apex:repeat>
+                
+                <apex:outputText rendered="{!IF(otherCharges == 0.00,false,true)}">
+                    <Row>
+                    
+                                                                                                                     
+                        <Cell ss:StyleID="s1">
+                            <Data ss:Type="String">{!otherChargesComments}</Data>
+                        </Cell>
+                     
+                        <Cell ss:StyleID="s5"></Cell>
+                        <Cell ss:StyleID="s5"></Cell>
+                        <Cell ss:StyleID="s5"><Data ss:Type="String">$
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                <apex:param value="{!otherCharges}" />
+                            </apex:outputText>
+                            </Data>
+                        </Cell>                                    
+                        <Cell ss:StyleID="s5"></Cell>                                
+                    </Row>    
+                </apex:outputText>
+                
+                
+                
+                <Row>
+                   
+                                                                               
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Net Proposal Values:</Data></Cell>
+                 
+                    <Cell ss:StyleID="s5"><Data ss:Type="String">{!CampaignDetailsTotalQuantity}</Data></Cell> 
+                    
+                 
+                    <Cell ss:StyleID="s5">
+                        <Data ss:Type="String">$
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}">  
+                                <apex:param value="{!CampaignDetailsTotalProductionCost}" />
+                            </apex:outputText>
+                        </Data>
+                    </Cell>
+                    
+                    <Cell ss:StyleID="s5"><Data ss:Type="String">$                                    
+                        <apex:outputText value="{0, number, ###,###,###,##0.00}">
+                            <apex:param value="{!CampaignDetailsTotalCost}" />
+                        </apex:outputText>
+                        </Data></Cell>
+                                             
+                </Row> 
+                
+               <apex:outputText rendered="{!IF(OR(DiscountedValue != 0.00, agentCommission != 0.00), true, false)}">
+                    <apex:outputText rendered="{!IF(DiscountedValue == 0.00,false,true)}">                              
+                        <Row>
+                           
+                                                                                                                            
+                            <Cell ss:StyleID="s1"><Data ss:Type="String">Discounts Total:</Data></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                          
+                            <apex:outputText rendered="{!IF(DiscountedValue < 0,false,true)}">
+                                <Cell ss:StyleID="s6"><Data ss:Type="String">-$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!DiscountedValue}" />
+                                    </apex:outputText>
+                                    </Data>
+                                </Cell> 
+                            </apex:outputText> 
+                            <apex:outputText rendered="{!IF(DiscountedValue > 0,false,true)}">
+                                <Cell ss:StyleID="s4"><Data ss:Type="String">$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!DiscountedValue * -1}" />
+                                    </apex:outputText>
+                                    </Data>
+                                </Cell> 
+                            </apex:outputText> 
+                                                   
+                        </Row> 
+                    </apex:outputText> 
+                    
+                    <apex:outputText rendered="{!IF(agentCommission == 0.00,false,true)}">
+                        <Row>
+                        
+                                                                                                                      
+                            <Cell ss:StyleID="s1"><Data ss:Type="String">Agency Commission Total:</Data></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                            <Cell ss:StyleID="s1"></Cell>
+                                                        
+                            <Cell ss:StyleID="s6">
+                                <Data ss:Type="String">$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!agentCommission}" />
+                                    </apex:outputText>
+                                </Data>
+                            </Cell>                                     
+                            <Cell ss:StyleID="s1"></Cell> 
+                            <Cell ss:StyleID="s1"></Cell>  
+                        </Row>
+                    </apex:outputText>
+                 
+                    
+                    <Row>
+                       
+                                                                                    
+                        <Cell ss:StyleID="s1"><Data ss:Type="String">Adjusted Net Proposal Values:</Data></Cell>
+                      <Cell ss:StyleID="s5"><Data ss:Type="String">{!CampaignDetailsTotalQuantity}</Data></Cell>   
+                     
+                        <Cell ss:StyleID="s5">
+                            <Data ss:Type="String">$
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">  
+                                    <apex:param value="{!CampaignDetailsTotalProductionCost}" />
+                                </apex:outputText>
+                            </Data>
+                        </Cell>
+                        
+                        <Cell ss:StyleID="s5">
+                            <Data ss:Type="String">$
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">  
+                                    <apex:param value="{!DiscountedCampaignDetailsTotalCost}" />
+                                </apex:outputText>
+                            </Data>
+                        </Cell>
+                        </Row>                          
+                </apex:outputText> 
+                  <Row>
+                </Row>
+                <Row>
+                </Row>
+                <Row>
+                    <Cell><Data ss:Type="String">* Proposal is valid for 30 days from issued date.  Media availability is subject to change.</Data></Cell>                               
+                </Row>
+                <Row>
+                </Row>
+               
+            </Table>
+        </Worksheet>
+     
+        <Worksheet ss:Name="Bundle By Product">            
+            <Table x:FullColumns="1" x:FullRows="1">               
+                
+                
+                <Column ss:Width="150"/>
+                <Column ss:Width="130"/>
+                <Column ss:Width="135"/>
+                <Column ss:Width="100"/>
+                <Column ss:Width="75"/>
+                <Column ss:Width="70"/>
+                <Column ss:Width="70"/>
+                <Column ss:Width="70"/>
+                              
+                <Row>
+                </Row>
+                <Row>
+                                               
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >PROPOSAL ID:</Data></Cell><Cell><Data ss:Type="String">{!HTMLENCODE(campaigndetails.Name)}</Data></Cell>         
+                </Row>
+                <Row>
+                                              
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >PROPOSAL NAME:</Data></Cell><Cell><Data ss:Type="String">{!HTMLENCODE(campaigndetails.sigmaerpdev2__Proposal_Name__c)}</Data></Cell>         
+                </Row>
+                <Row>
+                                              
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >PROPOSAL FOR:</Data></Cell><Cell><Data ss:Type="String">{!HTMLENCODE(campaigndetails.sigmaerpdev2__Client__r.Name)}</Data></Cell>         
+                </Row>  
+                                       
+                <Row>
+                   
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >DATES:</Data></Cell><Cell><Data ss:Type="String"><apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!campaigndetails.Start_Date__c}" /></apex:outputText>&nbsp;-&nbsp;<apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!campaigndetails.End_Date__c}" /></apex:outputText></Data></Cell>
+                </Row>                        
+                <Row>                            
+                    
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >Account Executive:</Data></Cell> <Cell><Data ss:Type="String">{!HTMLENCODE(campaigndetails.sigmaerpdev2__Account_Executive__r.Name)}</Data></Cell>
+                </Row>                
+                <Row>
+                </Row> 
+                <apex:outputText rendered="{!IF(completeCampaignDetails.size == 0,false,true)}">                
+                    <Row>                    
+                        <Cell ss:StyleID="s2"></Cell>
+                        <Cell ss:StyleID="s2"></Cell>
+                        <Cell ss:StyleID="s3"><Data ss:Type="String">Bundle By Product</Data></Cell> 
+                        
+                        <Cell ss:StyleID="s2"></Cell>
+                    </Row>
+                    
+                    <Row>                    
+                        <Cell ss:StyleID="s2"></Cell>
+                        <Cell ss:StyleID="s2"></Cell>
+                        <Cell ss:StyleID="s2"></Cell>
+                        <Cell ss:StyleID="s2"></Cell>
+                      
+                    </Row>
+                    <Row>                    
+                        <Cell ss:StyleID="s2"><Data ss:Type="String" >Product</Data></Cell>
+                       <Cell ss:StyleID="s2"><Data ss:Type="String" >Units Proposed</Data></Cell>
+                         <Cell ss:StyleID="s2"><Data ss:Type="String" >Total Units</Data></Cell>
+                        <Cell ss:StyleID="s2"><Data ss:Type="String" >Total Dollars</Data></Cell> 
+                       
+                    </Row>
+                </apex:outputText>
+                
+                
+                
+                
+                <apex:repeat value="{!completeCampaignDetails}" var="IndividualProduct">                     
+                    <apex:variable var="c" value="{!HTMLENCODE(IndividualProduct.Product__c)}" />
+                    <Row>                    
+                        <Cell><Data ss:Type="String">{!HTMLENCODE(IndividualProduct.sigmaerpdev2__Product__r.Name)}</Data></Cell>
+                         <Cell><Data ss:Type="String">{!HTMLENCODE(TEXT(IndividualProduct.Quantity__c))}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!HTMLENCODE(TEXT(IndividualProduct.Quantity__c))}</Data></Cell>
+                        <Cell>
+                            <Data ss:Type="String">$
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">  
+                                    <apex:param value="{!IndividualProduct.Cost__c}" />
+                                </apex:outputText>
+                            </Data>
+                        </Cell>
+                                        
+                    </Row>                    
+                </apex:repeat> 
+                
+                <Row>
+                </Row>
+                
+                <Row>
+                </Row>
+                
+                <Row>                    
+                    
+                    <Cell ss:StyleID="s2"></Cell>
+                    <Cell ss:StyleID="s3"><Data ss:Type="String">PROPOSAL SUMMARY</Data></Cell> 
+                    <Cell ss:StyleID="s2"></Cell>
+                   
+                </Row>                
+                <Row>
+                </Row>                
+                <Row>
+                </Row>                
+                <Row>
+                    <Cell ss:StyleID="s1"></Cell>
+                   
+                   
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >UNITS</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >COST</Data></Cell>
+                  
+                    
+                </Row>
+                
+                <apex:outputText rendered="{!IF(otherCharges == 0.00,false,true)}">
+                    <Row>
+                       
+                        <Cell ss:StyleID="s1"><Data ss:Type="String">{!otherChargesComments}</Data></Cell>
+                       
+                        <Cell ss:StyleID="s5"></Cell>
+                        <Cell ss:StyleID="s5"><Data ss:Type="String">$
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                <apex:param value="{!otherCharges}" />
+                            </apex:outputText>
+                            </Data>
+                        </Cell>   
+                        <Cell ss:StyleID="s5"></Cell>                                                       
+                    </Row>    
+                </apex:outputText>
+                
+                
+                
+                <Row>      
+                  
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >Net Campaign Values:</Data></Cell> 
+                  
+                    <Cell ss:StyleID="s5"><Data ss:Type="String">{!CampaignDetailsTotalQuantity}</Data></Cell> 
+                    <Cell ss:StyleID="s5">
+                        <Data ss:Type="String">$
+                            <apex:outputText value="{0, number, ###,###,###,##0.00}">   
+                                <apex:param value="{!CampaignDetailsTotalCost}" />
+                            </apex:outputText>
+                        </Data>
+                    </Cell>
+                    
+                </Row>
+                
+                <apex:outputText rendered="{!IF(OR(DiscountedValue != 0.00, agentCommission != 0.00), true, false)}">
+                    <apex:outputText rendered="{!IF(DiscountedValue == 0.00,false,true)}">                  
+                        <Row>
+                                                                                   
+                            <Cell ss:StyleID="s1"><Data ss:Type="String">Discounts Total:</Data></Cell>
+                           
+                            <Cell ss:StyleID="s1"></Cell>                                
+                            <apex:outputText rendered="{!IF(DiscountedValue < 0,false,true)}">
+                                <Cell ss:StyleID="s6"><Data ss:Type="String">-$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!DiscountedValue}" />
+                                    </apex:outputText>
+                                    </Data>
+                                </Cell> 
+                            </apex:outputText>
+                            <apex:outputText rendered="{!IF(DiscountedValue > 0,false,true)}">
+                                <Cell ss:StyleID="s4"><Data ss:Type="String">$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!DiscountedValue * -1}" />
+                                    </apex:outputText>
+                                    </Data>
+                                </Cell> 
+                            </apex:outputText>
+                            <!--<Cell ss:StyleID="s6"><Data ss:Type="String">-${!DiscountedValue}</Data></Cell>-->
+                                                         
+                        </Row>
+                    </apex:outputText>
+                    
+                    <apex:outputText rendered="{!IF(agentCommission == 0.00,false,true)}">
+                        <Row>
+                                              
+                            <Cell ss:StyleID="s1"><Data ss:Type="String">Agency Commission Total:</Data></Cell>                     
+                           
+                            <Cell ss:StyleID="s1"></Cell> 
+                            <Cell ss:StyleID="s6">
+                                <Data ss:Type="String">$
+                                    <apex:outputText value="{0, number, ###,###,###,##0.00}"> 
+                                        <apex:param value="{!agentCommission}" />
+                                    </apex:outputText>
+                                </Data>
+                            </Cell>
+                           
+                        </Row>
+                    </apex:outputText>
+                 
+                    
+                    <Row>
+                                                                                 
+                        <Cell ss:StyleID="s1"><Data ss:Type="String">Adjusted Net Campaign Values:</Data></Cell>
+                       
+                        <Cell ss:StyleID="s5"><Data ss:Type="String">{!HTMLENCODE(TEXT(CampaignDetailsTotalQuantity))}</Data></Cell> 
+                        <Cell ss:StyleID="s5">
+                            <Data ss:Type="String">$
+                                <apex:outputText value="{0, number, ###,###,###,##0.00}">  
+                                    <apex:param value="{!DiscountedCampaignDetailsTotalCost}" />
+                                </apex:outputText>
+                            </Data>
+                        </Cell>
+                                                       
+                    </Row>
+                </apex:outputText>
+                
+                <Row>
+                </Row>
+                <Row>
+                </Row>
+                <Row>
+                    <Cell><Data ss:Type="String">* Proposal is valid for 30 days from issued date.  Media availability is subject to change.</Data></Cell>                               
+                </Row>
+                <Row>
+                </Row>
+             
+            </Table>
+            
+        </Worksheet>
+     
+    </Workbook>
+</apex:page>

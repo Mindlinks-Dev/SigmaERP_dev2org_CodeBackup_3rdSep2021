@@ -1,0 +1,130 @@
+.THIS.bg
+{
+    background:#fafafa;
+}
+.THIS .customIcon div{
+    vertical-align: top !important;
+}
+
+.THIS.customIcon div{
+    vertical-align: top !important;
+}
+.THIS .slds-tabs_default
+{
+    background:#f0f0f0;
+}
+.THIS .slds-tabs_default__item:active:after
+{
+    background:#a41f34;
+}
+.THIS .slds-tabs--default__item:hover:after
+{
+    background:#a41f34;
+}
+
+.THIS .slds-tabs_default__item.slds-active:after
+{
+    background-color:#a41f34 !important;
+}
+.THIS .slds-tabs--default__item.slds-is-active:after
+{
+    background-color:#a41f34 !important;
+}
+.THIS .slds-button_neutral
+{
+    color:#a41f34;
+    border-color:#a41f34;
+}
+.THIS .slds-button_neutral:hover
+{
+    color:#a41f34;
+}
+.THIS .slds-button_icon-bare
+{
+    color:#a41f34;
+}
+.THIS .submit
+{
+    background-color:#a41f34;
+    color:white;
+}
+.THIS .submit:hover
+{
+    background-color:#a41f34;
+    color:white;
+}
+.THIS .slds-icon-standard-address
+{
+    background-color: #a41f34 !important;
+}
+.THIS .slds-icon-standard-user
+{
+    background-color: #a41f34 !important;
+}
+.THIS .slds-icon-standard-contact-list
+{
+    background-color: #a41f34 !important;
+}
+.THIS .hide-label label{
+    display:none;
+}
+
+.THIS .input.slds-input {
+    opacity: 1 !important;
+}
+.THIS .slds-modal__header .slds-icon-text-default
+{
+    fill:white !important;
+}
+.THIS .box-title {
+    display: -webkit-box;
+    position: relative;
+    margin-top: -26px;
+    background: #fafafa;
+    padding: 0 10px;
+    color: #a90533;
+    margin-left: 10px;
+    font-weight:bold;
+}
+.THIS .slds-box-no-border .slds-button_neutral
+{
+    line-height: 24px;
+}
+.THIS .slds-item_label
+{
+    font-size:90%;
+}
+.THIS .slds-box-no-border .uiInput--input.input
+{
+    width:58%;
+    line-height: 20px;
+    font-size: 88%;
+    height: 22px;
+    min-height: 22px; 
+}
+.THIS .slds-box-no-border .uiInput--select a
+{
+    width: 58%;
+    line-height: 20px;
+    font-size: 88%;
+    height: 22px;
+    min-height: 22px; 
+}
+.THIS .slds-box-no-border [lightning-input_input-host] 
+{
+    width:58%;
+    color:black;    
+    font-size: 88%;
+}
+.THIS .slds-box-no-border [lightning-input_input-host] input
+{
+    height: 22px;
+    min-height: 22px;
+}
+
+.THIS .label-hidden label{
+    display:none !important;
+}
+.THIS.label-hidden label{
+    display:none !important;
+}

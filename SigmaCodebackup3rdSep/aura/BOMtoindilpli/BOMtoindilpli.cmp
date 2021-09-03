@@ -1,0 +1,85 @@
+<aura:component implements="force:appHostable,forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes" access="global">
+    <aura:attribute name="ilpProId" type="String"/>
+    <aura:attribute name="ProType" type="String"/>
+    <aura:attribute name="IlpliItem" type="object"/>
+    <aura:attribute name="PSerialNumber" type="Product_Serial_Number__c[]" />
+    <tr class="slds-hint-parent" style="border-bottom:1px solid rgb(217, 219, 221);">
+        <th scope="row" style="width=5px">
+            <div class="slds-truncate" title="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Product__r.Name}">
+                <a href="javascript:void(0);"> <ui:outputText value="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Product__r.Name}" />  </a>
+            </div>
+        </th>
+          <th scope="row">
+            <div class="slds-truncate" title="{!v.IlpliItem.eachLineItemILPLI.Name}">
+                <a href="javascript:void(0);"> <ui:outputText value="{!v.IlpliItem.eachLineItemILPLI.Name}" />  </a>
+            </div>
+        </th>
+       
+        <td role="gridcell">
+            <div class="slds-truncate" title="Serial Code">
+                
+              <aura:If isTrue="{!v.ProType !='BULK'}">	
+                   <span title="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Product_Serial_Number__r.Name}">
+					 <ui:outputText  value="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Product_Serial_Number__r.Name}" />
+                  </span>	
+				<aura:set attribute="else">	
+                     <span title="N/A">
+					<ui:outputText value="N/A"/>
+                    </span>
+				</aura:set>
+			</aura:If> 
+          </div>
+         </td>
+         <td role="gridcell">
+            <div class="slds-truncate" title="Lot">
+              <aura:If isTrue="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Lot__c !=null}">
+                  <span title="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Lot__r.Name}">
+					 <ui:outputText  value="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Lot__r.Name}" />
+                  </span>		
+				<aura:set attribute="else">		
+                    <span title="N/A">
+					<ui:outputText value="N/A"/>
+                        </span>
+				</aura:set>
+			</aura:If> 
+          </div>
+             
+         </td> 
+        <td role="gridcell">
+            <div class="slds-truncate" title="Bin">
+              <aura:If isTrue="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Bin__c !=null}">	
+                  <span title="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Bin__r.Name}">
+					 <ui:outputText  value="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Bin__r.Name}" />
+			</span>
+                      <aura:set attribute="else">		
+                        <span title="N/A">
+                     <ui:outputText value="N/A"/>
+                            </span>
+				</aura:set>
+			</aura:If> 
+          </div>
+             
+         </td>  
+       <td role="gridcell">
+            <div class="slds-truncate" title="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Available_Quantity__c}"><ui:outputText value="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Available_Quantity__c}" /> </div>
+        </td>
+        <td role="gridcell">
+            <div class="slds-truncate" title="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Unit_Price__c}">
+                
+			<ui:outputText value="{!v.IlpliItem.eachLineItemILPLI.sigmaerpdev2__Unit_Price__c}" />
+                
+             </div>
+        </td>  
+        <td role="gridcell">
+            <div class="slds-truncate" title="Pick Quantity" data-label="Pick Quantity" id="quantity">
+               
+                <!--<input aura:id="bucket"  type="number" class="slds-input" placeholder="0" label="" value="{!v.IlpliItem.eachLineItemILPLI.pickQty}" required="true" updateOn="keyup" keyup="{!c.validateQuantity}"/>    -->                         
+       <ui:inputText  class="slds-input" aura:id="quantity" size="1"  value="{!v.IlpliItem.pickQty}" required="true" updateOn="keyup" keyup="{!c.validateQuantity}"/>   
+       
+            </div>
+        </td>
+      
+   
+    </tr>
+    
+</aura:component>

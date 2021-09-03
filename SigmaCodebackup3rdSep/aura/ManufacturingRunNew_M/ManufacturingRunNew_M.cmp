@@ -1,0 +1,556 @@
+<aura:component controller="ManufacturingRun" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+        
+    <aura:registerEvent name="ManufactureEvent" type="c:ManufactureEvent" />
+    <aura:handler event="c:ManufactureApplicationEvent" action="{!c.editManufRun}"/>
+    <aura:attribute name="status" type="string" default="Planning" />
+    <aura:attribute name="isResult" type="Boolean" default="false" />
+    <aura:attribute name="isDataChanged" type="Boolean" default="false" />
+    <aura:attribute name="isStockReserved" type="Boolean" default="false" />    
+    <aura:attribute name="isAddResources" type="Boolean" default="false" />  
+    <aura:attribute name="LoadGantt" type="Boolean" default="true" />
+    <aura:attribute name="unitPrice" type="Decimal" />
+    <aura:attribute name="totalCost" type="Decimal" />
+    <aura:attribute name="manufacturingRunDetails" type="object" />
+    <!-- for Resource Planning Usage-->
+    <aura:attribute name="resourceList" type="Project_Resource__c[]" />
+    <aura:attribute name="Resources" type="Resource__c"
+                    default="{'sobjectType': 'Resource__c',
+                             'Name':'',
+                             'Resource__c':'',
+                             'sigmaerpdev2__Manufacturing_Run__c':'',
+                             'sigmaerpdev2__Roles__c': '',
+                             'sigmaerpdev2__Interval__c':'',
+                            }"/> <!-- 'sigmaerpdev2__Start_Date__c':'',
+                             'sigmaerpdev2__End_Date__c':'' -->
+    
+    <aura:handler  event="c:AddResourceHandler" action="{!c.handleResources}"/>
+    <!--	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>-->
+    
+    
+    <aura:attribute name="orderItemNewFromChild" type="array" />
+    
+    <aura:attribute name="refreshResvStockTab" type="Boolean" />
+    
+    <!--<aura:attribute name="compName" type="String" default="" />-->        
+    <aura:attribute name="flagChk" type="Boolean" default="" />
+    
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.selectedRecipe}"/>
+    <aura:attribute name="recipeID" type="string" default=""/>
+    <aura:attribute name="recipeName" type="string" default=""/>
+    
+    <aura:attribute name="prodName" type="String" default="" />
+    
+    <aura:attribute name="vfHost" type="String" default=""/>
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    
+    <aura:attribute name="ManufacRunObj" type="Manufacturing_Run__c" default="{'Id':'','sigmaerpdev2__PI_updated__c':'','sigmaerpdev2__Product__c':'','sigmaerpdev2__Manufacturing_Name__c':'','sigmaerpdev2__Run_Date__c':'','sigmaerpdev2__Status__c':'Planning','sigmaerpdev2__Recipe__c':'','sigmaerpdev2__Required_Quantity__c':'','sigmaerpdev2__Produced_Quantity__c':'','sigmaerpdev2__Unit_Price__c':'','sigmaerpdev2__Total_Cost__c':'','sigmaerpdev2__End_Date__c':'','sigmaerpdev2__QC_Passed__c':'','sigmaerpdev2__QC_Passed_Qty__c':''}"
+                    />    
+    <aura:attribute name="autoAllocFlag" type="Boolean" />
+    <aura:attribute Name="disableChkStkAfterAutopick" type="Boolean" default="false" /> 
+    
+    <!--<aura:handler name="change" value="{!v.ManufacRunObj.sigmaerpdev2__Run_Date__c}" action="{!c.ChangeDate}"/>-->
+    <aura:handler name="change" value="{!v.ManufacRunObj.sigmaerpdev2__End_Date__c}" action="{!c.validateEndDate}"/>
+    
+    <aura:handler name="change" value="{!v.ManufacRunObj.sigmaerpdev2__Product__c}" action="{!c.checkProdAdded}" />
+    
+    <aura:attribute name="showQtyCalc" type="Boolean" default="false" />
+    
+    <aura:attribute name="dispBackOrdQty" type="Decimal" default="0.0" />
+    
+    <aura:attribute name="invalidDateEntered" type="Boolean" default="false" />
+    
+    <aura:attribute name="autopickReverted" type="Boolean" default="false" />
+    
+    <aura:attribute name="spinner" type="Boolean" default="false" />
+    
+    <aura:handler name="change" value="{!v.ManufacRunObj.sigmaerpdev2__Recipe__c}" action="{!c.getRecpProduct}" />
+    
+    <aura:attribute name="detTabClk" type="Boolean" default="false" />
+    
+    <lightning:overlayLibrary aura:id="popupmodal" />  
+    
+    <lightning:overlayLibrary aura:id="popupmodal1" /> 
+    
+    
+    <aura:if isTrue="{!v.spinner}">
+        <div class="slds-spinner_container slds-is-fixed">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    
+    <lightning:card title="">
+        <br />
+        <aura:set attribute="actions">
+            <div style="float:right;">
+                <lightning:button aura:id="calcRun" variant="brand" label="Calculate" onclick="{!c.calculateRecipe}" disabled="{#v.isStockReserved}" />               
+                <lightning:button variant="success" class="slds-hide" aura:id="saveManuRun" label="Save" onclick="{!c.saveManuRun}" />               
+                <lightning:button variant="success" class="slds-hide" aura:id="updateManuRun" label="Update" onclick="{!c.updateManuRun}" />                
+                <lightning:button variant="destructive" label="Close" onclick="{!c.goHome}" />
+            </div>
+        </aura:set>
+        <div class="slds-page-header" style="padding: 0.5rem;">
+            <div class="slds-grid">
+                <div class="slds-col slds-has-flexi-truncate">
+                    <div class="slds-media slds-no-space slds-grow">
+                        <!--<div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                            <lightning:icon iconName="standard:service_report" size="small" alternativeText="Indicates approval" />
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate" title="Manufacturing Run Details">
+                            Manufacturing Run Details
+                        </h1>
+                    </div>-->
+                    </div>
+                </div>
+                <div class="slds-col slds-no-flex slds-grid slds-align-top" style="width:auto;">
+                    <aura:if isTrue="{!or(v.manufacturingRunDetails.productCompList.length > 0, v.manufacturingRunDetails.packagingMatList.length > 0)}">                   
+                        <aura:if isTrue="{!and(v.ManufacRunObj.sigmaerpdev2__Status__c != 'Produced',v.ManufacRunObj.sigmaerpdev2__Status__c != 'Stock Reserved')}">
+                            <div class="slds-col">
+                                <label class="slds-checkbox_toggle slds-grid">
+                                    <span class="slds-form-element__label slds-m-bottom_none" style="padding-top:6.7px;"><b>Auto Stock Reservation :</b></span>                                              
+                                    <ui:inputCheckbox aura:id="selectorBox" value="{!v.autoAllocFlag}" />
+                                    <span class="slds-checkbox_faux_container" aria-live="assertive" style="padding-top:4px;">
+                                        <span class="slds-checkbox_faux"></span>                                
+                                    </span>
+                                </label>                   
+                            </div>&nbsp;
+                        </aura:if>
+                     </aura:if>
+                    <!--<div class="slds-col"> 
+                    <lightning:button aura:id="calcRun" variant="brand" label="Calculate" onclick="{!c.calculateRecipe}" disabled="{#v.isStockReserved}" />               
+                    <lightning:button variant="success" class="slds-hide" aura:id="saveManuRun" label="Save" onclick="{!c.saveManuRun}" />               
+                    <lightning:button variant="success" class="slds-hide" aura:id="updateManuRun" label="Update" onclick="{!c.updateManuRun}" />                
+                    <lightning:button variant="destructive" label="Close" onclick="{!c.goHome}" />
+                </div>-->
+                </div>               
+            </div><br />
+            <aura:if isTrue="{!v.showQtyCalc == true}">
+                <article class="slds-card slds-card--narrow">
+                    <lightning:card title="">
+                        <aura:set attribute="actions">                                       
+                            <lightning:button variant="brand" label="Close" onclick="{!c.closeInfo}"/>                            
+                        </aura:set>
+                        <div class="slds-form slds-form_compound slds-p-around_medium">        
+                            <fieldset class="slds-form-element">
+                                <div class="slds-form-element__group">
+                                    <div class="slds-form-element__row">
+                                        <span style="color:#7F8C8D;">Quantity to Produce :</span>                                        
+                                    </div>                                    
+                                    <!--<div class="slds-form-element__row">
+                                     <span style="color:#5DADE2;">As per Analytics - Yet to be implemented</span>                                        
+                                    </div>-->
+                                    <div class="slds-form-element__row">
+                                        <span style="color:#5DADE2;">As per Back Order items - {!v.dispBackOrdQty}</span>                                                    
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </lightning:card>
+                </article>
+            </aura:if>
+            <lightning:recordEditForm objectApiName="sigmaerpdev2__Manufacturing_Run__c" aura:id="manRunForm">
+                <ul class="slds-grid slds-page-header__detail-row" style="margin: 0.5rem 0rem 0rem;padding: .4rem 1rem;">
+                    <li class="slds-page-header__detail-block" >
+                        <p class="slds-text-body_regular" id="TempToDisplayMRName">                       
+                            <aura:if isTrue="{!v.ManufacRunObj.sigmaerpdev2__Status__c == 'Produced'}">                                                      
+                                <label class="slds-form-element__label slds-no-flex">
+                                    <span>MR Name</span>
+                                </label>
+                                <div class="slds-form-element__control slds-grow" style="font-weight: 600;padding-top: 2%;">
+                                    <ui:outputText value="{!v.ManufacRunObj.sigmaerpdev2__Manufacturing_Name__c}" />
+                                </div>
+                                <aura:set attribute = "else">
+                                    <lightning:input label="MR Name" name="ManufacturingRunName" value="{!v.ManufacRunObj.sigmaerpdev2__Manufacturing_Name__c}"
+                                                     required='true' />
+                                </aura:set>
+                            </aura:if>
+                        </p>
+                    </li>
+                </ul>
+                <ul class="slds-grid slds-page-header__detail-row" style="margin: 0.5rem 0rem 0rem;padding: .4rem 1rem;">    
+                    <li class="slds-page-header__detail-block">
+                        <p class="slds-text-body_regular" id="TempToDisplayRecp">                        
+                            <aura:if isTrue="{!v.isStockReserved}">
+                                <div class="slds-form-element lightningInput">
+                                    <label class="slds-form-element__label slds-no-flex">
+                                        <span>Recipe</span>
+                                    </label>
+                                    <div class="slds-form-element__control slds-grow" style="font-weight: 600;padding-top: 2%;">
+                                        <ui:outputText value="{!v.ManufacRunObj.sigmaerpdev2__Recipe__r.Name}" />
+                                    </div>
+                                </div>
+                                
+                                <aura:set attribute="else">
+                                    <span style="color:#b20000;">*</span> 
+                                    <label class="slds-form-element__label slds-no-flex">
+                                        <span>Recipe</span>
+                                    </label> 
+                                    <c:customLookup recordID="{!v.ManufacRunObj.sigmaerpdev2__Recipe__c}" recordName="{!v.recipeName}" objectAPIName="sigmaerpdev2__Recipe__c" IconName="standard:account" label="" isSigmaOrder= 'true' />
+                                </aura:set>
+                            </aura:if>                        
+                        </p>
+                    </li>
+                </ul>
+                <ul class="slds-grid slds-page-header__detail-row" style="margin: 0.5rem 0rem 0rem;padding: .4rem 1rem;">
+                    <li class="slds-page-header__detail-block">
+                        <p class="slds-text-body_regular" id="TempToDisplayRecpProd">
+                            <aura:if isTrue="{!v.ManufacRunObj.sigmaerpdev2__Status__c == 'Produced'}">                                                      
+                                <label class="slds-form-element__label slds-no-flex">
+                                    <span>Product</span>
+                                </label>
+                                <div class="slds-form-element__control slds-grow" style="font-weight: 600;padding-top: 2%;">
+                                    <ui:outputText value="{!v.ManufacRunObj.sigmaerpdev2__Product__r.Name}" />
+                                </div>
+                                <aura:set attribute = "else">
+                                    <span style="color:#b20000;float:left;position:relative;top:3.2px;">*</span>
+                                    <label class="slds-form-element__label slds-no-flex">
+                                        <span>Product</span>
+                                    </label>                                    
+                                    <c:customLookup recordID="{!v.ManufacRunObj.sigmaerpdev2__Product__c}" recordName="{!v.prodName}" whereCondition="{!'AND sigmaerpdev2__Stock_Item__c = true'}" objectAPIName="Product2" IconName="standard:account" label="" isSigmaOrder= 'true' />
+                                </aura:set>
+                            </aura:if>                        
+                        </p>
+                    </li>
+                  </ul>
+                	<aura:if isTrue="{!and(v.ManufacRunObj.sigmaerpdev2__Status__c != 'Produced', v.ManufacRunObj.sigmaerpdev2__Status__c != 'Stock Reserved')}">
+                        <ul class="slds-grid slds-page-header__detail-row" style="margin: 0.5rem 0rem 0rem;padding: .4rem 1rem;">                                               
+                            <li class="slds-page-header__detail-block">
+                                <p class="slds-text-body_regular" style="padding-top:20px;">                       
+                                    <lightning:button variant="brand" label="Get Quantity" onclick="{!c.getbackorderquant}"/>                        
+                                </p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </li>
+                        </ul>
+                     </aura:if>
+                <ul class="slds-grid slds-page-header__detail-row" style="margin: 0.5rem 0rem 0rem;padding: .4rem 1rem;">
+                    
+                    <li class="slds-page-header__detail-block">
+                        <p class="slds-text-body_regular" id="TempToDisplayQuantity">
+                            <aura:if isTrue="{!v.isStockReserved}">
+                                <div class="slds-form-element lightningInput">
+                                    <label class="slds-form-element__label slds-no-flex">
+                                        <span>Quantity</span>
+                                    </label>
+                                    <div class="slds-form-element__control slds-grow" style="font-weight: 600;padding-top: 2%;">
+                                        <ui:outputText value="{!v.ManufacRunObj.sigmaerpdev2__Required_Quantity__c}" />
+                                    </div>
+                                </div>
+                                <aura:set attribute="else">
+                                    <lightning:input step=".01" type="number" name="RequiredQuantity" label="Quantity" value="{!v.ManufacRunObj.sigmaerpdev2__Required_Quantity__c}"
+                                                     required='true' onchange="{!c.QntyChange}"  />
+                                </aura:set>
+                            </aura:if>
+                        </p>
+                    </li>
+                    </ul>
+                    <ul class="slds-grid slds-page-header__detail-row" style="margin: 0.5rem 0rem 0rem;padding: .4rem 1rem;">
+                    <li class="slds-page-header__detail-block">
+                        <p class="slds-text-body_regular" >
+                            <aura:if isTrue="{!and(v.disableChkStkAfterAutopick == true,v.isStockReserved == false)}">
+                                <div class="slds-form-element lightningInput">
+                                    <div class="slds-form-element__control slds-grow"> 
+                                        <label class="slds-form-element__label slds-no-flex">
+                                            <span><span style="color:#b20000;">* </span>Status</span>			
+                                        </label>
+                                        <ui:inputSelect value="{!v.ManufacRunObj.sigmaerpdev2__Status__c}" change="{!c.statusChanged}">
+                                            <ui:inputSelectOption text="Planning" label="Planning" value="true" disabled="true" />
+                                            <ui:inputSelectOption text="Date Confirmed" label="Date Confirmed" />			                                  
+                                            <ui:inputSelectOption text="Stock Reserved" label="Stock Reserved" disabled="true" /> 							
+                                            <ui:inputSelectOption text="Produced" label="Produced" disabled="true" />			
+                                            <ui:inputSelectOption text="Cancelled" label="Cancelled" disabled="true" />				
+                                            <!--<ui:inputSelectOption text="QC Passed" label="QC Passed" disabled="true" />-->
+                                        </ui:inputSelect>
+                                    </div>
+                                </div>                         
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!v.ManufacRunObj.sigmaerpdev2__Status__c == 'Produced'}">                                                      
+                                        <label class="slds-form-element__label slds-no-flex">
+                                            <!--<span><span style="color:#b20000;">*</span>Status</span>-->
+                                            <span>Status</span>
+                                        </label>
+                                        <div class="slds-form-element__control slds-grow" style="font-weight: 600;padding-top: 2%;">
+                                            <ui:outputText value="{!v.ManufacRunObj.sigmaerpdev2__Status__c}" />
+                                        </div>
+                                        <aura:set attribute="else"> 
+                                            <div class="slds-form-element lightningInput">
+                                                <div class="slds-form-element__control slds-grow"> 
+                                                    <label class="slds-form-element__label slds-no-flex">
+                                                        <span><span style="color:#b20000;">*</span>Status</span>										
+                                                    </label>
+                                                    <ui:inputSelect class="slds-select" value="{!v.ManufacRunObj.sigmaerpdev2__Status__c}" change="{!c.statusChanged}">
+                                                        <ui:inputSelectOption text="Planning" label="Planning" value="true" disabled="{!v.isStockReserved}" />
+                                                        <ui:inputSelectOption text="Date Confirmed" label="Date Confirmed" disabled="{!v.isStockReserved}" />
+                                                        <aura:if isTrue="{!v.ManufacRunObj.sigmaerpdev2__Status__c == 'Produced'}">                                    	
+                                                            <ui:inputSelectOption text="Stock Reserved" label="Stock Reserved" disabled="true" /> 
+                                                            <aura:set attribute="else">                                        
+                                                                <ui:inputSelectOption text="Stock Reserved" label="Stock Reserved" /> 
+                                                            </aura:set>
+                                                        </aura:if>                                                  
+                                                        <ui:inputSelectOption text="Produced" label="Produced" />
+                                                        <aura:if isTrue="{!(v.ManufacRunObj.sigmaerpdev2__Status__c == 'Produced' || v.ManufacRunObj.sigmaerpdev2__Status__c == 'Planning' || v.ManufacRunObj.sigmaerpdev2__Status__c == 'Date Confirmed')}">
+                                                            <ui:inputSelectOption text="Cancelled" label="Cancelled" disabled="true" />
+                                                            <aura:set attribute="else">
+                                                                <ui:inputSelectOption text="Cancelled" label="Cancelled" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                        <!--<ui:inputSelectOption text="QC Passed" label="QC Passed" />-->
+                                                    </ui:inputSelect>
+                                                </div>
+                                            </div>
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:set>
+                            </aura:if>
+                        </p>
+                    </li>
+                    </ul>
+                    <ul class="slds-grid slds-page-header__detail-row" style="margin: 0.5rem 0rem 0rem;padding: .4rem 1rem;">
+                    <li class="slds-page-header__detail-block">
+                        <p class="slds-text-body_regular" id="TempToDisplayStrtDate">                       
+                            <aura:if isTrue="{!v.ManufacRunObj.sigmaerpdev2__Status__c == 'Produced'}">                                                      
+                                <label class="slds-form-element__label slds-no-flex">
+                                    <span>Start Date</span>
+                                </label>
+                                <div class="slds-form-element__control slds-grow" style="font-weight: 600;padding-top: 2%;">
+                                    <ui:outputText value="{!v.ManufacRunObj.sigmaerpdev2__Run_Date__c}" />
+                                </div>
+                                <aura:set attribute = "else"> 
+                                    <!--<aura:if isTrue="{!v.invalidDateEntered == false}">
+                                    <lightning:inputField fieldName="sigmaerpdev2__Run_Date__c" value="{!v.ManufacRunObj.sigmaerpdev2__Run_Date__c}" onchange="{!c.ChangeDate}" />
+                                 <aura:set attribute="else">
+                                        <lightning:inputField fieldName="sigmaerpdev2__Run_Date__c" value="{!v.ManufacRunObj.sigmaerpdev2__Run_Date__c}" onchange="{!c.ChangeDate}" />
+                                    </aura:set>
+                                </aura:if>--> 
+                                    <lightning:inputField variant="standard" fieldName="sigmaerpdev2__Run_Date__c" value="{!v.ManufacRunObj.sigmaerpdev2__Run_Date__c}" />
+                                </aura:set>
+                            </aura:if>
+                        </p>
+                    </li>
+                	</ul>
+                	<ul class="slds-grid slds-page-header__detail-row" style="margin: 0.5rem 0rem 0rem;padding: .4rem 1rem;">                	
+                        <li class="slds-page-header__detail-block">
+                            <p class="slds-text-body_regular" id="TempToDisplayEndDate">                       
+                                <aura:if isTrue="{!v.ManufacRunObj.sigmaerpdev2__Status__c == 'Produced'}">                                                      
+                                    <label class="slds-form-element__label slds-no-flex">
+                                        <span>End Date</span>
+                                    </label>
+                                    <div class="slds-form-element__control slds-grow" style="font-weight: 600;padding-top: 2%;">
+                                        <ui:outputText value="{!v.ManufacRunObj.sigmaerpdev2__End_Date__c}" />
+                                    </div>
+                                    <aura:set attribute = "else">                                
+                                        <lightning:inputField variant="standard" fieldName="sigmaerpdev2__End_Date__c" value="{!v.ManufacRunObj.sigmaerpdev2__End_Date__c}" />
+                                    </aura:set>
+                                </aura:if>
+                            </p>
+                        </li>
+                </ul>
+            </lightning:recordEditForm>
+        </div>
+    </lightning:card><br />    
+    
+    <lightning:card title="">
+        
+        
+        <div style="z-index:0;position:relative">
+            <lightning:progressIndicator type="path" currentStep="{!v.ManufacRunObj.sigmaerpdev2__Status__c}" variant="shaded">
+                <lightning:progressStep label="Planning" value="Planning" />
+                <lightning:progressStep label="Date Confirmed" value="Date Confirmed" />
+                <lightning:progressStep label="Stock Reserved" value="Stock Reserved" />
+                <lightning:progressStep label="Produced" value="Produced" />
+            </lightning:progressIndicator>
+        </div>
+        <aura:if isTrue="{!v.isResult}">
+            <lightning:tabset>
+                <lightning:tab label="Details" onactive="{!c.calculationTab}">
+                    <div>
+                        <lightning:card title="Prod. Components" class="slds-card_boundary shadow" iconName="standard:product">
+                            <div>
+                                <table class="slds-table slds-table_fixed-layout slds-table_bordered slds-no-row-hover slds-table_cell-buffer">
+                                    <thead>
+                                        <tr class="slds-text-title_caps">
+                                            <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                <div title="Product">Prod.</div>
+                                            </th>
+                                            <!--<th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                <div class="slds-truncate" title="Unit of Measure">UOM</div>
+                                            </th>-->
+                                            <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                <div title="Quatity">Tot. Qty</div>
+                                            </th>
+                                            <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                <div title="Estimated Price">Est. Price</div>
+                                            </th>                                        
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.manufacturingRunDetails.productCompList}" var="prodComp">
+                                            <tr class="slds-hint-parent">
+                                                <th scope="row">
+                                                    <div class="slds-truncate" title="{!prodComp.ProdName}">{!prodComp.ProdName}</div>
+                                                </th>
+                                                <!--<td>
+                                                    <div class="slds-truncate" title="{!prodComp.UnityOfMeasure}">{!prodComp.UnityOfMeasure}</div>
+                                                </td>-->
+                                                <td>
+                                                    <div class="slds-truncate" title="{!prodComp.Quantity}">{!prodComp.Quantity}</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate" title="{!prodComp.UnitPrice}">{!prodComp.UnitPrice}</div>
+                                                </td>                                            
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </lightning:card>
+                        
+                        <lightning:card title="Pack. Materials" class="slds-card_boundary shadow" iconName="standard:product_item">
+                            <aura:set attribute="actions">
+                                <lightning:button label="Add New" onclick="{!c.addPackagingMaterials}" disabled="{!v.isStockReserved}" />
+                            </aura:set>
+                            <aura:if isTrue="{!v.manufacturingRunDetails.packagingMatList.length > 0}">                         
+                                <div>
+                                    <table class="slds-table slds-table_fixed-layout slds-table_bordered slds-no-row-hover slds-table_cell-buffer">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                    <div title="Product">Prod.</div>
+                                                </th>
+                                                <!--<th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                    <div class="slds-truncate" title="Unit of Measure">UOM</div>
+                                                </th>-->
+                                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                    <div title="Quantity">Tot. Qty</div>
+                                                </th>
+                                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                    <div title="Est. Price">Est. Price</div>
+                                                </th>                                       
+                                                <!--<aura:if isTrue="{!and(v.ManufacRunObj.sigmaerpdev2__Status__c != 'Produced', v.ManufacRunObj.sigmaerpdev2__Status__c != 'Stock Reserved')}">
+                                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                        <div class="slds-truncate" title="Action">Action</div>
+                                                    </th>
+                                                </aura:if>-->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.manufacturingRunDetails.packagingMatList}" var="packagingMat">
+                                                <tr class="slds-hint-parent">
+                                                    <th scope="row">
+                                                        <div class="slds-truncate" title="{!packagingMat.ProdName}">{!packagingMat.ProdName}</div>
+                                                    </th>
+                                                    <!--<td>
+                                                        <div class="slds-truncate" title="{!packagingMat.UnityOfMeasure}">{!packagingMat.UnityOfMeasure}</div>
+                                                    </td>-->
+                                                    <td>
+                                                        <div class="slds-truncate" title="{!packagingMat.Quantity}">{!packagingMat.Quantity}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate" title="{!packagingMat.UnitPrice}">{!packagingMat.UnitPrice}</div>
+                                                    </td>
+                                                  </tr>
+                                                  <tr>
+                                                    <aura:if isTrue="{!and(v.ManufacRunObj.sigmaerpdev2__Status__c != 'Produced', v.ManufacRunObj.sigmaerpdev2__Status__c != 'Stock Reserved')}">
+                                                        <td colspan="3">                                            	
+                                                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.EditPackageMaterials}" id="{!packagingMat.ProdID}">Edit</button>
+                                                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.deletePackageMat}" id="{!packagingMat.ProdID}">Delete</button>
+                                                        </td>
+                                                    </aura:if>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </aura:if>
+                        </lightning:card>
+                        
+                        <lightning:card title="Non Stock Items" class="slds-card_boundary shadow" iconName="standard:service_crew_member">
+                            <aura:set attribute="actions">
+                                <lightning:button label="Add New" onclick="{!c.addextraProd}" disabled="{!v.isStockReserved}" />
+                            </aura:set>
+                            
+                            <aura:if isTrue="{!v.manufacturingRunDetails.AdditionalProductList.length > 0}">                       
+                                <div>
+                                    <table class="slds-table slds-table_fixed-layout slds-table_bordered slds-no-row-hover slds-table_cell-buffer">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                    <div  title="Product">Prod.</div>
+                                                </th>
+                                                <!--<th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                    <div class="slds-truncate" title="Unit of Measure">UOM</div>
+                                                </th>-->
+                                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                    <div title="Quantity">Tot. Qty</div>
+                                                </th>
+                                                <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                    <div title="Actual Price">Actual Price</div>
+                                                </th>                                        
+                                                <!--<aura:if isTrue="{!and(v.ManufacRunObj.sigmaerpdev2__Status__c != 'Produced', v.ManufacRunObj.sigmaerpdev2__Status__c != 'Stock Reserved')}">
+                                                    <th scope="col" style="background-color: rgba(195, 216, 230, 0.48);">
+                                                        <div class="slds-truncate" title="Action">Action</div>
+                                                    </th>
+                                                </aura:if>-->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.manufacturingRunDetails.AdditionalProductList}" var="AdditionalProd">
+                                                <tr class="slds-hint-parent">
+                                                    <th scope="row">
+                                                        <div class="slds-truncate" title="{!AdditionalProd.ProdName}">{!AdditionalProd.ProdName}</div>
+                                                    </th>
+                                                    <!--<td>
+                                                        <div class="slds-truncate" title="{!AdditionalProd.UnityOfMeasure}">{!AdditionalProd.UnityOfMeasure}</div>
+                                                    </td>-->
+                                                    <td>
+                                                        <div class="slds-truncate" title="{!AdditionalProd.Quantity}">{!AdditionalProd.Quantity}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate" title="{!AdditionalProd.UnitPrice}">{!AdditionalProd.UnitPrice}</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                	<aura:if isTrue="{!and(v.ManufacRunObj.sigmaerpdev2__Status__c != 'Produced', v.ManufacRunObj.sigmaerpdev2__Status__c != 'Stock Reserved')}">
+                                                        <td colspan="3">                                            	
+                                                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.EditAdditionalProducts}" id="{!AdditionalProd.ProdID}">Edit</button>
+                                                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.deleteAddProd}" id="{!AdditionalProd.ProdID}">Delete</button>
+                                                        </td>
+                                                    </aura:if>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </aura:if>
+                        </lightning:card>                        
+                    </div>
+                </lightning:tab>
+                <lightning:tab label="Material Planning" onactive="{!c.reserveTab}">            
+                    <c:CheckManufacturingStock_M aura:id="childComp" isStockReservedStock="{!v.isStockReserved}" recipeObj="{!v.ManufacRunObj.sigmaerpdev2__Recipe__c}"
+                                               manfObj="{!v.ManufacRunObj}" manfRunDet="{!v.manufacturingRunDetails}" orderItemNew="{!v.orderItemNewFromChild}" disableChkStkAfterAutopick="{!v.disableChkStkAfterAutopick}" autopickRev="{!v.autopickReverted}" />
+                </lightning:tab>
+                
+                
+                <lightning:tab label="Post Production" onactive="{!c.movementTab}">
+                    <c:ManufactureProduced_M manfObj="{!v.ManufacRunObj}" UnitPrice="{!v.unitPrice}" TotalCost="{!v.totalCost}" detTabClk1="{!v.detTabClk}" />
+                </lightning:tab>
+            </lightning:tabset>
+        </aura:if>
+    </lightning:card>
+    
+    <div class="demo-only slds-hide" aura:id="mySpinner">
+        <div class="slds-spinner_container slds-is-fixed">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+
+</aura:component>

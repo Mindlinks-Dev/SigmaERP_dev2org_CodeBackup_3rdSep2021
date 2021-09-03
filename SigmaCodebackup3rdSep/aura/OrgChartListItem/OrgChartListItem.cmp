@@ -1,0 +1,19 @@
+<aura:component >
+    
+	<aura:attribute name="employee" type="Contact"/>
+    
+	<aura:registerEvent name="itemSelected" type="c:OrgChartItemSelected"/>
+
+	<li role="presentation">
+        <span class="slds-lookup__item-action slds-media slds-p-horizontal--small" role="option" onclick="{!c.employeeSelected}">
+            <aura:if isTrue="{!v.employee.Picture__c}">
+                <img src="{!v.employee.Picture__c}" class="profile"/>
+            </aura:if>
+            <div class="slds-media__body">
+                <div class="slds-lookup__result-text">{!v.employee.Name}</div>
+                <span class="slds-lookup__result-meta slds-text-body--small">{!v.employee.Title}</span>
+            </div>
+        </span>                
+    </li>
+    
+</aura:component>

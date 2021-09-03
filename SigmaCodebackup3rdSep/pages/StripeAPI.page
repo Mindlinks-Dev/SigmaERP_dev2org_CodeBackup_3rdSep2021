@@ -1,0 +1,86 @@
+<apex:page controller="StripeAPICustomController" >
+    <head>
+    <apex:slds />
+        <style>
+        .pbSubheader{color: black !important;background: #F2F1F2 !important;}
+        h2{font-size: 16px !important;font-weight: bold !important;}
+        
+        @media only screen and (max-width: 768px) 
+        {
+        .mob-box{width:98%;margin:auto;margin:1%;}
+        .slds-scope th{display:block !important;}
+        .slds-scope td{display:block !important;}
+        .slds-size_1-of-2{width:100% !important;}
+        .slds-size_2-of-3{width:100% !important;}
+        .mob-box {width: 96%;margin: 8px auto;padding: 1rem;border-radius: 0.25rem;border: 1px solid #dddbda;}
+        .slds-input{margin-bottom: 10px !important;}
+        .slds-select{margin-bottom: 10px !important;}
+        .labelCol.empty{display:none !important;}
+        .dataCol.empty{display:none !important;}
+        h2{font-size:150% !important;}
+        h3{font-size:130% !important;}
+        .submit{margin-left:26% !important;}
+        
+        th{width:100% !important;text-align:left !important;padding-left:10px !important;}
+        td{width:100% !important;text-align:left !important;}
+        .submit{margin-left:0 !important;}
+        }
+        </style>
+        <script>
+        function homePage() {
+           
+           
+         }
+        function ClosePage() {
+            if ((typeof sforce != 'undefined') && sforce && (!!sforce.one)) {
+                
+                sforce.one.navigateToURL("/lightning/page/home");
+            }
+            else{
+                
+                //window.location.href = "/home/home.jsp";
+                window.open("/home/home.jsp");
+                close();
+            } 
+            
+            
+        } 
+        
+        </script>
+    </head>
+    <div class="mob-box">
+     <apex:form >
+         <apex:pageblock title="Stripe API Custom Settings" >
+              <apex:PageMessages />
+              <apex:pageBlockSection title="Stripe API" collapsible="false">
+                  <apex:pageBlockSectionItem >
+                    Api Key
+                    <apex:inputSecret value="{!StripeSetting.Api_Key__c}" label="Api Key" required="true"  styleClass="slds-input slds-size_1-of-2"/> 
+                </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem >
+                    Charge URL
+                    <apex:inputSecret value="{!StripeSetting.Charge_URL__c}" label="Charge URL" required="true" styleClass="slds-input slds-size_1-of-2"/> 
+                </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem >
+                    Customer URL
+                    <apex:inputSecret value="{!StripeSetting.Customer_URL__c}" label="Customer URL"  required="true" styleClass="slds-input slds-size_1-of-2"/>
+                </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem >
+                    Refund URL          
+                    <apex:inputSecret value="{!StripeSetting.Refund_URL__c}" label="Package ID"  required="true" styleClass="slds-input slds-size_1-of-2"/>
+                </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem >
+                    Token URL
+                    <apex:inputSecret value="{!StripeSetting.Token_URL__c}" label="Refund URL"  required="true" styleClass="slds-input slds-size_1-of-2"/>
+                </apex:pageBlockSectionItem>
+             </apex:pageBlockSection>
+             
+             <apex:pageBlockButtons location="bottom"> 
+                <apex:commandButton value="Submit" action="{!saveConfig}"  onclick="homePage()" styleClass="slds-button slds-button_brand submit" style="margin-left:120px"/>
+                <apex:commandButton value="Cancel" action="{!cancelConfig1}" onclick="ClosePage()" immediate="true" styleClass="slds-button slds-button_brand submit" />
+            </apex:pageBlockButtons>
+         </apex:pageblock>
+        
+    </apex:form>
+    </div>
+</apex:page>

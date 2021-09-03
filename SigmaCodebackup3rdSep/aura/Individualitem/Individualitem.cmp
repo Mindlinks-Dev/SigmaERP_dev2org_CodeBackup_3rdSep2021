@@ -1,0 +1,134 @@
+<aura:component implements="force:appHostable,forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes" access="global">
+    <aura:attribute name="lineItem" type="object"/> 
+    <aura:attribute name="quantity" type="Integer"/>
+    <aura:attribute name="updatestock" type="Integer"/> 
+	<aura:attribute name="locBarCodeValue" type="String" default=''/>
+    <aura:attribute name="prodBarCodeValue" type="String" default=''/>    
+    <aura:attribute name="productFoundFlag" type="Boolean"/> 
+    <!-- code added to handle auto allocation flow on 07-04-2020 by rashmi-->
+    <aura:attribute type="Boolean" name="isMannualPicking" />
+    <aura:attribute name="autoAllocFlag" type="Boolean" default="false" />
+    <aura:attribute type="Integer" name="indexNum" />
+    <aura:attribute name="autoMode" type="Boolean" default="false" />
+     <aura:attribute name="isError" type="Boolean" default="false"/>
+    
+
+    
+    
+    <aura:registerEvent name="SigmaComponentEvent" type="c:SigmaComponentEvent" />
+    
+       
+    <aura:iteration items="{!v.lineItem.eachLineItemILPLIWrapper}" var="lineitems"  indexVar="ind"> 
+        <!--  <c:Individualilpli  lineItem="{!lineitem}" isMannualPicking="{v.isallocated}" autoMode="{!v.autoAllocFlag}"/> {!and(v.productFoundFlag,v.lineItem.pickqtydisplay==(lineitems.pickQty*1)) ? 'background: lightgreen':''}-->
+        <tr id="{!'rowData_'+ind}" class="slds-hint-parent" style="{!v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? 'background: lightgreen':''}">
+            <td scope="row" style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}" >
+               
+                <div class="slds-truncate" title="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Product__r.Name}">
+                    <a>
+                        <ui:outputText value="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Product__r.Name}" /> </a>
+                </div>
+            </td>
+            <td scope="row" style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}" >
+                <div class="slds-truncate" title="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Product__r.sigmaerpdev2__Product_Bar_Code__c}">
+                    <a>
+                        <ui:outputText value="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Product__r.sigmaerpdev2__Product_Bar_Code__c}" /> </a>
+                </div>
+            </td>
+            <td scope="row" style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}">
+                <div class="slds-truncate" title="{!lineitems.eachLineItemILPLI.Name}">
+                    <a>
+                        <ui:outputText value="{!lineitems.eachLineItemILPLI.Name}" /> </a>
+                </div>
+            </td>
+            <td class="slds-size_1-of-8" style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}">
+                <div class="slds-truncate"
+                     title="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Inventory_Location_Product__r.sigmaerpdev2__Inventory_Location_Name__c}">
+                    <ui:outputText
+                                   value="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Inventory_Location_Product__r.sigmaerpdev2__Inventory_Location_Name__c}" />
+                </div>
+            </td>
+            
+            <td role="gridcell" data-label="Serial Code" style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}">
+                <div class="slds-truncate" title="Serial Code">
+                    <aura:If isTrue="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Type__c =='SERIALIZED'}">
+                        <span title="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Product_Serial_Number__r.Name}">
+                            <ui:outputText
+                                           value="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Product_Serial_Number__r.Name}" />
+                        </span>
+                        <aura:set attribute="else">
+                            <span title="N/A">
+                                <ui:outputText value="N/A" />
+                            </span>
+                        </aura:set>
+                        
+                    </aura:If>
+                    <!--<div class="slds-truncate" title="Lot"><ui:outputText value="{!v.lineItem.eachLineItemILPLI.igmamvpdev__Lot__r.Name}" /></div>-->
+                </div>
+            </td>
+            <td role="gridcell" style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}">
+                <div class="slds-truncate" title="">
+                    <aura:If isTrue="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Lot__c !=null}">
+                        <span title="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Lot__r.Name}">
+                            <ui:outputText value="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Lot__r.Name}" />
+                        </span>
+                        <aura:set attribute="else">
+                            <span title="N/A">
+                                <ui:outputText value="N/A" />
+                            </span>
+                        </aura:set>
+                        
+                    </aura:If>
+                    <!--<div class="slds-truncate" title="Lot"><ui:outputText value="{!v.lineItem.eachLineItemILPLI.igmamvpdev__Lot__r.Name}" /></div>-->
+                </div>
+            </td>
+            <td role="gridcell" style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}">
+                <div class="slds-truncate" title="Bin">
+                    <aura:If isTrue="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__c !=null}">
+                        <span title="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.Name}">
+                            <ui:outputText value="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.Name}" />
+                        </span>
+                        
+                        <aura:set attribute="else">
+                            <span title="N/A">
+                                <ui:outputText value="N/A" />
+                            </span>
+                        </aura:set>
+                        
+                    </aura:If>
+                    <!--<div class="slds-truncate" title="Lot"><ui:outputText value="{!v.lineItem.eachLineItemILPLI.igmamvpdev__Lot__r.Name}" /></div>-->
+                </div>
+            </td>
+            <td role="gridcell"  style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}">
+                <div class="slds-truncate" title="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c}">
+                    <ui:outputText value="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c}" /> 
+                </div>
+            </td>
+            <td role="gridcell" style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}">
+                <div class="slds-truncate" title="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Available_Quantity__c}">
+                    
+                    <ui:outputText value="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Available_Quantity__c}" />
+                    
+                </div>
+            </td>
+            <td role="gridcell" style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}">
+                <div class="slds-truncate" title="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Unit_Price__c}">
+                    
+                    <ui:outputText value="{!lineitems.eachLineItemILPLI.sigmaerpdev2__Unit_Price__c}" />
+                    
+                </div>
+            </td>
+            <td role="gridcell" data-label="Pick Quantity"  style="{!empty(v.locBarCodeValue) || v.lineItem.pickqtydisplay==(lineitems.pickQty*1) ? '':lineitems.eachLineItemILPLI.sigmaerpdev2__Bin__r.sigmaerpdev2__Bar_Code__c==v.locBarCodeValue ? 'background: darkgray;':''}">
+                <div class="slds-truncate" title="Pick Quantity"  data-label="Pick Quantity" id="quantity">
+                  
+                    <!--	<lightning:input type="Number" aura:id="quantity" value="{!lineItem.pickQty}" onchange="{!c.validateQuantity}"  />   -->
+                    <ui:inputText class="slds-input" aura:id="quantity" size="1" value="{!lineitems.pickQty}"
+                                  required="true" updateOn="keyup" keyup="{!c.validateQuantity}"/>
+                    
+                    <!--<ui:outputText value="{!lineItem.pickQty}"    /> updateOn="keyup" keyup="{!c.validateQuantity}" -->
+                </div>
+            </td>
+            
+        </tr>
+      
+    </aura:iteration>     
+</aura:component>

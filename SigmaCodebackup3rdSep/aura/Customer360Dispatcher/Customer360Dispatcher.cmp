@@ -1,0 +1,186 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" controller="Customer360" >
+    <aura:attribute name="workOrderDetails" type="Object"></aura:attribute>
+    <aura:attribute name="sr" type="boolean" default="true"></aura:attribute>
+    <aura:attribute name="asr" type="boolean" default="false"></aura:attribute>
+    <aura:attribute name="noProducts" type="Integer"></aura:attribute>
+    <aura:attribute name="modalpopup" type="boolean" default="false"></aura:attribute>
+    <aura:attribute name="mapMarkers" type="Object"/>
+    <aura:attribute name="zoomLevel" type="Integer" />
+    <aura:attribute name="isPastWorkOrders" type="boolean" default="false"></aura:attribute>
+    <aura:attribute name="message" type="String"></aura:attribute>
+    <aura:attribute name="colorASR" type="String"></aura:attribute>
+    <aura:attribute name="colorSR" type="String"></aura:attribute>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.getData}"></aura:handler>
+    
+    <aura:if isTrue="{!v.modalpopup}">
+        <div class="demo-only" aura:id="modal_map"  >
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" style="height: 540px; width:500px;">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.modal_map_close}">
+                            <lightning:icon iconName="utility:close" alternativeText="Close" />
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Location</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_small" id="modal-content-id-1">
+                        <lightning:map 
+                                       mapMarkers="{! v.mapMarkers }" 
+                                       zoomLevel="{!v.zoomLevel}" />
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Close"  onclick="{!c.modal_map_close}" />
+                        
+                        <!--<button class="slds-button slds-button_brand">Save</button>-->
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    <div>
+        <h2 class="font">Work Order Summary</h2>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered bordersides"  label="Work Order Summary">
+            <tbody>
+                <tr class="slds-line-height_reset">
+                    <th class="slds-cell-buffer_left tableheading" scope="col">
+                        <div class="slds-truncate" title="">Work Order Id</div>
+                    </th>
+                    <td data-label="Account Name" class="slds-cell-buffer_left">
+                        <!--<div class="slds-truncate" title="" onclick=""><a>WO-0015</a></div>-->
+                        <div class="slds-truncate" title="" onclick="">{!v.workOrderDetails.workOrderName}</div>
+                    </td>
+                </tr>
+                <tr class="slds-line-height_reset">
+                    <th class="slds-cell-buffer_left tableheading" scope="col">
+                        <div class="slds-truncate" style="height:15px; padding-top: 3px; padding-bottom: 15px;" title="">Contact</div>
+                    </th>
+                    <td data-label="Account Name" class="slds-cell-buffer_left td_description" >
+                        <div class=""  style="height:15px; padding-top: 3px; padding-bottom: 15px;" title="" onclick="">{!v.workOrderDetails.name} - <a>{!v.workOrderDetails.customerPhone}</a> - <a href="" onclick="{!c.map_popup}">MAP</a></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="slds-cell-buffer_left tableheading" scope="col">
+                        <div class="slds-truncate" title="">Product/Asset</div>
+                    </th>
+                    <td data-label="Account Name" class="slds-cell-buffer_left td_description">
+                        <!--<div class="slds-truncate" title="" onclick=""><a>Drilling Machine - DM-07887</a></div>-->
+                        <div class="" title="" onclick="">{!v.workOrderDetails.productName}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="slds-cell-buffer_left tableheading" scope="col">
+                        <div class="slds-truncate" title="">Issue</div>
+                    </th>
+                    <td data-label="Account Name" class="slds-cell-buffer_left td_description">
+                        <!--<div class="" title="">Repair - Not able to adjust the Jaws, such that it can hold different types of Drilling Bits.</div>-->
+                        <div class="" title="">{!v.workOrderDetails.issue}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    
+    
+    <div class="slds-p-top_large">
+        <h2 class="font">Historical Service Summary</h2>
+        <aura:if isTrue="{!v.isPastWorkOrders}">
+            <h2>{!v.message}</h2>
+            <aura:set attribute="else">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered bordersides" label="Historical Service Summary">
+                    <tbody>
+                        <tr class="slds-line-height_reset">
+                            <th class="slds-cell-buffer_left tableheading" scope="col" rowspan="4">
+                                <div class="slds-truncate" title="">Last Visit</div>
+                            </th>
+                            <th class="slds-cell-buffer_left " scope="col">
+                                <div class="slds-truncate" title="">Date</div>
+                            </th>
+                            <td data-label="Account Name" class="slds-cell-buffer_left">
+                                <!--<div class="slds-truncate" title="Click to navigate to the Work Order" onclick=""><a>22/01/2019</a></div>-->
+                                <div class="slds-truncate" title="Click to navigate to the Work Order" onclick="{!c.navigatePreviousWO}"><a>{!v.workOrderDetails.lastVisitDate}</a></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-cell-buffer_left  bordersideleft" scope="col">
+                                <div class="slds-truncate" title="">Reason</div>
+                            </th>
+                            <td data-label="Account Name" class="slds-cell-buffer_left" style="white-space: normal !important;">
+                                <!--<div class="" title="" onclick=""><a>Drilling Machine - DM-07102</a> - Basic Repair, replacement of Drilling Bit and Cable Clamp. Also repaired some Power issues which was the main cause for the drop in RPM of the Drilling Machine.</div>-->
+                                <div class="" title="" ><a onclick="{!c.navigatePreviousWO}">{!v.workOrderDetails.lastVisitReason}</a>{!v.workOrderDetails.lastVisitReason1}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-cell-buffer_left bordersideleft" scope="col">
+                                <div class="slds-truncate" title="">Technician</div>
+                            </th>
+                            <td data-label="Account Name" class="slds-cell-buffer_left">
+                                <!--<div class="" title="" onclick="">Mr. John Mccasker</div>-->
+                                <div class="" title="" onclick="">{!v.workOrderDetails.lastVisitTechName} <a>{!v.workOrderDetails.lastVisitTechContact}</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-cell-buffer_left  bordersideleft" scope="col">
+                                <div class="slds-truncate" title="">Service Rating</div>
+                            </th>
+                            <aura:if isTrue="{!v.sr}">
+                                <td data-label="Account Name " class="slds-cell-buffer_left slds-text-aligt_right ">
+                                    <!--<div class="slds-truncate" title=""><b><span class="colorgreen">9</span></b>/10</div>-->
+                                    <div class="slds-truncate" title=""><b><span class="{!v.colorSR}">{!v.workOrderDetails.lastVisitServiceRating}</span></b>/10</div>
+                                </td>
+                                <aura:set attribute="else">
+                                    <td data-label="Account Name " class="slds-cell-buffer_left slds-text-aligt_right">
+                                        <!--<div class="slds-truncate" title=""><b><span class="colorred">9</span></b>/10</div>-->
+                                        <div class="slds-truncate" title="">{!v.workOrderDetails.lastVisitServiceRating}</div>
+                                    </td>
+                                </aura:set>
+                            </aura:if>   
+                        </tr> 
+                    </tbody>
+                </table>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+    
+    <div class="slds-p-top_medium">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered bordersides bordertop" label="Historical Service Summary">
+            <tbody>
+                <tr> 
+                    <th class="slds-cell-buffer_left tableheading" scope="col" style="width:50%">
+                        <div class="slds-truncate tableheading" title="Across 3 products">Number of Work Orders (Last 6 months)</div>
+                    </th>
+                    <td data-label="Account Name" class="slds-cell-buffer_left slds-text-aligt_right">
+                        <!--<div class="slds-truncate" title="Across 3 Products">6</div>-->
+                        <div class="slds-truncate" title="Across 3 Products">{!v.workOrderDetails.numberOfCases}</div>
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <th class="slds-cell-buffer_left tableheading" scope="col" style="width:50%">
+                        <div class="slds-truncate tableheading" title="">Average Service Rating (Last 6 months)</div>
+                    </th>
+                    <aura:if isTrue="{!v.asr}">
+                        <td data-label="Account Name" class="slds-cell-buffer_left slds-text-aligt_right">
+                            <!--<div class="slds-truncate" title=""><b><span class="colorgreen">9</span></b>/10</div>-->
+                            <!--<div class="slds-truncate" title=""><b><span class="colorgreen">{!v.workOrderDetails.avgServiceRating}</span></b>/10</div>-->
+                            <div class="slds-truncate" title=""><b><span class="{!v.colorASR}">{!v.workOrderDetails.avgServiceRating}</span></b>/10</div>
+                        </td>
+                        <aura:set attribute="else">
+                            <td data-label="Account Name" class="slds-cell-buffer_left slds-text-aligt_right">
+                                <!--<div class="slds-truncate" title=""><b><span class="colorred">7.2</span></b>/10</div>-->
+                                <div class="slds-truncate" title="">{!v.workOrderDetails.avgServiceRating}</div>
+                            </td>
+                        </aura:set>
+                    </aura:if>
+                </tr>
+            </tbody>
+        </table>
+        <footer class="slds-align_absolute-center slds-p-top_medium">
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Close"  onclick="{!c.closeWindow}" />
+        </footer>
+    </div>
+</aura:component>

@@ -1,0 +1,84 @@
+<aura:component  Controller="OrderPaymentCntrl"  implements="lightning:isUrlAddressable,force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="selectAllFlag" type="boolean" default='false'/>
+    <aura:attribute name="OrderList" type="Object[]"/>
+    <aura:attribute name="selectedOrderList" type="Object[]"/> 
+    <aura:attribute name="showInvoiceList" type="Boolean" default="false" />
+    <aura:attribute name="noRecsFound" type="Boolean" default="false" />
+    <aura:attribute name="disableBtn" type="Boolean" default="true" />
+    <aura:attribute name="SigmaOrder" type="Boolean" default="false"/>
+    <aura:attribute name="StndOrder" type="Boolean" default="false"/>
+   
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <ltng:require styles="{!$Resource.modal_close}"/>
+    
+    <lightning:navigation aura:id="launchComponent"/>
+    
+    
+        <div class="slds-modal slds-fade-in-open">           	
+            <div class="slds-modal__container" style="width:100%;max-width:100%;">           
+                <header class="slds-modal__header">
+                    <h2><lightning:icon iconName="standard:work_order_item" size="small" alternativeText="section" class="slds-m-right_xx-small"/>
+                             All Orders
+                    </h2>
+                </header>
+                          
+                <div class="slds-modal__content" id="modal-content-id-1"  style="height: 284px;">                 
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                                        <label class="slds-checkbox">
+                                            <ui:inputCheckbox aura:id="checkbox" change="{!c.selectAllInvoice}" value="{!v.selectAllFlag}"/>
+                                            <span class="slds-checkbox--faux" />
+                                        </label>
+                                        <span class="slds-truncate" title="Name">  Select All</span>
+                                    </th>
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                                        <label class="slds-th__action slds-text-link_reset" >
+                                            <span class="slds-truncate" title="Name">Order Number</span>
+                                            <!--<span class="slds-truncate" title="Name">Total Amount</span>-->
+                                        </label>
+                                    </th>
+                                    
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                                        <label class="slds-th__action slds-text-link_reset" >
+                                            <span class="slds-truncate" title="Name">Due Amount</span>
+                                            <!--<span class="slds-truncate" title="Name">Paid Amount</span>-->
+                                        </label>
+                                    </th>
+                                    
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                                        <label class="slds-th__action slds-text-link_reset" >
+                                            <span class="slds-truncate" title="Name">Total Amount</span>
+                                            <!--<span class="slds-truncate" title="Name">Balance Amount</span>-->
+                                        </label>
+                                    </th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody>
+                                <aura:if isTrue="{!v.SigmaOrder}">
+                                    <aura:iteration items="{!v.OrderList}" var="item" indexVar="i">
+                                        <c:SigmaOrderList OrderList="{!item}" indexVar="{!i}"/>
+                                    </aura:iteration>
+                           		 </aura:if>
+                                <aura:if isTrue="{!v.StndOrder}">
+                                    <aura:iteration items="{!v.OrderList}" var="item" indexVar="i">
+                                        <c:StandOrderList OrderList="{!item}" indexVar="{!i}"/>
+                                    </aura:iteration>
+                           		 </aura:if>
+                            </tbody>
+                                
+                        </table>
+                    </div>                    
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button--brand" onclick="{!c.payorderamount}">Proceed to Pay</button>
+                        <button type="button" class="slds-button slds-button_neutral" onclick="{!c.close}">Cancel</button>
+                    </footer>               
+                             
+            </div>
+        </div>
+   
+</aura:component>

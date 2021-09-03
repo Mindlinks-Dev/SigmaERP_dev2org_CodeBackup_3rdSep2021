@@ -1,0 +1,19 @@
+<apex:page standardController="Stock_Check__c">
+ 
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+        
+        $Lightning.use("sigmaerpdev:StockCheckAPP", function() {
+          $Lightning.createComponent("sigmaerpdev:StockCheckDetails",
+          {},
+          "lightning",
+          function(cmp) {
+              //alert('inside stockMovement');
+          });
+        });
+       
+    </script>
+</apex:page>

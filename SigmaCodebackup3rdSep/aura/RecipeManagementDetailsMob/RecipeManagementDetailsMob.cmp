@@ -1,0 +1,260 @@
+<aura:component controller="RecipeManagement" access="global">
+
+    <aura:handler name="change" value="{!v.recipeData}" action="{!c.init}" />
+    <aura:attribute name="recipeData" type="object" />
+    <aura:attribute name="recipeChildData" type="object" />
+    <aura:attribute name="index" type="Integer" />
+    <lightning:overlayLibrary aura:id="RecipeDetailsModal" />
+    <aura:handler event="c:RecipeManagementEvent" action="{!c.refreshChildData}" />
+   
+    <div class="slds-page-header" style="margin-bottom: .75rem;">
+        <div class="slds-grid">
+            <div class="slds-col slds-has-flexi-truncate">
+                <div class="slds-media slds-no-space slds-grow">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                            <lightning:icon iconName="custom:custom5" size="medium" alternativeText="Indicates approval" />
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <nav>
+                            <ol class="slds-breadcrumb slds-line-height_reset">
+                                <li class="slds-breadcrumb__item">
+                                    <span>Recipe</span>
+                                </li>
+                            </ol>
+                        </nav>
+                        <h3 class="slds-page-header__title slds-m-right_small slds-align-middle" title="">
+                            {!v.recipeData.Name}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-no-flex slds-grid slds-align-top" style="width:auto;">
+                <div class="slds-col"> 
+                    <lightning:button variant="destructive" label="Close" onclick="{!c.goHome}" />
+                </div>
+            </div>
+        </div>
+        <ul class="slds-grid slds-page-header__detail-row">
+            <li class="slds-page-header__detail-block">
+                <p class="slds-text-title slds-m-bottom_xx-small" title="Status">Recipe Type</p>
+                <p class="slds-text-body_regular" title="{!v.recipeData.sigmaerpdev2__Status__c}">{!v.recipeData.sigmaerpdev2__Recipe_Type__c}</p>
+            </li>
+            <li class="slds-page-header__detail-block">
+                <p class="slds-text-title slds-m-bottom_xx-small" title="Quantity">Quantity</p>
+                <p class="slds-text-body_regular">{!v.recipeData.sigmaerpdev2__Quantity__c}</p>
+            </li>
+        </ul>
+         <ul class="slds-grid slds-page-header__detail-row">
+            <li class="slds-page-header__detail-block">
+                <p class="slds-text-title slds-m-bottom_xx-small" title="Unit Of Measure">Unit Of Measure</p>
+                <p class="slds-text-body_regular">{!v.recipeData.sigmaerpdev2__Unit_of_Measure__c}</p>
+            </li>
+            <li class="slds-page-header__detail-block">
+                <p class="slds-text-title slds-m-bottom_xx-small" title="Product Name">Product Name</p>
+                <p title="{!v.recipeData.sigmaerpdev2__Product__r.Name}">{!v.recipeData.sigmaerpdev2__Product__r.Name}</p>
+            </li>
+        </ul>
+    </div>
+        
+    <lightning:card title="Dependent Recipe" iconName="custom:custom5">
+        <aura:set attribute="actions">
+            <lightning:button label="Add New" onclick="{!c.addRecipes}" class="buttonshowdow" />
+        </aura:set>
+        <div>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col">
+                            <div class="slds-truncate" title="Recipe Name">Recipe Name</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Description">Descp.</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.recipeChildData.recipeStagesList}" var="recipeStagesChild">
+                        <tr>
+                            <td>
+                                <div class="slds-truncate" title="{!recipeStagesChild.sigmaerpdev2__Dependent_Recipes__r.Name}">{!recipeStagesChild.sigmaerpdev2__Dependent_Recipe__r.Name}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!recipeStagesChild.sigmaerpdev2__Description__c}">{!recipeStagesChild.sigmaerpdev2__Description__c}</div>
+                            </td>
+                            <td data-label="Action" style="width:10%;">
+                                <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right" onselect="{!c.handleEdit}">
+                                    <lightning:menuItem label="Edit" value="{!recipeStagesChild.Id+':edit:recipeStages'}" iconName="action:edit" />
+                                    <lightning:menuItem label="Delete" value="{!recipeStagesChild.Id+':delete:recipeStages'}" iconName="action:delete" />
+                                </lightning:buttonMenu>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </lightning:card>
+    <lightning:card title="Prod. Comp" iconName="standard:product">
+        <aura:set attribute="actions">
+            <lightning:button label="Add New" onclick="{!c.createProdComp}" class="buttonshowdow" />
+        </aura:set>
+        <div>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer" width="100%" style="table-layout:fixed">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="width:150px;">
+                            <div  title="Product Name">Prod. Name</div>
+                        </th>
+                        <th scope="col" style="width:50px;">
+                            <div title="Quantity">Qty</div>
+                        </th>
+                        <th scope="col" style="width:50px;">
+                            <div title="Total Price">Tot. Price</div>
+                        </th>                        
+                    </tr>
+                </thead>  
+                <tbody>
+                    <aura:iteration items="{!v.recipeChildData.recipeProdList}" var="recipeChild">
+                        <tr>                            
+                            <td style="width:150px;overflow:hidden;text-overflow:ellipsis;" title="{!recipeChild.sigmaerpdev2__Product__r.Name}">
+                                {!recipeChild.sigmaerpdev2__Product__r.Name}
+                            </td>
+                            <td style="width:50px;">
+                                {!recipeChild.sigmaerpdev2__Quantity__c}
+                            </td>
+                            <td style="width:50px;">
+                                {!recipeChild.sigmaerpdev2__Cost__c}
+                            </td>
+                            <!--<td>
+                                <div class="slds-truncate" title="{!recipeChild.sigmaerpdev2__Unit_of_Measure__c}">{!recipeChild.sigmaerpdev2__Unit_of_Measure__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!recipeChild.sigmaerpdev2__Description__c}">{!recipeChild.sigmaerpdev2__Description__c}</div>
+                            </td>-->
+                            <td data-label="Action">
+                                <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right" onselect="{! c.handleEdit }">
+                                    <lightning:menuItem label="Edit" value="{!recipeChild.Id+':edit:prodcomp'}" iconName="action:edit" />
+                                    <lightning:menuItem label="Delete" value="{!recipeChild.Id+':delete:prodcomp'}" iconName="action:delete" />
+                                </lightning:buttonMenu>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </lightning:card>
+    <lightning:card title="Packaging Mat." iconName="standard:product_item">
+        <aura:set attribute="actions">
+            <lightning:button label="Add New" class="buttonshowdow" onclick="{!c.createPackagingMat}" />
+        </aura:set>
+        <div>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer" width="100%" style="table-layout:fixed">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="width:150px;">
+                            <div  title="Name">Prod. Name</div>
+                        </th>
+                        <th scope="col" style="width:50px;">
+                            <div  title="Quantity">Qty</div>
+                        </th>
+                        <th scope="col" style="width:50px;">
+                            <div title="Price">Tot. Price</div>
+                        </th>
+                        <!--<th scope="col">
+                            <div class="slds-truncate" title="Unit Of Measure">Unit Of Measure</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Description">Description</div>
+                        </th>-->
+                    </tr>
+                </thead>
+                <tbody> 
+                    <aura:iteration items="{!v.recipeChildData.recipePackagingMatList}" var="recipePackagingMatChild" indexVar="i">
+                        <tr>
+                            <td style="width:150px;overflow:hidden;text-overflow:ellipsis;" title="{!recipePackagingMatChild.sigmaerpdev2__Product__r.Name}">
+                                {!recipePackagingMatChild.sigmaerpdev2__Product__r.Name}
+                            </td>
+                            <td style="width:50px;">
+                                {!recipePackagingMatChild.sigmaerpdev2__Quantity__c}
+                            </td>
+                            <td style="width:50px;">
+                                {!recipePackagingMatChild.sigmaerpdev2__Cost__c}
+                            </td>
+                            <!--<td>
+                                <div class="slds-truncate" title="{!recipePackagingMatChild.sigmaerpdev2__Unit_of_Measure__c}">{!recipePackagingMatChild.sigmaerpdev2__Unit_of_Measure__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!recipePackagingMatChild.sigmaerpdev2__Description__c}">{!recipePackagingMatChild.sigmaerpdev2__Description__c}</div>
+                            </td>-->
+                            <td data-label="Action">
+                                <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right" onselect="{! c.handleEdit }">
+                                    <lightning:menuItem label="Edit" value="{!recipePackagingMatChild.Id+':edit:packagingMaterial'}" iconName="action:edit" />
+                                    <lightning:menuItem label="Delete" value="{!recipePackagingMatChild.Id+':delete:packagingMaterial'}" iconName="action:delete"
+                                    />
+                                </lightning:buttonMenu>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </lightning:card>
+    <lightning:card title="Non Stock Items" iconName="standard:pricebook" class="paddingBottom">
+        <aura:set attribute="actions">
+            <lightning:button label="Add New" class="buttonshowdow" onclick="{!c.createAddProd}" />
+        </aura:set>
+        <div>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer" width="100%" style="table-layout:fixed">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="width:150px;">
+                            <div title="Name">Prod. Name</div>
+                        </th>
+                        <th scope="col" style="width:50px;">
+                            <div  title="Quantity">Qty</div>
+                        </th>
+                        <th scope="col" style="width:50px;">
+                            <div  title="Price">Tot. Price</div>
+                        </th>
+                        <!--<th scope="col">
+                            <div class="slds-truncate" title="Unit Of Measure">Unit Of Measure</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Description">Description</div>
+                        </th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.recipeChildData.recipeAddProdList}" var="recipeAddProdChild" indexVar="i">
+                        <tr>
+                            <td style="width:150px;overflow:hidden;text-overflow:ellipsis;" title="{!recipeAddProdChild.sigmaerpdev2__Product__r.Name}">
+                                {!recipeAddProdChild.sigmaerpdev2__Product__r.Name}
+                            </td>
+                            <td style="width:50px;">
+                                {!recipeAddProdChild.sigmaerpdev2__Quantity__c}
+                            </td>
+                            <td style="width:50px;">
+                                {!recipeAddProdChild.sigmaerpdev2__Cost__c}
+                            </td>
+                            <!--<td>
+                                <div class="slds-truncate" title="{!recipeAddProdChild.sigmaerpdev2__Unit_of_Measure__c}">{!recipeAddProdChild.sigmaerpdev2__Unit_of_Measure__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title="{!recipeAddProdChild.sigmaerpdev2__Description__c}">{!recipeAddProdChild.sigmaerpdev2__Description__c}</div>
+                            </td>-->
+                            <td data-label="Action">
+                                <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right" onselect="{! c.handleEdit }">
+                                    <lightning:menuItem label="Edit" value="{!recipeAddProdChild.Id+':edit:additionalproduct'}" iconName="action:edit" />
+                                    <lightning:menuItem label="Delete" value="{!recipeAddProdChild.Id+':delete:additionalproduct'}" iconName="action:delete"
+                                    />
+                                </lightning:buttonMenu>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </lightning:card>
+
+</aura:component>

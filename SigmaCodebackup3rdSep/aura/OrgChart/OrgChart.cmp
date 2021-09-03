@@ -1,0 +1,25 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="OrgChartController">
+
+	<aura:attribute name="employees" type="Contact[]"/>
+	<aura:attribute name="reports" type="Contact[]"/>
+	<aura:attribute name="employee" type="Contact"/>
+	<aura:attribute name="currentView" type="String" default="list"/>
+	<aura:attribute name="height" type="String" default="400px"/>
+
+    <div class="slds-p-top--small" style="{!'height:' + v.height}">
+        <div class="slds-form-element slds-p-horizontal--small">
+            <div class="slds-form-element__control">
+                <input type="text" class="slds-input" placeholder="Search Employee" onkeypress="{!c.keyChangeHandler}"/>
+            </div>
+        </div>
+        <div class="content slds-m-top--x-small">
+            <aura:if isTrue="{!v.currentView=='list'}">
+                <c:OrgChartList employees="{!v.employees}" itemSelected="{!c.itemSelected}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.currentView!='list'}">
+                <c:OrgChartDetails employee="{!v.employee}" reports="{!v.reports}" itemSelected="{!c.itemSelected}"/>
+            </aura:if>
+        </div>
+    </div>
+    
+</aura:component>

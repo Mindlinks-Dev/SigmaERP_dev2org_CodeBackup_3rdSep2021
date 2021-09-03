@@ -1,0 +1,25 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" controller="ApproveProductRequest">
+	<aura:attribute name="isTrue" type="Boolean" default="false"/>
+    
+        <!--<h3 class="slds-section__title slds-align_absolute-center">
+            <span class="slds-truncate" title="Section Title">Are you sure you want to Approve?</span>
+        </h3>
+        <br/>
+        <footer class="slds-align_absolute-center">
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Confirm" onclick="{!c.approveProductRequest}" />
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+        </footer>-->
+    
+        <table class="slds-table slds-table_striped" width="40%">
+    		<tr>
+            	<td style="width:20%;">
+                	<img src="/resource/sigmaerpdev2__Approval" width="130" height="130" />              
+                </td>
+                <td style="width:20%;">
+                    <span class="slds-truncate" title="Section Title">Are you sure you want to approve?</span><br /><br />                    
+                    <button class="slds-button slds-button_success" onclick="{!c.approveProductRequest}">YES</button>&nbsp;
+                    <button class="slds-button slds-button_destructive" onclick="{!c.closeWindow}">No</button>                	
+                </td>
+            </tr>
+    	</table>
+</aura:component>

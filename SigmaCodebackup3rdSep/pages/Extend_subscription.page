@@ -1,0 +1,21 @@
+<apex:page StandardController="Account_Subscription__c" id="mainPage">
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+     var recId = "{!JSENCODE($CurrentPage.parameters.id)}";
+     
+        $Lightning.use("sigmaerpdev:AppForSubscription", function() 
+        {
+         $Lightning.createComponent("sigmaerpdev:ExtendSubscription",
+                                           {recordId: recId}, 
+                                           "lightning",
+                                           function(cmp) 
+                                           {
+                                           
+                                           }
+                );
+        });
+    </script>
+</apex:page>

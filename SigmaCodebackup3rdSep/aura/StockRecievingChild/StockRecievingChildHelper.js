@@ -1,0 +1,5 @@
+({
+	deletestock : function(component, event) {
+        
+	},
+})

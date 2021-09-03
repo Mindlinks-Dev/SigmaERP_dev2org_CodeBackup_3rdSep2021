@@ -1,0 +1,31 @@
+.THIS .slds-text-title_caps,.THIS .slds-text-title--caps {
+    font-size: .6rem;
+    letter-spacing: 0.025rem;
+}
+.THIS .buttonOverlay{
+    position: initial;
+}
+.THIS .paddingAround .slds-col
+{
+    padding: .3rem;
+}
+.THIS.AddContactIcon svg {
+    fill : green;
+}
+.THIS .slds-form-element__legend{
+    color:white !important ;
+}
+.THIS .slds-dueling-list__column_responsive .slds-dueling-list__options{
+    max-width:33rem !important;
+}
+.THIS .slds-dueling-list__column_responsive {
+    flex:0 1 33rem !important;
+}
+.THIS table label
+{
+    display:none !important;
+}
+@media only screen and (max-width: 768px) 
+    {
+    .THIS .slds-max-medium-table_stacked-horizontal td{overflow: visible;text-align: left;}
+}

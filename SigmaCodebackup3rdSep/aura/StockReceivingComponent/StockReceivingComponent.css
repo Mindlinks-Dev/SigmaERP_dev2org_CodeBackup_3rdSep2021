@@ -1,0 +1,12 @@
+.THIS .buttonOverlay{
+    position: initial;
+}
+.THIS .paddingAround .slds-col
+{
+   padding: .3rem;
+}
+
+@media (max-width: 48em)
+{
+.THIS .slds-size_1-of-3{width:100% !important;}
+}

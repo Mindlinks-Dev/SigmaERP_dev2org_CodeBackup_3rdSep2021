@@ -1,0 +1,24 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+    <aura:registerEvent name="ManufactureApplicationEvent" type="c:ManufactureApplicationEvent" />
+    <aura:attribute name="Manufac" type="object" />
+    <tr>
+        <td style="max-width:105px;overflow:hidden;text-overflow:ellipsis;" title="{!v.Manufac.sigmaerpdev2__Manufacturing_Name__c}">
+            <a onclick="{!c.viewDetails}">{!v.Manufac.sigmaerpdev2__Manufacturing_Name__c}</a>
+        </td>
+        <td style="max-width:105px;overflow:hidden;text-overflow:ellipsis;" title="{!v.Manufac.sigmaerpdev2__Product__r.Name}">
+            {!v.Manufac.sigmaerpdev2__Product__r.Name}
+        </td>        
+        <td data-label="Action" style="max-width:108px;padding-left:40px;">                  
+            <lightning:buttonMenu iconSize="x-small" iconName="utility:down" alternativeText="Toggle menu" menuAlignment="right" onselect="{!c.handleMenuSelect}">                
+                <aura:if isTrue="{!v.Manufac.sigmaerpdev2__Status__c != 'Cancelled'}">
+                    <lightning:menuItem label="Edit" value="Edit" iconName="action:edit" />
+                </aura:if>
+                <aura:if isTrue="{!and(v.Manufac.sigmaerpdev2__Status__c != 'Produced',v.Manufac.sigmaerpdev2__Status__c != 'Stock Reserved')}">
+                    <lightning:menuItem label="Delete" value="Delete" iconName="action:delete" />
+                </aura:if>                 
+            </lightning:buttonMenu>
+        </td>
+    </tr>
+
+</aura:component>

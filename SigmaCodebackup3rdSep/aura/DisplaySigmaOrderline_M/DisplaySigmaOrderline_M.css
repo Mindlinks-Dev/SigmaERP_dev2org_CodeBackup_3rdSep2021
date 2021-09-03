@@ -1,0 +1,9 @@
+.THIS .expandOrHideIcon,.THIS.expandOrHideIcon{
+    max-width: 20px;
+}
+
+@media only screen and (max-width: 600px) {
+    .THIS .expandOrHideIcon,.THIS.expandOrHideIcon{
+        max-width: 34px !important;
+    }  
+}

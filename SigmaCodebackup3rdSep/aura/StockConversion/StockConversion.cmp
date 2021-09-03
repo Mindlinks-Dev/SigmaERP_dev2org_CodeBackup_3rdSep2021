@@ -1,0 +1,51 @@
+<aura:component implements="force:lightningQuickActionwithoutheader,force:hasRecordId,force:appHostable,forceCommunity:availableForAllPageTypes" access="global">    
+    <!--aura:handler name="init" value="{!this}" action="{!c.doInit}" /-->
+    <aura:attribute name="recordId" type="Id" />
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+     
+	<!--<aura:registerEvent name="selfRefreshEvtindtockconv" type="c:selfRefreshEvt" />-->
+   <!-- <aura:registerEvent name="selfRefreshEvtforTabs" type="c:selfRefreshEvt"/>-->
+   <aura:registerEvent name="projectSelected" type="c:selfRefreshEvt"/>
+    <aura:attribute name="BomRecord" type="Inventory__c" />
+    <aura:attribute name="disTab" type="string"/>  
+     <!--TabSet-->
+     <div class="slds-page-header" style="margin-bottom:1rem;">            
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-contact" title="Stock">
+                        <lightning:icon iconName="custom:custom76" alternativeText="Stock" size="small"/>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <a class="slds-card__header-link slds-truncate" title="Stock Conversion">
+                            <span class="slds-text-heading_small">Stock Conversion</span>
+                        </a>
+                    </h2>
+                </div>
+                                
+            </header>             
+        </div>
+    
+                <lightning:tabset aura:id="tabs">
+                    <lightning:tab label="Make a BOM Product" id="itb" onactive="{!c.selectTab }">
+                        <aura:If isTrue="{!v.disTab == 'itb'}">
+                            <c:IndividualtoBom recordId="{!v.recordId}" messageFromEvent="1"/>
+                        </aura:If>
+                    </lightning:tab>
+                    
+                    <lightning:tab label="Convert a BOM Product" id="bti" onactive="{!c.selectTab }"> 
+                        <aura:If isTrue="{!v.disTab == 'bti'}">
+                            <c:BOMtoindividual recordId="{!v.recordId}"/>
+                        </aura:If>
+                    </lightning:tab>
+                    
+                <!--    <lightning:tab label="Print BOM Allocations" id="pba" onactive="{!c.selectTab }"> 
+                        <aura:If isTrue="{!v.disTab == 'pba'}">
+                            <c:ITBprint />
+                        </aura:If>
+                    </lightning:tab>-->
+                </lightning:tabset>
+           
+   
+</aura:component>

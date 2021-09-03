@@ -1,0 +1,27 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" controller="CreateProductTransfer" >
+    <aura:attribute name="isTrue" type="Boolean" default="false"/>
+    <aura:attribute name="isFalse" type="Boolean" default="false"/>
+    
+    <aura:handler name="init" action="{!c.checkProductRequestStatus}" value="{!this}"/>
+    <aura:if isTrue="{!v.isTrue}">
+        <h3 class="slds-section__title slds-align_absolute-center">
+            <span class="slds-truncate" title="Section Title">Are you sure you want to create a Product Transfer ?</span>
+        </h3>
+        <br/>
+        <footer class="slds-align_absolute-center">
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:save"  type="submit" label="Create" onclick="{!c.createProductTransfer}" />
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+        </footer>       
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isFalse}">
+        <h3 class="slds-section__title slds-align_absolute-center">
+            <span class="slds-truncate" title="Section Title">Product Request is not yet Approved.</span>
+        </h3>
+        <br/>
+        <footer class="slds-align_absolute-center">
+            
+            <lightning:button variant="brand" iconPosition="left" iconName="utility:close"  type="submit" label="Cancel"  onclick="{!c.closeWindow}" />
+        </footer>
+    </aura:if>
+</aura:component>

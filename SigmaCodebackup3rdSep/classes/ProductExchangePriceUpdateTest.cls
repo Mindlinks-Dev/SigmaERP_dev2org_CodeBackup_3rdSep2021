@@ -1,0 +1,90 @@
+@isTest
+public class ProductExchangePriceUpdateTest 
+{
+    @isTest 
+    public static void test()
+    {
+        Test.startTest(); 
+        Schema.DescribeSObjectResult R = Account.SObjectType.getDescribe();
+        List<Schema.RecordTypeInfo> RT = R.getRecordTypeInfos();
+       // StockRecevingControllerLtng.getStockInProductStatus();
+        ID RID1 = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Vendor').getRecordTypeId();
+        Account  acc=new Account();
+        acc.Name='JTEST Vendor';
+        acc.Type='Vendor';
+        acc.Email__c = 'cus@gmail.com';
+        acc.RecordTypeId = RID1;
+        insert acc;
+        System.assertEquals(acc.Name,'JTEST Vendor'); 
+        //ID RID2 = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Receiving Location').getRecordTypeId();
+        Account  acc1=new Account();
+        acc1.Name='JTEST Receiving Location';
+        acc1.Type='Receiving Location';
+        acc1.Email__c = 'cus2qw@gmail.com';
+        //acc1.RecordTypeId = RID2;
+        insert acc1;
+        System.assertEquals(acc1.Name,'JTEST Receiving Location'); 
+        ID RID3 = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Location').getRecordTypeId();
+        Account  acc2=new Account();
+        acc2.Name='JTEST Location';
+        acc2.Type='Location';
+        acc2.RecordTypeId = RID3;
+        insert acc2;
+        System.assertEquals(acc2.Name,'JTEST Location');
+        Contact  con=new Contact();
+        con.FirstName='JTEST contact';
+        con.LastName='JTEST';
+        con.AccountId=acc.Id;
+        con.phone ='1234567890';
+        insert con;
+        System.assertEquals(con.FirstName,'JTEST contact');
+        Default_Parameters__c  dp = new Default_Parameters__c (Name = 'Sample dp',Parent_Id__c = acc.Id);
+        insert dp;
+        System.assertEquals(dp.Name,'Sample dp');
+        Currency__c curr=new Currency__c();
+        curr.Symbol__c='$';
+        curr.Is_Default_Currency__c=true;
+        insert curr;
+        System.assertEquals(curr.Symbol__c,'$');
+        Currency_Exchange_Rate__c cer=new Currency_Exchange_Rate__c();
+        cer.Rate__c=0.66;
+        cer.Currency__c=curr.id;
+        insert cer;
+        System.assertEquals(cer.Rate__c,0.66);
+        Product2  pro=new  Product2();
+        pro.Name='JMTEST';
+        pro.Currency__c=curr.id;
+        pro.Attribute_Type__c='BULK';
+        pro.Product_Price__c=10;
+        pro.Buying_Price__c=20;
+        insert pro;
+        System.assertEquals(pro.Name,'JMTEST');
+        Lot__c lot = new Lot__c();
+        lot.Lot_Name__c = 'Test Lot';
+        lot.Product__c = pro.Id;
+        lot.Quantity__c = 10;
+        lot.Created_Date__c=System.today();
+        lot.Expiry_Date__c=System.today();
+        insert lot;
+        System.assertEquals(lot.Lot_Name__c,'Test Lot');
+        Lot_Product__c lotProd = new Lot_Product__c();
+        lotProd.Lot__c = lot.Id;
+        lotProd.Product__c = pro.Id;
+        lotProd.Quantity__c = 10;
+        insert lotProd;
+        System.assertEquals(lotProd.Quantity__c,10);
+        Product2  pro2=new  Product2();
+        pro2.id=pro.id;
+        pro2.Name='JMTEST2';
+        pro2.Currency__c=curr.id;
+        pro2.Attribute_Type__c='BULK';
+        pro2.Product_Price__c=30;
+        pro2.Buying_Price__c=1;
+        update pro2;
+        System.assertEquals(pro2.Name,'JMTEST2');
+        List<Product2> listOfpro=new List<Product2>();
+        listOfpro.add(pro2);
+        listOfpro.add(pro);
+        Test.stopTest();
+    }  
+}

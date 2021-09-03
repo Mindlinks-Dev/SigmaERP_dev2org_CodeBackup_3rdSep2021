@@ -1,0 +1,277 @@
+<!-- PickingNew -->
+<aura:component controller="PickingOrderCtrl" implements="force:appHostable,forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes,lightning:isUrlAddressable" access='global'>
+    <!--<ltng:require styles="{!$Resource.StappCustomCSS + '/StockRecievingCustomCSS.css'}" />-->
+   
+       <ltng:require scripts="{!join(',',
+                              $Resource.jQueryConfirm + '/SigmaLibraries/StripLibraries/jquery.js',
+                           $Resource.jQueryConfirm + '/SigmaLibraries/StripLibraries/jquery-confirm.min.js')}" 
+                  styles="{ $Resource.jQueryConfirm + '/SigmaLibraries/StripLibraries/jquery-confirm.min.css',
+                          $Resource.SigmaCustomCSS + '/SigmaCustomCSS/SigmaCustomCSS/StockRecievingCustomCSS.css'}" />
+     <aura:attribute name="locationFoundFlag" type="boolean" default="false"/> 
+    <!--Attribute for ProductImage Show  added on13-05-2020-->
+   <aura:attribute name="productimageexist" type="boolean" default ="false"/>
+    <aura:attribute name="ProductImageData" type="ContentDocumentLink" /> 
+     <aura:attribute name="ProductView" type="Boolean" default="false" />
+
+	<aura:attribute name="scannedLocationName" type="string"/> 
+	<aura:attribute name="soID" type="String"/>
+    <aura:attribute type="object" name="standOrderLineWrapper" />
+    <aura:attribute type="object" name="StandOrderWrap" />
+    <aura:attribute name="soName" type="string"/>
+	
+	<aura:attribute type="Inventory_Location_Product_Line_Item__c[]" name="originalILPLIData" />
+ 	<aura:attribute name="ilpliIdAllocatedQuantMap1" type="Map" default="{}" />
+     
+    <aura:attribute name="openPickingListModal" type="Boolean" default="false"/>
+    <aura:attribute name="pikkingListData" type="List"/>
+    <aura:attribute name="pickListIndex" type="Integer"/>
+    
+    <aura:attribute name="dataForPicking" type="object"/>
+    <aura:attribute name="tempdataForPicking" type="object"/>
+    <aura:attribute name="errorMessage" type="String"/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="popupErrorMessage" type="String"/>
+    
+    <aura:attribute name="isBarcodeScanned" type="boolean" default="false"/>
+    <aura:attribute name="prodName" type="string"/>
+    <aura:attribute name="locName" type="string"/>
+    <aura:attribute name="isPickingStarted" type="boolean" default="false"/>
+    <aura:attribute name="locBarCodeValue" type="String"/>
+    <aura:attribute name="prodBarCodeValue" type="String"/>
+    
+    <aura:attribute type="PackagedProducts__c" name="packageLinItems" default="{'sobjectType': 'PackagedProducts__c' }"/>
+	<aura:attribute type="Id" name="locId" />
+	<aura:attribute name="ilpliIdAllocatedQuantMap" type="Map"/>
+    <aura:attribute name="compId" type="String"/>
+    
+    <aura:attribute name="productFoundFlag" type="boolean" default="false"/> 
+    <aura:attribute name="scannedProductName" type="string"/>
+    <aura:attribute name="basketFoundFlag" type="boolean" default="false"/>
+    <aura:attribute name="basketComingFromSOFlag" type="boolean" default="false"/>
+    <aura:attribute name="scannedBasketName" type="string"/>
+   
+    <aura:handler name="change" value="{!v.soID}" action="{!c.clearAfterSORemove}" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="mobileScreenFlag" type="boolean" default="false"/>
+    <aura:attribute name="showHidenItems" type="boolean" default="true"/>
+    
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleLookupValueselected}"/>
+    
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.reInit}" />
+	<aura:attribute name="IsShowAndHidAutoPick" type="boolean" default="true"/>
+	<aura:attribute name="autopick" type="Boolean" default="false"/>
+    
+    <aura:attribute name="packageProductWrap" type="List" default="[{'SOId':'','SOName':'','packageLinItems':[] }]"/>
+    <aura:attribute name="ShipmentLineWrap" type="List" default="[{ 'packageName':'','shipLines':{ 'sobjectType': 'stapp__Shipment_Line_Item__c' }}]"/>
+    
+    
+    <lightning:navigation aura:id="PickingNewNav" />
+   
+    <article class="slds-card">
+        <div class="headercolor slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-contact" title="Picking">
+                        <lightning:icon iconName="custom:custom93" alternativeText="Picking" size="small"/>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <a class="slds-card__header-link slds-truncate" title="Picking">
+                            <span class="slds-text-heading_small">Picking</span>
+                        </a>
+                    </h2>
+                </div>
+                <div class="slds-no-flex" style="margin: 2%">
+                    <button class="slds-button slds-button_brand" onclick="{!c.CancelAndNavigate}" disabled="{!empty(v.soID)}">Cancel</button>
+                   
+                    <button class="slds-button slds-button_brand" onclick="{!v.isPickingStarted ? c.submit:c.startPicking}" disabled="{!empty(v.soID)}">{!empty(v.soID) ? 'Start Picking':v.isPickingStarted ?'Submit':'Start Picking'}</button>
+                </div>
+                
+                
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-8 slds-large-size_2-of-8">
+                    <aura:if isTrue="{!!v.isPickingStarted}">
+                        <c:customLookup recordID="{!v.soID}" recordName="{!v.soName}" objectAPIName="Order" IconName="standard:account" label="Standard Order" whereCondition="and sigmaerpdev2__No_Picking_Package_Shipment_Required__c=false" />
+                        <aura:set attribute="else">
+                            <label>&nbsp;</label>
+                            <ui:inputText class="slds-input" value="{!v.soName}"   disabled="{!v.isPickingStarted}"/>
+                        </aura:set>
+                    </aura:if>
+                </div>
+                <div class="{!v.isBarcodeScanned? 'slds-col slds-size_1-of-1 slds-medium-size_2-of-8 slds-large-size_2-of-8':'slds-hide'}" id="BinID">
+                    <lightning:input class=""
+                                     aura:id="locScanedCode"
+                                     name="enter-search"
+                                     label="Bin"
+                                     type="search"
+                                     value="{!v.locBarCodeValue}"
+                                     error=""
+                                     onchange="{!c.afterLocScaned2}"
+                                     />
+                    <div aura:id="" class="">
+                        <!--<strong style="{!!empty(v.locName)?'-webkit-text-stroke-width: medium;color: green;':'-webkit-text-stroke-width: medium;color: red;'}">{!!empty(v.locName)? v.locName: 'Not Found'}</strong>-->
+                        <strong class="{!v.locationFoundFlag? '':''}" style="{!v.locationFoundFlag? v.scannedLocationName!='Not Found'?'-webkit-text-stroke-width: medium;color: green;':'-webkit-text-stroke-width: medium;color: red;':'color: white'}">{!v.scannedLocationName}</strong>
+                    </div>
+                    <!--<lightning:input style='-webkit-text-stroke-width: medium' class="" aura:id="LocBinName" type="Text" value="" readonly="true"/>-->
+                </div>
+               
+               <div class="{!v.locationFoundFlag? 'slds-col slds-size_1-of-1 slds-medium-size_2-of-8 slds-large-size_2-of-8':'slds-hide'}" id="productScannedCode">
+                    <lightning:input class=""
+                                     aura:id="prodScanedCode"
+                                     name="enter-search"
+                                     label="Product Barcode"
+                                     type="search"
+                                     value="{!v.prodBarCodeValue}"
+                                     error=""
+                                     onchange="{!c.afterProdScaned}"
+                                     />
+                    <div aura:id="ProdName" class="">
+                        <!--<strong style="{!!empty(v.prodName)?'-webkit-text-stroke-width: medium;color: green;':'-webkit-text-stroke-width: medium;color: red;'}">{!!empty(v.prodName)? v.prodName: 'Not Found'}</strong>-->
+                        <strong class="{!v.productFoundFlag? '':''}" style="{!v.productFoundFlag? v.scannedProductName!='Not Found'?'-webkit-text-stroke-width: medium;color: green;':'-webkit-text-stroke-width: medium;color: red;':'color: white'}">{!v.scannedProductName}</strong>
+                    </div>
+                    <!--<lightning:input style='-webkit-text-stroke-width: medium' class="" aura:id="ProdName" type="Text" value="" readonly="true"/>-->
+                </div>
+                
+                <div class="slds-no-flex">
+                    <aura:if isTrue="{!v.IsShowAndHidAutoPick}">
+                        <aura:set attribute="else">
+                            <div class="slds-form-element" style="padding-left:70px;"> 
+                                <label class="slds-checkbox_toggle slds-grid">
+                                    <span class="slds-form-element__label slds-m-bottom_none"><b>Enable AutoPick</b>
+                                    	<div style="padding-top:5px;"><ui:inputCheckbox value="{!v.autopick}"/>
+                                        <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>                                        
+                                        </span>[For Serialized Products only] </div>                                 
+                                    </span>                                    
+                                </label>
+                            </div>
+                        </aura:set>
+                    </aura:if>      
+                </div> 
+                
+            </div>
+            <div>
+                <button class="{!v.mobileScreenFlag? 'slds-button slds-m-top_medium':'slds-hide'}" onclick="{!c.showPickedProducts}">Show/hide Picked Items</button>
+            </div>
+        </div>
+        <div class="slds-card__body" >
+            <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_cell-buffer slds-no-row-hover" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        
+                        
+                         <th scope="col" style="background-color: #dbddde;">
+                            <div class="slds-truncate" title="Location">Location</div>
+                        </th>
+                        <th scope="col" style="background-color: #dbddde;">
+                            <div class="slds-truncate" title="Zone">Zone</div>
+                        </th>
+                        <th scope="col" style="background-color: #dbddde;">
+                            <div class="slds-truncate" title="Bin">Bin</div>
+                        </th> 
+                      <th scope="col" style="background-color: #dbddde;">
+                            <div class="slds-truncate" title="Loc BarCode">Bin BarCode</div>
+                        </th>
+                        <th scope="col" style="background-color: #dbddde;">
+                            <div class="slds-truncate" title="Product">Product</div>
+                        </th>
+                         <th scope="col" style="background-color: #dbddde;">
+                            <div class="slds-truncate" title="View Product">View Product</div>
+                        </th>
+                        <th scope="col" style="background-color: #dbddde;">
+                            <div class="slds-truncate" title="Product Code">Products Barcode</div>
+                        </th>
+                        <th scope="col" style="background-color: #dbddde;">
+                            <div class="slds-truncate" title="Required Qty">Required Qty</div>
+                        </th>
+                        <th scope="col" style="background-color: #dbddde;width:20%">
+                            <div class="slds-truncate" title="Picked Qty">Picked Qty</div>
+                        </th>
+                        <th scope="col" style="background-color: #dbddde;">
+                        </th>
+                        <th scope="col" style="background-color: #dbddde;">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="slds-col slds-size_1-of-1 slds-medium-size_2-of-8 slds-large-size_2-of-8">
+                    <aura:iteration items="{!v.dataForPicking.PickingDuplicateDataWrap}" var="dfp"  indexVar="ind">
+                        <tr id="{!'rowData_'+ind}" class="{!and(dfp.reqQty==(dfp.totalPickedQty*1),and(v.mobileScreenFlag,v.showHidenItems)) ? 'slds-hide':''}" style="{!dfp.reqQty==(dfp.totalPickedQty*1) ? 'background: lightgreen;':dfp.hasAltPick?'background: indianred;':''}">
+                            
+                      
+                             <td scope="row" data-label="Location" style="{!empty(v.locBarCodeValue) || dfp.reqQty==(dfp.totalPickedQty*1) ? '': dfp.binBarCode==v.locBarCodeValue ? 'background: darkgray;':''}">
+                                <div class="slds-truncate" >
+                                    <a target="_blank" href="{!'/'+dfp.locId}">{!dfp.locName}</a>
+                                </div>
+                            </td>
+                           <td scope="row" data-label="Zone" style="{!empty(v.locBarCodeValue) || dfp.reqQty==(dfp.totalPickedQty*1) ? '': dfp.binBarCode==v.locBarCodeValue ? 'background: darkgray;':''}">
+                                <div class="slds-truncate" >
+                                    <a target="_blank" href="{!'/'+dfp.zoneId}">{!dfp.zoneName?dfp.zoneName:'None'}</a>
+                                </div>
+                            </td>
+                            <td scope="row" data-label="Bin" style="{!empty(v.locBarCodeValue) || dfp.reqQty==(dfp.totalPickedQty*1) ? '': dfp.binBarCode==v.locBarCodeValue ? 'background: darkgray;':''}">
+                                <div class="slds-truncate" >
+                                    <a target="_blank" href="{!'/'+dfp.binId}">{!dfp.binName}</a>
+                                </div>
+                            </td> 
+                            <td scope="row" data-label="Bin Barcode" style="{!empty(v.locBarCodeValue) || dfp.reqQty==(dfp.totalPickedQty*1) ? '': dfp.binBarCode==v.locBarCodeValue ? 'background: darkgray;':''}">
+                                <div class="slds-truncate" >
+                                    {!dfp.binBarCode}
+                                </div>
+                            </td>                
+                                  <td scope="row" data-label="Product" style="{!  dfp.reqQty==(dfp.totalPickedQty*1) ? '':and(dfp.prodCode==v.prodBarCodeValue)  ? 'background: darkgray;':''}">
+                                <strong>
+                                    <div class="slds-truncate" >
+                                        <a target="_blank" href="{!'/'+dfp.prodId}">{!dfp.prodName}</a>
+                                    </div>
+                                </strong>
+                            </td>
+                             <td scope="row" data-label="Product" style="{!  dfp.reqQty==(dfp.totalPickedQty*1) ? '':and(dfp.prodCode==v.prodBarCodeValue)  ? 'background: darkgray;':''}">
+                                      <div class="slds-truncate" >
+                                          <lightning:button accesskey="{!dfp.prodId}" class="slds-button_balck" title="View Product" onclick="{!c.fetchProductImageData}"><lightning:icon iconName="action:add_photo_video" size="x-small" alternativeText="View Product" /></lightning:button>
+      
+                                        <!--lightning:icon  accesskey="{!dfp.prodId}" iconName="action:preview" alternativeText="View Product" title="View Product"  onmouseover="{!c.fetchProductImageData}" /-->
+                                        </div>
+                            </td>
+                            <td scope="row" data-label="Product Code" style="{!  dfp.reqQty==(dfp.totalPickedQty*1) ? '':and(dfp.prodCode==v.prodBarCodeValue)  ? 'background: darkgray;':''}">
+                                <div class="slds-truncate" >
+                                    {!dfp.prodCode}
+                                </div>
+                            </td>
+                            <td scope="row" data-label="Required Qty">
+                                <div class="slds-truncate" >
+                                    {!dfp.reqQty}
+                                </div>
+                            </td>
+                            <div id="PickedQty">
+                            <td scope="row" data-label="Picked Qty">
+                                <div class="{!and((dfp.reqQty==(dfp.totalPickedQty*1)),v.mobileScreenFlag)?'slds-hide':'slds-truncate'}" >
+                                  <!--  <lightning:input aura:id="TotoalPickQuant" variant="label-hidden" type="Number" value="{!dfp.totalPickedQty}" min="{!dfp.reqQty}" max="{!dfp.reqQty}" messageWhenRangeOverflow="{! 'Out of Range(0->'+dfp.reqQty+')'}" readonly="{!(dfp.reqQty==(dfp.totalPickedQty*1))||!v.isBarcodeScanned || dfp.hasAltPick}"/>-->
+                                      <lightning:input aura:id="TotoalPickQuant" variant="label-hidden" type="Number" value="{!dfp.totalPickedQty}"  readonly="{!(dfp.reqQty==(dfp.totalPickedQty*1))||!v.isBarcodeScanned || dfp.hasAltPick}"/>
+                                </div>
+                                <div class="{!!and((dfp.reqQty==(dfp.totalPickedQty*1)),v.mobileScreenFlag)?'slds-hide':'slds-truncate'}" >
+                                    {!dfp.totalPickedQty}
+                                </div>
+                            </td>
+                            </div>
+                        </tr>
+                        
+                    </aura:iteration>
+                </tbody>
+                <aura:if isTrue="{!v.ProductView}">
+                    <c:viewProductImage ProductImageDataSet="{!v.ProductImageData}" productimageexist ="{!v.productimageexist}" ProductView ="{!v.ProductView}"/>  
+                </aura:if>
+            </table>
+        </div>
+        <div style="text-align: -webkit-right;">
+            <lightning:button label="Go To Picking Slip" title="Go Back Action" onclick="{! c.goBackToPickingSlip }"/>
+        </div>
+    </article>
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner style="position: fixed" alternativeText="Loading" size="large" />
+    </div>
+</aura:component>

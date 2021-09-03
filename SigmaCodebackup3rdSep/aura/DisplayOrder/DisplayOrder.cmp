@@ -1,0 +1,15 @@
+<aura:component>
+	<aura:attribute name="stdList1" type="List" />
+	
+    <aura:attribute name="fromMobile" type="boolean" />
+    
+    <td colspan="8">
+        <table border="0" class="slds-table slds-table_bordered">
+            <aura:iteration items="{!v.stdList1.stappOrderList1}" var="locListInner1">
+                <tr>
+                    <c:DisplayOrderline fullList="{!v.innerList1}" innerList2="{!locListInner1}" rowId1="{!locListInner1.stoId}" fromMobile1="{!v.fromMobile}"  />   
+                </tr>
+            </aura:iteration>        
+        </table>
+    </td>
+</aura:component>

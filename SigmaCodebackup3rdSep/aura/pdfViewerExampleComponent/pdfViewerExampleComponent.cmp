@@ -1,0 +1,14 @@
+<aura:component access="GLOBAL" implements="force:lightningQuickAction,force:hasRecordId" controller="InvoiceGenerationPdfController">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="pdfData" type="String"/>
+    <aura:attribute name="noInvoice" type="Boolean" default='false'/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="pdfContainer" type="Aura.Component[]"/>
+    <aura:if isTrue="{!v.noInvoice}">
+        <div>
+            <h1>No WorkOrderLineItems for the Invoice.</h1>
+        </div>
+    </aura:if> 
+    
+    {!v.pdfContainer}
+</aura:component>

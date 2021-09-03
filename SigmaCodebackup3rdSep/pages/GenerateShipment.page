@@ -1,0 +1,20 @@
+<apex:page StandardController="Shipment__c" id="mainPage">
+    <apex:includeLightning />
+    
+    <div id="lightning" />
+    
+    <script>
+    var recId = "{!JSENCODE($CurrentPage.parameters.id)}";
+    
+    $Lightning.use("sigmaerpdev:ShipmentProductsView", function(){
+        $Lightning.createComponent("sigmaerpdev:ShipmentProduct",
+                                   {Id: recId}, 
+                                   "lightning",
+                                   function(cmp) 
+                                   {
+                             
+                                   }
+                                  );
+    });
+    </script>
+</apex:page>

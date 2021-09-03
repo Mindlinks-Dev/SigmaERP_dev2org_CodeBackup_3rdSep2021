@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION">    
+    <aura:attribute name="selfRefreshEvttab" type="String"/>
+  <!--  <aura:attribute name="selfRefreshEvtindstockconv" type="String"/>
+    <aura:attribute name="BOMtoindividualEvt" type="String"/>-->
+</aura:event>

@@ -1,0 +1,18 @@
+<apex:page StandardController="Inventory__c" id="mainPage">
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+     var recId = "{!JSENCODE($CurrentPage.parameters.id)}";
+    
+        $Lightning.use("sigmaerpdev:BOMtoindividualApp", function() {
+          $Lightning.createComponent("sigmaerpdev:IndividualtoBom",
+          {recordId: recId},
+          "lightning",
+          function(cmp) {
+        
+          });
+        });
+    </script>
+</apex:page>

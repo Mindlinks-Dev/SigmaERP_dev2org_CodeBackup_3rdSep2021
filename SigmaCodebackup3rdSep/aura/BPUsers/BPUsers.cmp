@@ -1,0 +1,98 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="BPUserCtrl">
+    <lightning:overlayLibrary aura:id="popupmodal"/>
+    
+    <ltng:require styles="/resource/SLDS0122/assets/styles/salesforce-lightning-design-system.min.css"/>
+    <aura:attribute name="flag" type="string"/>
+    <aura:attribute name="message" type="String" default="" />
+    <aura:attribute name="showMessage" type="boolean" default="false"/>
+    <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+    <aura:attribute name="actmap" type="Map" default="{'AccountIds':'','AccountName':''}"/>
+    <aura:attribute name="accObject"  type="Account" default="{'sobjectType': 'Account',
+																				'Name': '',
+																				'sigmaerpdev2__Partner__c' : '',
+																			'sigmaerpdev2__Commision_Fees__c':'',
+																			'sigmaerpdev2__Payment_interval__c':'',
+																			'sigmaerpdev2__Interval__c':''
+																		} "/>
+    <aura:attribute name="spinner" type="Boolean" default="false"/>
+    
+    
+    <aura:if isTrue="{!v.showMessage==true}">
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+            <span class="slds-assistive-text">error</span>
+            <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">  
+            </span>
+            <h2>{!v.message}</h2>
+        </div>
+    </aura:if>
+   
+    <div class="slds-modal__content" style="length:40%;">
+    <aura:if isTrue="{!v.spinner}">
+        <div class="slds-spinner_container" style="position:initial">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+  
+    <lightning:card title="Brewery Producer Configurations" iconName="standard:approval">
+        <hr />
+             <div class="slds-col slds-m-horizontal_small" style="width:25%;">
+                <div class="slds-form-element">
+                    <span style="color:#b20000;">* </span>Brewery Producer  
+                        <c:customLookup recordID="{!v.actmap.AccountIds}"
+                                          recordName="{!v.actmap.AccountName}"
+                                          whereCondition="{!'AND sigmaerpdev2__Active__c=\'Yes\' AND recordType.Name=\'Vendor\' '}"
+                                          objectAPIName="Account"
+                                          IconName="standard:account" 
+                                          isSigmaOrder= 'true'  />
+             </div>
+        </div>
+		<br/>
+        <!--  <div class="slds-grid"> -->
+		 <div class="slds-col slds-m-horizontal_small" style="width:21%;">
+             <div class="slds-grid slds-gutters">
+             	<div class="slds-col slds-size_1-of-2">
+                 <div class="slds-form-element">
+                    <span style="color:#b20000;">* </span>Payment Interval
+                <lightning:input aura:id="Payinterval"
+                                 type="String" variant="label-hidden"
+                                 value="{!v.actmap.Duration}"/>
+            </div>
+                 </div>
+                 <div class="slds-col slds-size_1-of-2">
+                 <div class="slds-form-element" style="padding-top:19px;">                    
+                     <lightning:select aura:id="interval" variant="label-hidden" class="label-hidden" value="{!v.actmap.PaymentInterval}" >
+                    <option value="Day"> Days </option>
+                    <option value="Month"> Months </option>
+                    <option value="Year"> Year </option>
+                </lightning:select>
+             </div>
+                 </div>
+             </div>
+                
+        </div>
+        <br/>
+         
+        <div class="slds-col slds-m-horizontal_small" style="width:10%">
+            <div class="slds-form-element">	
+                <span style="color:#b20000;">* </span>Commission (%)
+            	<lightning:input aura:id="commision"
+                                 type="Number" variant="label-hidden"
+                                 value="{!v.actmap.commisionFees}"/>
+            </div>
+        </div>
+        <br/>
+        <div class="slds-p-horizontal_small">
+		<button class="slds-button slds-button_brand" onclick="{!c.save}">Submit</button>
+        <button class="slds-button slds-button_neutral" onclick="{!c.close}">Cancel</button>
+      </div>
+    </lightning:card>
+    <!-- </aura:if>-->
+    </div>
+    
+    
+    
+</aura:component>

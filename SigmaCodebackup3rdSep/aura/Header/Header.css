@@ -1,0 +1,24 @@
+.THIS.container,.THIS .container{
+    width:94%;
+    margin:auto;
+}
+.THIS.header-top,.THIS .header-top {
+    background: #242424;
+    color:white;
+    border-bottom: 1px solid #eaeaea;
+    padding: 6px 0;
+    width: 100%;
+}
+.THIS.header-bottom,.THIS .header-bottom {
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.4);
+    padding: 12px 0;
+    border-bottom: 1px solid;
+}
+.THIS.header-bottom h1,.THIS .header-bottom h1{
+    font-size: 24px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.THIS .slds-icon-standard-home{
+    background-color: deepskyblue;
+}

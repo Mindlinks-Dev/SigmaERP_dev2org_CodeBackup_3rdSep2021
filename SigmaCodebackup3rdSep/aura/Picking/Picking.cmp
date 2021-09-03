@@ -1,0 +1,721 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable" access="global" 
+                controller="PickingCtrl" >
+    <ltng:require scripts="{!join(',',
+                           $Resource.jQueryConfirm + '/SigmaLibraries/StripLibraries/jquery.js',
+                           $Resource.jQueryConfirm + '/SigmaLibraries/StripLibraries/jquery-confirm.min.js')}" 
+                  styles="{!$Resource.jQueryConfirm + '/SigmaLibraries/StripLibraries/jquery-confirm.min.css'}" />
+    <aura:attribute name="isSpin" type="Boolean" default="false"/>
+    <!-- create 2 aura handler with waiting and donewaiting events--> 
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:attribute name="soID" type="String"/>
+    <aura:attribute type="object" name="sigmaOrderLineWrapper" />
+    <aura:attribute type="object" name="SigmaOrderWrap" />
+    
+    <aura:attribute name="openSelectManual" type="Boolean" default="false"/>
+    <aura:attribute type="Boolean" name="disableSave" default="false"/>
+    <aura:attribute type="Inventory_Location_Product_Line_Item__c[]" name="originalILPLIData" />
+    <aura:attribute name="ilpliIdAllocatedQuantMap" type="Map"  />
+    <aura:attribute name="mapQorderlineAndIlpliQuantity" type="Map"  />
+    <aura:attribute type="Integer" name="ManualSelectIndex" />
+    <!--help menu-->
+    <aura:attribute name="currectObject" type="String" default=""/>
+    <aura:attribute name="description" type="String" default="test"/>
+    <aura:attribute name="descriptionBody" type="String" default="test"/>
+    
+    
+    <!-- code added to handle picking for Sales and Standard order -->
+    <aura:attribute name="sigmaOrderData" type="List"/>  
+    <aura:attribute name="prioritySort" type="String"/>
+    <aura:attribute name="dueDateSort" type="String"/>
+    <aura:attribute name="numberOfRecordsToDisplay" type="Integer" default="20"/>
+    <aura:attribute name="totalRowCount" type="Integer" default="0"/>
+    <aura:attribute name="ConfigData" type="Object"/>
+    
+    <aura:attribute name="dataForPicking" type="object"/>
+    <aura:attribute name="altPickModelForPrinted" type="boolean" default="false"/>  
+    
+    <aura:attribute name="packageProductWrap" type="List" default="[{'SOId':'','SOName':'','packageLinItems':[] }]"/>
+    <aura:attribute name="ShipmentLineWrap" type="List" default="[{ 'packageName':'','shipLines':{ 'sobjectType': 'stapp__Shipment_Line_Item__c' }}]"/>
+    <aura:attribute name="selectedTab" type="String"/>
+    
+    <aura:attribute name="mobileScreenFlag" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.soID}" action="{!c.soClearEvent}" />
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.reInit}" />
+    
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="isPicking" type="Boolean" default="true"/>
+    <aura:attribute name="isAllocationInPicking" type="Boolean" default="false"/>
+    <aura:attribute name="autoAllocationInpicking" type="Boolean" default="false"/>
+    <aura:attribute name="allocatedAs" type="String" default=""/>
+    <aura:attribute name="boolean" type="boolean" default="true"/>
+    
+    
+    
+    <!--Code added by rashmi to handle Standard order in Package -->
+    <aura:attribute name="isSigmaOrder" type="boolean" default="true"/>
+    <aura:attribute name="ordercreated" type="String" default=""/>
+    <aura:attribute name="isPickedTab" type="boolean" default="false"/>
+    <aura:attribute name="isPickingInProgressTab" type="boolean" default="false"/>
+    
+    <!--code added to handle module in one page on 11-02-2020-->
+    <aura:attribute name="pickingnew" type="boolean" default="false"/>
+    <aura:attribute name="soIDs" type="string"/>
+    <aura:attribute name="soName" type="string"/>
+    <aura:attribute name="ispackagecmp" type="boolean" default="false"/>    
+    <!--Attribute added to handled package in same page -->
+    <aura:attribute name="customerName" type="String" />
+    <aura:attribute name="package" type="Package__c" default="{ 'sobjectType':'Package__c' }"/>    
+    <aura:attribute name="packageProductWraplist" type="List" default="[{'SOId':'','SOName':'','packageLinItems':[] }]"/>
+    
+    <!--<aura:handler name="render" value="{!this}" action="{!c.onRender}"/>-->
+    <aura:attribute name="selChkboxCount" type="Integer" default=""/>
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>
+    <aura:handler event="c:PageChange" action="{!c.pageChange}"/>
+    
+    
+    <lightning:navigation aura:id="nav" />
+    <aura:renderIf isTrue="{!v.isError}">
+        <ui:message title="Error" severity="error" closable="false">
+            {!v.errorMsg}
+        </ui:message>
+        <aura:set attribute="else">
+        </aura:set>
+    </aura:renderIf> 
+    
+    <aura:if isTrue="{!v.isPicking}">
+        <article class="slds-card">
+            <div class="slds-grid slds-grid-block slds-m-bottom_small">
+                <div class="slds-col">
+                    <div class="headercolor slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container slds-icon-standard-contact" title="Picking">
+                                    <lightning:icon iconName="custom:custom93" alternativeText="Picking" size="small"/>
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <a class="slds-card__header-link slds-truncate" title="Picking">
+                                        <span class="slds-text-heading_small">Picking</span>
+                                    </a>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                </div>
+                <div class="slds-col slds-text-align_right slds-p-left_small">
+                    <span class="{!and(v.selectedTab=='NotPicked',v.sigmaOrderData[0].isSystemAdmin)? 'slds-no-flex1':'slds-hide'}">
+                        <button class="slds-button slds-button_brand" onclick="{!c.allocatBulk}" disabled="">Allocate</button>
+                    </span>
+                    <span class="{!v.selectedTab=='Printed'? 'slds-no-flex1':'slds-hide'}">
+                        <button class="slds-button slds-button_brand slds-m-left_xx-small" onclick="{!c.confirmPickMultiSO}" disabled="{!v.selectedTab!='Printed' || v.disableSave}">Confirm Picked</button>
+                    </span>
+                    
+                    <span class="slds-m-horizontal_x-small">
+                        <lightning:buttonIcon iconName="utility:refresh" onclick="{!c.refreshView}" alternativeText="Refresh" />
+                    </span>
+                    <span class="slds-no-flex1">
+                        <button class="slds-button slds-button_brand" onclick="{!c.printPDF}" disabled="{!!(v.selectedTab=='NotPicked' || v.selectedTab=='Printed')}">Print</button>
+                    </span>
+                    
+                </div>
+                
+                
+            </div>
+            
+            <div class="shadowPadding slds-tabs_scoped slds-tabs_scoped__nav">
+                <lightning:tabset aura:id="tabs" variant="scoped" selectedTabId="NotPicked">
+                    <lightning:tab label="Not Picked" id="NotPicked" onactive="{!c.fetchOrders}">
+                    </lightning:tab>
+                    <lightning:tab label="Picking In Progress" id="PickingInProgress" onactive="{!c.fetchOrders}"> 
+                    </lightning:tab>
+                    <lightning:tab label="Printed" id="Printed" onactive="{!c.fetchOrders}"/> 
+                    
+                    <lightning:tab label="Picked" id="Picked" onactive="{!c.fetchOrders}">
+                    </lightning:tab>
+                </lightning:tabset>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="{!v.mobileScreenFlag ? 'slds-col slds-size_1-of-1 slds-medium-size_2-of-8 slds-large-size_2-of-8':'slds-hide'}">
+                        <button class="slds-button" onclick="{!c.sortOnPriority}">Priority
+                            <lightning:icon class="" aura:id="priorityArrowupMobi" iconName="utility:arrowup" size="x-small" alternativeText="section" />
+                            <lightning:icon class="slds-hide" aura:id="priorityArrowdownMobi" iconName="utility:arrowdown" size="x-small" alternativeText="section" />
+                        </button>
+                        <button class="slds-button" onclick="{!c.sortOnDueDate}">Due Date
+                            <lightning:icon class="" aura:id="dueDateArrowupMobi" iconName="utility:arrowup" size="x-small" alternativeText="section" />
+                            <lightning:icon class="slds-hide" aura:id="dueDateArrowdownMobi" iconName="utility:arrowdown" size="x-small" alternativeText="section" />
+                        </button>
+                    </div>
+                </div>
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-8 slds-large-size_2-of-8" id="SigmaOrder">				
+                        <aura:if isTrue="{!v.boolean}"><!-- Condition added on 31-07-2019 to list orders based on created via -->
+                            <c:customLookup recordID="{!v.soID}" recordName="" objectAPIName="sigmaerpdev2__Sigma_Order__c" IconName="standard:account" label="Sigma Order" isSigmaOrder="{!v.isSigmaOrder}" whereCondition="and sigmaerpdev2__No_Picking_Package_Shipment_Required__c=false " /> 
+                            
+                            <!--Code added by rashmi to handle picking for Standard order -->
+                            <aura:set attribute="else">
+                                <c:customLookup recordID="{!v.soID}" recordName="" objectAPIName="Order" IconName="standard:order" label="Standard Order" />  
+                            </aura:set>
+                        </aura:if> 
+                        <!--Ends here -->
+                        
+                        <!-- <sigmaerpdev:LookupSObject aura:id="soID" searchString="sigmaOrderData" 
+                                                        label="Sigma Orders" pluralLabel="Sigma Orders"
+                                                        sObjectAPIName="sigmaerpdev2__Sigma_Order__c" 
+                                                        instanceId="sigmaerpdev2__Sigma_Order__c"
+                                                        SRString="{!v.soID}"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                        listIconClass="slds-icon-standard-account"
+                                                        
+                                                        />   -->
+                        <!--<sigmaerpdev:LookupSObject aura:id="order" 
+                                                               SRString="{!v.soID}" 
+                                                              
+                                                               label="Sigma Order" 
+                                                               pluralLabel="Sigma Orders" 
+                                                               sObjectAPIName="sigmadev__Sigma_Order__c" 
+                                                               instanceId="MyOrder"
+                                                               listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                               listIconClass="slds-icon-standard-account"                             
+                                                               />-->
+                        <!--   <c:LookupSObject aura:id="ContactName" 
+                                                        searchString="{!v.soID}" 
+                                                        label="Sigma Order" pluralLabel="Sigma Orders" 
+                                                        sObjectAPIName="sigmaerpdev2__Sigma_Order__c"
+                                                        instanceId="Myorder"
+                                                        SRString="All"
+                                                        listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#new_contact'}"
+                                                        listIconClass="slds-icon-standard-contact"
+                                                        />     -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-card__body">
+                <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_cell-buffer" role="grid">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <aura:if isTrue="{!v.isPickedTab}">
+                                <aura:set attribute="else">
+                                    
+                                    <aura:if isTrue="{!v.isPickingInProgressTab}">
+                                        <aura:set attribute="else">
+                                            <th scope="col" style="background-color: #dbddde;font-weight: bold;width:5%">
+                                                <div class="slds-truncate" title="Sigma Order">Select</div>
+                                            </th>
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:set>
+                            </aura:if>
+                            <th scope="col" style="background-color: #dbddde;font-weight: bold;width:5%">
+                                <div class="slds-truncate" title="Sigma Order">Order</div>
+                            </th>
+                            <th scope="col" style="background-color: #dbddde;font-weight: bold;width:5%">
+                                <div class="slds-truncate" title="Due Date">Due Date
+                                    <button class="slds-button" onclick="{!c.sortOnDueDate}">
+                                        <lightning:icon class="" aura:id="dueDateArrowup" iconName="utility:arrowup" size="x-small" alternativeText="section" />
+                                        <lightning:icon class="slds-hide" aura:id="dueDateArrowdown" iconName="utility:arrowdown" size="x-small" alternativeText="section" />
+                                    </button>
+                                </div>
+                            </th>
+                            <th scope="col" style="background-color: #dbddde;font-weight: bold;width:10%">
+                                <div class="slds-truncate" title="Customer">Customer</div>
+                            </th>
+                            <th scope="col" style="background-color: #dbddde;font-weight: bold;width:5%">
+                                <div class="slds-truncate" title="Status">Status</div>
+                            </th>
+                            <th scope="col" style="background-color: #dbddde;font-weight: bold;width:10%">
+                                <div class="slds-truncate" title="Allocated User">{!v.sigmaOrderData[0].isSystemAdmin ? 'Allocate User': 'Allocated User'}</div>
+                            </th>
+                            <!--	<th scope="col" style="background-color: #dbddde;font-weight: bold;width:10%">
+                            <div class="slds-truncate" title="Allocated User">{!v.StandardOrderData[0].isSystemAdmin ? 'Allocate User': 'Allocated User'}</div>
+                        </th>-->
+                            <th scope="col" style="background-color: #dbddde;font-weight: bold;width:5%">
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:if isTrue="{!v.boolean}">
+                            <aura:iteration items="{!v.sigmaOrderData}" var="soData"  indexVar="ind">
+                                <tr ><!--style="{!soData.pickedSattus=='Picked'? 'background: lightgreen;':soData.pickedSattus=='Printed'? 'background: orange;': soData.pickedSattus=='Picking In Progress'?'background:lightblue':'background: lightcoral;'}">-->
+                                    <!--aura:if isTrue="{!v.isPickedTab}">
+                                 <aura:set attribute="else">
+                                    
+                                </aura:set>
+                            
+                            </aura:if-->
+                                    <aura:if isTrue="{!v.isPickedTab}">
+                                        <aura:set attribute="else">
+                                            
+                                            <aura:if isTrue="{!v.isPickingInProgressTab}">
+                                                <aura:set attribute="else">
+                                                    <td scope="row" data-label="Select">
+                                                        <ui:inputCheckbox change="{!c.onCheck}" class="mobileView" aura:id="checkbox"  value="{!soData.sigmaOrder.isSelected}" disabled="{!soData.pickedSattus=='Picked' || soData.pickedSattus=='Picking In Progress'}" />
+                                                    </td>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                    <td scope="row" data-label="Sigma Order">
+                                        <div class="slds-truncate" >
+                                            <a target="_blank" href="{!'/'+soData.sigmaOrder.Id}">{!soData.sigmaOrder.Name}</a>
+                                        </div>
+                                    </td>
+                                    <td scope="row" data-label="Due Date">
+                                        <div class="slds-truncate" >
+                                            <!--{!soData.stappOrder.stapp__Due_Date__c}-->
+                                            <ui:outputDate value="{!soData.sigmaOrder.sigmaerpdev2__Delivary_Date__c}"/>
+                                        </div>
+                                    </td>
+                                    <td scope="row" data-label="Customer">
+                                        <div class="slds-truncate" >
+                                            {!soData.sigmaOrder.sigmaerpdev2__AccountId__r.Name }
+                                        </div>
+                                    </td>
+                                    <td scope="row" data-label="Status">
+                                        <div class="slds-truncate" >
+                                            {!soData.pickedSattus}
+                                        </div>
+                                    </td>
+                                    <td scope="row" data-label="Allocated User">
+                                        <div class="slds-truncate" id="AllocatedUser" >
+                                            <aura:if isTrue="{!v.sigmaOrderData[0].isSystemAdmin}">
+                                                <ui:inputSelect aura:id="user" class="slds-input" value="{!soData.PickedUser}" disabled="{!soData.pickedSattus=='Picked' || soData.pickedSattus=='Printed' || soData.pickedSattus=='Picking In Progress'}">
+                                                    <aura:iteration items="{!soData.users}" var="user" indexVar="ind">
+                                                        <ui:inputSelectOption text="{!user.Id}" label="{!user.Name}" />
+                                                        <!--<option value="">{!user.Name}</option>-->
+                                                    </aura:iteration>
+                                                </ui:inputSelect>
+                                                <aura:set attribute="else">
+                                                    {!soData.allocatedUserName}
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                    <td scope="row" data-label="Action">
+                                        <div class="slds-truncate" >
+                                            <aura:if isTrue="{!v.sigmaOrderData[0].isSystemAdmin}">
+                                                <aura:if isTrue="{!soData.pickedSattus=='Not Picked'}">
+                                                    <!--    <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.allocateUser}" disabled="{!soData.allocatedUserId==soData.PickedUser}">Allocate</button> -->
+                                                    <aura:if isTrue="{!v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">
+                                                        
+                                                        
+                                                        <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.navigateToPicking}" disabled="">Pick</button>
+                                                        
+                                                    </aura:if>
+                                                </aura:if>
+                                                <aura:if isTrue="{!soData.pickedSattus=='Printed'}">
+                                                    <!-- <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.PickPrinted}" disabled="">Confirm Picked</button> -->
+                                                    <!-- <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.altPickForPrinted}" disabled="">AltPick</button> -->
+                                                </aura:if>
+                                                <aura:if isTrue="{!soData.pickedSattus=='Picking In Progress' &amp;&amp; v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">
+                                                    <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.navigateToPicking}" disabled="">Resume</button>
+                                                </aura:if>
+                                                <aura:if isTrue="{!soData.pickedSattus=='Picked'}">
+                                                    <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.proceedToPackShip}" disabled="">Proceed</button>
+                                                </aura:if>
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!soData.pickedSattus=='Not Picked' &amp;&amp; v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">
+                                                        <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.navigateToPicking}" disabled="">Pick</button>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!soData.pickedSattus=='Printed'}">
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!soData.pickedSattus=='Picking In Progress' &amp;&amp; v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">
+                                                        <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.navigateToPicking}" disabled="">Resume</button>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!soData.pickedSattus=='Picked'}">
+                                                    </aura:if>
+                                                </aura:set>
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.isAllocationInPicking}" >
+                                                <aura:if isTrue="{!soData.sigmaOrder.isSelected}"  >
+                                                    <aura:if isTrue="{!v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">   
+                                                        <button class="{!v.allocatedAs=='ManualPick'   ? 'slds-button slds-button_brand btnpadding':'slds-button slds-button_neutral btnpadding'}" onclick="{!c.navigateToPicking1}" disabled="{!v.allocatedAs=='AutoPick'}" title="Manual">M</button>
+                                                        <button class="{!v.allocatedAs=='AutoPick'? 'slds-button slds-button_brand btnpadding':'slds-button slds-button_neutral btnpadding'}"  onclick="{!c.autoAllocation}" disabled="{!v.allocatedAs=='ManualPick'}" title="Auto">A</button>
+                                                    </aura:if>
+                                                    
+                                                </aura:if>
+                                                
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                            <aura:set attribute="else">
+                                <aura:iteration items="{!v.sigmaOrderData}" var="soData"  indexVar="ind">
+                                    <tr ><!--style="{!soData.pickedSattus=='Picked'? 'background: lightgreen;':soData.pickedSattus=='Printed'? 'background: orange;': soData.pickedSattus=='Picking In Progress'?'background:lightblue':'background: lightcoral;'}">-->
+                                        <td scope="row" data-label="Select">
+                                            <ui:inputCheckbox class="mobileView" aura:id="checkbox"  value="{!soData.standOrder.isSelected}" disabled="{!soData.pickedSattus=='Picked' || soData.pickedSattus=='Picking In Progress'}" />
+                                        </td>
+                                        <td scope="row" data-label="Sigma Order">
+                                            <div class="slds-truncate" >
+                                                <a target="_blank" href="{!'/'+soData.standOrder.Id}">{!soData.standOrder.OrderNumber}</a>
+                                            </div>
+                                        </td>
+                                        <td scope="row" data-label="Due Date">
+                                            <div class="slds-truncate" >
+                                                <!--{!soData.stappOrder.stapp__Due_Date__c}-->
+                                                <ui:outputDate value="{!soData.standOrder.sigmaerpdev2__Delivary_Date__c}"/>
+                                            </div>
+                                        </td>
+                                        <td scope="row" data-label="Customer">
+                                            <div class="slds-truncate" >
+                                                {!soData.standOrder.Account.Name  }
+                                            </div>
+                                        </td>
+                                        <td scope="row" data-label="Status">
+                                            <div class="slds-truncate" >
+                                                {!soData.pickedSattus}
+                                            </div>
+                                        </td>
+                                        <td scope="row" data-label="Allocated User">
+                                            <div class="slds-truncate" >
+                                                <aura:if isTrue="{!v.sigmaOrderData[0].isSystemAdmin}">
+                                                    <ui:inputSelect aura:id="user" class="slds-input" value="{!soData.PickedUser}" disabled="{!soData.pickedSattus=='Picked' || soData.pickedSattus=='Printed' || soData.pickedSattus=='Picking In Progress'}">
+                                                        <aura:iteration items="{!soData.users}" var="user" indexVar="ind">
+                                                            <ui:inputSelectOption text="{!user.Id}" label="{!user.Name}" />
+                                                            <!--<option value="">{!user.Name}</option>-->
+                                                        </aura:iteration>
+                                                    </ui:inputSelect>
+                                                    <aura:set attribute="else">
+                                                        {!soData.allocatedUserName}
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </td>
+                                        <td scope="row" data-label="Action">
+                                            <div class="slds-truncate" >
+                                                <aura:if isTrue="{!v.sigmaOrderData[0].isSystemAdmin}">
+                                                    <aura:if isTrue="{!soData.pickedSattus=='Not Picked'}">
+                                                        <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.allocateUser}" disabled="{!soData.allocatedUserId==soData.PickedUser}">Allocate</button>
+                                                        <aura:if isTrue="{!v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">
+                                                            
+                                                            
+                                                            <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.navigateToPicking}" disabled="">Pick</button>
+                                                            
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!soData.pickedSattus=='Printed'}">
+                                                        <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.PickPrinted}" disabled="">Confirm Picked</button>
+                                                        <!-- <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.altPickForPrinted}" disabled="">AltPick</button> -->
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!soData.pickedSattus=='Picking In Progress' &amp;&amp; v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">
+                                                        <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.navigateToPicking}" disabled="">Resume</button>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!soData.pickedSattus=='Picked'}">
+                                                        <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.proceedToPackShip}" disabled="">Proceed</button>
+                                                    </aura:if>
+                                                    <aura:set attribute="else">
+                                                        <aura:if isTrue="{!soData.pickedSattus=='Not Picked' &amp;&amp; v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">
+                                                            <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.navigateToPicking}" disabled="">Pick</button>
+                                                        </aura:if>
+                                                        <aura:if isTrue="{!soData.pickedSattus=='Printed'}">
+                                                        </aura:if>
+                                                        <aura:if isTrue="{!soData.pickedSattus=='Picking In Progress' &amp;&amp; v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">
+                                                            <button class="slds-button slds-button_brand" name='{!ind}' onclick="{!c.navigateToPicking}" disabled="">Resume</button>
+                                                        </aura:if>
+                                                        <aura:if isTrue="{!soData.pickedSattus=='Picked'}">
+                                                        </aura:if>
+                                                    </aura:set>
+                                                </aura:if>
+                                                <aura:if isTrue="{!v.isAllocationInPicking}" >
+                                                    <aura:if isTrue="{!soData.standOrder.isSelected}"  >
+                                                        <aura:if isTrue="{!v.sigmaOrderData[0].logedInUserId==soData.allocatedUserId}">   
+                                                            <button class="{!v.allocatedAs=='ManualPick'   ? 'slds-button slds-button_brand btnpadding':'slds-button slds-button_neutral btnpadding'}" onclick="{!c.navigateToPicking1}" disabled="{!v.allocatedAs=='AutoPick'}" title="Manual">M</button>
+                                                            <button class="{!v.allocatedAs=='AutoPick'? 'slds-button slds-button_brand btnpadding':'slds-button slds-button_neutral btnpadding'}"  onclick="{!c.autoAllocation}" disabled="{!v.allocatedAs=='ManualPick'}" title="Auto">A</button>
+                                                        </aura:if>
+                                                        
+                                                    </aura:if>
+                                                    
+                                                </aura:if>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </aura:set>
+                        </aura:if> 
+                        
+                    </tbody>
+                </table>
+                <footer class="slds-card__footer footer">
+                    <div class="slds-text-align_center">
+                        <c:PaginationComponentForInventory page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                        {!V.body}
+                    </div>
+                </footer>
+            </div>
+            <div style="text-align: -webkit-right;">
+                <lightning:button label="Load More..." title="Load More Action" disabled="{!lessthanorequal(v.totalRowCount,v.numberOfRecordsToDisplay)}" onclick="{! c.loadMoreContent }"/>
+            </div>
+        </article>
+    </aura:if>
+    <aura:if isTrue="{!v.pickingnew}">
+        <c:PickingNew soID="{!v.soIDs}" soName ="{!v.soName}"  isSigmaOrder ="{!v.isSigmaOrder}" /> 
+        
+    </aura:if>
+    <aura:if isTrue="{!v.ispackagecmp}">
+        <c:Package customerName="{!v.customerName}" package ="{!v.package}"  packageProductWrap ="{!v.packageProductWraplist}" fromPickingSlip ="true" isSOComingFromPicking ="true" isSigmaOrder ='{!v.isSigmaOrder}'/> 
+    </aura:if>
+    
+    <!--  <aura:if isTrue="{!v.isSpin}">
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner style="position: fixed" alternativeText="Loading"  size="small" />
+    </div>
+         </aura:if>-->
+    <!--loading spinner start... style=Brand Medium (blue dots)-->
+    
+    <aura:if isTrue="{!v.isSpin}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert"  style="background-color:red">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Loading spinner end-->    
+    <aura:if isTrue="{!v.altPickModelForPrinted}">
+        <div class="demo-only" style="">
+            <section role="dialog" class="slds-modal slds-fade-in-open slds-modal_large">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.closeAltPickModel}">
+                            <lightning:icon iconName="action:close" size="x-small" alternativeText="close"/>
+                            <span class="slds-assistive-text" >Close</span>
+                        </button>
+                        <!-- <div>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Alternate Pick</h2>
+                        </div> -->
+                        <div class="slds-text-align_right">
+                            <button class="slds-button slds-button_brand" name="" onclick="{!c.confirmPicking}" disabled="">Submit</button>
+                        </div>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_cell-buffer slds-no-row-hover" role="grid">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col" style="background-color: #dbddde;">
+                                        <div class="slds-truncate" title="Product">Product</div>
+                                    </th>
+                                    <th scope="col" style="background-color: #dbddde;">
+                                        <div class="slds-truncate" title="Zone">Zone</div>
+                                    </th>
+                                    <th scope="col" style="background-color: #dbddde;">
+                                        <div class="slds-truncate" title="Bin">Bin</div>
+                                    </th>
+                                    <th scope="col" style="background-color: #dbddde;">
+                                        <div class="slds-truncate" title="Required Qty">Required Qty</div>
+                                    </th>
+                                    <th scope="col" style="background-color: #dbddde;width:20%">
+                                        <div class="slds-truncate" title="Picked Qty">Picked Qty</div>
+                                    </th>
+                                    <th scope="col" style="background-color: #dbddde;">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="slds-col slds-size_1-of-1 slds-medium-size_1-of-6 slds-large-size_1-of-6">
+                                <aura:iteration items="{!v.dataForPicking.PickingDuplicateDataWrap}" var="dfp"  indexVar="ind">
+                                    <tr id="{!'rowData_'+ind}" class="" style="{!dfp.reqQty==(dfp.totalPickedQty*1) ? 'background: lightgreen;':dfp.hasAltPick?'background: indianred;':''}">
+                                        <td scope="row" data-label="Product">
+                                            <strong>
+                                                <div class="slds-truncate" >
+                                                    <a target="_blank" href="{!'/'+dfp.prodId}">{!dfp.prodName}</a>
+                                                </div>
+                                            </strong>
+                                        </td>
+                                        <td scope="row" data-label="Zone" style="{!empty(v.locBarCodeValue) || dfp.reqQty==(dfp.totalPickedQty*1) ? '': dfp.binBarCode==v.locBarCodeValue ? 'background: darkgray;':''}">
+                                            <div class="slds-truncate" >
+                                                <a target="_blank" href="{!'/'+dfp.zoneId}">{!dfp.zoneName?dfp.zoneName:'None'}</a>
+                                            </div>
+                                        </td>
+                                        <td scope="row" data-label="Location" style="{!empty(v.locBarCodeValue) || dfp.reqQty==(dfp.totalPickedQty*1) ? '': dfp.binBarCode==v.locBarCodeValue ? 'background: darkgray;':''}">
+                                            <div class="slds-truncate" >
+                                                <a target="_blank" href="{!'/'+dfp.binId}">{!dfp.binName}</a>
+                                            </div>
+                                        </td>
+                                        <td scope="row" data-label="Required Qty">
+                                            <div class="slds-truncate" >
+                                                {!dfp.reqQty}
+                                            </div>
+                                        </td>
+                                        <td scope="row" data-label="Picked Qty">
+                                            <div class="slds-truncate" >
+                                                {!dfp.totalPickedQty}
+                                                <!--<lightning:input aura:id="TotoalPickQuant" type="Number" value="{!dfp.totalPickedQty}" min="0" max="{!dfp.reqQty}" messageWhenRangeOverflow="{! 'Out of Range(0->'+dfp.reqQty+')'}" />-->
+                                            </div>
+                                        </td>
+                                        
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop--open"></div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.openSelectManual}">
+        <!--<div>-->
+        <section role="dialog" class="slds-modal slds-fade-in-open" style="top:50px;padding-left:75px;">
+            <div class="slds-modal__content" style="max-height:80%;max-width:90%;overflow-x: hidden;overflow-y: auto;">
+                <header class="slds-modal__header">
+                    <button onclick="{!c.closeSelectManualModal}" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                        <lightning:icon iconName="utility:close" size="small" alternativeText="Close" />
+                    </button>
+                    <!--<h2 class="slds-text-heading_medium slds-hyphenate">Available Stock</h2>-->
+                    <h2 class="slds-text-heading_medium slds-hyphenate">Manual Stock Selection</h2>
+                </header>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <aura:iteration items="{!v.SigmaOrderWrap.orderLines}" var="wrap" indexVar="i">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="">
+                                    <div class="slds-truncate" title="PRODUCT" style="color:#16325c;">Product</div>
+                                </th>                    
+                                <th scope="col">
+                                    <div class="slds-truncate" title="ORDERED QUANTITY" style="color:#16325c;">Ordered Quantity</div>
+                                </th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr> 
+                                <td>                                   
+                                    <ui:inputText aura:id="manualSelectProdName" label="" class="slds-input" labelClass="slds-form-element__label" value="{!wrap.sigmaerpdev2__Product__r.Name}" disabled="true"/>                                 
+                                </td>
+                                <td>            
+                                    <ui:inputText aura:id="orderedQuant" label="" class="slds-input" labelClass="slds-form-element__label" value="{!wrap.sigmaerpdev2__Net_Quantity__c}" disabled="true"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <!--<ui:inputCheckbox aura:id="checkbox1" labelClass="slds-p-horizontal-small slds-float-left" label="Auto Select" change="{!c.handleAutoSelectCheckBox}"/>-->
+                        <tbody>
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Location" style="color:#16325c;">Location</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="SerialNo" style="color:#16325c;">Serial No.</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Lot" style="color:#16325c;">Lot</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Received Date" style="color:#16325c;">Received Date</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Available Quantity" style="color:#16325c;">Available Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Enter Quantity" style="color:#16325c;">Enter Quantity</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>                                
+                            </tbody>
+                        </tbody>
+                        <aura:iteration items="{!v.originalILPLIData}" var="item" indexVar="i">
+                            <c:PackageILPLIManualSelect ilpliIndividualData="{!item}"  indexNum="{!i}" />
+                        </aura:iteration>
+                    </aura:iteration>
+                    
+                </table>
+                <!--<aura:iteration items="{!v.sigmaOrderLineWrapper}" var="item" indexVar="i">
+                            <table border="1">
+                             <thead>
+                                 <tr>
+                                     <th scope="col" style="">
+                                     </th>
+                                     <th scope="col" style="">
+                                         <div class="slds-truncate" title="PRODUCT" style="color:#16325c;">Product</div>
+                                     </th>                    
+                                     <th scope="col">
+                                         <div class="slds-truncate" title="ORDERED QUANTITY" style="color:#16325c;">Ordered Quantity</div>
+                                     </th> 
+                                 </tr>
+                          </thead>
+                             <tbody>
+                                    <tr> 
+                                        <td>
+                                            <img align="top" onclick="{!c.expandOrHide}" id="{!'changeImage_'+item.orderLineWrap.sigmaerpdev2__Product__c}" src="/resource/sigmaerpdev2__NPlus" width="32"
+                                                height="32" title="Show Stock" />
+                                        </td>
+                                        <td>                                    
+                                            <ui:inputText aura:id="manualSelectProdName" label="" class="slds-input" labelClass="slds-form-element__label" value="{!item.orderLineWrap.sigmaerpdev2__Product__r.Name}" disabled="true"/>                                 
+                                        </td>
+                                        <td>            
+                                            <ui:inputText aura:id="orderedQuant" label="" class="slds-input" labelClass="slds-form-element__label" value="{!item.orderLineWrap.sigmaerpdev2__Net_Quantity__c}" disabled="true"/>
+                                        </td>
+                                    </tr>
+                          </tbody>
+                             <div id="{!'showHide_'+item.orderLineWrap.sigmaerpdev2__Product__c}" style="display:none;">
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Location" style="color:#16325c;">Location</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="SerialNo" style="color:#16325c;">Serial No.</div>
+                                        </th>
+                                         <th scope="col">
+                                            <div class="slds-truncate" title="Lot" style="color:#16325c;">Lot</div>
+                                        </th>
+                                       <th scope="col">
+                                            <div class="slds-truncate" title="Received Date" style="color:#16325c;">Received Date</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Available Quantity" style="color:#16325c;">Available Quantity</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Enter Quantity" style="color:#16325c;">Enter Quantity</div>
+                                        </th>
+                                    </tr>
+                                    <tbody>
+                                        <aura:iteration items="{!item.wrapperIlpli}" var="item1" indexVar="i">
+                                            <c:PackageILPLIManualSelect sigmaOrderIlpliWrapper="{!item1}"  indexNum="{!i}" />
+                                        </aura:iteration>                                
+                                    </tbody>
+                                </div>
+                         </table>
+                        </aura:iteration>-->
+                
+                <table class="slds-table slds-table_bordered slds-no-row-hover slds-table_cell-buffer" style="overflow:auto;">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="">
+                            </th>
+                            <th scope="col" style="">
+                                <div class="slds-truncate" title="PRODUCT" style="color:#16325c;">Product</div>
+                            </th>                    
+                            <th scope="col">
+                                <div class="slds-truncate" title="ORDERED QUANTITY" style="color:#16325c;">Ordered Quantity</div>
+                            </th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.sigmaOrderLineWrapper}" var="item" indexVar="i">                                   
+                            <c:PackageILPLIManualSelectOuter sigmaOrderIlpliWrapper="{!item}" indexNum="{!i}" />                                        
+                        </aura:iteration>
+                    </tbody>
+                </table>
+                <div style="max-height:5rem;min-height:5rem;overflow:auto;">&nbsp;</div>
+                <!--<div class="slds-modal__content slds-p-around_medium slds-size-1-of-1" style="max-height:20rem;min-height:10rem;overflow:auto;">
+                        <ui:inputCheckbox aura:id="checkbox1" labelClass="slds-p-horizontal-small slds-float-left" label="Auto Select" change="{!c.handleAutoSelectCheckBox}"/>                        
+                    </div>-->
+                <footer class="slds-modal__footer">                        
+                    <button class="slds-button slds-button_brand" onclick="{!c.selectedIPPLI2}">Save</button>
+                    <button class="slds-button slds-button_neutral" onclick="{!c.closeSelectManualModal}">Cancel</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <!--</div>-->
+    </aura:if>
+    
+</aura:component>

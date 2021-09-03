@@ -1,0 +1,15 @@
+.THIS .bPageHeader
+{
+    display: none !important;
+}
+.bPageHeader.THIS 
+{
+    display: none !important;
+}
+
+@media only screen and (max-width: 768px) 
+{
+    .THIS .slds-grid-mob{display:block !important;}
+    .THIS .slds-grid-table-mob{border: 1px solid rgb(216, 221, 230);}
+    .THIS .slds-scrollable-mob{overflow:scroll;padding-bottom:80px;}
+}

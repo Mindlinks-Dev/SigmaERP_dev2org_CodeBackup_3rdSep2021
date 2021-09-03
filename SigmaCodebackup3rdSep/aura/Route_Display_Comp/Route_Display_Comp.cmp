@@ -1,0 +1,9 @@
+<aura:component implements="flexipage:availableForAllPageTypes"
+                access="global">
+
+    <aura:attribute name="vfHost" type="String"
+            default="sigma-mvp-dev2-dev-ed--sigmaerpdev2.visualforce.com"/>
+
+    <iframe aura:id="vfFrame" src="{!'https://' + v.vfHost + '/apex/sigmaerpdev2__Route_Display'}"/>
+
+</aura:component>

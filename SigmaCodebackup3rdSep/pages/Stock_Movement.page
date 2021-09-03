@@ -1,0 +1,16 @@
+<apex:page standardController="StockMovement__c">
+    <apex:includeLightning />
+
+    <div id="lightning" />
+
+    <script>
+        $Lightning.use("sigmaerpdev:StockMovement", function() {
+          $Lightning.createComponent("sigmaerpdev:StockMovementsOne",
+          {  },
+          "lightning",
+          function(cmp) {
+              //alert('inside stockMovement');
+          });
+        });
+    </script>
+</apex:page>

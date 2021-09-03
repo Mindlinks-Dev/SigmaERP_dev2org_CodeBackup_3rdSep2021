@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>true</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>ControlledByParent</externalSharingModel>
+    <fields>
+        <fullName>AVR_Commission_Euro__c</fullName>
+        <externalId>false</externalId>
+        <formula>If( Proposal_Line_Item__r.Proposal__r.AVR_Commission_Euro__c &lt;&gt; 0.00,(Proposal_Line_Item__r.Proposal__r.AVR_Commission_Euro__c / Proposal_Line_Item__r.Proposal__r.Gross_Amount_Euro__c ) * ( Quantity__c * Cost_Euro__c ),0.00)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>AVR Commission Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>AVR_Commission__c</fullName>
+        <externalId>false</externalId>
+        <formula>If( Proposal_Line_Item__r.Proposal__r.AVR_Commission__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.AVR_Commission__c / Proposal_Line_Item__r.Proposal__r.Net_Amount__c ) * ( Quantity__c * Cost__c ), 0.00)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>AVR Commission</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Agency_Commission_Euro__c</fullName>
+        <externalId>false</externalId>
+        <formula>if( Proposal_Line_Item__r.Proposal__r.Agent_Commission_Euro__c &lt;&gt; 0.00,(Proposal_Line_Item__r.Proposal__r.Agent_Commission_Euro__c / Proposal_Line_Item__r.Proposal__r.Gross_Amount_Euro__c ) * ( Quantity__c * Cost_Euro__c ),0.00)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Agency Commission Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agency_Commission__c</fullName>
+        <externalId>false</externalId>
+        <formula>if( Proposal_Line_Item__r.Proposal__r.Agent_Commission__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Agent_Commission__c / Proposal_Line_Item__r.Proposal__r.Net_Amount__c ) * ( Quantity__c * Cost__c ), 0.00)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Agency Commission</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Airport__c</fullName>
+        <externalId>false</externalId>
+        <formula>Location__r.Airport__r.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Airport</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CPM_Euro__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <externalId>false</externalId>
+        <label>CPM Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CPM__c</fullName>
+        <externalId>false</externalId>
+        <label>CPM</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Charlie_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Charlie Id</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Choosen_Other_charges_Euro__c</fullName>
+        <externalId>false</externalId>
+        <formula>if(Media_Cost_Euro__c = null, 
+If( Proposal_Line_Item__r.Other_Charges_Euro__c &lt;&gt; 0.00, 
+( Proposal_Line_Item__r.Other_Charges_Euro__c/Proposal_Line_Item__r.Cost_Euro__c)*(Cost_Euro__c * Quantity__c ), 
+if( Proposal_Line_Item__r.Proposal__r.Other_Charges_Euro__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Other_Charges_Euro__c /Proposal_Line_Item__r.Proposal__r.Gross_Amount_Euro__c)*(Cost_Euro__c * Quantity__c ), 
+0.00)), 
+If( Proposal_Line_Item__r.Other_Charges_Euro__c &lt;&gt; 0.00, 
+( Proposal_Line_Item__r.Other_Charges_Euro__c/Proposal_Line_Item__r.Media_Cost_Euro__c)*(Media_Cost_Euro__c * Quantity__c ), 
+if( Proposal_Line_Item__r.Proposal__r.Other_Charges_Euro__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Other_Charges_Euro__c /Proposal_Line_Item__r.Proposal__r.Gross_Media_Cost_Euro__c)*(Media_Cost_Euro__c * Quantity__c ), 
+0.00)))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Choosen Other charges Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Choosen_Other_charges__c</fullName>
+        <externalId>false</externalId>
+        <formula>if(Media_Cost__c = null, 
+If( Proposal_Line_Item__r.OtherCharges__c &lt;&gt; 0.00, 
+( Proposal_Line_Item__r.OtherCharges__c/Proposal_Line_Item__r.Cost__c)*(Cost__c * Quantity__c ), 
+if( Proposal_Line_Item__r.Proposal__r.Other_Charges__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Other_Charges__c /Proposal_Line_Item__r.Proposal__r.Net_Amount__c)*(Cost__c * Quantity__c ), 
+0.00)), 
+If( Proposal_Line_Item__r.OtherCharges__c &lt;&gt; 0.00, 
+( Proposal_Line_Item__r.OtherCharges__c/Proposal_Line_Item__r.Media_Cost__c)*(Media_Cost__c * Quantity__c ), 
+if( Proposal_Line_Item__r.Proposal__r.Other_Charges__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Other_Charges__c /Proposal_Line_Item__r.Proposal__r.Gross_Media_Cost__c)*(Media_Cost__c * Quantity__c ), 
+0.00)))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Choosen Other charges</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Chosen_Discount_Euro__c</fullName>
+        <externalId>false</externalId>
+        <formula>if(Media_Cost_Euro__c = null,if( Location_Discount_Euro__c &lt;&gt; 0.00 , 
+Location_Discount_Euro__c , 
+if(Proposal_Line_Item__r.Discount_Euro__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Discount_Euro__c/ Proposal_Line_Item__r.Cost_Euro__c ) * (Cost_Euro__c * Quantity__c ) , 
+if(Proposal_Line_Item__r.Proposal__r.Field_Discount_Amount_Euro__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Field_Discount_Amount_Euro__c/ Proposal_Line_Item__r.Proposal__r.Gross_Amount_Euro__c ) * (Cost_Euro__c * Quantity__c ), 
+if(Proposal_Line_Item__r.Proposal__r.Other_Discount_Euro__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Other_Discount_Euro__c/ Proposal_Line_Item__r.Proposal__r.Gross_Amount_Euro__c ) * (Cost_Euro__c * Quantity__c ), 
+0.00)))), 
+if(Location_Discount_Euro__c &lt;&gt; 0.00 , 
+Location_Discount_Euro__c , 
+if(Proposal_Line_Item__r.Discount_Euro__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Discount_Euro__c/ Proposal_Line_Item__r.Media_Cost_Euro__c ) * (Media_Cost_Euro__c * Quantity__c ) , 
+if(Proposal_Line_Item__r.Proposal__r.Field_Discount_Amount_Euro__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Field_Discount_Amount_Euro__c/ Proposal_Line_Item__r.Proposal__r.Gross_Media_Cost_Euro__c ) * (Media_Cost_Euro__c * Quantity__c ), 
+if(Proposal_Line_Item__r.Proposal__r.Other_Discount_Euro__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Other_Discount_Euro__c/ Proposal_Line_Item__r.Proposal__r.Gross_Media_Cost_Euro__c ) * (Media_Cost_Euro__c * Quantity__c ), 
+0.00)))))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Chosen Discount Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Chosen_Discount__c</fullName>
+        <externalId>false</externalId>
+        <formula>if(Media_Cost__c = null,if( Location_Discount__c &lt;&gt; 0.00 , 
+Location_Discount__c , 
+if(Proposal_Line_Item__r.Discount__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Discount__c/ Proposal_Line_Item__r.Cost__c ) * (Cost__c * Quantity__c ) , 
+if(Proposal_Line_Item__r.Proposal__r.Field_Discount_Amount__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Field_Discount_Amount__c/ Proposal_Line_Item__r.Proposal__r.Net_Amount__c ) * (Cost__c * Quantity__c ), 
+if(Proposal_Line_Item__r.Proposal__r.Other_Discount__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Other_Discount__c/ Proposal_Line_Item__r.Proposal__r.Gross_Media_Cost__c ) * (Media_Cost__c * Quantity__c ), 
+0.00)))), 
+if(Location_Discount__c &lt;&gt; 0.00 , 
+Location_Discount__c , 
+if(Proposal_Line_Item__r.Discount__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Discount__c/ Proposal_Line_Item__r.Media_Cost__c ) * (Media_Cost__c * Quantity__c ) , 
+if(Proposal_Line_Item__r.Proposal__r.Field_Discount_Amount__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Field_Discount_Amount__c/ Proposal_Line_Item__r.Proposal__r.Gross_Media_Cost__c ) * (Media_Cost__c * Quantity__c ), 
+if(Proposal_Line_Item__r.Proposal__r.Other_Discount__c &lt;&gt; 0.00, 
+(Proposal_Line_Item__r.Proposal__r.Other_Discount__c/ Proposal_Line_Item__r.Proposal__r.Gross_Media_Cost__c ) * (Media_Cost__c * Quantity__c ), 
+0.00)))))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Chosen Discount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Cost_After_Discount_Euro__c</fullName>
+        <externalId>false</externalId>
+        <formula>Cost__c * Quantity__c - Chosen_Discount__c + Choosen_Other_charges__c - Agency_Commission__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Cost After Discount Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Cost_After_Discount__c</fullName>
+        <externalId>false</externalId>
+        <formula>Cost__c * Quantity__c - Chosen_Discount__c + Choosen_Other_charges__c - Agency_Commission__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Cost After Discount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Cost_Euro__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <externalId>false</externalId>
+        <label>Cost Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Cost__c</fullName>
+        <externalId>false</externalId>
+        <label>Cost</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Deduct_from_Net__c</fullName>
+        <externalId>false</externalId>
+        <formula>Proposal_Line_Item__r.Proposal__r.Deduct_from_Net__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Deduct from Net</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Inventory_Allocated__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Inventory Allocated</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Location_Discount_Euro__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <externalId>false</externalId>
+        <label>Location Discount Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Location_Discount__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <externalId>false</externalId>
+        <label>Location Discount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Location__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Location</label>
+        <lookupFilter>
+            <active>false</active>
+            <filterItems>
+                <field>Account.Digital_Media_Campaign_Account_Type__c</field>
+                <operation>equals</operation>
+                <value>Location</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Account</referenceTo>
+        <relationshipName>CampaignLineItemLocations</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Market__c</fullName>
+        <externalId>false</externalId>
+        <formula>Location__r.Market__r.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Market</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Media_Cost_Euro__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <externalId>false</externalId>
+        <label>Media Cost Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Media_Cost__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <externalId>false</externalId>
+        <label>Media Cost</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Media_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Media Type</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Monthly_Impressions__c</fullName>
+        <externalId>false</externalId>
+        <label>Monthly Impressions</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Monthly_Traffic__c</fullName>
+        <externalId>false</externalId>
+        <label>Monthly Traffic</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Number_of_Months__c</fullName>
+        <externalId>false</externalId>
+        <label>Number of Months</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Number_of_Screens__c</fullName>
+        <externalId>false</externalId>
+        <label>Number of Screens</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Partner__c</fullName>
+        <externalId>false</externalId>
+        <formula>Location__r.Partner__r.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Partner</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Product_Inventory_Location__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Product Inventory Location</label>
+        <referenceTo>Inventory_Location_Product__c</referenceTo>
+        <relationshipName>CampaignLineItemLocations</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Product_Price__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Product Price</label>
+        <referenceTo>Product_Price__c</referenceTo>
+        <relationshipName>CampaignLineItemLocations</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Product__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Product</label>
+        <referenceTo>Product2</referenceTo>
+        <relationshipName>CampaignLineItemLocations</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Production_Cost_Euro__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <externalId>false</externalId>
+        <label>Production Cost Euro</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Production_Cost__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <externalId>false</externalId>
+        <label>Production Cost</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Proposal_Line_Item__c</fullName>
+        <externalId>false</externalId>
+        <label>Proposal Line Item</label>
+        <referenceTo>Proposal_Item__c</referenceTo>
+        <relationshipLabel>ProposalLineItemLocations</relationshipLabel>
+        <relationshipName>CampaignLineItemLocations</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Quantity__c</fullName>
+        <externalId>false</externalId>
+        <label>Quantity</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>ProposalLineItemLocation</label>
+    <listViews>
+        <fullName>All</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <displayFormat>PLL-{0000}</displayFormat>
+        <label>ProposalLineItemLocationId</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>ProposalLineItemLocations</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

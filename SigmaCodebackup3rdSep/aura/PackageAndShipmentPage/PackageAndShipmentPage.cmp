@@ -1,0 +1,117 @@
+<!--<aura:component controller="sigmaerpdev.PackageCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >-->
+<aura:component controller="PackageCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="ispackageFlag" type="Boolean" default="false"/>
+    <aura:attribute name="sigmaOrderFlag" type="Boolean" default="false"/>
+    <aura:attribute name="isshipmentFlag" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="page" type="integer"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>   
+    <aura:attribute name="Listflag" type="Boolean" default="true"/>
+    <aura:attribute name="packageList" type="Package__c[]"/>
+    <aura:handler event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:If isTrue="{!v.Listflag}">
+        
+        <div class="slds-m-vertical_small" aura:id="mainDiv">
+                <div class="slds-grid slds-grid-mob">
+                    <div class="slds-col slds-has-flexi-truncate">
+                        <div class="slds-media slds-no-space slds-grow  slds-m-vertical_xx-small">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container slds-icon-standard-lead">
+                                    <lightning:icon iconName="standard:record" size="small" />
+                                </span>
+                            </div>
+                            <div class="slds-media__body">                        
+                                <h1 class="slds-page-header__title slds-p-right_x-small">
+                                    
+                                    <button class="slds-button slds-button_reset slds-type-focus slds-truncate" aria-haspopup="true" title="">
+                                        <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">
+                                            <span class="slds-truncate" title="this should match My Packages">Package</span>
+                                        </span>
+                                    </button>
+                                    
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="slds-col slds-no-flex slds-grid slds-align-top slds-p-bottom_xx-small">
+                        <div class="slds-button-group" role="group"> 
+                          <lightning:button label="New" name="Package"  onclick="{!c.selectPackage}" />
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+       
+        
+        
+        
+        
+        
+        <!--div class="slds-col slds-no-flex slds-grid slds-align-top slds-p-bottom_xx-small">
+            <div class="slds-button-group" role="group">   
+                <lightning:button label="New" name="Package"  onclick="{!c.selectPackage}" />
+                <lightning:button label="Shipment"  name="Shipment" onclick="{!c.selectShipment}" />
+            </div>
+        </div-->
+    </aura:If>
+    <aura:If isTrue="{!v.Listflag}">
+        <div aura:Id="ProductSection">
+            <div class="slds-grid slds-scrollable--x slds-grid-table-mob">
+                <table class="slds-table slds-table_bordered" role="grid" style="border-left: 1px solid rgb(216, 221, 230);border-right: 1px solid rgb(216, 221, 230);">
+                    <thead>
+                        
+                        <tr class="slds-text-title_caps">
+                            <th scope="col" >
+                                <div class="slds-truncate" title="Serial Number">SL NO</div>
+                            </th>
+                            <th scope="col" >
+                                <div class="slds-truncate" title="Sigma Order Name">Package Name</div>
+                            </th>
+                            <th scope="col" >
+                                <div class="slds-truncate" title="Account Name">Order</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Order Status">Customer Name</div>
+                            </th>
+                            <th scope="col"> 
+                                <div class="slds-truncate" title="Payment">Status</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Order Created Via">Packaged Date</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Order Type">Type</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>     
+                        <aura:iteration items="{!v.packageList}" var="item" indexVar="i">
+                            <c:PackageChild packageList="{!item}" sigmaOrderFlag="{!v.sigmaOrderFlag}" serialCount="{!i+1}"/> 
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+            <c:PaginationComponentForInventory page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+        </div>
+    </aura:If>
+    <aura:If isTrue="{!v.ispackageFlag}">
+        <div aura:Id="ProductSection">
+            <c:Package/>
+        </div>
+    </aura:If>
+    <aura:If isTrue="{!v.isshipmentFlag}">
+        <c:ShipmentProduct/>
+    </aura:If>
+    <div class="demo-only slds-hide" aura:id="mySpinner" style="height: 6rem;">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</aura:component>

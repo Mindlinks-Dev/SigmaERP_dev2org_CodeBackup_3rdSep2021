@@ -1,0 +1,277 @@
+<aura:component controller="AccountLookupRentalController" implements="flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickAction,forceCommunity:availableForAllPageTypes"  access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <!-- Attributes -->
+    <aura:attribute name="recordId" type="Id" default="" description="The current record Id to display" />
+    <aura:attribute name="orderSFId" type="String" description="value for Order SFId" />
+    <!-- aura:attribute name="flagForProceedPayment" type="Boolean" default="false"/-->
+    <!-- aura:attribute name="flagForSaveOrderButton" type="Boolean" default="false"/-->
+    <aura:attribute name="recordName" type="String" default="" description="The current record Id to display" />
+    <!-- That recordName Should be store Name which is coming while selecting customers -->
+    <aura:attribute name="storeName" type="String" default="Mindlinks Store" description="The current record Id to display" />
+    <aura:attribute name="prod" type="String[]" description="The current record Id to display" />
+    <aura:attribute access="global" name="showOrderLines" type="Boolean" description="The current record Id to display" />
+    <aura:attribute name="productsTotalAmount" type="String" description="The current record Id to display" />
+    <aura:attribute name="currencySymbol" type="String" description="The current record Id to display" />
+    <aura:attribute name="paymenttype" type="String"/>
+    <aura:attribute name="subid" type="String"  />   
+    <aura:attribute name="AvailableInventory" type="Integer" description="The current record Id to display" />
+    <aura:attribute name="MaxDicount" type="String" description="The current record Id to display" />
+    <aura:attribute name="delivarydate" type="Date" description="The current record Id to display"/>   
+    <aura:attribute name="orderID" type="Id" description="The current record Id to display" />
+    <aura:attribute name="mainblock" type="Boolean" description="The current record Id to display" />
+    
+    <!-- For temporarily using by hard code -->
+    <aura:attribute name="customerID" type="Id" default="" description="The current record Id to display" />
+    <aura:attribute name="CreatedBy" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="CreatedbyID" type="Id" default="" description="The current record Id to display" />
+    <aura:attribute name="CreatedbyName" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="CreateCustomerShow" type="Boolean" description="The current record Id to display" />
+    <aura:attribute name="productId" type="Id" default="" description="The current record Id to display" />
+    <aura:attribute name="productName" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="billingPerson" type="String" default="" description="The current record Id to display" /> 
+    <aura:attribute name="showProduct" type="Boolean" description="The current record Id to display" />
+    <aura:attribute name="taxShow" type="Boolean" description="The current record Id to display" />
+    
+    
+    <aura:attribute name="paymentOptions" type="Boolean" description="The current record Id to display" />
+    <aura:attribute name="showProductInfo" type="Boolean" description="The current record Id to display" />
+    <aura:attribute name="tableList" type="Boolean" description="The current record Id to display" />
+    <aura:attribute name="curRecordID" type="String" />
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="productsDiscount" type="String" description="The current record Id to display" />
+    <aura:attribute name="prodObject" type="Product2" description="The current record Id to display" 
+                    default="{ 'sObjectType' : 'Product2' ,
+                             'Name' : '',                             
+                             'Description' :'',
+                             'sigmaerpdev__Product_Price__c':'',
+                             'sigmaerpdev__Max_Discount__c':'',
+                             'sigmaerpdev__Buying_Price__c':'',
+                             'sigmaerpdev__Product_Weight__c':'' 
+                             }"
+                    />
+    <!-- Event handlers -->
+    <aura:handler name="productObjEvent" event="c:RentalProductEvent" action="{!c.handleProductObject}"/>
+    <aura:handler name="updateLookupIdEvent" event="c:UpdateLookupId" action="{!c.handleAccountIdUpdate}"/>
+    <aura:handler name="clearLookupIdEvent" event="c:ClearLookupId" action="{!c.handleAccountIdClear}"/>
+    <aura:handler name="customerRegEvent" event="c:CustomerEvent" action="{!c.afterSaveCustomer}"/>    
+    <aura:handler name="backToProductList" event="c:ShowProductList" action="{!c.showProductList}"/>
+    <aura:handler name="showCreateOrders" event="c:ShowCreateOrdersPage" action="{!c.showCreateOrders}"/>
+    <!--<aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>-->
+    <!-- ends here -->
+    <!-- start of new code for standard-alerts-->
+    <div id="Accspinner" class="slds-spinner_container" style="display:none">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>    
+    <div class="slds-notify_container slds-is-relative slds-hide" id="slds-notify_container" aura:id="successAlert" style="position:fixed;margin-top:8px;">
+        <div class="slds-notify slds-notify_toast slds-theme--success" aura:id="successAlertTheme" role="alert" style="z-index:10000;margin-top:0;display: inline-flex !important; width: 34%;padding: 6px;">
+            <span class="slds-assistive-text">success</span>
+            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" aura:id="iconsuccess" title="Description of icon when needed">
+                <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#success'}" />
+            </span>
+            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top slds-hide" aura:id="iconwarning" title="Description of icon when needed">     
+                <c:svg class="slds-icon slds-icon_small" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#warning'}" />
+            </span>	
+            <div class="slds-notify__content">
+                <h2 class="slds-text-heading_small" id="slds-text-heading_small" style="position:relative;left:34%;">
+                    <span aura:id="recordCreatedHeader" >Record Created Successfully.</span>
+                    <span aura:id="recordNotCreatedHeader" class="slds-hide">Failed to create record.</span>
+                    <span aura:id="recordUpdtatedHeader" class="slds-hide">Record Updated Successfully.</span>
+                    <span aura:id="recordNotUpdtatedHeader" class="slds-hide">Record update failed.</span>
+                </h2>               
+            </div>
+            <div aura:id="recordCreatedOK" id="slds-text-heading_small1" style="position:relative;left:40%;">
+                <button class="slds-button" title="Close" onclick="{!c.recordCreatedOK}" style="color:white !important;">
+                    <c:svg class="slds-button__icon slds-button__icon_large"  xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+            <div aura:id="recordCreatedCancel" class="slds-hide" style="position:relative;left:40%;">
+                <button class="slds-button" title="Close" onclick="{!c.recordCreatedCancel}" style="color:white !important;">
+                    <c:svg class="slds-button__icon slds-button__icon_large" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/utility-sprite/svg/symbols.svg#close'}" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+        </div>	
+        <div class="slds-backdrop slds-backdrop--open" style="opacity:0.6;"></div>
+    </div>
+    <!-- end of new code for standard-alerts-->    
+    <div aura:Id="mainBlocktoggle">
+        <!-- PAGE HEADER -->
+        <div class="slds-page-header" style="">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-contract">
+                        <c:svg class="slds-icon" xlinkHref="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#contract'}" />
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle" >Rental Order</h1>
+                </div>
+            </div>
+        </div>        
+        <!-- / PAGE HEADER -->   
+        <!--   code for first page -->           
+        <div class="slds-box" id="body1" style="padding:0;">
+            <div id="content1">
+                <fieldset class="slds-form--compound">
+                    <div class="form-element__group">
+                        <div class="slds-form-element__row">
+                            <label class="slds-size--1-of-3" >
+                                <span class="slds-form-element__label">Customer Name: {!v.orderID}</span>
+                            </label>                           
+                            <label class="slds-size--2-of-5">
+                                <c:LookupSObject aura:id="AccName" searchString="{!v.recordName}" 
+                                                 label="Account" pluralLabel="Accounts"
+                                                 sObjectAPIName="Account" 
+                                                 instanceId="Supplier,Vendor"
+                                                 SRString="Customer"
+                                                 listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#account'}"
+                                                 listIconClass="slds-icon-standard-account"
+                                                 />   
+                            </label>                            
+                        </div>
+                    </div>
+                </fieldset>              
+                <fieldset class="slds-form--compound">
+                    <div class="form-element__group">
+                        <div class="slds-form-element__row">
+                            <label class="slds-size--1-of-3" >
+                                <span class="slds-form-element__label">Billing person:</span>
+                            </label>                           
+                            <label class="slds-size--2-of-5">
+                                <c:LookupSObject aura:id="ContactName" 
+                                                 searchString="{!v.CreatedBy}" 
+                                                 label="Contact" pluralLabel="Contacts" 
+                                                 sObjectAPIName="Contact"
+                                                 instanceId="MyContact"
+                                                 SRString="All"
+                                                 listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#new_contact'}"
+                                                 listIconClass="slds-icon-standard-contact"
+                                                 />   
+                            </label>                           
+                        </div>
+                    </div>
+                </fieldset>               
+                <fieldset class="slds-form--compound">
+                    <div class="form-element__group">
+                        <div class="slds-form-element__row ">
+                            <label class="slds-size--1-of-3" >
+                                <span class="slds-form-element__label">Order Date:</span>
+                            </label>                           
+                            <label class="slds-size--2-of-5 slds-truncate">
+                                <ui:inputDate aura:id="DateTime"
+                                              class="slds-input "
+                                              labelClass="slds-form-element__label"
+                                              value="{!v.delivarydate}"
+                                              displayDatePicker="true" />
+                            </label>                           
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="slds-form--compound" style="display:flex;">
+                    <label class="slds-size--1-of-3" >
+                        <span class="slds-form-element__label">Payment Type</span>
+                    </label>                           
+                    <label class="slds-size--2-of-5 slds-truncate">
+                        <div class="custom-box">
+                            <ui:inputSelect  aura:id="paymenttype" class="slds-select"/>     
+                        </div>
+                    </label> 
+                </div>
+                <br/> 
+                <fieldset class="slds-form--compound">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.createNewCustomer}" aura:id="back">Create New Customer</button>
+                    <button class="slds-button slds-button--neutral" onclick="{!c.showProduct}" aura:id="Add_Products">Add Products</button>                   
+                    <button class="slds-button slds-button--neutral" onclick="{!c.cancel}">Cancel</button>                   
+                </fieldset>               
+                <!--<div aura:Id="tableListToogle"> -->
+                <aura:if isTrue="{!v.showOrderLines == true}">
+                    <br/>
+                    <div class="slds-scrollable">
+                        <table class="slds-table slds-table_bordered" style="border:1px solid #d8dde6;">
+                            <thead>
+                                <tr class="slds-text-heading--label" style="background:#f4f6f9">
+                                    <th class="slds-is-sortable" scope="col">
+                                        <div class="slds-truncate">Product Name</div>
+                                    </th>
+                                    <th class="slds-is-sortable" scope="col">
+                                        <div class="slds-truncate">Price({!v.currencySymbol})</div>
+                                    </th>
+                                    <th class="slds-is-sortable" scope="col">
+                                        <div class="slds-truncate">Quantity</div>
+                                    </th>
+                                    <th class="slds-is-sortable" scope="col">
+                                        <div class="slds-truncate">Total Amount({!v.currencySymbol})</div>
+                                    </th> 
+                                    <th class="slds-is-sortable" scope="col">
+                                        <div class="slds-truncate">Delivary Date</div>
+                                    </th>   
+                                    <th class="slds-is-sortable" scope="col">
+                                        <div class="slds-truncate">Action</div>
+                                    </th>                                  
+                                </tr>
+                            </thead>
+                            <tbody>                           
+                                <aura:iteration items="{!v.prod}" var="obj" indexVar="i">
+                                    <tr class="slds-hint-parent">                                    
+                                        <td class="slds-truncate" data-label="Prod Name">{!obj.Name}</td>
+                                        <td class="slds-truncate" data-label="Price">{!obj.amountperinterval}</td>
+                                        <td class="slds-truncate" data-label="Quantity">{!obj.quantity}</td>
+                                        <td class="" data-label="Total">{!obj.totalAmount}</td>
+                                        <td class="slds-truncate" data-label="Delivary Date">{!obj.deliverydate}</td>                                   
+                                        <td class="slds-cell-shrink" data-label="Actions">                                       
+                                            <a data-index="{!i}" onclick="{!c.removeOrderLine}">
+                                                Remove
+                                            </a>                                                       
+                                        </td>
+                                    </tr>
+                                </aura:iteration>                           
+                            </tbody>
+                        </table>        
+                    </div>
+                    <br/>   
+                    <button class="slds-button slds-button--neutral"  aura:id="Next" onclick="{!c.gotoTax}" >Save Order</button> 
+                </aura:if>	
+            </div> 
+        </div>
+        <!-- End of 1st page -->
+    </div> 
+    <div aura:id="toggleProduct" >   
+        <header class="site-masthead slds-grid slds-wrap slds-theme--alt-inverse" style="padding:1rem 2rem;" id="head2" >
+            <div class="slds-align-middle">
+                <button class="slds-button slds-button--inverse" onclick="{!c.goBack}" aura:id="back">Back</button></div>
+            <div class="site-masthead-title slds-col slds-has-flexi-truncate">
+                <div class="slds-media slds-media--center slds-media--responsive"><span class="slds-media__figure"></span><div class="slds-media__body"><div class="slds-grid "><span class="slds-hide docsearch-category"></span>
+                    <h1 title="Button Groups" class="slds-page-header__title slds-truncate" id="Create_orders" >Product Orders</h1></div></div></div></div>
+        </header>
+        <div class="" id="body2" style="height:80vh;">
+            <div id="content2">
+                <label class="slds-size--1-of-2" >
+                    <span class="slds-form-element__label">Product:</span>
+                </label> 
+                <c:LookupSObject label="Product"
+                                 pluralLabel="Products" 
+                                 searchString="{!v.productName}" 
+                                 sObjectAPIName="Product2Rental" instanceId="MyProduct" SRString="All"
+                                 listIconSVGPath="{!$Resource.SLDS103 + '/assets/icons/standard-sprite/svg/symbols.svg#Product'}"
+                                 listIconClass="slds-icon-standard-Product" 
+                                 />
+            </div>
+        </div>
+    </div>
+    <div aura:Id="showProductToggle">
+        <c:RentalProductInfo MaxDicount="{!v.MaxDicount}" currencySymbol="{!v.currencySymbol}" prductObj="{!v.prodObject}" AvailableInventory="{!v.AvailableInventory}"/> 
+    </div>  
+    <aura:if isTrue="{!v.taxShow == true}">        
+        <c:Tax recordId="{!v.recordId}" orderSFId="{!v.orderSFId}" paymenttype="{!v.paymenttype}" Symbol="{!v.currencySymbol}" TotalProductAmount="{!v.productsTotalAmount}" CustomerName="{!v.recordName}" billingPerson="{!v.CreatedBy}" />        	
+    </aura:if>
+    <div aura:Id="NewCustomer"></div>
+    <aura:if isTrue="{!v.CreateCustomerShow == true}">        
+        <c:NewCustomer />        	
+    </aura:if>
+</aura:component>

@@ -1,0 +1,17 @@
+.content.THIS 
+{
+    width: 35%;
+    background: white;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.16);
+    position: relative;
+    /*top: 54px;*/    
+    margin:2% auto;
+}
+.THIS .slds-icon-text-default {
+    fill:#a41f34;
+}
+.THIS a {
+    color: Black;
+    pointer-events: none;
+    cursor: not-allowed;
+}

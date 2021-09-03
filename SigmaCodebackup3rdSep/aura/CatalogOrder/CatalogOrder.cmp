@@ -1,0 +1,90 @@
+<aura:component controller="CatalogOrderController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <!--Declare Attributes-->
+    <aura:attribute name="parentcmp" type="Boolean" default="true"/>
+    <aura:attribute name="displayPagination" type="Boolean" default="true"/>
+    <aura:attribute name="cartFlag" type="boolean" default="false"/>
+    <aura:attribute name="isSelectAll" type="boolean" default="false"/>
+    <aura:attribute name="isShipcmp" type="boolean" default="false"/>
+    <aura:attribute name="isSearch" type="boolean" default="false" description="to differentiate between search and normal catalog"/>
+    <aura:attribute name="quickView" type="boolean" default="false"/>
+    <!--Order to company and prefererred currency-->
+    <aura:attribute name="selectedCompany" type="string"/>
+    <aura:attribute name="selectedCurrency" type="string"/>
+    <aura:attribute name="listOfCompanies" type="List"/>
+    <aura:attribute name="listOfCurrency" type="List"/>
+    <aura:attribute name="completeWrap" type="object" />   
+    <!--Search Product-->
+    <aura:attribute name="searchKeyword" type="string" description="search product by name"/>
+    <!--Retailer -->
+    <aura:attribute name="SelectedProductType" type="String" description="ProductType"/> 
+    <aura:attribute name="SelectedRetailercode" type="String" description="retailer Code Id"/> 
+    <aura:attribute name="onselectcustomeid" type="String" /> 
+    <aura:attribute name="selectedTab" type="String" default="Hanger Business"/>
+    <!--Pagination -->
+    <aura:attribute name="PageNumber" type="integer" default="1"/>
+    <aura:attribute name="TotalPages" type="integer" default="0"/>
+    <aura:attribute name="TotalRecords" type="integer" default="0"/>
+    <aura:attribute name="RecordStart" type="integer" default="0"/>
+    <aura:attribute name="RecordEnd" type="integer" default="36"/>
+    <aura:attribute name="OffsetValue" type="integer" default="0"/>
+    
+    <aura:handler name="CommPageChange" event="c:CommPageChange" action="{!c.pageChange}"/>
+    <aura:attribute name="page" type="integer" default="1" description="current page number"/>
+    <aura:attribute name="pages" type="integer" description="Number of Page"/>
+    <aura:attribute name="total" type="integer"/>
+    <aura:attribute name="searchText" type="String" default=""/>
+    
+    <!--Product Family-->
+    <aura:attribute name="fieldList" type="String[]"/>
+    <aura:attribute name="selectedFamily" type="String"/>
+    
+    <aura:attribute name="bulkAddData" type="String"/>
+    <aura:attribute name="viewbulk" type="Boolean" default="true"/>
+    
+    <!-- Content-Security-Policy-->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src	'self' 'unsafe-inline' *; img-src 'self' data: *"/>
+    <!--Spinner Start-->
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+    <aura:if isTrue="{!v.showSpinner}">    
+        <lightning:spinner class="slds-is-fixed" variant="brand" alternativeText="Loading" size="large" />
+    </aura:if>
+    <lightning:spinner variant="brand" size="large" aura:id="Id_spinner" class="slds-hide" />
+    <!--Spinner End-->
+    
+    <div class="cart-button-group">
+        <aura:If isTrue="{!v.parentcmp}">
+            <lightning:button label="VIEW CART" onclick="{!c.Shipcmp}" class="view-cart1 slds-m-around_small" iconName="utility:cart"/> 
+        </aura:If>
+    </div>
+    <br/>
+    <div>
+        <aura:If isTrue="{!v.parentcmp}">  
+            <div class="slds-grid slds-m-bottom_medium slds-grid-block">
+                <div class="slds-col slds-size-mob-1-of-2 slds-size-mob-1-of-2">
+                    <h2 class="tab-header"><b>Product Category : </b>{!v.SelectedProductType}</h2>
+                </div>
+                <div class="slds-col slds-size_1-of-4 slds-size-mob-1-of-1">
+                    <lightning:input variant="label-hidden" value="{!v.searchKeyword}" type="Search" aura:id="searchField" />
+                </div>
+                <div class="slds-col slds-size-mob-1-of-1 slds-mob-align-c">
+                    <button class="slds-button slds-button_destructive slds-button_red" type="button" onclick="{!c.Search}"><span>Search</span></button>
+                </div>
+            </div>
+            <div class="slds-grid slds-p-bottom_small slds-wrap slds-grid-block" style="border-bottom:2px solid #e0e0e0">
+                <c:CatalogProducts aura:id="ProductBulkaddId"  SigProductList="{!v.completeWrap.productList}" onselectProducType="{!v.SelectedProductType}" page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+            </div> 
+            <!-- Pagination Start-->
+            <aura:if isTrue="{!v.displayPagination}">
+                <div class="slds-text-align_center pagination-area">
+                    <c:PaginationCompCommunity page="{!v.page}" pages="{!v.pages}" total="{!v.total}" txt="{!v.searchText}"/>
+                </div>
+            </aura:if>
+            <!--Pagination End-->
+        </aura:If>
+        <aura:If isTrue="{!v.isShipcmp}">
+            <c:ViewCartRetailer SelectedRetailerName="{!v.SelectedRetailer}" SelectedRetailer="{!v.SelectedRetailercode}" />
+        </aura:If>
+    </div>	
+</aura:component>

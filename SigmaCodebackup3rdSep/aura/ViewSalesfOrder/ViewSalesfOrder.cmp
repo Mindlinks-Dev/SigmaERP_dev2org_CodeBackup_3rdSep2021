@@ -1,0 +1,69 @@
+<aura:component controller="viewCartctrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="SOresponse" type="object"/>
+    <aura:attribute name="Status" type="String"/>
+    <aura:attribute name="ParentComp" type="boolean" default="true"/>
+    <aura:attribute name="ShipComp" type="boolean" default="false"/>
+    <aura:attribute name="ButtonDissable" type="boolean" default="false"/>
+    <aura:attribute name="page" type="integer" default="1"/>
+    <aura:attribute name="pages" type="integer"/>
+    <aura:attribute name="total" type="integer"/>
+    <aura:attribute name="searchText" type="String" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doint}"/>
+    <!--<aura:handler event="c:PageChange" action="{!c.pageChange}"/>-->
+    <aura:handler name="CommPageChange" event="c:CommPageChange" action="{!c.pageChange}"/>
+    <!--<aura:handler name="searchEvent" event="sigmaerpdev:GlobalSearchEvent" action="{!c.handleSearchEvent}"/>-->
+    
+    <div class="slds-hide" aura:id="spinner">
+        <lightning:spinner style="position: fixed" alternativeText="Loading" size="large" />
+    </div>
+    
+    <div class="content">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__body">
+                    <h1 class="slds-card__header-title header slds-text-title_caps">
+                        <img src="{!$Resource.SigmaIcons + '/Report.png'}" width="50"/>
+                        <strong style="font-weight: 1000;">Sales Order List</strong>
+                    </h1>
+                </div>
+            </header>
+        </div>
+        <div class="slds-box1" style="">
+            <aura:renderIf isTrue="{!v.isError}">
+                <ui:message title="Error" severity="error" closable="false">
+                    {!v.errorMsg}
+                </ui:message>
+                <aura:set attribute="else">  
+                </aura:set>
+            </aura:renderIf> 
+        </div>
+        <div class="slds-card__body">
+            <div class="table-scroll  ">
+                <table class="slds-table"> 
+                    <thead>
+                        <tr class="slds-text-title_caps slds-gray">
+                            <th style="width: 2.5%;"><div class="slds-truncate slds-text-align_center"></div></th>
+                            <th style="width: 5%;"><div class="slds-truncate slds-text-align_center">SIGMA Order Name</div></th>
+                            <th style="width: 16%;"><div class="slds-truncate slds-text-align_center">ACCOUNT NAME</div></th>
+                            <th style="width: 16%;"><div class="slds-truncate slds-text-align_center">Status</div></th>
+                            <th style="width: 16%;"><div class="slds-truncate slds-text-align_center">Created VIA</div></th>
+                            <th style="width: 16%;"><div class="slds-truncate slds-text-align_center">Order Date</div></th>
+                            <th style="width: 16%;"><div class="slds-truncate slds-text-align_center"> Comment</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.SOresponse}" var="so" indexVar="index">
+                            <c:SalesfOrderTable SOrder="{!so}"  rowIndex="{!index}"/>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <footer class="slds-card__footer footer">
+            <div class="slds-text-align_center">
+                <c:PaginationCompCommunity page="{!v.page}" pages="{!v.pages}" total="{!v.total}" txt="{!v.searchText}"/>
+            </div>
+        </footer>               
+    </div>
+</aura:component>

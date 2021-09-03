@@ -1,0 +1,44 @@
+<apex:page StandardController="Proposal__c" id="mainPage">
+ <apex:includeLightning />
+
+    <div id="lightning" />
+
+   <script>
+
+var proId= '{!HTMLENCODE(Proposal__c.Id)}'; 
+var usagetype = '{!HTMLENCODE(Proposal__c.Usage_Type__c)}'; 
+alert('usagetype'+usagetype);
+if(usagetype == 'Service') 
+{ 
+ $Lightning.use("sigmaerpdev:sigmaorderPayment", function() 
+        {
+         $Lightning.createComponent("sigmaerpdev:Proposal",
+                                           {recordId: proId}, 
+                                           "lightning",
+                                           function(cmp) 
+                                           {
+                                          
+                                               //  Do some stuff
+                                           }
+                );
+        });
+} 
+else  
+{ 
+ $Lightning.use("sigmaerpdev:sigmaorderPayment", function() 
+        {
+         $Lightning.createComponent("sigmaerpdev:ProposalforProduct",
+                                           {recordId: proId}, 
+                                           "lightning",
+                                           function(cmp) 
+                                           {
+                                           
+                                               //  Do some stuff
+                                           }
+                );
+        });
+}
+
+    }
+</script>
+</apex:page>

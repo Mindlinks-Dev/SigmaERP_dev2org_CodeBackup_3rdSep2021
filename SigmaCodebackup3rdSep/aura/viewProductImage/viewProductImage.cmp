@@ -1,0 +1,52 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <!--Handler -->
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <!--Declare Attributes-->
+    <aura:attribute name="completeWrap" type="list" />   
+    <aura:attribute name="isSelectAll" type="boolean" default="false"/>
+    <aura:attribute name="isShipcmp" type="boolean" default="false"/>
+    <!--Customer Id Attributes-->
+    <aura:attribute name="onselectcustomeid" type="String" /> 
+    <!--Product Attributes-->
+    <aura:attribute name="quickviewprod" type="Boolean" />
+    <aura:attribute name="selectedTab" type="String" />
+    <aura:attribute name="quickviewedIndex" type="Integer"/>
+    <aura:attribute name="quickviewedProduct" type="Object"/>
+    <aura:attribute name="proImgURL" type="String" />
+    
+    <aura:attribute name="ProductImageDataSet" type="ContentDocumentLink" />
+    <aura:attribute name="productimageexist" type="boolean" default ="false"/>
+     <aura:attribute name="ProductView" type="Boolean" default="false" />
+    <!-- SHOW LOADING SPINNER--> 
+    <lightning:spinner variant="brand" size="large" aura:id="Id_spinner" class="slds-hide" />
+    <div style="">
+        <section role="dialog" tabindex="-1" aria-label="Meaningful description of the modal content" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="width:40%;max-width:40%;">
+                <header class="slds-modal__header slds-modal__header_empty"> 
+                     <button class="slds-button slds-button_icon slds-button_icon-inverse close" title="Close" style="background:rgb(164,31,52);border-radius:25px;float:right;padding:3px;margin-top:-25px;" onclick="{!c.close}">
+                                <lightning:icon class="white" iconName="utility:close" size="x-small" alternativeText="Approved" />
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                </header>
+                <div class="slds-modal__content " id="modal-content-id-1">
+                    <div class="slds-grid slds-grid-block">
+                        <div class="slds-col slds-size_2-of-2">
+                             <aura:if isTrue="{!v.productimageexist}">
+                                    <div class="img-zoom-container-inner">
+                                        <img id="myimage" class="myimage" src="{!('/sfc/servlet.shepherd/version/download/'+v.ProductImageDataSet.ContentDocument.LatestPublishedVersionId)}"/>
+                                    </div>
+                                    <aura:set attribute="else"> 
+                                        <div class="img-zoom-container-inner" >
+                                            <img id="myimage" class="myimage" src="{!$Resource.NoImageFound}"/>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                      </div>
+                    </div>
+                </div> 
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>  
+</aura:component>
